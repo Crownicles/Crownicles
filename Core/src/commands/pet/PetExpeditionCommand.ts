@@ -49,6 +49,8 @@ import { BlessingManager } from "../../core/blessings/BlessingManager";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { resetExpeditionStreakMission } from "../../core/missions/ExpeditionStreakUtils";
 import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
+import { notifyQuestStepCompleted } from "../../core/quests/Quests";
+import { QUEST_IDS } from "../../../../Lib/src/constants/QuestConstants";
 import {
 	LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
@@ -269,7 +271,26 @@ type ResolvedExpeditionPayload = {
 	expeditionData: ExpeditionData;
 	petInfo: ReturnType<PetEntity["getBasicInfo"]>;
 	badgeEarned: string | undefined;
+	isFirstSuccessfulExpedition: boolean;
 };
+
+/**
+ * Tell the player about the steps of the expedition talismans quest the expedition just completed
+ */
+async function notifyExpeditionQuestSteps(response: CrowniclesPacket[], player: Player, resolved: ResolvedExpeditionPayload): Promise<void> {
+	if (resolved.isFirstSuccessfulExpedition) {
+		await notifyQuestStepCompleted(response, player, {
+			questId: QUEST_IDS.EXPEDITION_TALISMANS,
+			stepId: "successfulExpedition"
+		});
+	}
+	if (resolved.outcome.rewards?.cloneTalismanFound) {
+		await notifyQuestStepCompleted(response, player, {
+			questId: QUEST_IDS.EXPEDITION_TALISMANS,
+			stepId: "cloneTalisman"
+		});
+	}
+}
 
 /**
  * In-lock body for `doResolveExpedition`. Re-validates that the
@@ -312,6 +333,9 @@ async function applyLockedResolveExpedition(
 	}
 
 	const expeditionSuccess = !outcome.totalFailure;
+
+	// The completion log is written without being awaited, so the previous successes are counted before it
+	const isFirstSuccessfulExpedition = expeditionSuccess && await LogsReadRequests.countSuccessfulExpeditions(player.keycloakId) === 0;
 	await finalizeExpedition(player, pet, activeExpedition, expeditionData, expeditionSuccess, outcome);
 
 	await updateExpeditionMissions(player, response, expeditionData, expeditionSuccess);
@@ -324,7 +348,8 @@ async function applyLockedResolveExpedition(
 		expeditionSuccess,
 		expeditionData,
 		petInfo: pet.getBasicInfo(),
-		badgeEarned
+		badgeEarned,
+		isFirstSuccessfulExpedition
 	};
 }
 
@@ -464,6 +489,7 @@ export default class PetExpeditionCommand {
 			expedition: resolved.expeditionData,
 			badgeEarned: resolved.badgeEarned
 		}));
+		await notifyExpeditionQuestSteps(response, player, resolved);
 	}
 
 	/**

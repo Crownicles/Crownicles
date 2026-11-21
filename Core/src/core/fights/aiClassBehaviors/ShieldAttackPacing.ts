@@ -1,5 +1,5 @@
 import { AiPlayerFighter } from "../fighter/AiPlayerFighter";
-import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { PlayerBaseFighter } from "../fighter/PlayerBaseFighter";
 import { FightActionDataController } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
@@ -32,7 +32,7 @@ export type ShieldAttackChances = typeof SHIELD_ATTACK_CHANCES[keyof typeof SHIE
  */
 export function canPlayShieldAttack(
 	me: AiPlayerFighter,
-	opponent: AiPlayerFighter | RealPlayerFighter,
+	opponent: PlayerBaseFighter,
 	chances: ShieldAttackChances,
 	pacing: {
 		breathToKeep?: number;
@@ -59,7 +59,7 @@ export function canPlayShieldAttack(
  * @param opponent
  * @param breathToKeep Breath the AI wants to keep after the shield attack
  */
-export function canStrikeWithShieldAttack(me: AiPlayerFighter, opponent: AiPlayerFighter | RealPlayerFighter, breathToKeep = 0): boolean {
+export function canStrikeWithShieldAttack(me: AiPlayerFighter, opponent: PlayerBaseFighter, breathToKeep = 0): boolean {
 	return opponent.hasFightAlteration()
 		&& opponent.alteration?.id !== FightConstants.FIGHT_ACTIONS.ALTERATION.WEAK
 		&& me.getBreath() - FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK) >= breathToKeep;

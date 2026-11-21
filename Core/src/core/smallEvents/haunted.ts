@@ -5,7 +5,7 @@ import { SmallEventHauntedPacket } from "../../../../Lib/src/packets/smallEvents
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnHauntedPath,
-	executeSmallEvent: (response): void => {
+	executeSmallEvent: (_player, { response }): void => {
 		response.push(makePacket(SmallEventHauntedPacket, {}));
 	}
 };

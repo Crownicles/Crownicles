@@ -4,7 +4,7 @@ import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
-import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { PlayerBaseFighter } from "../fighter/PlayerBaseFighter";
 import { getUsedGodMoves } from "../FightController";
 import PaladinFightBehavior from "./PaladinFightBehavior";
 import { MAX_GOD_MOVES_PER_FIGHT } from "./PaladinTactics";
@@ -26,7 +26,7 @@ class PaladinJusticarFightBehavior extends PaladinFightBehavior {
 	protected override readonly ultimateChargeEnergyRatio = JUSTICAR_ULTIMATE_CHARGE_ENERGY_RATIO;
 
 	override chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
-		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter | AiPlayerFighter;
+		const opponent = fightView.fightController.getDefendingFighter() as PlayerBaseFighter;
 		const divineAttackAvailable = getUsedGodMoves(me, opponent) < MAX_GOD_MOVES_PER_FIGHT
 			&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.DIVINE_ATTACK);
 		if (fightView.fightController.turn >= JUSTICAR_DIVINE_ATTACK_TURN && divineAttackAvailable) {

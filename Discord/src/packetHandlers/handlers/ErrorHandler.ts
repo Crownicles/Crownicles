@@ -18,37 +18,23 @@ import {
 import { handleClassicError } from "../../utils/ErrorUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { formatBlockedReasons } from "../../utils/BlockingReasonUtils";
-import {
-	ButtonInteraction, escapeCodeBlock
-} from "discord.js";
-import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
-
-type BlockedReplyTarget = {
-	interaction: CrowniclesInteraction | null;
-	buttonInteraction: ButtonInteraction | null;
-};
-
-type EmbedReplyOptions = {
-	embeds: CrowniclesEmbed[];
-};
+import { escapeCodeBlock } from "discord.js";
+import { SendManner } from "../../messages/CrowniclesInteraction";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 
 export default class ErrorHandler {
 	@packetHandler(BlockedPacket)
 	async blockedHandler(context: PacketContext, packet: BlockedPacket): Promise<void> {
-		const target = ErrorHandler.getBlockedReplyTarget(context);
-		const lng = target.interaction?.userLanguage ?? LANGUAGE.ENGLISH;
+		const commandInteraction = DiscordCache.getInteraction(context.discord!.interaction);
+		const target = MessagesUtils.getButtonClick(context) ?? commandInteraction;
+		if (!target) {
+			return;
+		}
+		const lng = commandInteraction?.userLanguage ?? LANGUAGE.ENGLISH;
 		const embed = await ErrorHandler.buildBlockedEmbed(context, packet, lng);
 
-		await ErrorHandler.sendBlockedEmbed(target, embed);
-	}
-
-	private static getBlockedReplyTarget(context: PacketContext): BlockedReplyTarget {
-		return {
-			interaction: DiscordCache.getInteraction(context.discord!.interaction),
-			buttonInteraction: context.discord?.buttonInteraction
-				? DiscordCache.getButtonInteraction(context.discord.buttonInteraction)
-				: null
-		};
+		// An interaction already answered keeps its answer: the blocking reasons are sent in the channel
+		await target.respond({ embeds: [embed] }, target.replied ? { manner: SendManner.SEND } : {});
 	}
 
 	private static async buildBlockedEmbed(context: PacketContext, packet: BlockedPacket, lng: Language): Promise<CrowniclesEmbed> {
@@ -75,49 +61,6 @@ export default class ErrorHandler {
 			lng,
 			reasons: errorReasons
 		});
-	}
-
-	private static async sendBlockedEmbed(target: BlockedReplyTarget, embed: CrowniclesEmbed): Promise<void> {
-		const replyOptions: EmbedReplyOptions = { embeds: [embed] };
-		if (target.buttonInteraction) {
-			await ErrorHandler.sendBlockedEmbedToButtonInteraction(target, replyOptions);
-			return;
-		}
-
-		await ErrorHandler.sendBlockedEmbedToCommandInteraction(target.interaction, replyOptions);
-	}
-
-	private static async sendBlockedEmbedToButtonInteraction(target: BlockedReplyTarget, replyOptions: EmbedReplyOptions): Promise<void> {
-		const buttonInteraction = target.buttonInteraction!;
-		if (buttonInteraction.deferred) {
-			await buttonInteraction.editReply(replyOptions);
-			return;
-		}
-
-		if (!buttonInteraction.replied) {
-			await buttonInteraction.reply(replyOptions);
-			return;
-		}
-
-		await target.interaction?.channel.send(replyOptions);
-	}
-
-	private static async sendBlockedEmbedToCommandInteraction(interaction: CrowniclesInteraction | null, replyOptions: EmbedReplyOptions): Promise<void> {
-		if (!interaction) {
-			return;
-		}
-
-		if (interaction.deferred && !interaction.replyEdited) {
-			await interaction.editReply(replyOptions);
-			return;
-		}
-
-		if (!interaction.deferred && !interaction.replied) {
-			await interaction.reply(replyOptions);
-			return;
-		}
-
-		await interaction.channel.send(replyOptions);
 	}
 
 	@packetHandler(ErrorInternalPacket)

@@ -61,7 +61,9 @@ export abstract class Shop<
 		// Default implementation does nothing
 	}
 
-	public executeSmallEvent: ExecuteSmallEventLike = async (response, player, context) => {
+	public executeSmallEvent: ExecuteSmallEventLike = async (player, {
+		response, context
+	}) => {
 		const itemMultiplier = await this.getPriceMultiplier(player);
 		const randomItem = await this.getRandomItem();
 		const itemPrice = Math.round(getItemValue(randomItem) * itemMultiplier);

@@ -1,5 +1,6 @@
 import {
 	BaseGuildTextChannel,
+	BaseMessageOptions,
 	BooleanCache,
 	ButtonInteraction,
 	Client,
@@ -38,16 +39,66 @@ type CrowniclesInteractionWithoutSendCommands = new(client: Client<true>, data: 
 const CrowniclesInteractionWithoutSendCommands: CrowniclesInteractionWithoutSendCommands = CommandInteraction as unknown as CrowniclesInteractionWithoutSendCommands;
 
 type ChannelTypeWithoutSend = new(client: Client<true>, data: RawWebhookData) => Omit<BaseGuildTextChannel, "send">;
-const GuildTextBasedChannel: GuildTextBasedChannel = BaseGuildTextChannel as unknown as GuildTextBasedChannel;
-const ChannelTypeWithoutSend: ChannelTypeWithoutSend = GuildTextBasedChannel as unknown as ChannelTypeWithoutSend;
+const ChannelTypeWithoutSend: ChannelTypeWithoutSend = BaseGuildTextChannel as unknown as ChannelTypeWithoutSend;
 
-export type ReplyFunctionLike<OptionValue> = (options: OptionValue) => Promise<ReturnType<OptionValue> | null>;
+type ReplyFunctionLike<OptionValue> = (options: OptionValue) => Promise<SendResult<OptionValue> | null>;
 
-type ReturnType<OptionValue> = OptionValue extends InteractionReplyOptions
+type SendResult<OptionValue> = OptionValue extends InteractionReplyOptions
 	? OptionValue extends { withResponse: true }
 		? InteractionCallbackResponse
 		: InteractionResponse<BooleanCache<"cached">>
 	: Message;
+
+type Fallback = () => void | Promise<void>;
+
+/**
+ * Message telling the user why the bot could not send what it wanted to
+ */
+type FallbackAlert = {
+	content?: string;
+	embeds?: CrowniclesEmbed[];
+};
+
+/**
+ * Errors due to a development mistake, and not to a weird permission error
+ */
+const DEV_MISTAKE_ERROR_CODES = [
+	DiscordjsErrorCodes.InteractionAlreadyReplied,
+	DiscordjsErrorCodes.InteractionNotReplied
+];
+
+const NO_FALLBACK: Fallback = (): void => {
+	// Nothing to do when the message could not be sent
+};
+
+/**
+ * Method used to display a message in answer to an interaction
+ */
+export enum SendManner {
+	SEND = "SEND",
+	REPLY = "REPLY",
+	FOLLOWUP = "FOLLOWUP",
+	EDIT_REPLY = "EDIT_REPLY"
+}
+
+/**
+ * Content of a message displayable by every send manner
+ */
+export type CrowniclesResponseOptions = Pick<BaseMessageOptions, "content" | "embeds" | "components" | "files"> & {
+
+	/**
+	 * Only show the message to the user, when the manner allows it: a reply or a follow-up
+	 */
+	ephemeral?: boolean;
+};
+
+/**
+ * How to display a response: a manner forced by the caller, and what to do if the message could not be sent
+ */
+type RespondSettings = {
+	manner?: SendManner;
+	fallback?: Fallback;
+};
 
 export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendCommands {
 	public userLanguage: Language = LANGUAGE.DEFAULT_LANGUAGE;
@@ -63,17 +114,13 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 		return this._channel;
 	}
 
-	private _replyEdited = false;
-
-	public get replyEdited(): boolean {
-		return this._replyEdited;
-	}
-
 	/**
-	 * Cast a CommandInteraction to a CrowniclesInteraction
+	 * Cast a discord.js interaction to a CrowniclesInteraction. The interaction keeps its discord.js prototype: the
+	 * methods of this class are bound to it one by one, those which are not are unavailable at runtime
 	 * @param discordInteraction
+	 * @param userLanguage - Language to display the messages in, when it is already known
 	 */
-	static cast(discordInteraction: CommandInteraction | ButtonInteraction | StringSelectMenuInteraction): CrowniclesInteraction {
+	static cast(discordInteraction: CommandInteraction | ButtonInteraction | StringSelectMenuInteraction, userLanguage?: Language): CrowniclesInteraction {
 		if (discordInteraction === null) {
 			throw new Error("CrowniclesInteraction casting: discordInteraction is null.");
 		}
@@ -88,7 +135,16 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 		discordInteraction.editReply = CrowniclesInteraction.prototype.editReply.bind(discordInteraction);
 
 		const interaction = discordInteraction as unknown as CrowniclesInteraction;
-		interaction._channel = CrowniclesChannel.cast(discordInteraction.channel as GuildTextBasedChannel);
+		interaction.replyWithMessage = CrowniclesInteraction.prototype.replyWithMessage.bind(interaction);
+		interaction.respond = CrowniclesInteraction.prototype.respond.bind(interaction);
+		if (userLanguage) {
+			interaction.userLanguage = userLanguage;
+		}
+
+		// The channel is null when it is not cached: a click must still reach Core then
+		if (discordInteraction.channel) {
+			interaction._channel = CrowniclesChannel.cast(discordInteraction.channel as GuildTextBasedChannel);
+		}
 		if (discordInteraction.isCommand() && "options" in discordInteraction) {
 			interaction.options = this.properCastOptions(discordInteraction.options as CommandInteractionOptionResolver);
 		}
@@ -203,29 +259,81 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 		return options;
 	}
 
-	public async reply(options: InteractionReplyOptions & {
-		withResponse: true;
-	}, fallback?: () => void | Promise<void>): Promise<InteractionCallbackResponse | null>;
-
-	// Yes, we need to omit createMessageComponentCollector because the response is not a message and so the collectors are created on the interaction and not the message, and it mixes everything up
-	public async reply(options: string | MessagePayload | InteractionReplyOptions & {
-		withResponse?: false;
-	}, fallback?: () => void | Promise<void>): Promise<Omit<InteractionResponse, "createMessageComponentCollector"> | null>;
-
 	/**
-	 * Send a reply to the user
+	 * Send a reply to the user. Its response is not a message, and collectors created on it mix everything up: use
+	 * {@link replyWithMessage} to collect the components of the reply
 	 * @param options classic discord.js send options
 	 * @param fallback function to execute if the bot can't send the message
 	 */
-	public async reply<T extends string | MessagePayload | InteractionReplyOptions>(options: T, fallback?: () => void | Promise<void>): Promise<Omit<ReturnType<T>, "createMessageComponentCollector"> | null> {
-		return await (CrowniclesInteraction.prototype.commonSendCommand<T>).call(
+	public async reply(options: string | MessagePayload | InteractionReplyOptions & {
+		withResponse?: false;
+	}, fallback?: Fallback): Promise<Omit<InteractionResponse, "createMessageComponentCollector"> | null> {
+		return await (CrowniclesInteraction.prototype.commonSendCommand<typeof options>).call(
 			this,
-			(CommandInteraction.prototype.reply as ReplyFunctionLike<T>).bind(this),
+			(CommandInteraction.prototype.reply as ReplyFunctionLike<typeof options>).bind(this),
 			options,
-			fallback ?? ((): void => {
-				// Do nothing by default if no fallback is provided
-			})
+			fallback ?? NO_FALLBACK
+		) as Omit<InteractionResponse, "createMessageComponentCollector"> | null;
+	}
+
+	/**
+	 * Send a reply to the user and get its message (#3386)
+	 * @param options classic discord.js send options
+	 * @param fallback function to execute if the bot can't send the message
+	 */
+	public async replyWithMessage(options: InteractionReplyOptions, fallback?: Fallback): Promise<Message | null> {
+		type ReplyWithResponseOptions = InteractionReplyOptions & { withResponse: true };
+		const response = await (CrowniclesInteraction.prototype.commonSendCommand<ReplyWithResponseOptions>).call(
+			this,
+			(CommandInteraction.prototype.reply as ReplyFunctionLike<ReplyWithResponseOptions>).bind(this),
+			{
+				...options,
+				withResponse: true
+			},
+			fallback ?? NO_FALLBACK
 		);
+		return response?.resource?.message ?? null;
+	}
+
+	/**
+	 * Display a message in answer to the interaction (#2730). Without a forced manner, the method is the one the state of
+	 * the interaction still allows: the reply before any acknowledgement, the deferred reply while it waits for its
+	 * content, a follow-up once answered
+	 * @param options content of the message
+	 * @param settings manner forced by the caller and function to execute if the bot can't send the message
+	 */
+	public async respond(options: CrowniclesResponseOptions, {
+		manner, fallback
+	}: RespondSettings = {}): Promise<Message | null> {
+		const {
+			ephemeral, ...content
+		} = options;
+		const ephemeralFlags = ephemeral ? { flags: MessageFlags.Ephemeral } as const : {};
+		switch (manner ?? CrowniclesInteraction.getAvailableSendManner(this)) {
+			case SendManner.REPLY:
+				return await CrowniclesInteraction.prototype.replyWithMessage.call(this, {
+					...content, ...ephemeralFlags
+				}, fallback);
+			case SendManner.FOLLOWUP:
+				return await this.followUp({
+					...content, ...ephemeralFlags
+				}, fallback);
+			case SendManner.EDIT_REPLY:
+				return await this.editReply(content, fallback);
+			default:
+				return await this.channel.send(content, fallback);
+		}
+	}
+
+	/**
+	 * The only manner Discord still accepts to answer the interaction in its current state
+	 * @param interaction
+	 */
+	private static getAvailableSendManner(interaction: CrowniclesInteraction): Exclude<SendManner, SendManner.SEND> {
+		if (interaction.replied) {
+			return SendManner.FOLLOWUP;
+		}
+		return interaction.deferred ? SendManner.EDIT_REPLY : SendManner.REPLY;
 	}
 
 	/**
@@ -233,14 +341,12 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 	 * @param options classic discord.js send options
 	 * @param fallback function to execute if the bot can't send the message
 	 */
-	public async followUp(options: string | InteractionReplyOptions | MessagePayload, fallback?: () => void | Promise<void>): Promise<Message | null> {
+	public async followUp(options: string | InteractionReplyOptions | MessagePayload, fallback?: Fallback): Promise<Message | null> {
 		return await (CrowniclesInteraction.prototype.commonSendCommand<string | MessagePayload | InteractionReplyOptions>).call(
 			this,
 			CommandInteraction.prototype.followUp.bind(this),
 			options,
-			fallback ?? ((): void => {
-				// Do nothing by default if no fallback is provided
-			})
+			fallback ?? NO_FALLBACK
 		) as Message;
 	}
 
@@ -254,9 +360,7 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 			&& options.flags.includes("IsComponentsV2");
 	}
 
-	public async editReply(options: string | MessagePayload | InteractionEditReplyOptions, fallback?: () => void | Promise<void>): Promise<Message | null> {
-		this._replyEdited = true;
-
+	public async editReply(options: string | MessagePayload | InteractionEditReplyOptions, fallback?: Fallback): Promise<Message | null> {
 		// Track V2 state — once set, the flag cannot be removed from the message
 		if (CrowniclesInteraction.isV2FlaggedOptions(options)) {
 			this._isV2 = true;
@@ -273,9 +377,7 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 			this,
 			CommandInteraction.prototype.editReply.bind(this),
 			options,
-			fallback ?? ((): void => {
-				// Do nothing by default if no fallback is provided
-			})
+			fallback ?? NO_FALLBACK
 		) as Message;
 	}
 
@@ -288,8 +390,8 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 	private async commonSendCommand<OptionType>(
 		functionPrototype: ReplyFunctionLike<OptionType>,
 		options: OptionType,
-		fallback: () => void | Promise<void>
-	): Promise<ReturnType<OptionType> | null> {
+		fallback: Fallback
+	): Promise<SendResult<OptionType> | null> {
 		try {
 			return await functionPrototype(options);
 		}
@@ -302,7 +404,28 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 	}
 
 	/**
-	 * Manage the fallback of both reply and followUp functions
+	 * Alert telling the user why a message could not be sent, in their language
+	 * @param interaction
+	 * @param e - Error raised by the send
+	 */
+	private static getFallbackAlert(interaction: CrowniclesInteraction, e: Error): FallbackAlert {
+		const lng = interaction.userLanguage;
+		if (e?.constructor.name === DiscordjsError.name && DEV_MISTAKE_ERROR_CODES.includes((e as DiscordjsError).code)) {
+			return {
+				embeds: [
+					new CrowniclesEmbed()
+						.formatAuthor(i18n.t("error:errorOccurredTitle", { lng }), interaction.user)
+						.setDescription(i18n.t("error:aDevMessedUp", { lng }))
+						.setErrorColor()
+				]
+			};
+		}
+		return { content: i18n.t("bot:noSpeakPermission", { lng }) };
+	}
+
+	/**
+	 * Alert the user that a message could not be sent: through the interaction, else in the channel, else in direct
+	 * messages. Each way is tried once, so that an alert delivered nowhere ends instead of being retried forever
 	 */
 	private async manageFallback<OptionType>(
 		functionPrototype: ReplyFunctionLike<OptionType>,
@@ -318,50 +441,29 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 			return;
 		}
 
-		// Error codes due to a development mistake, and not because of a weird permission error
-		const manageFallbackDevErrorCodes = [
-			DiscordjsErrorCodes.InteractionAlreadyReplied,
-			DiscordjsErrorCodes.InteractionNotReplied
-		];
-
-		let toSendProp: {
-			content?: string; embeds?: CrowniclesEmbed[];
-		};
-		const lng = this.userLanguage;
-		if (e?.constructor.name === DiscordjsError.name && manageFallbackDevErrorCodes.includes((e as DiscordjsError).code)) {
-			toSendProp = {
-				embeds: [
-					new CrowniclesEmbed()
-						.formatAuthor(i18n.t("error:errorOccurredTitle", { lng }), this.user)
-						.setDescription(i18n.t("error:aDevMessedUp", { lng }))
-						.setErrorColor()
-				]
-			};
-		}
-		else {
-			toSendProp = { content: i18n.t("bot:noSpeakPermission", { lng }) };
-		}
+		const alert = CrowniclesInteraction.getFallbackAlert(this, e);
 		try {
 			// @ts-expect-error - We consider that the functionPrototype is a function that can be called with these parameters (i.e, accepts a InteractionReplyOptions)
 			await functionPrototype.call(this, {
 				flags: MessageFlags.Ephemeral,
-				...toSendProp
+				...alert
 			});
+			return;
 		}
 		catch {
-			// Try again to manage fallback with the send function
-			if (functionPrototype !== CrowniclesChannel.prototype.send) {
-				await CrowniclesInteraction.prototype.manageFallback.bind(this)(BaseGuildTextChannel.prototype.send.bind(this.channel), e);
-				return;
-			}
+			// The interaction refuses the alert as well
+		}
 
-			// We can't send ephemeral message, so we send the message in DM
-			try {
-				await CommandInteraction.prototype.user.send.bind(this.user)({ ...toSendProp });
-			}
-			catch (e) {
-				CrowniclesLogger.errorWithObj(`Unable to alert user of no speak permission : c:${this.channel?.id} / u:${this.user?.id}`, e);
-			}
+		// The channel is null when it is not cached
+		if (this.channel && await CrowniclesChannel.prototype.send.call(this.channel, alert)) {
+			return;
+		}
+
+		try {
+			await this.user.send(alert);
+		}
+		catch (dmError) {
+			CrowniclesLogger.errorWithObj(`Unable to alert user of no speak permission : c:${this.channel?.id} / u:${this.user?.id}`, dmError);
 		}
 	}
 }
@@ -385,17 +487,14 @@ export class CrowniclesChannel extends ChannelTypeWithoutSend {
 	 * @param options classic discord.js send options
 	 * @param fallback function to execute if the bot can't send the message
 	 */
-	public async send(options: string | MessageCreateOptions, fallback?: () => void | Promise<void>): Promise<Message | null> {
+	public async send(options: string | MessageCreateOptions, fallback?: Fallback): Promise<Message | null> {
 		try {
 			return await BaseGuildTextChannel.prototype.send.bind(this)(options);
 		}
 		catch (e) {
 			CrowniclesLogger.errorWithObj("Weird Permission Error", e);
 			CrowniclesChannel.prototype.manageFallback.bind(this)();
-			fallback ??= (): void => {
-				// Do nothing by default if no fallback is provided
-			};
-			await fallback();
+			await (fallback ?? NO_FALLBACK)();
 			return null;
 		}
 	}

@@ -8,7 +8,7 @@ import {
 import {
 	ActionRowBuilder,
 	ButtonBuilder,
-	ButtonInteraction, ButtonStyle, parseEmoji, StringSelectMenuBuilder,
+	ButtonInteraction, ButtonStyle, Message, parseEmoji, StringSelectMenuBuilder,
 	StringSelectMenuInteraction, StringSelectMenuOptionBuilder, User
 } from "discord.js";
 import { Constants } from "../../../../Lib/src/constants/Constants";
@@ -79,29 +79,26 @@ async function mainPage(interaction: CrowniclesInteraction | StringSelectMenuInt
 	}
 
 	// Build and send the message
-	let reply;
-	const embed = getNotificationsEmbed(notificationsConfiguration, interaction.user, lng);
+	const messageOptions = {
+		embeds: [getNotificationsEmbed(notificationsConfiguration, interaction.user, lng)],
+		components: [row]
+	};
+	let msg: Message | null | undefined;
 	if (!interaction.isStringSelectMenu()) {
-		reply = await interaction.reply({ // Reply is picky on the signature, so the options can't be factorized into a single variable
-			embeds: [embed],
-			components: [row],
-			withResponse: true
-		});
+		msg = await interaction.replyWithMessage(messageOptions);
 	}
 
 	// Click on Buttons/Menu
 	else {
-		reply = await (interaction as ButtonInteraction | StringSelectMenuInteraction).update({
-			embeds: [embed],
-			components: [row],
+		msg = (await (interaction as ButtonInteraction | StringSelectMenuInteraction).update({
+			...messageOptions,
 			withResponse: true
-		});
+		})).resource?.message;
 	}
 
-	if (!reply?.resource?.message) {
+	if (!msg) {
 		return;
 	}
-	const msg = reply.resource.message;
 
 	// Create the collector
 	const buttonCollector = msg.createMessageComponentCollector({

@@ -21,9 +21,7 @@ import {
 	ReactionCollectorSkipMissionShopItemPacket,
 	ReactionCollectorSkipMissionShopItemReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorSkipMissionShopItem";
-import {
-	DiscordCollectorUtils, SEND_POLITICS
-} from "../../utils/DiscordCollectorUtils";
+import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import {
@@ -36,6 +34,7 @@ import { ExpeditionLocationType } from "../../../../Lib/src/constants/Expedition
 import {
 	PlantConstants, PlantId
 } from "../../../../Lib/src/constants/PlantConstants";
+import { SendManner } from "../../messages/CrowniclesInteraction";
 
 async function handleBasicMissionShopItem(context: PacketContext, descriptionString: string, descriptionFormat: {
 	[keys: string]: string | number;
@@ -215,7 +214,7 @@ export async function skipMissionShopItemCollector(context: PacketContext, packe
 			can: true,
 			reactionIndex: packet.reactions.findIndex(reaction => reaction.type === ReactionCollectorSkipMissionShopItemCloseReaction.name)
 		},
-		sendManners: SEND_POLITICS.ALWAYS_FOLLOWUP
+		sendManner: SendManner.FOLLOWUP
 	});
 }
 

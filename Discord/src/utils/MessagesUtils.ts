@@ -12,28 +12,29 @@ type ClickReplyOptions = Pick<BaseMessageOptions, "content" | "embeds" | "compon
 
 export abstract class MessagesUtils {
 	/**
-	 * Get the current interaction from the context and cast it to CrowniclesInteraction.
-	 * It selects either the string select menu interaction, the button interaction or the interaction depending on which one is present in the context.
-	 * The order of priority is string select menu interaction > button interaction > interaction.
-	 * The interaction is retrieved from the DiscordCache.
+	 * Click on a button Core is responding to, while it can still be answered (see DiscordCollectorUtils.sendReaction)
+	 * @param context
+	 */
+	static getButtonClick(context: PacketContext): CrowniclesInteraction | null {
+		const clickId = context.discord?.buttonInteraction;
+		return clickId ? DiscordCache.getButtonInteraction(clickId) : null;
+	}
+
+	/**
+	 * Selection in a menu or click on a button Core is responding to, while it can still be answered
+	 * @param context
+	 */
+	static getAnswerableClick(context: PacketContext): CrowniclesInteraction | null {
+		const selectionId = context.discord?.stringSelectMenuInteraction;
+		return (selectionId ? DiscordCache.getStringSelectMenuInteraction(selectionId) : null) ?? MessagesUtils.getButtonClick(context);
+	}
+
+	/**
+	 * Interaction to answer for the context: the answerable click Core is responding to, the command otherwise
 	 * @param context
 	 */
 	static getCurrentInteraction(context: PacketContext): CrowniclesInteraction {
-		if (context.discord!.stringSelectMenuInteraction) {
-			const stringSelectMenuInteraction = DiscordCache.getStringSelectMenuInteraction(context.discord!.stringSelectMenuInteraction);
-			if (stringSelectMenuInteraction) {
-				return CrowniclesInteraction.cast(stringSelectMenuInteraction);
-			}
-		}
-
-		if (context.discord!.buttonInteraction) {
-			const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction);
-			if (buttonInteraction) {
-				return CrowniclesInteraction.cast(buttonInteraction);
-			}
-		}
-
-		return DiscordCache.getInteraction(context.discord!.interaction)!;
+		return MessagesUtils.getAnswerableClick(context) ?? DiscordCache.getInteraction(context.discord!.interaction)!;
 	}
 
 	/**
@@ -42,16 +43,15 @@ export abstract class MessagesUtils {
 	 * Nothing is displayed when the collector ended without any click
 	 */
 	static async editClickReply(context: PacketContext, options: ClickReplyOptions): Promise<void> {
-		const clickId = context.discord?.buttonInteraction;
-		if (!clickId) {
+		if (!context.discord?.buttonInteraction) {
 			return;
 		}
-		const buttonInteraction = DiscordCache.getButtonInteraction(clickId);
-		if (buttonInteraction) {
-			await buttonInteraction.editReply(options);
+		const buttonClick = MessagesUtils.getButtonClick(context);
+		if (buttonClick) {
+			await buttonClick.editReply(options);
 			return;
 		}
-		await DiscordCache.getInteraction(context.discord!.interaction)?.followUp(options);
+		await DiscordCache.getInteraction(context.discord.interaction)?.followUp(options);
 	}
 
 	/**
@@ -75,7 +75,6 @@ export abstract class MessagesUtils {
 		if (!clickId) {
 			return null;
 		}
-		const answerableClick = DiscordCache.getButtonInteraction(clickId) ?? DiscordCache.getStringSelectMenuInteraction(clickId);
-		return answerableClick?.user ?? DiscordCache.getUnanswerableClickUser(clickId);
+		return MessagesUtils.getAnswerableClick(context)?.user ?? DiscordCache.getUnanswerableClickUser(clickId);
 	}
 }

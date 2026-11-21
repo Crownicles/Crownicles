@@ -5,7 +5,7 @@ import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
-import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { PlayerBaseFighter } from "../fighter/PlayerBaseFighter";
 import {
 	canPlayShieldAttack, canStrikeWithShieldAttack, SHIELD_ATTACK_CHANCES
 } from "./ShieldAttackPacing";
@@ -20,7 +20,7 @@ class TankRiposteFightBehavior implements ClassBehavior {
 	private weakeningShieldAttacks = 0;
 
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
-		const opponent = fightView.fightController.getDefendingFighter() as AiPlayerFighter | RealPlayerFighter;
+		const opponent = fightView.fightController.getDefendingFighter() as PlayerBaseFighter;
 		const actions = FightConstants.FIGHT_ACTIONS.PLAYER;
 		const getAction = (actionId: string): FightAction => FightActionDataController.instance.getById(actionId)!;
 		const cost = (actionId: string): number => FightActionDataController.getFightActionBreathCost(actionId);

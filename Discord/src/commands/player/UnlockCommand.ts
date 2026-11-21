@@ -2,7 +2,9 @@ import { ICommand } from "../ICommand";
 import {
 	makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
+import {
+	CrowniclesInteraction, SendManner
+} from "../../messages/CrowniclesInteraction";
 import i18n from "../../translations/i18n";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { SlashCommandBuilder } from "@discordjs/builders";
@@ -19,9 +21,7 @@ import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { ReactionCollectorUnlockPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorUnlock";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { CommandProfilePacketReq } from "../../../../Lib/src/packets/commands/CommandProfilePacket";
-import {
-	sendErrorMessage, SendManner
-} from "../../utils/ErrorUtils";
+import { sendErrorMessage } from "../../utils/ErrorUtils";
 import { UnlockConstants } from "../../../../Lib/src/constants/UnlockConstants";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { escapeUsername } from "../../utils/StringUtils";

@@ -9,7 +9,9 @@ import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
-	executeSmallEvent: async (response, player, context): Promise<void> => {
+	executeSmallEvent: async (player, {
+		response, context
+	}): Promise<void> => {
 		const itemGenerated = generateRandomItem({
 			maxRarity: ItemRarity.EPIC
 		});

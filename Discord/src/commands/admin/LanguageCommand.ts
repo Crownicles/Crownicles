@@ -40,21 +40,19 @@ async function getPacket(interaction: CrowniclesInteraction, keycloakUser: Keycl
 	const row = new ActionRowBuilder<StringSelectMenuBuilder>()
 		.addComponents(languageSelectionMenu);
 
-	const reply = await interaction.reply({
+	const msg = await interaction.replyWithMessage({
 		embeds: [
 			new CrowniclesEmbed()
 				.setTitle(i18n.t("commands:language.title", { lng }))
 				.setDescription(i18n.t("commands:language.description", { lng }))
 		],
-		components: [row],
-		withResponse: true
+		components: [row]
 	});
 
-	if (!reply?.resource?.message) {
+	if (!msg) {
 		return null;
 	}
 
-	const msg = reply.resource.message;
 	const collector = msg.createMessageComponentCollector({
 		filter: menuInteraction => menuInteraction.customId === selectLanguageMenuId,
 		time: Constants.MESSAGES.COLLECTOR_TIME

@@ -8,7 +8,7 @@ import { MissionsController } from "../missions/MissionsController";
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: player => Maps.isOnContinent(player),
-	executeSmallEvent: async (response, player): Promise<void> => {
+	executeSmallEvent: async (player, { response }): Promise<void> => {
 		// Determine if the player is left-handed or right-handed according to the same logic as for fightPet
 		const isLeftHanded = player.id % 10 === SmallEventConstants.FIGHT_PET.LAST_DIGIT_LEFT_HANDED;
 

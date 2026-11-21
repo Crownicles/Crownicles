@@ -28,6 +28,7 @@ import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import {
 	KingGuardChallengerRecord, KingGuardFightStats
 } from "../../../../Lib/src/types/KingGuardFightStats";
+import { KingGuardUtils } from "../../utils/KingGuardUtils";
 
 /**
  * Get the league change string
@@ -101,9 +102,14 @@ async function buildPlayerFightHistoryLine(fight: PlayerFightHistoryItem, lng: L
  * @param lng
  */
 function buildKingGuardFightHistoryLine(fight: KingGuardFightHistoryItem, lng: Language): string {
-	return i18n.t("commands:fightHistory.kingGuardHistoryLine", {
+	return i18n.t("commands:fightHistory.kingGuardFightLine", {
 		lng,
 		date: dateDisplay(new Date(fight.date)),
+
+		// The guards generated on the fly before the library had no name
+		guard: fight.kingGuard.id === undefined
+			? i18n.t("commands:fight.kingGuard.unnamed", { lng })
+			: KingGuardUtils.getDisplayName(fight.kingGuard.id, lng),
 		guardLevel: fight.kingGuard.level,
 		guardClassId: fight.classes.opponent,
 		resultSentence: getResultSentence(fight.result, lng)
@@ -131,19 +137,22 @@ export async function buildPacketHistoryDescription(history: FightHistoryItem[],
 }
 
 /**
- * Get the lines of the best king guard beaten by the player: how far above its level it is, how many times it was broken and its rank
+ * Get the lines of the best king guard beaten by the player: who it is, how far above the level of the player it is, and the rank of the player
  * @param stats
  * @param lng
  */
 function getKingGuardRecordLines(stats: KingGuardFightStats, lng: Language): string[] {
 	if (!stats.record) {
-		return [i18n.t("commands:fightHistory.kingGuardStats.noRecord", { lng })];
+		return [i18n.t("commands:fightHistory.kingGuardStats.noDefeatedGuard", { lng })];
 	}
-	const levelsAbovePlayer = stats.record.level - stats.playerLevel;
+	const guard = stats.record.guard;
+	const levelsAbovePlayer = guard.level - stats.playerLevel;
 	return [
-		i18n.t("commands:fightHistory.kingGuardStats.record", {
+		i18n.t("commands:fightHistory.kingGuardStats.bestDefeatedGuard", {
 			lng,
-			level: stats.record.level,
+			guard: KingGuardUtils.getDisplayName(guard.id, lng),
+			classId: guard.classId,
+			level: guard.level,
 			aboveLevel: levelsAbovePlayer > 0
 				? i18n.t("commands:fightHistory.kingGuardStats.aboveLevel", {
 					lng,
@@ -151,9 +160,11 @@ function getKingGuardRecordLines(stats: KingGuardFightStats, lng: Language): str
 				})
 				: ""
 		}),
-		i18n.t("commands:fightHistory.kingGuardStats.progress", {
+		i18n.t("commands:fightHistory.kingGuardStats.bestDefeatedGuardHint", { lng }),
+		i18n.t("commands:fightHistory.kingGuardStats.ranking", {
 			lng,
-			...stats.record
+			rank: stats.record.rank,
+			challengers: stats.record.challengers
 		})
 	];
 }
@@ -167,19 +178,21 @@ function getKingGuardRecordLines(stats: KingGuardFightStats, lng: Language): str
  */
 async function getLeaderboardLine(challenger: KingGuardChallengerRecord, rank: number, viewerKeycloakId: string, lng: Language): Promise<string> {
 	const isViewer = challenger.keycloakId === viewerKeycloakId;
-	return i18n.t("commands:fightHistory.kingGuardStats.leaderboardLine", {
+	return i18n.t("commands:fightHistory.kingGuardStats.leaderboardEntry", {
 		lng,
 		badge: DisplayUtils.getRankMedalBadge(rank) ?? (isViewer ? CrowniclesIcons.top.badges.self : CrowniclesIcons.top.badges.default),
 		rank,
 		name: isViewer
 			? i18n.t("commands:fightHistory.kingGuardStats.you", { lng })
 			: await DisplayUtils.getEscapedUsername(challenger.keycloakId, lng),
-		level: challenger.level
+		guard: KingGuardUtils.getDisplayName(challenger.guard.id, lng),
+		classId: challenger.guard.classId,
+		level: challenger.guard.level
 	});
 }
 
 /**
- * Get the leaderboard of the players who beat the strongest king guards, followed by the viewer if it is not part of it
+ * Get the leaderboard of the players who beat the best king guards, followed by the viewer if it is not part of it
  * @param stats
  * @param viewerKeycloakId
  * @param lng
@@ -194,7 +207,7 @@ async function getKingGuardLeaderboard(stats: KingGuardFightStats, viewerKeycloa
 	if (stats.record && !stats.leaderboard.some(challenger => challenger.keycloakId === viewerKeycloakId)) {
 		lines.push(await getLeaderboardLine({
 			keycloakId: viewerKeycloakId,
-			level: stats.record.level
+			guard: stats.record.guard
 		}, stats.record.rank, viewerKeycloakId, lng));
 	}
 	return StringUtils.joinLines([i18n.t("commands:fightHistory.kingGuardStats.leaderboardTitle", { lng }), ...lines]);

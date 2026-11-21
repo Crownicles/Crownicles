@@ -63,6 +63,18 @@ export class NotificationsConfiguration extends Model {
 
 	declare petExpeditionChannelId?: string;
 
+	declare gardenPlantReadyEnabled: boolean;
+
+	declare gardenPlantReadySendType: number;
+
+	declare gardenPlantReadyChannelId?: string;
+
+	declare gardenAllPlantsReadyEnabled: boolean;
+
+	declare gardenAllPlantsReadySendType: number;
+
+	declare gardenAllPlantsReadyChannelId?: string;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -188,6 +200,30 @@ export function initModel(sequelize: Sequelize): void {
 			defaultValue: NotificationSendTypeEnum.DM
 		},
 		petExpeditionChannelId: {
+			// eslint-disable-next-line new-cap
+			type: DataTypes.STRING(32)
+		},
+		gardenPlantReadyEnabled: {
+			type: DataTypes.BOOLEAN,
+			defaultValue: false
+		},
+		gardenPlantReadySendType: {
+			type: DataTypes.INTEGER,
+			defaultValue: NotificationSendTypeEnum.DM
+		},
+		gardenPlantReadyChannelId: {
+			// eslint-disable-next-line new-cap
+			type: DataTypes.STRING(32)
+		},
+		gardenAllPlantsReadyEnabled: {
+			type: DataTypes.BOOLEAN,
+			defaultValue: true
+		},
+		gardenAllPlantsReadySendType: {
+			type: DataTypes.INTEGER,
+			defaultValue: NotificationSendTypeEnum.DM
+		},
+		gardenAllPlantsReadyChannelId: {
 			// eslint-disable-next-line new-cap
 			type: DataTypes.STRING(32)
 		},

@@ -35,6 +35,7 @@ import {
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import moment from "moment";
+import { getModelSequelize } from "../../../../../../Lib/src/database/ModelUtils";
 
 export class PetEntity extends Model {
 	/**
@@ -293,7 +294,7 @@ export abstract class PetEntities {
                        WHERE lovePoints >= ${PetConstants.TRAINED_LOVE_THRESHOLD}`;
 		return (<{
 			count: number;
-		}[]>(await PetEntity.sequelize!.query(query, {
+		}[]>(await getModelSequelize(PetEntity).query(query, {
 			type: QueryTypes.SELECT
 		})))[0].count;
 	}
@@ -304,7 +305,7 @@ export abstract class PetEntities {
                        WHERE lovePoints <= ${PetConstants.LOVE_LEVELS[0]}`;
 		return (<{
 			count: number;
-		}[]>(await PetEntity.sequelize!.query(query, {
+		}[]>(await getModelSequelize(PetEntity).query(query, {
 			type: QueryTypes.SELECT
 		})))[0].count;
 	}
@@ -315,7 +316,7 @@ export abstract class PetEntities {
                        WHERE sex = :sex`;
 		return (<{
 			count: number;
-		}[]>(await PetEntity.sequelize!.query(query, {
+		}[]>(await getModelSequelize(PetEntity).query(query, {
 			type: QueryTypes.SELECT,
 			replacements: { sex }
 		})))[0].count;
@@ -326,7 +327,7 @@ export abstract class PetEntities {
                        FROM pet_entities`;
 		return (<{
 			count: number;
-		}[]>(await PetEntity.sequelize!.query(query, {
+		}[]>(await getModelSequelize(PetEntity).query(query, {
 			type: QueryTypes.SELECT
 		})))[0].count;
 	}

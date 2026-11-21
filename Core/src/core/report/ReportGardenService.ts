@@ -44,8 +44,13 @@ import {
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { crowniclesInstance } from "../../app";
 import { MissionsController } from "../missions/MissionsController";
+import {
+	getSeedsQuestStepOfPlant, notifyQuestStepCompleted, SeedsQuestStepId
+} from "../quests/Quests";
+import { QUEST_IDS } from "../../../../Lib/src/constants/QuestConstants";
 import { updateCollectMaterialsMission } from "../utils/MaterialLootUtils";
 import { GardenActionType } from "../database/logs/LogsCityLogger";
+import { rescheduleGardenNotificationsUnderLock } from "../bot/GardenNotifications";
 
 type HomeData = ReactionCollectorCityData["home"];
 type GardenData = NonNullable<NonNullable<HomeData["owned"]>["garden"]>;
@@ -213,14 +218,12 @@ function buildGardenPlotsData(gardenSlots: HomeGardenSlot[], earthQuality: numbe
 }
 
 function computeReadyAtTimestamp(slot: HomeGardenSlot, effectiveGrowthTime: number, isReady: boolean): number {
-	if (!slot.plantedAt) {
-		return 0;
-	}
-	if (isReady) {
+	const readyAt = slot.getReadyAt(effectiveGrowthTime);
+	if (readyAt === null || isReady) {
 		return 0;
 	}
 
-	return Math.ceil((slot.plantedAt.valueOf() + effectiveGrowthTime * TimeConstants.MS_TIME.SECOND) / TimeConstants.MS_TIME.SECOND);
+	return Math.ceil(readyAt / TimeConstants.MS_TIME.SECOND);
 }
 
 /**
@@ -352,6 +355,7 @@ async function runHarvestUnderLock(params: {
 			accumulator
 		});
 	}
+	await rescheduleGardenNotificationsUnderLock(player, home);
 
 	const updatedStorage = await HomePlantStorages.getOfHome(home.id);
 	const plantStorage = updatedStorage
@@ -445,6 +449,7 @@ export function handleGardenPlant(
 	response: CrowniclesPacket[]
 ): Promise<void> {
 	let plantedPlayer: Player | null = null;
+	let completedSeedsStep: SeedsQuestStepId | undefined;
 	return withGardenLock(
 		keycloakId,
 		() => makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.NO_SEED),
@@ -452,6 +457,7 @@ export function handleGardenPlant(
 			const result = await runGardenPlantUnderLock(player, home, packet);
 			if (result.planted) {
 				plantedPlayer = player;
+				completedSeedsStep = result.completedSeedsStep;
 			}
 			return result.packet;
 		}
@@ -470,18 +476,31 @@ export function handleGardenPlant(
 		const sideEffects: CrowniclesPacket[] = [];
 		if (plantedPlayer) {
 			await MissionsController.update(plantedPlayer, sideEffects, { missionId: "plantSeed" });
+			if (completedSeedsStep) {
+				await notifyQuestStepCompleted(sideEffects, plantedPlayer, {
+					questId: QUEST_IDS.SEEDS,
+					stepId: completedSeedsStep
+				});
+			}
 		}
 		response.push(resultPacket, ...sideEffects);
 	});
 }
 
+/**
+ * Outcome of a planting attempt: the packet answering it and, when the plant is the most advanced of the garden, the step of the seeds quest it completes
+ */
+type GardenPlantResult = {
+	planted: boolean;
+	packet: CrowniclesPacket;
+	completedSeedsStep?: SeedsQuestStepId;
+};
+
 async function runGardenPlantUnderLock(
 	player: Locked<Player>,
 	home: Locked<Home>,
 	packet: CommandReportGardenPlantReq
-): Promise<{
-	planted: boolean; packet: CrowniclesPacket;
-}> {
+): Promise<GardenPlantResult> {
 	const validation = await validateGardenPlant(player, home, packet);
 	if (validation.error) {
 		return {
@@ -494,9 +513,11 @@ async function runGardenPlantUnderLock(
 		seedSlot, gardenSlot
 	} = validation;
 	const plantId = seedSlot!.plantId;
+	const isNewHighestPlant = plantId > await HomeGardenSlots.getHighestPlantedId(home.id);
 
 	await HomeGardenSlots.plantSeed(home.id, gardenSlot!.slot, plantId);
 	await PlayerPlantSlots.clearSeed(player.id);
+	await rescheduleGardenNotificationsUnderLock(player, home);
 
 	crowniclesInstance?.logsDatabase.logGardenAction({
 		keycloakId: player.keycloakId,
@@ -512,7 +533,8 @@ async function runGardenPlantUnderLock(
 		packet: makePacket(CommandReportGardenPlantRes, {
 			plantId,
 			gardenSlot: gardenSlot!.slot
-		})
+		}),
+		...isNewHighestPlant ? { completedSeedsStep: getSeedsQuestStepOfPlant(plantId) } : {}
 	};
 }
 
@@ -791,6 +813,7 @@ async function applyGardenWateringUnderLock(
 	now: number
 ): Promise<void> {
 	await shiftPlantedAtForGroupedSlots(home.id, groupSlotsByAdvance(wateringResult.entries));
+	await rescheduleGardenNotificationsUnderLock(lockedPlayer, home);
 
 	lockedPlayer.lastGardenWatered = new Date(now);
 	await lockedPlayer.save();

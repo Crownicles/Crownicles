@@ -1,5 +1,6 @@
 import {
 	DAYS,
+	DayOfTheWeek,
 	TimeConstants
 } from "../constants/TimeConstants";
 import {
@@ -205,12 +206,13 @@ export function dateDisplay(finishDate: Date): string {
 }
 
 /**
- * Get the next week's start
+ * Get the end (23:59:59.999) of the next given day of the week, today's when today is that day
+ * @param day
  */
-export function getNextSundayMidnight(): Millisecond {
+export function getNextWeekDayMidnight(day: DayOfTheWeek): Millisecond {
 	const now = new Date();
 	const dateOfReset = new Date();
-	dateOfReset.setDate(now.getDate() + (7 - now.getDay()) % 7);
+	dateOfReset.setDate(now.getDate() + (day - now.getDay() + TimeConstants.DAYS_IN_WEEK) % TimeConstants.DAYS_IN_WEEK);
 	dateOfReset.setHours(23, 59, 59, 999);
 	let dateOfResetTimestamp = dateOfReset.valueOf();
 	while (dateOfResetTimestamp < now.valueOf()) {
@@ -235,32 +237,17 @@ export function todayIsSunday(): boolean {
 }
 
 /**
- * Get the next season's start
- */
-export function getNextSaturdayMidnight(): Millisecond {
-	const now = new Date();
-	const dateOfReset = new Date();
-	dateOfReset.setDate(now.getDate() + (6 - now.getDay()) % 7);
-	dateOfReset.setHours(23, 59, 59, 999);
-	let dateOfResetTimestamp = dateOfReset.valueOf();
-	while (dateOfResetTimestamp < now.valueOf()) {
-		dateOfResetTimestamp += weeksToMilliseconds(asWeeks(1));
-	}
-	return asMilliseconds(dateOfResetTimestamp);
-}
-
-/**
  * Check if the reset is being done currently
  */
 export function resetIsNow(): boolean {
-	return msDiff(getNextSundayMidnight(), nowMs()) <= minutesToMilliseconds(asMinutes(5));
+	return msDiff(getNextWeekDayMidnight(DayOfTheWeek.SUNDAY), nowMs()) <= minutesToMilliseconds(asMinutes(5));
 }
 
 /**
  * Check if the reset of the season end is being done currently
  */
 export function seasonEndIsNow(): boolean {
-	return msDiff(getNextSaturdayMidnight(), nowMs()) <= minutesToMilliseconds(asMinutes(20));
+	return msDiff(getNextWeekDayMidnight(DayOfTheWeek.SATURDAY), nowMs()) <= minutesToMilliseconds(asMinutes(20));
 }
 
 /**

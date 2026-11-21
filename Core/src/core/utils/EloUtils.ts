@@ -2,6 +2,7 @@ import Player from "../database/game/models/Player";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { EloGameResult } from "../../../../Lib/src/types/EloGameResult";
 import { LeagueInfoConstants } from "../../../../Lib/src/constants/LeagueInfoConstants";
+import { InactivityKFactorBoost } from "../../../../Lib/src/types/InactivityKFactorBoost";
 
 export abstract class EloUtils {
 	/**
@@ -31,25 +32,48 @@ export abstract class EloUtils {
 	}
 
 	/**
+	 * Get the k-factor of a player, boosted when their rating was rarely put at stake recently
+	 * @param player
+	 * @param fightCountInWindow - Number of ranked fights counted in the last `boost.WINDOW_WEEKS` weeks
+	 * @param boost - Boost rule of the rating at stake
+	 */
+	private static getInactivityBoostedKFactor(player: Player, fightCountInWindow: number, boost: InactivityKFactorBoost): number {
+		const baseFactor = EloUtils.getKFactor(player);
+		const countdown = Math.max(0, boost.FIGHT_COUNT_THRESHOLD - fightCountInWindow);
+		if (countdown < boost.COUNTDOWN_THRESHOLD || player.getLeague().id >= LeagueInfoConstants.ROYAL_LEAGUE_ID) {
+			return baseFactor;
+		}
+		return baseFactor * Math.min(countdown - 1, boost.K_FACTOR_MAX_MULTIPLIER);
+	}
+
+	/**
 	 * Get the k-factor for an attacker, boosted when the attacker is returning from inactivity.
-	 * This is a custom Crownicles balancing rule to help stale attacker ratings converge faster.
-	 * The boost is based on how many ranked fights the player has initiated in the last
-	 * ATTACK_COUNT_WINDOW_WEEKS weeks: fewer attacks means a higher multiplier.
+	 * This is a custom Crownicles balancing rule to help stale attacker ratings converge faster:
+	 * fewer ranked fights initiated in the window means a higher multiplier.
 	 * @param attacker
-	 * @param attackCountInWindow - Number of ranked fights initiated in the last ATTACK_COUNT_WINDOW_WEEKS weeks
+	 * @param attackCountInWindow - Number of ranked fights initiated in the last INACTIVE_ATTACKER.WINDOW_WEEKS weeks
 	 */
 	static getAttackerKFactor(attacker: Player, attackCountInWindow: number): number {
-		const baseFactor = EloUtils.getKFactor(attacker);
-		const attackBasedCountdown = Math.max(0, FightConstants.ELO.INACTIVE_ATTACKER_ATTACK_COUNT_THRESHOLD - attackCountInWindow);
-		if (attackBasedCountdown >= FightConstants.ELO.INACTIVE_ATTACKER_FIGHT_COUNTDOWN_THRESHOLD
-			&& attacker.getLeague().id < LeagueInfoConstants.ROYAL_LEAGUE_ID) {
-			const multiplier = Math.min(
-				attackBasedCountdown - 1,
-				FightConstants.ELO.INACTIVE_ATTACKER_K_FACTOR_MAX_MULTIPLIER
-			);
-			return baseFactor * multiplier;
-		}
-		return baseFactor;
+		return EloUtils.getInactivityBoostedKFactor(attacker, attackCountInWindow, FightConstants.ELO.INACTIVE_ATTACKER);
+	}
+
+	/**
+	 * Get the k-factor for a defender, boosted when the defender was rarely attacked recently.
+	 * Only fights update a defense rating, so the one of a rarely attacked player would otherwise stay stale for months.
+	 * @param defender
+	 * @param defenseCountInWindow - Number of ranked fights undergone in the last INACTIVE_DEFENDER.WINDOW_WEEKS weeks
+	 */
+	static getDefenderKFactor(defender: Player, defenseCountInWindow: number): number {
+		return EloUtils.getInactivityBoostedKFactor(defender, defenseCountInWindow, FightConstants.ELO.INACTIVE_DEFENDER);
+	}
+
+	/**
+	 * Expected score of a player against an opponent, from 0 (sure to lose) to 1 (sure to win)
+	 * @param playerRating The player rating
+	 * @param opponentRating Their opponent rating
+	 */
+	static getExpectedScore(playerRating: number, opponentRating: number): number {
+		return 1 / (1 + Math.pow(10, (opponentRating - playerRating) / FightConstants.ELO.RATING_SCALE));
 	}
 
 	/**
@@ -60,7 +84,7 @@ export abstract class EloUtils {
 	 * @param kFactor The k factor of the player (see EloUtils.getKFactor)
 	 */
 	static calculateNewRating(playerRating: number, opponentRating: number, gameResult: EloGameResult, kFactor: number): number {
-		const newElo = Math.round(playerRating + kFactor * (gameResult - 1 / (1 + Math.pow(10, (opponentRating - playerRating) / 400))));
+		const newElo = Math.round(playerRating + kFactor * (gameResult - EloUtils.getExpectedScore(playerRating, opponentRating)));
 		return Math.max(newElo + Math.round((newElo - playerRating) * (1.49 - Math.tanh((playerRating - 502) / 140) / 2 - 0.87)), 0);
 	}
 }

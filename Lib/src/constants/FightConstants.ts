@@ -1,6 +1,7 @@
 import {
-	asDays, asMinutes, Day, Minute
+	asDays, asMinutes, asWeeks, Day, Minute
 } from "../types/TimeTypes";
+import { InactivityKFactorBoost } from "../types/InactivityKFactorBoost";
 
 export abstract class FightConstants {
 	static readonly RARE_SUB_TEXT_INTRO = 0.001; // Chance of having a rare subtext in the fight intro message (1=100%)
@@ -338,6 +339,9 @@ export abstract class FightConstants {
 
 	static readonly ELO = {
 		DEFAULT_ELO: 0,
+
+		// Rating gap for which the stronger side is expected to win 10 times out of 11, as in chess
+		RATING_SCALE: 400,
 		MAX_ELO_GAP: 400,
 		DEFAULT_K_FACTOR: 32,
 		LOW_K_FACTOR: 24,
@@ -351,15 +355,25 @@ export abstract class FightConstants {
 		LOW_LEVEL_BONUS_THRESHOLD: 1000,
 		MAX_RANK_FOR_LEAGUE_POINTS_REWARD: 200,
 		ELO_DIFFERENCE_FOR_SAME_ELO: 30,
-		INACTIVE_ATTACKER_K_FACTOR_MAX_MULTIPLIER: 4,
-		INACTIVE_ATTACKER_FIGHT_COUNTDOWN_THRESHOLD: 3,
-		ATTACK_COUNT_WINDOW_WEEKS: 10,
 
 		/*
-		 * Number of attacks below which a player is considered inactive and gets a K-factor boost.
-		 * Must be independent from FIGHT_COUNTDOWN_REGEN_LIMIT to avoid accidental balance coupling.
+		 * An attacker who has initiated few ranked fights recently has a stale attack rating.
+		 * FIGHT_COUNT_THRESHOLD must be independent from FIGHT_COUNTDOWN_REGEN_LIMIT to avoid accidental balance coupling.
 		 */
-		INACTIVE_ATTACKER_ATTACK_COUNT_THRESHOLD: 7
+		INACTIVE_ATTACKER: {
+			WINDOW_WEEKS: asWeeks(10),
+			FIGHT_COUNT_THRESHOLD: 7,
+			COUNTDOWN_THRESHOLD: 3,
+			K_FACTOR_MAX_MULTIPLIER: 4
+		} satisfies InactivityKFactorBoost,
+
+		// A defender rarely attacked recently has a stale defense rating; tuned independently from the attackers
+		INACTIVE_DEFENDER: {
+			WINDOW_WEEKS: asWeeks(10),
+			FIGHT_COUNT_THRESHOLD: 7,
+			COUNTDOWN_THRESHOLD: 3,
+			K_FACTOR_MAX_MULTIPLIER: 4
+		} satisfies InactivityKFactorBoost
 	};
 
 	// If a player has a fight countdown higher than this value, he will not appear in the glory top
@@ -389,12 +403,6 @@ export abstract class FightConstants {
 	// Number of players to search for when looking for an opponent
 	static PLAYER_PER_OPPONENT_SEARCH = 10;
 
-	// Amount of attack glory transformed into defense glory each week
-	static ATTACK_GLORY_TO_DEFENSE_GLORY_EACH_WEEK = 50;
-
-	// Maximum defense glory points to be eligible for attack glory transfer
-	static readonly MAX_DEFENSE_GLORY_FOR_TRANSFER = 1400;
-
 	// Purge timeout
 	static PURGE_TIMEOUT = 60000;
 
@@ -416,37 +424,35 @@ export abstract class FightConstants {
 	} as const;
 
 	/**
-	 * King guards are generated on the fly when /fight finds no opponent
+	 * King guards are drawn from a library of pre-generated guards when /fight finds no opponent
 	 */
 	static readonly KING_GUARD = {
-		// Reserved identifier sent instead of a keycloak id: a king guard has no account
-		KEYCLOAK_ID: "kingGuard",
+		// A king guard has no account: the identifier sent instead of a keycloak id is this prefix followed by the id of the guard
+		KEYCLOAK_ID_PREFIX: "kingGuard:",
 
-		// Same rule as the PvE bosses: a lost fight lowers the next guard level by this amount
-		FAILED_FIGHT_LEVEL_REDUCTION: 10,
-
-		// Number of players shown on the king guards page of the fight history, ranked by the strongest guard they beat
+		// Number of players shown on the king guards page of the fight history, ranked by the best guard they beat
 		LEADERBOARD_SIZE: 10,
 
-		// Calibrated on real players' equipment: about one rarity every 16 levels, starting from common, give or take one
-		EQUIPMENT_RARITY: {
-			AT_LEVEL_ZERO: 1,
-			LEVELS_PER_RARITY: 16,
-			SPREAD: 1
+		// Levels covered by the library (Core/resources/kingGuards/library.json) and number of guards of each level
+		LIBRARY: {
+			MIN_LEVEL: 80,
+			MAX_LEVEL: 250,
+			GUARDS_PER_LEVEL: 10
 		},
 
-		// Share of real players equipped with a fight potion
-		FIGHT_POTION_PROBABILITY: 0.2,
-
 		/*
-		 * Upgrades and enchantments grow from the required fight level up to this level:
-		 * the weapon and the armor get an upgrade level up to a cap growing to the maximum,
-		 * and an enchantment chance growing from the loot chance to the given maximum
+		 * Hidden Elo rating of the players and of the guards, only used to choose the guard a player fights:
+		 * it is never displayed and has nothing to do with the glory.
+		 * The guard is drawn among the CANDIDATES guards whose rating is the closest to the one of the player,
+		 * leaving out the last guards it fought. The rating of a player moves faster during its first fights.
 		 */
-		FULLY_EQUIPPED_LEVEL: 120,
-		ENCHANTMENT_PROBABILITY: {
-			MIN: 0.05,
-			MAX: 0.75
+		RATING: {
+			CANDIDATES: 10,
+			RECENT_GUARDS_EXCLUDED: 5,
+			PROVISIONAL_FIGHTS: 10,
+			PROVISIONAL_PLAYER_K_FACTOR: 48,
+			PLAYER_K_FACTOR: 32,
+			GUARD_K_FACTOR: 16
 		},
 
 		/*

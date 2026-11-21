@@ -6,6 +6,7 @@ import { Data } from "./Data";
 import { MapLocationType } from "../../../Lib/src/constants/MapLocationConstants";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 import { Biome } from "../../../Lib/src/types/Biome";
+import { getModelSequelize } from "../../../Lib/src/database/ModelUtils";
 
 export class MapLocation extends Data<number> {
 	declare readonly type: MapLocationType;
@@ -48,7 +49,7 @@ export class MapLocation extends Data<number> {
                           OR mapLinkId = :id2;`;
 		return (<{
 			count: number;
-		}[]>(await Player.sequelize!.query(query, {
+		}[]>(await getModelSequelize(Player).query(query, {
 			replacements: {
 				id1: mapLink1?.id ?? -1,
 				id2: mapLink2?.id ?? -1
@@ -144,7 +145,7 @@ export class MapLocationDataController extends DataControllerNumber<MapLocation>
 						 AND players.mapLinkId = :id1
 					       OR players.mapLinkId = :id2
                        ORDER BY RAND();`;
-		return await Player.sequelize!.query(query, {
+		return await getModelSequelize(Player).query(query, {
 			replacements: {
 				playerId,
 				id1: mapLink1?.id ?? -1,

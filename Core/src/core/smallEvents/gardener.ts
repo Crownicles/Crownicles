@@ -4,16 +4,17 @@ import { Maps } from "../maps/Maps";
 import { MapLinkDataController } from "../../data/MapLink";
 import { MapLocationDataController } from "../../data/MapLocation";
 import {
-	CrowniclesPacket, makePacket, PacketContext
+	CrowniclesPacket, makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { SmallEventGardenerPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventGardenerPacket";
+import {
+	GardenerConsolation, SmallEventGardenerPacket
+} from "../../../../Lib/src/packets/smallEvents/SmallEventGardenerPacket";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import {
 	GARDENER_ADVICE, GARDENER_INTERACTIONS, PLANT_TYPES, PlantConstants, PlantId,
 	SeedConditionKey, SEED_CONDITION_SUCCESS, SEED_CONDITION_FAILURE
 } from "../../../../Lib/src/constants/PlantConstants";
-import { TimeConstants } from "../../../../Lib/src/constants/TimeConstants";
 import {
 	PlayerPlantSlot, PlayerPlantSlots
 } from "../database/game/models/PlayerPlantSlot";
@@ -30,7 +31,9 @@ import {
 import {
 	PetDataController
 } from "../../data/Pet";
-import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import {
+	PetConstants, PetTag
+} from "../../../../Lib/src/constants/PetConstants";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
@@ -49,13 +52,10 @@ import { ReactionCollectorGardener } from "../../../../Lib/src/packets/interacti
 import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { BlockingUtils } from "../utils/BlockingUtils";
-import {
-	ItemConstants, ItemRarity
-} from "../../../../Lib/src/constants/ItemConstants";
+import { ItemConstants } from "../../../../Lib/src/constants/ItemConstants";
 import { GardenConstants } from "../../../../Lib/src/constants/GardenConstants";
 import { GardenEarthQuality } from "../../../../Lib/src/types/GardenEarthQuality";
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
-import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { LogsReadRequests } from "../database/logs/LogsReadRequests";
 import { MapLocationConstants } from "../../../../Lib/src/constants/MapLocationConstants";
 import {
@@ -76,89 +76,12 @@ function makeGardenerPacket(packet: Partial<SmallEventGardenerPacket> & Pick<Sma
 		 * leaves it unset because Discord skips the story for those (#4273).
 		 */
 		...packet.isFirstEncounter !== undefined ? { isFirstEncounter: packet.isFirstEncounter } : {},
-		...packet.sentToHomeStorage ? { sentToHomeStorage: true } : {}
+		...packet.sentToHomeStorage ? { sentToHomeStorage: true } : {},
+		...packet.consolation ? { consolation: packet.consolation } : {}
 	};
 }
 
-let moonCache: {
-	illumination: number; fetchedAt: number;
-} | null = null;
-
-const RADIANS_PER_DEGREE = Math.PI / 180;
-
-function getFallbackMoonIllumination(): number {
-	const daysSinceNewMoon = (Date.now() - PlantConstants.LUNAR_FALLBACK.REFERENCE_NEW_MOON) / TimeConstants.MS_TIME.DAY;
-	const phase = (daysSinceNewMoon % PlantConstants.LUNAR_FALLBACK.CYCLE_DAYS) / PlantConstants.LUNAR_FALLBACK.CYCLE_DAYS;
-	return (1 - Math.cos(2 * Math.PI * phase)) / 2;
-}
-
-function buildMoonApiUrl(now: Date): string {
-	const year = now.getFullYear();
-	const month = String(now.getMonth() + 1)
-		.padStart(2, "0");
-	const day = String(now.getDate())
-		.padStart(2, "0");
-	const today = `${year}-${month}-${day}`;
-
-	const timezoneOffsetMinutes = -now.getTimezoneOffset();
-	const offsetSign = timezoneOffsetMinutes >= 0 ? "+" : "-";
-	const absMinutes = Math.abs(timezoneOffsetMinutes);
-	const offsetHours = String(Math.floor(absMinutes / 60))
-		.padStart(2, "0");
-	const offsetMins = String(absMinutes % 60)
-		.padStart(2, "0");
-	const offset = `${offsetSign}${offsetHours}:${offsetMins}`;
-
-	return `${PlantConstants.MOON_API.BASE_URL}?lat=${PlantConstants.MOON_API.LAT}&lon=${PlantConstants.MOON_API.LON}&date=${today}&offset=${offset}`;
-}
-
-/**
- * Fetch the current moon phase in degrees, or null when the API answers with an error or an unexpected payload
- */
-async function fetchMoonPhase(): Promise<number | null> {
-	const response = await fetch(buildMoonApiUrl(new Date()), {
-		headers: { "User-Agent": PlantConstants.MOON_API.USER_AGENT }
-	});
-
-	if (!response.ok) {
-		// An unread body keeps its connection and buffers alive
-		await response.body?.cancel();
-		CrowniclesLogger.error("Moon API returned non-OK status", { status: response.status });
-		return null;
-	}
-
-	const data = await response.json() as { properties?: { moonphase?: number } };
-	const moonphase = data.properties?.moonphase;
-	if (typeof moonphase !== "number") {
-		CrowniclesLogger.error("Moon API returned unexpected data format");
-		return null;
-	}
-	return moonphase;
-}
-
-async function getMoonIllumination(): Promise<number> {
-	if (moonCache && Date.now() - moonCache.fetchedAt < PlantConstants.MOON_API.CACHE_DURATION) {
-		return moonCache.illumination;
-	}
-
-	try {
-		const moonphase = await fetchMoonPhase();
-		if (moonphase === null) {
-			return getFallbackMoonIllumination();
-		}
-
-		const illumination = (1 - Math.cos(moonphase * RADIANS_PER_DEGREE)) / 2;
-		moonCache = {
-			illumination,
-			fetchedAt: Date.now()
-		};
-		return illumination;
-	}
-	catch (e) {
-		CrowniclesLogger.errorWithObj("Failed to fetch moon phase from API", e);
-		return getFallbackMoonIllumination();
-	}
-}
+type GardenerPlantGift = Extract<GardenerConsolation, { plantId: PlantId }>;
 
 function getGameHour(): number {
 	return new Date().getHours();
@@ -188,8 +111,14 @@ function isOnGardenerMapLink(mapLinkId: number): boolean {
 async function getNextSeedId(player: Player, home: Home | null): Promise<PlantId | null> {
 	const invInfo = await InventoryInfos.getOfPlayer(player.id);
 	await PlayerPlantSlots.initializeSlots(player.id, invInfo.plantSlots);
+	return await findNextSeedId(player.id, home);
+}
 
-	if (await playerHasSeed(player.id)) {
+/**
+ * Read-only part of {@link getNextSeedId}, for the checks made outside the small event lock
+ */
+async function findNextSeedId(playerId: number, home: Home | null): Promise<PlantId | null> {
+	if (await playerHasSeed(playerId)) {
 		return null;
 	}
 
@@ -197,7 +126,7 @@ async function getNextSeedId(player: Player, home: Home | null): Promise<PlantId
 		return PlantId.COMMON_HERB;
 	}
 
-	const highestPlanted = await getHighestPlantedSeedId(home!.id);
+	const highestPlanted = await HomeGardenSlots.getHighestPlantedId(home!.id);
 	const nextSeed = highestPlanted + 1;
 	return nextSeed > PlantConstants.MAX_PLANT_ID ? null : nextSeed as PlantId;
 }
@@ -218,11 +147,6 @@ async function playerHasSeed(playerId: number): Promise<boolean> {
 	return seedSlot !== null && seedSlot.plantId !== 0;
 }
 
-async function getHighestPlantedSeedId(homeId: number): Promise<number> {
-	const gardenSlots = await HomeGardenSlots.getOfHome(homeId);
-	return gardenSlots.reduce((highestPlanted, slot) => Math.max(highestPlanted, slot.plantId), 0);
-}
-
 function getDefaultSeedCondition(cost: number): SeedConditionResult {
 	return {
 		canObtain: true,
@@ -230,35 +154,81 @@ function getDefaultSeedCondition(cost: number): SeedConditionResult {
 	};
 }
 
-async function getNightSeedCondition(seedId: PlantId): Promise<SeedConditionResult> {
-	if (seedId === PlantId.LUNAR_MOSS) {
-		return !isNight() || await getMoonIllumination() <= PlantConstants.MOON_ILLUMINATION_THRESHOLD
-			? {
-				canObtain: false,
-				conditionKey: SEED_CONDITION_FAILURE.NEED_MOONLIGHT
-			}
-			: {
-				canObtain: true,
-				conditionKey: SEED_CONDITION_SUCCESS.MOON
-			};
-	}
+/**
+ * One of the ways to earn a seed whose condition can be fulfilled in several ways
+ */
+type SeedFavor = {
+	conditionKey: SeedConditionKey;
+	isGranted: (player: Player) => boolean | Promise<boolean>;
+};
 
-	return !isNight()
-		? {
-			canObtain: false,
-			conditionKey: SEED_CONDITION_FAILURE.NEED_NIGHT
+/**
+ * The seed is handed over as soon as one of its favors is granted, the favors being checked in order
+ */
+async function checkSeedFavors(player: Player, favors: SeedFavor[], failureKey: SeedConditionKey): Promise<SeedConditionResult> {
+	for (const favor of favors) {
+		if (await favor.isGranted(player)) {
+			return {
+				canObtain: true,
+				conditionKey: favor.conditionKey
+			};
 		}
-		: {
-			canObtain: true,
-			conditionKey: SEED_CONDITION_SUCCESS.NIGHT
-		};
+	}
+	return {
+		canObtain: false,
+		conditionKey: failureKey
+	};
 }
+
+async function hasPetWithTag(player: Player, tag: PetTag): Promise<boolean> {
+	const petEntity = await getOwnedPet(player);
+	return Boolean(petEntity && PetDataController.instance.getById(petEntity.typeId)?.hasTag(tag));
+}
+
+async function hasSleptInInnRecently(player: Player): Promise<boolean> {
+	return await LogsReadRequests.hasSleptInInnDuringLast(player.keycloakId, PlantConstants.INN_NIGHT_FAVOR_DURATION);
+}
+
+const INN_NIGHT_FAVOR: SeedFavor = {
+	conditionKey: SEED_CONDITION_SUCCESS.INN_NIGHT,
+	isGranted: hasSleptInInnRecently
+};
+
+const NIGHT_FAVOR: SeedFavor = {
+	conditionKey: SEED_CONDITION_SUCCESS.NIGHT,
+	isGranted: isNight
+};
+
+/**
+ * The lunar moss grows on the highest rocks: a flying pet picks it, or the player spent the night in an inn, or meets the gardener at night
+ */
+const LUNAR_MOSS_FAVORS: SeedFavor[] = [
+	{
+		conditionKey: SEED_CONDITION_SUCCESS.FLYING_PET,
+		isGranted: player => hasPetWithTag(player, PetConstants.TAGS.FLYING)
+	},
+	INN_NIGHT_FAVOR,
+	NIGHT_FAVOR
+];
+
+/**
+ * The night mushroom is found in the dark: a nocturnal pet sniffs it out, or the player spent the night in an inn, or meets the gardener at night
+ */
+const NIGHT_MUSHROOM_FAVORS: SeedFavor[] = [
+	{
+		conditionKey: SEED_CONDITION_SUCCESS.NOCTURNAL_PET,
+		isGranted: player => hasPetWithTag(player, PetConstants.TAGS.NOCTURNAL)
+	},
+	INN_NIGHT_FAVOR,
+	NIGHT_FAVOR
+];
 
 function getSpecialSeedChecker(seedId: PlantId): SeedConditionChecker | null {
 	switch (seedId) {
 		case PlantId.LUNAR_MOSS:
+			return async (player: Player): Promise<SeedConditionResult> => await checkSeedFavors(player, LUNAR_MOSS_FAVORS, SEED_CONDITION_FAILURE.NEED_MOONLIGHT);
 		case PlantId.NIGHT_MUSHROOM:
-			return async (): Promise<SeedConditionResult> => await getNightSeedCondition(seedId);
+			return async (player: Player): Promise<SeedConditionResult> => await checkSeedFavors(player, NIGHT_MUSHROOM_FAVORS, SEED_CONDITION_FAILURE.NEED_NIGHT);
 		case PlantId.VENOMOUS_LEAF:
 			return async (player: Player): Promise<SeedConditionResult> => await checkHerbivorePetCondition(player, false);
 		case PlantId.FIRE_BULB:
@@ -284,7 +254,7 @@ function isHerbivorePetEligible(petEntity: PetEntity, requireLegendary: boolean)
 
 	const isHerbivore = petData.canEatVegetables();
 	const isTrained = petEntity.lovePoints >= PetConstants.TRAINED_LOVE_THRESHOLD;
-	const meetsRarityRequirement = !requireLegendary || petData.rarity >= ItemRarity.EPIC;
+	const meetsRarityRequirement = !requireLegendary || petData.rarity >= PlantConstants.RARE_PET_SEED_MIN_RARITY;
 
 	return isHerbivore && isTrained && meetsRarityRequirement;
 }
@@ -337,15 +307,6 @@ async function checkHerbivorePetCondition(player: Player, requireLegendary: bool
 	};
 }
 
-async function hasFireAffinityPet(player: Player): Promise<boolean> {
-	const petEntity = await getOwnedPet(player);
-	if (!petEntity) {
-		return false;
-	}
-	const petData = PetDataController.instance.getById(petEntity.typeId);
-	return Boolean(petData?.tags?.includes(PetConstants.TAGS.FIRE));
-}
-
 async function hasFireAffinityItem(player: Player): Promise<boolean> {
 	const equippedSlots = [
 		await InventorySlots.getMainWeaponSlot(player.id),
@@ -363,7 +324,7 @@ async function checkFireAffinityCondition(player: Player): Promise<SeedCondition
 		};
 	}
 
-	if (await hasFireAffinityPet(player)) {
+	if (await hasPetWithTag(player, PetConstants.TAGS.FIRE)) {
 		return {
 			canObtain: true,
 			conditionKey: SEED_CONDITION_SUCCESS.FIRE_PET
@@ -400,7 +361,7 @@ async function checkCarnivorePetCondition(player: Player): Promise<SeedCondition
 		};
 	}
 
-	if (petData.rarity < ItemRarity.EPIC) {
+	if (petData.rarity < PlantConstants.RARE_PET_SEED_MIN_RARITY) {
 		return {
 			canObtain: false,
 			conditionKey: SEED_CONDITION_FAILURE.NEED_CARNIVORE_PET
@@ -529,12 +490,12 @@ async function getGenericAdviceKey(player: Player): Promise<SeedConditionKey> {
 	return GARDENER_ADVICE.TIP_GENERIC;
 }
 
-async function handleFallback(response: CrowniclesPacket[], player: Player, conditionKey: SeedConditionKey, targetSeedId: PlantId | 0 = 0): Promise<SmallEventGardenerPacket> {
+async function handleFallback(response: CrowniclesPacket[], player: Player, conditionKey: SeedConditionKey): Promise<SmallEventGardenerPacket> {
 	const roll = RandomUtils.crowniclesRandom.real(0, 1);
 
 	if (roll < PlantConstants.GARDENER_FALLBACK_PROBABILITIES.ADVICE) {
 		return makeGardenerPacket({
-			interactionName: GARDENER_INTERACTIONS.ADVICE, conditionKey, plantId: targetSeedId
+			interactionName: GARDENER_INTERACTIONS.ADVICE, conditionKey
 		});
 	}
 
@@ -552,50 +513,114 @@ async function handleFallback(response: CrowniclesPacket[], player: Player, cond
 	return await handleMaterialGift(response, player);
 }
 
-// Exported for integration tests
-export async function handlePlantGift(player: Player): Promise<SmallEventGardenerPacket> {
-	const randomPlantId = PlantConstants.lootRandomPlant(RandomUtils.crowniclesRandom);
+/**
+ * Give a random plant of the gardener to the player, or null when the player has no room for it
+ */
+async function giveGardenerPlant(player: Player): Promise<GardenerPlantGift | null> {
+	const plantId = PlantConstants.lootRandomPlant(RandomUtils.crowniclesRandom);
 	const delivery = await givePlantsToPlayer(player, {
-		plantId: randomPlantId,
+		plantId,
 		amount: 1
 	});
+	return delivery.delivered
+		? {
+			plantId,
+			sentToHomeStorage: delivery.toHomeStorage > 0
+		}
+		: null;
+}
 
-	if (!delivery.delivered) {
+/**
+ * Give a common (or else uncommon) material to the player, or null when there is none to give
+ */
+async function giveGardenerMaterial(response: CrowniclesPacket[], player: Player): Promise<number | null> {
+	const material = MaterialDataController.instance.getRandomMaterialFromRarity(MaterialRarity.COMMON)
+		?? MaterialDataController.instance.getRandomMaterialFromRarity(MaterialRarity.UNCOMMON);
+	if (!material) {
+		return null;
+	}
+	const materialId = parseInt(material.id, 10);
+	const loot = [
+		{
+			materialId,
+			quantity: 1
+		}
+	];
+	await applyMaterialLoot(player.id, loot);
+	await updateCollectMaterialsMission(player, response, loot);
+	return materialId;
+}
+
+// Exported for integration tests
+export async function handlePlantGift(player: Player): Promise<SmallEventGardenerPacket> {
+	const gift = await giveGardenerPlant(player);
+	if (!gift) {
 		return makeGardenerPacket({
 			interactionName: GARDENER_INTERACTIONS.ADVICE, conditionKey: SEED_CONDITION_FAILURE.NO_PLANT_SPACE
 		});
 	}
-
 	return makeGardenerPacket({
 		interactionName: GARDENER_INTERACTIONS.PLANT,
 		conditionKey: SEED_CONDITION_FAILURE.NONE,
-		plantId: randomPlantId,
-		...delivery.toHomeStorage > 0 ? { sentToHomeStorage: true } : {}
+		...gift
 	});
 }
 
 async function handleMaterialGift(response: CrowniclesPacket[], player: Player): Promise<SmallEventGardenerPacket> {
-	const material = MaterialDataController.instance.getRandomMaterialFromRarity(MaterialRarity.COMMON)
-		?? MaterialDataController.instance.getRandomMaterialFromRarity(MaterialRarity.UNCOMMON);
-
-	if (material) {
-		const materialId = parseInt(material.id, 10);
-		const loot = [
-			{
-				materialId,
-				quantity: 1
-			}
-		];
-		await applyMaterialLoot(player.id, loot);
-		await updateCollectMaterialsMission(player, response, loot);
-		return makeGardenerPacket({
+	const materialId = await giveGardenerMaterial(response, player);
+	return materialId === null
+		? makeGardenerPacket({
+			interactionName: GARDENER_INTERACTIONS.ADVICE, conditionKey: SEED_CONDITION_FAILURE.ALL_SEEDS_OBTAINED
+		})
+		: makeGardenerPacket({
 			interactionName: GARDENER_INTERACTIONS.MATERIAL, conditionKey: SEED_CONDITION_FAILURE.NONE, materialId
 		});
-	}
+}
 
+/**
+ * Gift added to the explanation of a blocked seed: a plant most of the time, a material when the draw says so or when the player has no room for a plant
+ */
+async function giveConsolation(response: CrowniclesPacket[], player: Player): Promise<GardenerConsolation | null> {
+	const plantGift = RandomUtils.crowniclesRandom.bool(PlantConstants.GARDENER_CONSOLATION_PLANT_PROBABILITY)
+		? await giveGardenerPlant(player)
+		: null;
+	if (plantGift) {
+		return plantGift;
+	}
+	const materialId = await giveGardenerMaterial(response, player);
+	return materialId === null ? null : { materialId };
+}
+
+/**
+ * Seed the gardener cannot hand over, and why (0 when the player still carries a seed to plant)
+ */
+type BlockedSeed = {
+	conditionKey: SeedConditionKey;
+	seedId: PlantId | 0;
+};
+
+/**
+ * The gardener cannot hand over the next seed: he always explains what is missing, and gives a consolation gift so that the encounter is never wasted
+ */
+async function explainBlockedSeed(response: CrowniclesPacket[], player: Player, blockedSeed: BlockedSeed): Promise<SmallEventGardenerPacket> {
+	const consolation = await giveConsolation(response, player);
 	return makeGardenerPacket({
-		interactionName: GARDENER_INTERACTIONS.ADVICE, conditionKey: SEED_CONDITION_FAILURE.ALL_SEEDS_OBTAINED
+		interactionName: GARDENER_INTERACTIONS.ADVICE,
+		conditionKey: blockedSeed.conditionKey,
+		plantId: blockedSeed.seedId,
+		...consolation ? { consolation } : {}
 	});
+}
+
+/**
+ * The gardener is guaranteed on a forest path to a player who fulfills the conditions of their next seed: a player who
+ * prepared the right pet is not left at the mercy of the draw. The small event being eligible already means the path is
+ * a forest one and the gardener did not appear on it yet.
+ */
+async function isGardenerGuaranteed(player: Player): Promise<boolean> {
+	const home = await Homes.getOfPlayer(player.id);
+	const nextSeedId = await findNextSeedId(player.id, home);
+	return nextSeedId !== null && (await checkSeedConditions(player, nextSeedId, home)).canObtain;
 }
 
 export const smallEventFuncs: SmallEventFuncs = {
@@ -608,7 +633,9 @@ export const smallEventFuncs: SmallEventFuncs = {
 		}
 		return await PlayerSmallEvents.playerSmallEventCount(player.id, SmallEventConstants.UNIQUE_EVENT_IDS.GARDENER) === 0;
 	},
-	executeSmallEvent: async (response: CrowniclesPacket[], player, context: PacketContext): Promise<void> => {
+	executeSmallEvent: async (player, {
+		response, context
+	}): Promise<void> => {
 		const home = await Homes.getOfPlayer(player.id);
 		const nextSeedId = await getNextSeedId(player, home);
 
@@ -622,9 +649,12 @@ export const smallEventFuncs: SmallEventFuncs = {
 		) <= 1;
 
 		if (nextSeedId === null) {
-			const seedSlot = await PlayerPlantSlots.getSeedSlot(player.id);
-			const conditionKey = seedSlot && seedSlot.plantId !== 0 ? SEED_CONDITION_FAILURE.SEED_SLOT_FULL : SEED_CONDITION_FAILURE.ALL_SEEDS_OBTAINED;
-			const packet = await handleFallback(response, player, conditionKey);
+			const packet = await playerHasSeed(player.id)
+				? await explainBlockedSeed(response, player, {
+					conditionKey: SEED_CONDITION_FAILURE.SEED_SLOT_FULL,
+					seedId: 0
+				})
+				: await handleFallback(response, player, SEED_CONDITION_FAILURE.ALL_SEEDS_OBTAINED);
 			response.push(makePacket(SmallEventGardenerPacket, {
 				...packet, isFirstEncounter
 			}));
@@ -634,7 +664,10 @@ export const smallEventFuncs: SmallEventFuncs = {
 		const conditions = await checkSeedConditions(player, nextSeedId, home);
 
 		if (!conditions.canObtain) {
-			const packet = await handleFallback(response, player, conditions.conditionKey, nextSeedId);
+			const packet = await explainBlockedSeed(response, player, {
+				conditionKey: conditions.conditionKey,
+				seedId: nextSeedId
+			});
 			response.push(makePacket(SmallEventGardenerPacket, {
 				...packet, isFirstEncounter
 			}));
@@ -666,5 +699,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 	},
 
 	// The plant gift may go to the home plant storage
-	getAdditionalLockKeys: getPlantReceiverLockKeys
+	getAdditionalLockKeys: getPlantReceiverLockKeys,
+
+	isGuaranteed: isGardenerGuaranteed
 };

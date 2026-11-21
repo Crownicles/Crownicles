@@ -4,6 +4,8 @@ import {
 import Player from '../../../../src/core/database/game/models/Player';
 import { ClassDataController } from '../../../../src/data/Class';
 import { PlayerActiveObjects } from '../../../../src/core/database/game/models/PlayerActiveObjects';
+import { ObjectItem } from '../../../../src/data/ObjectItem';
+import { ItemNature } from '../../../../../Lib/src/constants/ItemConstants';
 
 /**
  * Build a bare Player instance without going through Sequelize's constructor/DB,
@@ -14,6 +16,13 @@ function buildPlayer(level: number, classId: number): Player {
 	player.level = level;
 	player.class = classId;
 	return player;
+}
+
+function buildObjectItem(nature: ItemNature, power: number): ObjectItem {
+	return Object.assign(new ObjectItem(), {
+		nature,
+		power
+	});
 }
 
 function buildActiveObjects(params: {
@@ -38,7 +47,7 @@ function buildActiveObjects(params: {
 			itemEnchantmentId: params.armorEnchantmentId ?? null
 		},
 		potion: { item: zeroStatsItem as PlayerActiveObjects['potion']['item'] },
-		object: { item: zeroStatsItem as PlayerActiveObjects['object']['item'] }
+		object: { item: buildObjectItem(ItemNature.NONE, 0) }
 	};
 }
 

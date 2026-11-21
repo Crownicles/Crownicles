@@ -1,8 +1,12 @@
 import { TimeConstants } from "./TimeConstants";
 import {
-	getDayNumber, getWeekNumber
+	getDayNumber, getWeekNumber, hoursToSeconds
 } from "../utils/TimeUtils";
+import {
+	asHours, Second
+} from "../types/TimeTypes";
 import { frac } from "../utils/MathUtils";
+import { ItemRarity } from "./ItemConstants";
 
 /**
  * Gardener interaction types sent in SmallEventGardenerPacket
@@ -40,8 +44,10 @@ export const SEED_CONDITION_SUCCESS = {
 	FREE: "free",
 	PAID: "paid",
 	PAID_ACCEPTED: "paidAccepted",
-	MOON: "moon",
 	NIGHT: "night",
+	FLYING_PET: "flyingPet",
+	NOCTURNAL_PET: "nocturnalPet",
+	INN_NIGHT: "innNight",
 	HERBIVORE_PET: "herbivorePet",
 	LEGENDARY_HERBIVORE_PET: "legendaryHerbivorePet",
 	MAGE: "mage",
@@ -491,28 +497,21 @@ export abstract class PlantConstants {
 	} as const;
 
 	/**
-	 * Moon API configuration for real moon phase data (Met.no).
+	 * A night spent in an inn during these last hours earns the night seeds, as an alternative to meeting the gardener at night
 	 */
-	public static readonly MOON_API = {
-		BASE_URL: "https://api.met.no/weatherapi/sunrise/3.0/moon",
-		LAT: 48.8566,
-		LON: 2.3522,
-		USER_AGENT: "Crownicles/1.0",
-		CACHE_DURATION: TimeConstants.MS_TIME.HOUR
-	} as const;
+	public static readonly INN_NIGHT_FAVOR_HOURS = 24;
+
+	public static readonly INN_NIGHT_FAVOR_DURATION: Second = hoursToSeconds(asHours(PlantConstants.INN_NIGHT_FAVOR_HOURS));
 
 	/**
-	 * Fallback lunar constants used when the moon API is unavailable.
+	 * Chance that the consolation gift of a blocked seed is a plant rather than a material
 	 */
-	public static readonly LUNAR_FALLBACK = {
-		CYCLE_DAYS: 29.53058770576,
-		REFERENCE_NEW_MOON: Date.UTC(2000, 0, 6, 18, 14, 0)
-	} as const;
+	public static readonly GARDENER_CONSOLATION_PLANT_PROBABILITY = 0.6;
 
 	/**
-	 * Minimum moon illumination (0-1) required for LUNAR_MOSS seed.
+	 * Minimum rarity of the pet the gardener requires before handing over the meat plant and ancestral tree seeds
 	 */
-	public static readonly MOON_ILLUMINATION_THRESHOLD = 0.5;
+	public static readonly RARE_PET_SEED_MIN_RARITY = ItemRarity.EPIC;
 
 	/**
 	 * Maximum plant ID value (ANCIENT_TREE = 10).

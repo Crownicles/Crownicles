@@ -156,9 +156,7 @@ function buildStatsData(player: Player, playerActiveObjects: PlayerActiveObjects
 		return null;
 	}
 	return {
-		attack: player.getCumulativeAttack(playerActiveObjects),
-		defense: player.getCumulativeDefense(playerActiveObjects),
-		speed: player.getCumulativeSpeed(playerActiveObjects),
+		...player.getCumulativeStats(playerActiveObjects),
 		energy: {
 			value: player.getCumulativeEnergy(playerActiveObjects),
 			max: player.getMaxCumulativeEnergy(playerActiveObjects)

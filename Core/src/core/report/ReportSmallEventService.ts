@@ -5,20 +5,20 @@ import { Player } from "../database/game/models/Player";
 import { MissionsController } from "../missions/MissionsController";
 import { withLockedPlayerAndMissionsSafe } from "../utils/withLockedPlayerAndMissionsSafe";
 import {
-	SmallEventDataController, SmallEventFuncs
+	SmallEventDataController, SmallEventExecutionContext, SmallEventFuncs
 } from "../../data/SmallEvent";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { PacketUtils } from "../utils/PacketUtils";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { crowniclesInstance } from "../../app";
 import { InventorySlots } from "../database/game/models/InventorySlot";
-import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
+import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 
 /**
  * Small event eligibility result
  */
-interface SmallEventEligibility {
+export interface SmallEventEligibility {
 	key: string;
 	rarity: number;
 }
@@ -29,18 +29,15 @@ interface SmallEventEligibility {
 async function checkSmallEventEligibility(
 	key: string,
 	player: Player,
-	playerActiveObjects: PlayerActiveObjects,
-	response: CrowniclesPacket[]
+	execution: SmallEventExecutionContext
 ): Promise<SmallEventEligibility | null> {
-	const file = await import(`../smallEvents/${key}.js`);
-
-	if (!file.smallEventFuncs?.canBeExecuted) {
-		PacketUtils.pushInternalError(response, `Small event ${key} doesn't contain a canBeExecuted function`);
+	const smallEvent = SmallEventDataController.getSmallEventFunction(key);
+	if (!smallEvent) {
+		PacketUtils.pushInternalError(execution.response, `Small event ${key} doesn't export its functions`);
 		return null;
 	}
 
-	const canExecute = await file.smallEventFuncs.canBeExecuted(player, playerActiveObjects);
-	if (!canExecute) {
+	if (!await smallEvent.canBeExecuted(player, execution.playerActiveObjects)) {
 		return null;
 	}
 
@@ -55,14 +52,13 @@ async function checkSmallEventEligibility(
  */
 async function getEligibleSmallEvents(
 	player: Player,
-	playerActiveObjects: PlayerActiveObjects,
-	response: CrowniclesPacket[]
+	execution: SmallEventExecutionContext
 ): Promise<SmallEventEligibility[]> {
 	const keys = SmallEventDataController.instance.getKeys();
 	const eligibleEvents: SmallEventEligibility[] = [];
 
 	for (const key of keys) {
-		const eligibility = await checkSmallEventEligibility(key, player, playerActiveObjects, response);
+		const eligibility = await checkSmallEventEligibility(key, player, execution);
 		if (eligibility) {
 			eligibleEvents.push(eligibility);
 		}
@@ -90,20 +86,47 @@ function selectRandomSmallEvent(eligibleEvents: SmallEventEligibility[]): string
 }
 
 /**
- * Get a random small event key based on rarity weighting
+ * Whether an eligible small event is guaranteed to happen now: it declares so, and did not already happen on the path
+ * (a player who just met it, e.g. for an introduction, is not forced to meet it again)
+ */
+async function isSmallEventGuaranteed(player: Player, key: string): Promise<boolean> {
+	const isGuaranteed = SmallEventDataController.getSmallEventFunction(key)?.isGuaranteed;
+	if (!isGuaranteed || await PlayerSmallEvents.playerSmallEventCount(player.id, key) > 0) {
+		return false;
+	}
+	return await isGuaranteed(player);
+}
+
+/**
+ * First eligible small event guaranteed to happen now, if any. Guarantees only apply to the small event following the
+ * first ones of a path, so a path has at most one guaranteed small event and the checks are skipped the rest of the time.
+ */
+export async function findGuaranteedSmallEvent(player: Player, eligibleEvents: SmallEventEligibility[]): Promise<string | null> {
+	if (await PlayerSmallEvents.countSmallEventsOfPlayer(player.id) !== SmallEventConstants.GUARANTEED_AFTER_SMALL_EVENTS) {
+		return null;
+	}
+	for (const event of eligibleEvents) {
+		if (await isSmallEventGuaranteed(player, event.key)) {
+			return event.key;
+		}
+	}
+	return null;
+}
+
+/**
+ * Get the guaranteed small event if there is one, or else a random small event key based on rarity weighting
  */
 async function getRandomSmallEvent(
-	response: CrowniclesPacket[],
 	player: Player,
-	playerActiveObjects: PlayerActiveObjects
+	execution: SmallEventExecutionContext
 ): Promise<string | null> {
-	const eligibleEvents = await getEligibleSmallEvents(player, playerActiveObjects, response);
+	const eligibleEvents = await getEligibleSmallEvents(player, execution);
 
 	if (eligibleEvents.length === 0) {
 		return null;
 	}
 
-	return selectRandomSmallEvent(eligibleEvents);
+	return await findGuaranteedSmallEvent(player, eligibleEvents) ?? selectRandomSmallEvent(eligibleEvents);
 }
 
 /**
@@ -111,28 +134,23 @@ async function getRandomSmallEvent(
  */
 async function loadAndExecuteSmallEvent(
 	event: string,
-	response: CrowniclesPacket[],
 	player: Player,
-	context: PacketContext,
-	playerActiveObjects: PlayerActiveObjects
+	execution: SmallEventExecutionContext
 ): Promise<void> {
 	const filename = `${event}.js`;
+	const smallEvent = SmallEventDataController.getSmallEventFunction(event);
+	if (!smallEvent) {
+		PacketUtils.pushInternalError(execution.response, `Small event file ${filename} doesn't exist`);
+		return;
+	}
 
 	try {
-		const smallEventModule = require.resolve(`../smallEvents/${filename}`);
-		try {
-			// skipcq: JS-0359 - Small event handlers are discovered dynamically from resource names.
-			const smallEvent: SmallEventFuncs = require(smallEventModule).smallEventFuncs;
-			await crowniclesInstance.logsDatabase.logSmallEvent(player.keycloakId, event);
+		await crowniclesInstance.logsDatabase.logSmallEvent(player.keycloakId, event);
 
-			await runSmallEventUnderLock(player, event, smallEvent, response, context, playerActiveObjects);
-		}
-		catch (e) {
-			PacketUtils.pushInternalError(response, `Error while executing ${filename} small event`, { cause: e });
-		}
+		await runSmallEventUnderLock(player, event, smallEvent, execution);
 	}
-	catch {
-		PacketUtils.pushInternalError(response, `Small event file ${filename} doesn't exist`);
+	catch (e) {
+		PacketUtils.pushInternalError(execution.response, `Error while executing ${filename} small event`, { cause: e });
 	}
 }
 
@@ -155,9 +173,7 @@ async function runSmallEventUnderLock(
 	player: Locked<Player>,
 	event: string,
 	smallEvent: SmallEventFuncs,
-	response: CrowniclesPacket[],
-	context: PacketContext,
-	playerActiveObjects: PlayerActiveObjects
+	execution: SmallEventExecutionContext
 ): Promise<void> {
 	const additionalLockKeys = await smallEvent.getAdditionalLockKeys?.(player) ?? [];
 	await withLockedPlayerAndMissionsSafe(player, "runSmallEventUnderPlayerLock", async lockedPlayer => {
@@ -169,9 +185,9 @@ async function runSmallEventUnderLock(
 		 */
 		const smallEventRecord = PlayerSmallEvents.createPlayerSmallEvent(lockedPlayer.id, event, Date.now());
 		await smallEventRecord.save();
-		await smallEvent.executeSmallEvent(response, lockedPlayer, context, playerActiveObjects);
+		await smallEvent.executeSmallEvent(lockedPlayer, execution);
 		await lockedPlayer.save();
-		await MissionsController.update(lockedPlayer, response, { missionId: "doReports" });
+		await MissionsController.update(lockedPlayer, execution.response, { missionId: "doReports" });
 	}, additionalLockKeys);
 }
 
@@ -184,10 +200,14 @@ export async function executeSmallEvent(
 	context: PacketContext,
 	forced: string | null
 ): Promise<void> {
-	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+	const execution: SmallEventExecutionContext = {
+		response,
+		context,
+		playerActiveObjects: await InventorySlots.getPlayerActiveObjects(player.id)
+	};
 
 	// Pick a random event or use forced one
-	const event = forced ?? await getRandomSmallEvent(response, player, playerActiveObjects);
+	const event = forced ?? await getRandomSmallEvent(player, execution);
 
 	if (!event) {
 		PacketUtils.pushInternalError(response, "No small event can be executed", {
@@ -196,5 +216,5 @@ export async function executeSmallEvent(
 		return;
 	}
 
-	await loadAndExecuteSmallEvent(event, response, player, context, playerActiveObjects);
+	await loadAndExecuteSmallEvent(event, player, execution);
 }

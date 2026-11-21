@@ -1,6 +1,5 @@
-import {
-	DayOfTheWeek, setWeeklyCronJob
-} from "../../utils/CronInterface";
+import { setWeeklyCronJob } from "../../utils/CronInterface";
+import { DayOfTheWeek } from "../../../../../Lib/src/constants/TimeConstants";
 import { Settings } from "../../database/game/models/Setting";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { CrowniclesLogger } from "../../../../../Lib/src/logs/CrowniclesLogger";

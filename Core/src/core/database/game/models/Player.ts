@@ -8,7 +8,9 @@ import { InventoryInfos } from "./InventoryInfo";
 import {
 	assertPlayerHasNoPendingChanges, LockedPlayerFollowUp, LockedPlayerMutation, MissionInformationsWithoutMutation, MissionsController, PLAYER_RESYNC_CALLERS
 } from "../../../missions/MissionsController";
-import { PlayerActiveObjects } from "./PlayerActiveObjects";
+import {
+	EQUIPPED_MAIN_ITEM_SLOTS, EquippedMainItem, EquippedMainItemSlot, PlayerActiveObjects
+} from "./PlayerActiveObjects";
 import {
 	asMilliseconds,
 	daysToMilliseconds,
@@ -63,7 +65,9 @@ import { GuildConstants } from "../../../../../../Lib/src/constants/GuildConstan
 import { MapConstants } from "../../../../../../Lib/src/constants/MapConstants";
 import { Effect } from "../../../../../../Lib/src/types/Effect";
 import { dispatchOrRescheduleArrivalNotification } from "../../../bot/ReportNotifications";
-import { StatValues } from "../../../../../../Lib/src/types/StatValues";
+import {
+	StatValues, ZERO_STATS
+} from "../../../../../../Lib/src/types/StatValues";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import { TokensConstants } from "../../../../../../Lib/src/constants/TokensConstants";
 import { MathUtils } from "../../../utils/MathUtils";
@@ -87,12 +91,27 @@ import { RecipeDiscoverySource } from "../../../../../../Lib/src/constants/Cooki
 import { buildNewItemSlotData } from "../../../utils/ItemSlotUtils";
 import type { AiPersonality } from "../../../../../../Lib/src/constants/AiPersonalityConstants";
 import { applyKingChallengeProgressUnderLock } from "../../../kingChallenge/KingChallenge";
+import { getInitialPlayerGuardGlory } from "../../../fights/kingGuards/KingGuardRating";
+import { getModelSequelize } from "../../../../../../Lib/src/database/ModelUtils";
 
 export type PlayerEditValueParameters = {
 	player: Player;
 	amount: number;
 	response: CrowniclesPacket[];
 	reason: NumberChangeReason;
+};
+
+/**
+ * Options of {@link Player.getCumulativeStats}
+ */
+export type CumulativeStatsOptions = {
+	includePotion?: boolean;
+
+	// The level at which the stats are computed, the player level by default
+	level?: number;
+
+	// A weapon or an armor left out of the stats, while its enchantment still applies to the remaining stats
+	withoutMainItem?: EquippedMainItemSlot;
 };
 
 type ressourcesLostOnPveFaint = {
@@ -241,6 +260,9 @@ export class Player extends Model {
 	declare attackGloryPoints: number;
 
 	declare gloryPointsLastSeason: number;
+
+	// Hidden rating against the king guards, only used to choose them: null until the first fight against one
+	declare guardGloryPoints: number | null;
 
 	declare fightCountdown: number;
 
@@ -566,6 +588,13 @@ export class Player extends Model {
 	}
 
 	/**
+	 * Return the hidden rating of the player against the king guards, the one of its level if it never fought one
+	 */
+	public getGuardGloryPoints(): number {
+		return this.guardGloryPoints ?? getInitialPlayerGuardGlory(this.level);
+	}
+
+	/**
 	 * Check if a player needs to level up
 	 */
 	public needLevelUp(): boolean {
@@ -831,7 +860,7 @@ export class Player extends Model {
 		return Math.round(
 			(<{
 				count: number;
-			}[]>(await Player.sequelize!.query(query, {
+			}[]>(await getModelSequelize(Player).query(query, {
 				replacements: {
 					link: this.mapLinkId,
 					linkInverse: oppositeLink.id
@@ -1008,78 +1037,119 @@ export class Player extends Model {
 	}
 
 	/**
-	 * Calculate the cumulative attack of the player.
-	 * Attack enchantments are not applied here: they act as a multiplier on the effective damage dealt
-	 * in fights (see {@link EnchantmentUtils.getOutgoingDamageMultiplier}), not on the raw attack stat.
+	 * Get the attack, defense and speed a weapon or an armor adds to the player: each of them is capped by the stat of the class
+	 * @param mainItem The equipped weapon or armor
+	 * @param maxStats The stats of the class, see {@link getMaxStatsValue}
+	 */
+	public static getCappedMainItemStats(mainItem: EquippedMainItem, maxStats: StatValues): StatValues {
+		return {
+			attack: Math.min(mainItem.item.getAttack(mainItem.itemLevel), maxStats.attack),
+			defense: Math.min(mainItem.item.getDefense(mainItem.itemLevel), maxStats.defense),
+			speed: Math.min(mainItem.item.getSpeed(mainItem.itemLevel), maxStats.speed)
+		};
+	}
+
+	/**
+	 * Sum, for each stat, the class stat and the stats of the equipped items (capped by the class), before rounding and enchantments
+	 * @param playerActiveObjects
+	 * @param options
+	 */
+	private getRawCumulativeStats(playerActiveObjects: PlayerActiveObjects, {
+		includePotion = true, level = this.level, withoutMainItem
+	}: CumulativeStatsOptions): StatValues {
+		const maxStats = this.getMaxStatsValue(level);
+		const potion = playerActiveObjects.potion.item;
+		const parts: StatValues[] = [
+			maxStats,
+			...EQUIPPED_MAIN_ITEM_SLOTS
+				.filter(slot => slot !== withoutMainItem)
+				.map(slot => Player.getCappedMainItemStats(playerActiveObjects[slot], maxStats)),
+			playerActiveObjects.object.item.getCappedStats(maxStats),
+			includePotion
+				? {
+					attack: potion.getAttack(), defense: potion.getDefense(), speed: potion.getSpeed()
+				}
+				: ZERO_STATS
+		];
+		return parts.reduce((total, part) => ({
+			attack: total.attack + part.attack,
+			defense: total.defense + part.defense,
+			speed: total.speed + part.speed
+		}), ZERO_STATS);
+	}
+
+	/**
+	 * Calculate the attack, defense and speed of the player: this is the single formula of the fight stats.
+	 * The speed enchantment of the armor multiplies the whole speed. Attack and defense enchantments are not applied here:
+	 * they act as multipliers on the damage dealt and received in fights
+	 * (see {@link EnchantmentUtils.getOutgoingDamageMultiplier} and {@link EnchantmentUtils.getIncomingDamageMultiplier})
+	 * @param playerActiveObjects
+	 * @param options
+	 */
+	public getCumulativeStats(playerActiveObjects: PlayerActiveObjects, options: CumulativeStatsOptions = {}): StatValues {
+		const raw = this.getRawCumulativeStats(playerActiveObjects, options);
+		const speedMultiplier = EnchantmentUtils.getEnchantmentMultiplier(playerActiveObjects, ItemEnchantmentKind.SPEED, EnchantmentConstants.SPEED_MULTIPLIER);
+		return {
+			attack: Math.max(0, Math.round(raw.attack)),
+			defense: Math.max(0, Math.round(raw.defense)),
+			speed: Math.max(0, Math.round(raw.speed * speedMultiplier))
+		};
+	}
+
+	/**
+	 * Get the share of the fight stats an equipped weapon or armor provides, enchantments and rounding included:
+	 * it is the difference between the stats with and without the item, its enchantment still applying to the remaining stats
+	 * @param playerActiveObjects
+	 * @param slot
+	 * @param options
+	 */
+	public getMainItemStatsContribution(playerActiveObjects: PlayerActiveObjects, slot: EquippedMainItemSlot, options: Omit<CumulativeStatsOptions, "withoutMainItem"> = {}): StatValues {
+		const withItem = this.getCumulativeStats(playerActiveObjects, options);
+		const withoutItem = this.getCumulativeStats(playerActiveObjects, {
+			...options,
+			withoutMainItem: slot
+		});
+		return {
+			attack: withItem.attack - withoutItem.attack,
+			defense: withItem.defense - withoutItem.defense,
+			speed: withItem.speed - withoutItem.speed
+		};
+	}
+
+	/**
+	 * Calculate the cumulative attack of the player, see {@link getCumulativeStats}
 	 * @param playerActiveObjects
 	 * @param includePotion
 	 * @param level The level at which the stat is computed, the player level by default
 	 */
 	public getCumulativeAttack(playerActiveObjects: PlayerActiveObjects, includePotion = true, level = this.level): number {
-		const playerAttack = this.getMaxStatsValue(level).attack;
-		const weaponAttack = playerActiveObjects.weapon.item.getAttack(playerActiveObjects.weapon.itemLevel);
-		const armorAttack = playerActiveObjects.armor.item.getAttack(playerActiveObjects.armor.itemLevel);
-		const objectAttack = playerActiveObjects.object.item.getAttack();
-		const attack = playerAttack
-			+ (weaponAttack < playerAttack
-				? weaponAttack
-				: playerAttack)
-			+ (armorAttack < playerAttack
-				? armorAttack
-				: playerAttack)
-			+ (objectAttack / 2 < playerAttack
-				? objectAttack
-				: playerAttack * 2)
-			+ (includePotion ? playerActiveObjects.potion.item.getAttack() : 0);
-		return attack > 0 ? Math.round(attack) : 0;
+		return this.getCumulativeStats(playerActiveObjects, {
+			includePotion, level
+		}).attack;
 	}
 
 	/**
-	 * Calculate the cumulative defense of the player.
-	 * The defense enchantment is not applied here: it acts as a multiplier on the effective damage received
-	 * in fights (see {@link EnchantmentUtils.getIncomingDamageMultiplier}), not on the raw defense stat.
+	 * Calculate the cumulative defense of the player, see {@link getCumulativeStats}
 	 * @param playerActiveObjects
 	 * @param includePotion
 	 * @param level The level at which the stat is computed, the player level by default
 	 */
 	public getCumulativeDefense(playerActiveObjects: PlayerActiveObjects, includePotion = true, level = this.level): number {
-		const playerDefense = this.getMaxStatsValue(level).defense;
-		const defense = playerDefense
-			+ (playerActiveObjects.weapon.item.getDefense(playerActiveObjects.weapon.itemLevel) < playerDefense
-				? playerActiveObjects.weapon.item.getDefense(playerActiveObjects.weapon.itemLevel)
-				: playerDefense)
-			+ (playerActiveObjects.armor.item.getDefense(playerActiveObjects.armor.itemLevel) < playerDefense
-				? playerActiveObjects.armor.item.getDefense(playerActiveObjects.armor.itemLevel)
-				: playerDefense)
-			+ (playerActiveObjects.object.item.getDefense() / 2 < playerDefense
-				? playerActiveObjects.object.item.getDefense()
-				: playerDefense * 2)
-			+ (includePotion ? playerActiveObjects.potion.item.getDefense() : 0);
-		return defense > 0 ? Math.round(defense) : 0;
+		return this.getCumulativeStats(playerActiveObjects, {
+			includePotion, level
+		}).defense;
 	}
 
 	/**
-	 * Calculate the cumulative speed of the player
+	 * Calculate the cumulative speed of the player, see {@link getCumulativeStats}
 	 * @param playerActiveObjects
 	 * @param includePotion
 	 * @param level The level at which the stat is computed, the player level by default
 	 */
 	public getCumulativeSpeed(playerActiveObjects: PlayerActiveObjects, includePotion = true, level = this.level): number {
-		const playerSpeed = this.getMaxStatsValue(level).speed;
-		const speed = playerSpeed
-			+ (playerActiveObjects.weapon.item.getSpeed(playerActiveObjects.weapon.itemLevel) < playerSpeed
-				? playerActiveObjects.weapon.item.getSpeed(playerActiveObjects.weapon.itemLevel)
-				: playerSpeed)
-			+ (playerActiveObjects.armor.item.getSpeed(playerActiveObjects.armor.itemLevel) < playerSpeed
-				? playerActiveObjects.armor.item.getSpeed(playerActiveObjects.armor.itemLevel)
-				: playerSpeed)
-			+ (playerActiveObjects.object.item.getSpeed() / 2 < playerSpeed
-				? playerActiveObjects.object.item.getSpeed()
-				: playerSpeed * 2)
-			+ (includePotion ? playerActiveObjects.potion.item.getSpeed() : 0);
-		const multiplier = EnchantmentUtils.getEnchantmentMultiplier(playerActiveObjects, ItemEnchantmentKind.SPEED, EnchantmentConstants.SPEED_MULTIPLIER);
-		const enchantedSpeed = Math.round(speed * multiplier);
-		return enchantedSpeed > 0 ? enchantedSpeed : 0;
+		return this.getCumulativeStats(playerActiveObjects, {
+			includePotion, level
+		}).speed;
 	}
 
 	/**
@@ -1657,7 +1727,7 @@ export class Players {
 		               FROM (SELECT id, RANK() OVER (ORDER BY ${orderBy} desc, level desc) ranking
 		                     FROM players ${condition}) subquery
 		               WHERE subquery.id = ${playerId}`;
-		return ((await Player.sequelize!.query(query))[0][0] as {
+		return ((await getModelSequelize(Player).query(query))[0][0] as {
 			ranking: number;
 		}).ranking;
 	}
@@ -1671,7 +1741,7 @@ export class Players {
 		               FROM players
 		               WHERE players.${weekOnly ? "weeklyScore" : "score"}
 			                     > ${Constants.MINIMAL_PLAYER_SCORE}`;
-		const queryResult = await Player.sequelize!.query(query);
+		const queryResult = await getModelSequelize(Player).query(query);
 		return (queryResult[0][0] as {
 			nbPlayers: number;
 		}).nbPlayers;
@@ -1685,7 +1755,7 @@ export class Players {
 		               FROM players
 		               WHERE players.fightCountdown
 			                     <= ${FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE}`;
-		const queryResult = await Player.sequelize!.query(query);
+		const queryResult = await getModelSequelize(Player).query(query);
 		return (queryResult[0][0] as {
 			nbPlayers: number;
 		}).nbPlayers;
@@ -1760,7 +1830,7 @@ export class Players {
 		                            RANK() OVER (ORDER BY weeklyScore desc, level desc) weeklyRank
 		                     FROM players) subquery
 		               WHERE subquery.rank = :rank`;
-		const res = await Player.sequelize!.query(query, {
+		const res = await getModelSequelize(Player).query(query, {
 			replacements: { rank },
 			type: QueryTypes.SELECT,
 			mapToModel: true,
@@ -1780,7 +1850,7 @@ export class Players {
 		                            RANK() OVER (ORDER BY weeklyScore desc, level desc) weeklyRank
 		                     FROM players) subquery
 		               WHERE subquery.id = :id`;
-		const playerToReturn = (await Player.sequelize!.query<Player>(query, {
+		const playerToReturn = (await getModelSequelize(Player).query<Player>(query, {
 			replacements: { id },
 			type: QueryTypes.SELECT
 		}))[0] as Player;
@@ -1797,7 +1867,7 @@ export class Players {
 		return Math.round(
 			(<{
 				avg: number;
-			}[]>(await Player.sequelize!.query(query, {
+			}[]>(await getModelSequelize(Player).query(query, {
 				type: QueryTypes.SELECT
 			})))[0].avg
 		);
@@ -1813,7 +1883,7 @@ export class Players {
 		return Math.round(
 			(<{
 				avg: number;
-			}[]>(await Player.sequelize!.query(query, {
+			}[]>(await getModelSequelize(Player).query(query, {
 				type: QueryTypes.SELECT
 			})))[0].avg
 		);
@@ -1828,7 +1898,7 @@ export class Players {
 		               WHERE effectId = "${Effect.NOT_STARTED.id}"`;
 		return (<{
 			count: number;
-		}[]>(await Player.sequelize!.query(query, {
+		}[]>(await getModelSequelize(Player).query(query, {
 			type: QueryTypes.SELECT
 		})))[0].count;
 	}
@@ -1842,7 +1912,7 @@ export class Players {
 		               WHERE score > ${Constants.MINIMAL_PLAYER_SCORE}`;
 		return (<{
 			count: number;
-		}[]>(await Player.sequelize!.query(query, {
+		}[]>(await getModelSequelize(Player).query(query, {
 			type: QueryTypes.SELECT
 		})))[0].count;
 	}
@@ -1857,7 +1927,7 @@ export class Players {
 		return Math.round(
 			(<{
 				avg: number;
-			}[]>(await Player.sequelize!.query(query, {
+			}[]>(await getModelSequelize(Player).query(query, {
 				type: QueryTypes.SELECT
 			})))[0].avg
 		);
@@ -1873,7 +1943,7 @@ export class Players {
 		return Math.round(
 			(<{
 				avg: number;
-			}[]>(await Player.sequelize!.query(query, {
+			}[]>(await getModelSequelize(Player).query(query, {
 				type: QueryTypes.SELECT
 			})))[0].avg
 		);
@@ -1888,7 +1958,7 @@ export class Players {
 		               WHERE score > ${Constants.MINIMAL_PLAYER_SCORE}`;
 		return (<{
 			sum: number;
-		}[]>(await Player.sequelize!.query(query, {
+		}[]>(await getModelSequelize(Player).query(query, {
 			type: QueryTypes.SELECT
 		})))[0].sum;
 	}
@@ -1901,7 +1971,7 @@ export class Players {
 		               FROM players`;
 		return (<{
 			max: number;
-		}[]>(await Player.sequelize!.query(query, {
+		}[]>(await getModelSequelize(Player).query(query, {
 			type: QueryTypes.SELECT
 		})))[0].max;
 	}
@@ -1919,7 +1989,7 @@ export class Players {
 		return Math.round(
 			(<{
 				count: number;
-			}[]>(await Player.sequelize!.query(query, {
+			}[]>(await getModelSequelize(Player).query(query, {
 				replacements: { class: classEntity.id },
 				type: QueryTypes.SELECT
 			})))[0].count
@@ -1956,7 +2026,7 @@ export class Players {
 
 	/**
 	 * Find the X active players that are the closest in defense glory to a specific value.
-	 * Active players are those whose startTravelDate is within the last two weeks.
+	 * Active players are those whose startTravelDate is within the last two weeks, and who are not dead.
 	 * @param player - the player that needs an opponent
 	 * @param amountOfPlayersToRetrieve - the X amount of players
 	 * @param offset - offset in case the found players are not enough and an offset search is necessary
@@ -1974,7 +2044,10 @@ export class Players {
 					]
 				},
 				level: { [Op.gte]: FightConstants.REQUIRED_LEVEL },
-				startTravelDate: { [Op.gte]: twoWeeksAgo }
+				startTravelDate: { [Op.gte]: twoWeeksAgo },
+
+				// A dead player does not play until they respawn, whatever their travel dates say
+				effectId: { [Op.ne]: Effect.DEAD.id }
 			},
 			order: [
 				// Sort using the difference with the attack elo of the player
@@ -2093,6 +2166,11 @@ export function initModel(sequelize: Sequelize): void {
 		defenseGloryPoints: {
 			type: DataTypes.INTEGER,
 			defaultValue: FightConstants.ELO.DEFAULT_ELO
+		},
+		guardGloryPoints: {
+			type: DataTypes.INTEGER,
+			allowNull: true,
+			defaultValue: null
 		},
 		gloryPointsLastSeason: {
 			type: DataTypes.INTEGER,

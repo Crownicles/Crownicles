@@ -15,15 +15,17 @@ import {
 	asMinutes,
 	asSeconds,
 	dateToLogs,
-	getNextSaturdayMidnight,
-	getNextSundayMidnight,
+	getNextWeekDayMidnight,
 	getTodayMidnight,
 	millisecondsToSeconds,
 	minutesToMilliseconds,
-	msDiff, nowMs
+	msDiff, nowMs,
+	secondsToMilliseconds
 } from "../../../../../Lib/src/utils/TimeUtils";
 import { Second } from "../../../../../Lib/src/types/TimeTypes";
-import { TimeConstants } from "../../../../../Lib/src/constants/TimeConstants";
+import {
+	DayOfTheWeek, TimeConstants
+} from "../../../../../Lib/src/constants/TimeConstants";
 import { LogsMapLinks } from "./models/LogsMapLinks";
 import { MapConstants } from "../../../../../Lib/src/constants/MapConstants";
 import { LogsFightsResults } from "./models/LogsFightsResults";
@@ -37,6 +39,7 @@ import { LogsGuilds } from "./models/LogsGuilds";
 import { MapLocationDataController } from "../../../data/MapLocation";
 import { LogsExpeditions } from "./models/LogsExpeditions";
 import { ExpeditionConstants } from "../../../../../Lib/src/constants/ExpeditionConstants";
+import { LogsInnRooms } from "./models/LogsInnRooms";
 import { getPveIslandLeaveDates } from "./requests/LogsPveIslandRequests";
 import { LogsKingGuardFightsRequests } from "./requests/LogsKingGuardFightsRequests";
 
@@ -122,7 +125,7 @@ export class LogsReadRequests {
 	 * @param playerKeycloakId - The keycloak id of the player we want to check on
 	 */
 	private static async resolveWeeklyShopBuyoutScope(playerKeycloakId: string): Promise<WeeklyShopBuyoutScope | null> {
-		const startOfWeek = asSeconds(Math.floor(millisecondsToSeconds(msDiff(getNextSundayMidnight(), TimeConstants.MS_TIME.WEEK))));
+		const startOfWeek = asSeconds(Math.floor(millisecondsToSeconds(msDiff(getNextWeekDayMidnight(DayOfTheWeek.SUNDAY), TimeConstants.MS_TIME.WEEK))));
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
 		if (!logPlayer) {
 			return null;
@@ -397,7 +400,7 @@ export class LogsReadRequests {
 				"$LogsPlayer1.keycloakId$": attackerKeycloakId,
 				"$LogsPlayer2.keycloakId$": { [Op.in]: defenderKeycloakIds },
 				"date": {
-					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(getNextSaturdayMidnight(), TimeConstants.MS_TIME.WEEK)))
+					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(getNextWeekDayMidnight(DayOfTheWeek.SATURDAY), TimeConstants.MS_TIME.WEEK)))
 				},
 				"friendly": false
 			},
@@ -472,7 +475,7 @@ export class LogsReadRequests {
 			where: {
 				"$LogsPlayer.keycloakId$": keycloakId,
 				"date": {
-					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(getNextSundayMidnight(), TimeConstants.MS_TIME.WEEK)))
+					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(getNextWeekDayMidnight(DayOfTheWeek.SUNDAY), TimeConstants.MS_TIME.WEEK)))
 				},
 				"$LogsMapLink.start$": MapLocationDataController.instance.getWithAttributes([MapConstants.MAP_ATTRIBUTES.MAIN_CONTINENT])[0].id,
 				"$LogsMapLink.end$": {
@@ -509,7 +512,7 @@ export class LogsReadRequests {
 				"$LogsPlayer.keycloakId$": keycloakId,
 				"$LogsGuild.gameId$": guildId,
 				"date": {
-					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(getNextSundayMidnight(), TimeConstants.MS_TIME.WEEK)))
+					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(getNextWeekDayMidnight(DayOfTheWeek.SUNDAY), TimeConstants.MS_TIME.WEEK)))
 				}
 			},
 			include: [
@@ -584,6 +587,26 @@ export class LogsReadRequests {
 				smallEventId: smallEvent.id
 			}
 		});
+	}
+
+	/**
+	 * Whether the player rented a room in an inn during the given last seconds
+	 * @param keycloakId - The keycloak id of the player
+	 * @param duration - How far back to look, in seconds
+	 */
+	static async hasSleptInInnDuringLast(keycloakId: string, duration: Second): Promise<boolean> {
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!logPlayer) {
+			return false;
+		}
+		return await LogsInnRooms.count({
+			where: {
+				playerId: logPlayer.id,
+				date: {
+					[Op.gte]: Math.floor(millisecondsToSeconds(msDiff(nowMs(), secondsToMilliseconds(duration))))
+				}
+			}
+		}) > 0;
 	}
 
 	/**

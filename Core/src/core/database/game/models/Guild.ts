@@ -28,6 +28,7 @@ import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogge
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import moment from "moment";
+import { getModelSequelize } from "../../../../../../Lib/src/database/ModelUtils";
 
 export class Guild extends Model {
 	/**
@@ -163,7 +164,7 @@ export class Guild extends Model {
 			await runDestroyOps(existing);
 			return;
 		}
-		await Guild.sequelize!.transaction(runDestroyOps);
+		await getModelSequelize(Guild).transaction(runDestroyOps);
 	}
 
 	/**
@@ -367,7 +368,7 @@ export class Guild extends Model {
                        FROM (SELECT id, RANK() OVER (ORDER BY score desc, level desc) ranking
                              FROM guilds) subquery
                        WHERE subquery.id = :id`;
-		return ((await Guild.sequelize!.query(query, {
+		return ((await getModelSequelize(Guild).query(query, {
 			replacements: { id: this.id },
 			type: QueryTypes.SELECT
 		}))[0] as {
@@ -420,7 +421,7 @@ export abstract class Guilds {
 		return Math.round(
 			(<{
 				avg: number;
-			}[]>(await Guild.sequelize!.query(query, {
+			}[]>(await getModelSequelize(Guild).query(query, {
 				type: QueryTypes.SELECT
 			})))[0].avg
 		);

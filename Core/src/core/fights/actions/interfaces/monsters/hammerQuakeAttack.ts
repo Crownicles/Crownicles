@@ -6,14 +6,14 @@ import { FightActionFunc } from "../../../../../data/FightAction";
 import {
 	customMessageActionResult
 } from "../../../../../../../Lib/src/types/FightActionResult";
-import { RealPlayerFighter } from "../../../fighter/RealPlayerFighter";
+import { PlayerBaseFighter } from "../../../fighter/PlayerBaseFighter";
 import { PetConstants } from "../../../../../../../Lib/src/constants/PetConstants";
 import { PetDataController } from "../../../../../data/Pet";
 import { simpleDamageFightAction } from "../../templates/SimpleDamageFightActionTemplate";
 
 const use: FightActionFunc = (sender, receiver) => {
 	// This attack will fail if the opponent has a flying pet
-	if (receiver instanceof RealPlayerFighter && receiver.pet && PetDataController.instance.getById(receiver.pet.typeId)?.hasTag(PetConstants.TAGS.FLYING)) {
+	if (receiver instanceof PlayerBaseFighter && receiver.pet && PetDataController.instance.getById(receiver.pet.typeId)?.hasTag(PetConstants.TAGS.FLYING)) {
 		return {
 			...customMessageActionResult(),
 			damages: 0

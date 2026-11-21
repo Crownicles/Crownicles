@@ -1,5 +1,5 @@
 import { AiPlayerFighter } from "../fighter/AiPlayerFighter";
-import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { PlayerBaseFighter } from "../fighter/PlayerBaseFighter";
 import { FightActionDataController } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { getUsedGodMoves } from "../FightController";
@@ -8,7 +8,7 @@ import { getUsedGodMoves } from "../FightController";
  * Check if a fighter can cast a god move (benediction or divine attack)
  * @param fighter
  */
-export function canUseGodMove(fighter: AiPlayerFighter | RealPlayerFighter): boolean {
+export function canUseGodMove(fighter: PlayerBaseFighter): boolean {
 	return FightConstants.GOD_MOVES.some(godMove => fighter.availableFightActions.has(godMove));
 }
 
@@ -19,7 +19,7 @@ export function canUseGodMove(fighter: AiPlayerFighter | RealPlayerFighter): boo
  * @param me
  * @param opponent
  */
-export function shouldWinGodMoveRace(me: AiPlayerFighter, opponent: AiPlayerFighter | RealPlayerFighter): boolean {
+export function shouldWinGodMoveRace(me: AiPlayerFighter, opponent: PlayerBaseFighter): boolean {
 	const canAffordBenediction = me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.BENEDICTION);
 	return canUseGodMove(opponent) && getUsedGodMoves(me, opponent) < 1 && canAffordBenediction;
 }

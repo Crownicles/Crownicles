@@ -124,6 +124,12 @@ export const CrowniclesIcons: {
 		tierReached: string;
 		tierPending: string;
 	};
+	quests: {
+		icon: string;
+		stepDone: string;
+		stepCurrent: string;
+		completed: string;
+	};
 	messages: {
 		validate: string;
 		refuse: string;
@@ -2450,13 +2456,21 @@ export const CrowniclesIcons: {
 			guildStatusChange: "📜",
 			energy: "⚡",
 			dailyBonus: "📅",
-			petExpedition: "🐾"
+			petExpedition: "🐾",
+			gardenPlantReady: "🌱",
+			gardenAllPlantsReady: "🧺"
 		}
 	},
 	kingChallenge: {
 		icon: "⚜️",
 		tierReached: "✅",
 		tierPending: "▫️"
+	},
+	quests: {
+		icon: "🧭",
+		stepDone: "✅",
+		stepCurrent: "⏳",
+		completed: "🏆"
 	},
 	missions: {
 		expired: "📤",

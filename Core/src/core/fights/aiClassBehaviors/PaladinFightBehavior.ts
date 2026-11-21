@@ -4,7 +4,7 @@ import { FightView } from "../FightView";
 import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
-import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { PlayerBaseFighter } from "../fighter/PlayerBaseFighter";
 import {
 	canPlayShieldAttack, canStrikeWithShieldAttack, SHIELD_ATTACK_CHANCES
 } from "./ShieldAttackPacing";
@@ -38,7 +38,7 @@ class PaladinFightBehavior implements ClassBehavior {
 	 * @returns The chosen fight action.
 	 */
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
-		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter | AiPlayerFighter; // AI will never fight monsters
+		const opponent = fightView.fightController.getDefendingFighter() as PlayerBaseFighter; // AI will never fight monsters
 		const usedGodMoves = getUsedGodMoves(me, opponent);
 		const usedUltimateAttacks = me.fightActionsHistory.filter(action => action.id === FightConstants.FIGHT_ACTIONS.PLAYER.ULTIMATE_ATTACK).length;
 
@@ -80,7 +80,7 @@ class PaladinFightBehavior implements ClassBehavior {
 	private shouldUseDivineAttack(
 		me: AiPlayerFighter,
 		fightView: FightView,
-		opponent: RealPlayerFighter | AiPlayerFighter,
+		opponent: PlayerBaseFighter,
 		usedGodMoves: number,
 		usedUltimateAttacks: number
 	): boolean {
@@ -144,7 +144,7 @@ class PaladinFightBehavior implements ClassBehavior {
 	 */
 	private shouldUseShieldAttack(
 		me: AiPlayerFighter,
-		opponent: RealPlayerFighter | AiPlayerFighter,
+		opponent: PlayerBaseFighter,
 		usedUltimateAttacks: number
 	): boolean {
 		return hasBreathToSpare(me, usedUltimateAttacks, FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK)

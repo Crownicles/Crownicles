@@ -10,3 +10,9 @@ export const NO_STAT_COMPARISON: StatValues = {
 	defense: Infinity,
 	speed: Infinity
 };
+
+export const ZERO_STATS: StatValues = {
+	attack: 0,
+	defense: 0,
+	speed: 0
+};

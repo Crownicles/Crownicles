@@ -28,7 +28,6 @@ import { resolveKeycloakDiscordUser } from "../../utils/KeycloakPlayerUtils";
 import { disableRows } from "../../utils/DiscordCollectorUtils";
 import { ItemWithDetails } from "../../../../Lib/src/types/ItemWithDetails";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
-import { PlantId } from "../../../../Lib/src/constants/PlantConstants";
 import { DiscordConstants } from "../../DiscordConstants";
 
 enum InventoryView {
@@ -276,15 +275,10 @@ function getMaterialsEmbed(packet: CommandInventoryPacketRes, pseudo: string, ln
 
 type InventoryPlants = NonNullable<NonNullable<CommandInventoryPacketRes["data"]>["plants"]>;
 
-function formatPlant(plantId: PlantId, lng: Language): string {
-	const plantEmoji = CrowniclesIcons.plants[plantId] ?? CrowniclesIcons.city.homeUpgrades.garden;
-	return `${plantEmoji} **${i18n.t(`models:plants.${plantId}`, { lng })}**`;
-}
-
 function buildSeedField(plants: InventoryPlants, lng: Language): EmbedField {
 	return {
 		name: i18n.t("commands:inventory.seedSlot", { lng }),
-		value: plants.seed ? formatPlant(plants.seed, lng) : i18n.t("commands:inventory.emptySlot", { lng }),
+		value: plants.seed ? DisplayUtils.getPlantDisplay(plants.seed, lng) : i18n.t("commands:inventory.emptySlot", { lng }),
 		inline: false
 	};
 }
@@ -292,7 +286,7 @@ function buildSeedField(plants: InventoryPlants, lng: Language): EmbedField {
 function buildPlantSlotsField(plants: InventoryPlants, lng: Language): EmbedField {
 	const plantEntries = Array.from({ length: plants.maxPlantSlots }, (_unused, slot) => {
 		const found = plants.plantSlots.find(p => p.slot === slot);
-		return found ? formatPlant(found.plantId, lng) : i18n.t("commands:inventory.emptySlot", { lng });
+		return found ? DisplayUtils.getPlantDisplay(found.plantId, lng) : i18n.t("commands:inventory.emptySlot", { lng });
 	});
 	return {
 		name: i18n.t("commands:inventory.plantSlots", {
@@ -415,15 +409,13 @@ export async function handleCommandInventoryPacketRes(packet: CommandInventoryPa
 		return new ActionRowBuilder<ButtonBuilder>().addComponents(buttons);
 	}
 
-	const reply = await interaction.reply({
+	const msg = await interaction.replyWithMessage({
 		embeds: [embeds[currentView]],
-		components: [createButtons(currentView)],
-		withResponse: true
+		components: [createButtons(currentView)]
 	});
-	if (!reply?.resource?.message) {
+	if (!msg) {
 		return;
 	}
-	const msg = reply.resource.message;
 	const collector = msg.createMessageComponentCollector({
 		filter: buttonInteraction => allCustomIds.includes(buttonInteraction.customId),
 		time: Constants.MESSAGES.COLLECTOR_TIME

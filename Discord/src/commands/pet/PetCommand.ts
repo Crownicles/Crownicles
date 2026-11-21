@@ -314,19 +314,18 @@ export async function handleCommandPetPacketRes(packet: CommandPetPacketRes, con
 	const embed = await createPetEmbed(packet, interaction);
 	const showButtons = shouldSetupCollector(packet, isOwnerViewingOwnPet);
 
-	const reply = await interaction.reply({
+	const message = await interaction.replyWithMessage({
 		embeds: [embed],
-		components: showButtons ? [row] : [],
-		withResponse: true
+		components: showButtons ? [row] : []
 	});
 
-	if (!reply?.resource?.message) {
+	if (!message) {
 		return;
 	}
 
 	if (showButtons) {
 		setupPetButtonCollector({
-			message: reply.resource.message,
+			message,
 			packet,
 			interaction,
 			buttons,

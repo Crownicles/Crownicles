@@ -1,5 +1,5 @@
 import { AiPlayerFighter } from "../fighter/AiPlayerFighter";
-import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { PlayerBaseFighter } from "../fighter/PlayerBaseFighter";
 import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
@@ -31,7 +31,7 @@ function canAfford(me: AiPlayerFighter, actionId: string): boolean {
  * @param me
  * @param opponent
  */
-function chooseFinishingMove(me: AiPlayerFighter, opponent: RealPlayerFighter | AiPlayerFighter): FightAction {
+function chooseFinishingMove(me: AiPlayerFighter, opponent: PlayerBaseFighter): FightAction {
 	return getAction(canAfford(me, ACTIONS.QUICK_ATTACK) && me.getSpeed() > opponent.getSpeed() ? ACTIONS.QUICK_ATTACK : ACTIONS.SABOTAGE_ATTACK);
 }
 
@@ -40,7 +40,7 @@ function chooseFinishingMove(me: AiPlayerFighter, opponent: RealPlayerFighter | 
  * @param me
  * @param opponent
  */
-function shouldUseIntenseAttack(me: AiPlayerFighter, opponent: RealPlayerFighter | AiPlayerFighter): boolean {
+function shouldUseIntenseAttack(me: AiPlayerFighter, opponent: PlayerBaseFighter): boolean {
 	return opponent.getSpeed() > me.getSpeed() * INTENSE_ATTACK_MIN_SPEED_RATIO
 		&& opponent.getEnergy() > opponent.getMaxEnergy() * INTENSE_ATTACK_MIN_ENERGY_RATIO
 		&& canAfford(me, ACTIONS.INTENSE_ATTACK);
@@ -52,7 +52,7 @@ function shouldUseIntenseAttack(me: AiPlayerFighter, opponent: RealPlayerFighter
  * @param opponent
  * @param turn
  */
-function shouldOpenWithBoomerang(me: AiPlayerFighter, opponent: RealPlayerFighter | AiPlayerFighter, turn: number): boolean {
+function shouldOpenWithBoomerang(me: AiPlayerFighter, opponent: PlayerBaseFighter, turn: number): boolean {
 	return turn <= 2 && !opponent.hasFightAlteration() && canAfford(me, ACTIONS.BOOMERANG_ATTACK);
 }
 
@@ -69,7 +69,7 @@ export class GunnerCanonPlan {
 	 */
 	public constructor(private readonly breathMarginToStartChain: number) {}
 
-	public chooseAction(me: AiPlayerFighter, opponent: RealPlayerFighter | AiPlayerFighter, turn: number): FightAction {
+	public chooseAction(me: AiPlayerFighter, opponent: PlayerBaseFighter, turn: number): FightAction {
 		const lastWasCanon = me.getLastFightActionUsed()?.id === ACTIONS.CANON_ATTACK;
 		if (!lastWasCanon) {
 			this.chainedCanonAttacks = 0;

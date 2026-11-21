@@ -6,7 +6,7 @@ import {
 } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
 import {
-	disableRows, DiscordCollectorUtils, SEND_POLITICS
+	disableRows, DiscordCollectorUtils
 } from "../utils/DiscordCollectorUtils";
 import i18n from "../translations/i18n";
 import { DisplayUtils } from "../utils/DisplayUtils";
@@ -27,6 +27,7 @@ import {
 } from "discord.js";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
+import { SendManner } from "../messages/CrowniclesInteraction";
 
 export async function itemChoiceCollector(context: PacketContext, packet: ReactionCollectorItemChoicePacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
@@ -65,7 +66,7 @@ export async function itemChoiceCollector(context: PacketContext, packet: Reacti
 				}
 			]
 			: [],
-		sendManners: SEND_POLITICS.ALWAYS_SEND
+		sendManner: SendManner.SEND
 	});
 }
 

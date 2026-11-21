@@ -14,7 +14,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 		}
 		return player.getHealthValue() < player.getMaxHealth();
 	},
-	executeSmallEvent: async (response, player): Promise<void> => {
+	executeSmallEvent: async (player, { response }): Promise<void> => {
 		const healthWon = RandomUtils.rangedInt(SmallEventConstants.HEALTH);
 		await player.addHealth({
 			amount: healthWon,

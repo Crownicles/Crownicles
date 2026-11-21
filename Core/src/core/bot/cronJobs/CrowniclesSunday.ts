@@ -1,6 +1,5 @@
-import {
-	DayOfTheWeek, setWeeklyCronJob
-} from "../../utils/CronInterface";
+import { setWeeklyCronJob } from "../../utils/CronInterface";
+import { DayOfTheWeek } from "../../../../../Lib/src/constants/TimeConstants";
 import { Settings } from "../../database/game/models/Setting";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { CrowniclesLogger } from "../../../../../Lib/src/logs/CrowniclesLogger";
@@ -100,24 +99,6 @@ export class CrowniclesSunday {
 				)
 			},
 			{ where: { fightCountdown: { [Op.lt]: FightConstants.FIGHT_COUNTDOWN_REGEN_LIMIT } } }
-		);
-
-		// Transform a part of the defense glory into attack glory
-		await Player.update(
-			{
-				defenseGloryPoints: Sequelize.literal(
-					`defenseGloryPoints + LEAST(${FightConstants.ATTACK_GLORY_TO_DEFENSE_GLORY_EACH_WEEK}, attackGloryPoints)`
-				),
-				attackGloryPoints: Sequelize.literal(
-					`attackGloryPoints - LEAST(${FightConstants.ATTACK_GLORY_TO_DEFENSE_GLORY_EACH_WEEK}, attackGloryPoints)`
-				)
-			},
-			{
-				where: {
-					attackGloryPoints: { [Op.gt]: 0 },
-					defenseGloryPoints: { [Op.lte]: FightConstants.MAX_DEFENSE_GLORY_FOR_TRANSFER }
-				}
-			}
 		);
 	}
 }

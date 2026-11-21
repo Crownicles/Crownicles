@@ -5,7 +5,9 @@ import { CrowniclesErrorEmbed } from "../messages/CrowniclesErrorEmbed";
 import {
 	LANGUAGE, Language
 } from "../../../Lib/src/Language";
-import { CrowniclesInteraction } from "../messages/CrowniclesInteraction";
+import {
+	CrowniclesInteraction, CrowniclesResponseOptions, SendManner
+} from "../messages/CrowniclesInteraction";
 import i18n from "../translations/i18n";
 import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
 import { escapeUsername } from "../../../Lib/src/utils/StringUtils";
@@ -24,22 +26,24 @@ import { MessageFlags } from "discord-api-types/v10";
  * @param reason
  */
 export async function replyEphemeralErrorMessage(context: PacketContext | null, interaction: CrowniclesInteraction, reason: string): Promise<void> {
-	if (interaction.deferred) {
-		await interaction.deleteReply();
-	}
-
-	// Without a bind, context is lost for "this"
-	await (interaction.replied || interaction.deferred ? interaction.followUp.bind(interaction) : interaction.reply.bind(interaction))({
-		embeds: [new CrowniclesErrorEmbed(interaction.user, context, interaction, reason)],
-		flags: MessageFlags.Ephemeral
-	});
+	await replyEphemerally(interaction, { embeds: [new CrowniclesErrorEmbed(interaction.user, context, interaction, reason)] });
 }
 
-export enum SendManner {
-	SEND = "SEND",
-	REPLY = "REPLY",
-	FOLLOWUP = "FOLLOWUP",
-	EDIT_REPLY = "EDIT_REPLY"
+/**
+ * Answer the interaction with an ephemeral message. A public deferred reply cannot become ephemeral: when the deferred
+ * reply belongs to this answer, it is deleted and the message follows up instead
+ * @param interaction
+ * @param options
+ * @param ownsDeferredReply - false when the deferred reply holds something to keep, e.g. the collector of a command
+ */
+export async function replyEphemerally(interaction: CrowniclesInteraction, options: CrowniclesResponseOptions, ownsDeferredReply = true): Promise<void> {
+	if (ownsDeferredReply && interaction.deferred) {
+		await interaction.deleteReply();
+	}
+	await interaction.respond({
+		...options,
+		ephemeral: true
+	}, interaction.deferred ? { manner: SendManner.FOLLOWUP } : {});
 }
 
 /**
@@ -67,23 +71,9 @@ export async function sendErrorMessage(
 		sendManner?: SendManner;
 	} = {}
 ): Promise<void> {
-	const sendArg = {
+	await interaction.respond({
 		embeds: [new CrowniclesErrorEmbed(user, context, interaction, reason, isCancelling, isBlockedError)]
-	};
-	switch (sendManner) {
-		case SendManner.REPLY:
-			await interaction.reply(sendArg);
-			break;
-		case SendManner.EDIT_REPLY:
-			await interaction.editReply(sendArg);
-			break;
-		case SendManner.FOLLOWUP:
-			await interaction.followUp(sendArg);
-			break;
-		default:
-			await interaction.channel.send(sendArg);
-			break;
-	}
+	}, { manner: sendManner });
 }
 
 export async function sendInteractionNotForYou(
@@ -179,13 +169,8 @@ export async function handleClassicError(context: PacketContext, errorKey: strin
 		}));
 	}
 
-	await (!interactionToRespondTo.replied
-		? interactionToRespondTo.deferred
-			? interactionToRespondTo.editReply.bind(interactionToRespondTo)
-			: interactionToRespondTo.reply.bind(interactionToRespondTo)
-		: interactionToRespondTo.followUp.bind(interactionToRespondTo)
-	)({
+	await interactionToRespondTo.respond({
 		embeds: [embed],
-		flags: opts.ephemeral ? MessageFlags.Ephemeral as number : 0
+		ephemeral: opts.ephemeral
 	});
 }

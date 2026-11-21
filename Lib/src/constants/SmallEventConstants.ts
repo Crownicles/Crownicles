@@ -2,6 +2,12 @@ import { MapLocationConstants } from "./MapLocationConstants";
 import type { Biome } from "../types/Biome";
 
 export abstract class SmallEventConstants {
+	/**
+	 * Small events met on a path before a guaranteed small event can be drawn: it replaces the random draw of the next one,
+	 * so at most one small event is guaranteed per path
+	 */
+	static readonly GUARANTEED_AFTER_SMALL_EVENTS = 3;
+
 	static readonly HEALTH = {
 		MIN: 1,
 		MAX: 4

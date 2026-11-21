@@ -8,7 +8,7 @@ import { FightConstants } from "../../../../../Lib/src/constants/FightConstants"
 import { Fighter } from "../fighter/Fighter";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
-import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { PlayerBaseFighter } from "../fighter/PlayerBaseFighter";
 
 /**
  * Determines whether the AI should use a boomerang attack
@@ -38,7 +38,7 @@ export function shouldUseBoomerang(
  * @returns True if fighter should start a canon attack sequence, false otherwise
  */
 export function shouldStartCanonSequence(
-	opponent: RealPlayerFighter,
+	opponent: PlayerBaseFighter,
 	me: AiPlayerFighter,
 	canonAttackUsed: number,
 	isGoingForChainedCanonAttack: boolean
@@ -84,7 +84,7 @@ class RockThrowerFightBehavior implements ClassBehavior {
 	private canonAttackUsed = 0;
 
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
-		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter;
+		const opponent = fightView.fightController.getDefendingFighter() as PlayerBaseFighter;
 		const turn = fightView.fightController.turn;
 
 		// Continue a canon attack sequence if appropriate

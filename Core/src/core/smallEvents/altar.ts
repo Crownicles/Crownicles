@@ -293,7 +293,9 @@ export const smallEventFuncs: SmallEventFuncs = {
 
 		return true;
 	},
-	executeSmallEvent: async (response, player, context): Promise<void> => {
+	executeSmallEvent: async (player, {
+		response, context
+	}): Promise<void> => {
 		// Update oracle missions for altar oracle
 		await MissionsController.update(player, response, {
 			missionId: "meetOracle",

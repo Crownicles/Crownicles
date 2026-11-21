@@ -36,22 +36,73 @@ import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { StringUtils } from "../../utils/StringUtils";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { Constants } from "../../../../Lib/src/constants/Constants";
+import { QuestProgress } from "../../../../Lib/src/types/QuestProgress";
+import { QuestUtils } from "../../utils/QuestUtils";
 
-const MISSIONS_BUTTON_IDS = {
-	KING_CHALLENGE: "missions_king_challenge",
-	MISSIONS: "missions_back"
+const MISSIONS_PAGE_IDS = {
+	MISSIONS: "missions",
+	KING_CHALLENGE: "kingChallenge",
+	QUESTS: "quests",
+	COMPLETED_QUESTS: "completedQuests"
 } as const;
 
-type MissionsButtonId = typeof MISSIONS_BUTTON_IDS[keyof typeof MISSIONS_BUTTON_IDS];
+type MissionsPageId = typeof MISSIONS_PAGE_IDS[keyof typeof MISSIONS_PAGE_IDS];
+
+/**
+ * Tabs always shown below the missions command
+ */
+const MISSIONS_TABS = [
+	MISSIONS_PAGE_IDS.MISSIONS,
+	MISSIONS_PAGE_IDS.KING_CHALLENGE,
+	MISSIONS_PAGE_IDS.QUESTS
+] as const;
+
+type MissionsTabId = typeof MISSIONS_TABS[number];
+
+const MISSIONS_TAB_EMOTES: Record<MissionsTabId, string> = {
+	[MISSIONS_PAGE_IDS.MISSIONS]: CrowniclesIcons.missions.sideMission,
+	[MISSIONS_PAGE_IDS.KING_CHALLENGE]: CrowniclesIcons.kingChallenge.icon,
+	[MISSIONS_PAGE_IDS.QUESTS]: CrowniclesIcons.quests.icon
+};
+
+type QuestsPageId = typeof MISSIONS_PAGE_IDS.QUESTS | typeof MISSIONS_PAGE_IDS.COMPLETED_QUESTS;
+
+/**
+ * Button of a page of the quests tab leading to its other page
+ */
+type QuestsPageOption = {
+	target: QuestsPageId;
+	emote: string;
+};
+
+/**
+ * Option of each page of the quests tab, leading to the other one: the ongoing quests lead to the completed ones and back
+ */
+const QUESTS_PAGE_OPTIONS: Record<QuestsPageId, QuestsPageOption> = {
+	[MISSIONS_PAGE_IDS.QUESTS]: {
+		target: MISSIONS_PAGE_IDS.COMPLETED_QUESTS,
+		emote: CrowniclesIcons.quests.stepDone
+	},
+	[MISSIONS_PAGE_IDS.COMPLETED_QUESTS]: {
+		target: MISSIONS_PAGE_IDS.QUESTS,
+		emote: CrowniclesIcons.quests.stepCurrent
+	}
+};
+
+const MISSIONS_TAB_BUTTON_PREFIX = "missions_tab_";
+
+const QUESTS_OPTION_BUTTON_PREFIX = "missions_quests_";
 
 type MissionsEmbedAuthor = {
 	discordUser: User | null;
 	pseudo: string;
 };
 
-type MissionsPages = {
-	missions: CrowniclesEmbed;
-	kingChallenge: CrowniclesEmbed;
+type MissionsPages = Record<MissionsPageId, CrowniclesEmbed>;
+
+type QuestsCounts = {
+	ongoing: number;
+	completed: number;
 };
 
 /**
@@ -222,6 +273,27 @@ function getKingChallengeDescription(progress: KingChallengeProgress, lng: Langu
 }
 
 /**
+ * Description of the quests sub-page of the missions command, which only shows the ongoing quests
+ */
+function getQuestsDescription(ongoingQuests: QuestProgress[], lng: Language): string {
+	return StringUtils.joinParagraphs([
+		i18n.t("commands:missions.quests.description", { lng }),
+		...ongoingQuests.length > 0
+			? ongoingQuests.map(quest => QuestUtils.formatOngoingQuest(quest, lng))
+			: [i18n.t("commands:missions.quests.noOngoingQuest", { lng })]
+	]);
+}
+
+/**
+ * Description of the completed quests sub-page of the missions command, one line per completed quest
+ */
+function getCompletedQuestsDescription(completedQuests: QuestProgress[], lng: Language): string {
+	return completedQuests.length > 0
+		? StringUtils.joinLines(completedQuests.map(quest => QuestUtils.formatCompletedQuest(quest, lng)))
+		: i18n.t("commands:missions.quests.noCompletedQuest", { lng });
+}
+
+/**
  * Build an embed of the missions command with the author of the displayed missions
  */
 function buildMissionsCommandEmbed(author: MissionsEmbedAuthor, title: string, description: string): CrowniclesEmbed {
@@ -229,18 +301,65 @@ function buildMissionsCommandEmbed(author: MissionsEmbedAuthor, title: string, d
 	return author.discordUser ? embed.formatAuthor(title, author.discordUser) : embed.setTitle(title);
 }
 
-function buildToggleButton(showKingChallenge: boolean, lng: Language): ButtonBuilder {
-	return new ButtonBuilder()
-		.setCustomId(showKingChallenge ? MISSIONS_BUTTON_IDS.KING_CHALLENGE : MISSIONS_BUTTON_IDS.MISSIONS)
-		.setLabel(i18n.t(showKingChallenge ? "commands:missions.kingChallenge.button" : "commands:missions.kingChallenge.backButton", { lng }))
-		.setEmoji(showKingChallenge ? CrowniclesIcons.kingChallenge.icon : CrowniclesIcons.collectors.back)
-		.setStyle(ButtonStyle.Secondary);
+function isQuestsPage(page: MissionsPageId): page is QuestsPageId {
+	return page === MISSIONS_PAGE_IDS.QUESTS || page === MISSIONS_PAGE_IDS.COMPLETED_QUESTS;
 }
 
 /**
- * Let the player who asked switch between the missions and the king's challenge sub-page
+ * The tabs of the missions command: the tab of the displayed page is disabled, and every tab once no page is displayed anymore
  */
-function setupMissionsToggleCollector(message: Message, interaction: CrowniclesInteraction, pages: MissionsPages): void {
+function buildTabsRow(displayedPage: MissionsPageId | null, lng: Language): ActionRowBuilder<ButtonBuilder> {
+	const displayedTab = displayedPage !== null && isQuestsPage(displayedPage) ? MISSIONS_PAGE_IDS.QUESTS : displayedPage;
+	return new ActionRowBuilder<ButtonBuilder>().addComponents(MISSIONS_TABS
+		.map(tab => new ButtonBuilder()
+			.setCustomId(`${MISSIONS_TAB_BUTTON_PREFIX}${tab}`)
+			.setLabel(i18n.t(`commands:missions.pages.${tab}`, { lng }))
+			.setEmoji(MISSIONS_TAB_EMOTES[tab])
+			.setStyle(ButtonStyle.Secondary)
+			.setDisabled(displayedTab === null || tab === displayedTab)));
+}
+
+/**
+ * The option of a page of the quests tab, leading to its other page
+ */
+function buildQuestsOptionRow(displayedPage: QuestsPageId, questsCounts: QuestsCounts, lng: Language): ActionRowBuilder<ButtonBuilder> {
+	const option = QUESTS_PAGE_OPTIONS[displayedPage];
+	return new ActionRowBuilder<ButtonBuilder>().addComponents(new ButtonBuilder()
+		.setCustomId(`${QUESTS_OPTION_BUTTON_PREFIX}${option.target}`)
+		.setLabel(i18n.t(`commands:missions.quests.options.${option.target}`, {
+			lng,
+			count: option.target === MISSIONS_PAGE_IDS.QUESTS ? questsCounts.ongoing : questsCounts.completed
+		}))
+		.setEmoji(option.emote)
+		.setStyle(ButtonStyle.Secondary));
+}
+
+/**
+ * Components below a page of the missions command: the tabs, plus the option of the quests tab while one of its pages is displayed
+ */
+function buildPageComponents(displayedPage: MissionsPageId | null, questsCounts: QuestsCounts, lng: Language): ActionRowBuilder<ButtonBuilder>[] {
+	const tabsRow = buildTabsRow(displayedPage, lng);
+	return displayedPage !== null && isQuestsPage(displayedPage) && hasQuestsOption(displayedPage, questsCounts)
+		? [tabsRow, buildQuestsOptionRow(displayedPage, questsCounts, lng)]
+		: [tabsRow];
+}
+
+/**
+ * The completed quests page is only offered once the player completed a quest
+ */
+function hasQuestsOption(displayedPage: QuestsPageId, questsCounts: QuestsCounts): boolean {
+	return displayedPage !== MISSIONS_PAGE_IDS.QUESTS || questsCounts.completed > 0;
+}
+
+function getPageOfButton(customId: string): MissionsPageId | undefined {
+	return Object.values(MISSIONS_PAGE_IDS)
+		.find(page => customId === `${MISSIONS_TAB_BUTTON_PREFIX}${page}` || customId === `${QUESTS_OPTION_BUTTON_PREFIX}${page}`);
+}
+
+/**
+ * Let the player who asked switch between the pages of the missions command
+ */
+function setupMissionsPagesCollector(message: Message, interaction: CrowniclesInteraction, pages: MissionsPages, questsCounts: QuestsCounts): void {
 	const lng = interaction.userLanguage;
 	const collector = message.createMessageComponentCollector({
 		componentType: ComponentType.Button,
@@ -249,24 +368,24 @@ function setupMissionsToggleCollector(message: Message, interaction: CrowniclesI
 				sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
 				return false;
 			}
-			return Object.values(MISSIONS_BUTTON_IDS)
-				.includes(buttonInteraction.customId as MissionsButtonId);
+			return getPageOfButton(buttonInteraction.customId) !== undefined;
 		},
 		time: Constants.MESSAGES.COLLECTOR_TIME
 	});
 
-	let lastButton = buildToggleButton(true, lng);
 	collector.on("collect", async (buttonInteraction: ButtonInteraction) => {
-		const showKingChallenge = buttonInteraction.customId === MISSIONS_BUTTON_IDS.KING_CHALLENGE;
-		lastButton = buildToggleButton(!showKingChallenge, lng);
+		const page = getPageOfButton(buttonInteraction.customId);
+		if (!page) {
+			return;
+		}
 		await buttonInteraction.update({
-			embeds: [showKingChallenge ? pages.kingChallenge : pages.missions],
-			components: [new ActionRowBuilder<ButtonBuilder>().addComponents(lastButton)]
+			embeds: [pages[page]],
+			components: buildPageComponents(page, questsCounts, lng)
 		});
 	});
 
 	collector.on("end", async () => {
-		await message.edit({ components: [new ActionRowBuilder<ButtonBuilder>().addComponents(lastButton.setDisabled(true))] })
+		await message.edit({ components: buildPageComponents(null, questsCounts, lng) })
 			.catch(() => undefined);
 	});
 }
@@ -294,6 +413,12 @@ export async function handleCommandMissionsPacketRes(packet: CommandMissionsPack
 		pseudo: escapeUsername(discordUser?.displayName ?? getUser.payload.user.username)
 	};
 
+	const completedQuests = packet.quests.filter(QuestUtils.isCompleted);
+	const ongoingQuests = packet.quests.filter(quest => !QuestUtils.isCompleted(quest));
+	const questsCounts: QuestsCounts = {
+		ongoing: ongoingQuests.length,
+		completed: completedQuests.length
+	};
 	const pages: MissionsPages = {
 		missions: buildMissionsCommandEmbed(author, i18n.t("commands:missions.title", {
 			lng,
@@ -306,16 +431,23 @@ export async function handleCommandMissionsPacketRes(packet: CommandMissionsPack
 		kingChallenge: buildMissionsCommandEmbed(author, i18n.t("commands:missions.kingChallenge.title", {
 			lng,
 			pseudo: author.pseudo
-		}), getKingChallengeDescription(packet.kingChallenge, lng))
+		}), getKingChallengeDescription(packet.kingChallenge, lng)),
+		quests: buildMissionsCommandEmbed(author, i18n.t("commands:missions.quests.title", {
+			lng,
+			pseudo: author.pseudo
+		}), getQuestsDescription(ongoingQuests, lng)),
+		completedQuests: buildMissionsCommandEmbed(author, i18n.t("commands:missions.quests.completedTitle", {
+			lng,
+			pseudo: author.pseudo
+		}), getCompletedQuestsDescription(completedQuests, lng))
 	};
 
-	const reply = await interaction.reply({
+	const msg = await interaction.replyWithMessage({
 		embeds: [pages.missions],
-		components: [new ActionRowBuilder<ButtonBuilder>().addComponents(buildToggleButton(true, lng))],
-		withResponse: true
+		components: buildPageComponents(MISSIONS_PAGE_IDS.MISSIONS, questsCounts, lng)
 	});
-	if (reply?.resource?.message) {
-		setupMissionsToggleCollector(reply.resource.message, interaction, pages);
+	if (msg) {
+		setupMissionsPagesCollector(msg, interaction, pages, questsCounts);
 	}
 }
 

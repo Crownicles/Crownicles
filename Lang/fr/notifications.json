@@ -1,4 +1,17 @@
 {
+  "quests": {
+    "title_obtained": "{{pseudo}}, vous obtenez une nouvelle quête !",
+    "title_progressed": "{{pseudo}}, votre quête progresse !",
+    "title_completed": "{{pseudo}}, vous accomplissez une quête !",
+    "description": "> {{description}}",
+    "stepDone": "{emote:quests.stepDone} Étape accomplie",
+    "nextStep": "{emote:quests.stepCurrent} Prochaine étape",
+    "nextStepValue": "**Étape {{stepNumber}}** : {{label}}\n{{hint}}",
+    "completed": "{emote:quests.completed} Quête accomplie",
+    "completedValue": "Toutes les étapes de cette quête sont accomplies : elle rejoint vos quêtes terminées.",
+    "journal": "{emote:quests.icon} Journal de quêtes",
+    "journalValue": "Suivez la progression de toutes vos quêtes avec la commande {command:missions}."
+  },
   "kingChallenge": {
     "title_one": "{{pseudo}}, vous relevez le palier {{tier}}/{{tierCount}} du défi du roi !",
     "title_other": "{{pseudo}}, vous relevez {{count}} paliers du défi du roi, jusqu'au palier {{tier}}/{{tierCount}} !",

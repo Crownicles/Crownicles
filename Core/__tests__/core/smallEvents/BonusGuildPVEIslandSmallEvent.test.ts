@@ -47,7 +47,9 @@ describe("bonus guild PVE island small event", () => {
 	it("reports a health loss when the earthquake damages the player", async () => {
 		const response: SmallEventBonusGuildPVEIslandPacket[] = [];
 
-		await smallEventFuncs.executeSmallEvent(response, player as never, {} as never, {} as never);
+		await smallEventFuncs.executeSmallEvent(player as never, {
+			response, context: {} as never, playerActiveObjects: {} as never
+		});
 
 		expect(player.addHealth).toHaveBeenCalledWith(expect.objectContaining({ amount: -5 }));
 		expect(response).toContainEqual(expect.objectContaining({
@@ -85,7 +87,9 @@ describe("bonus guild PVE island small event", () => {
 		vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(true);
 
 		const response: SmallEventBonusGuildPVEIslandPacket[] = [];
-		await smallEventFuncs.executeSmallEvent(response, player as never, {} as never, {} as never);
+		await smallEventFuncs.executeSmallEvent(player as never, {
+			response, context: {} as never, playerActiveObjects: {} as never
+		});
 
 		expect(Guild.withLocked).toHaveBeenCalledWith(player.guildId, expect.any(Function));
 		expect(guild.addExperience).not.toHaveBeenCalled();

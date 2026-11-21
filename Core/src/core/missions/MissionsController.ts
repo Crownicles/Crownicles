@@ -41,6 +41,8 @@ import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
 import { RecipeDiscoverySource } from "../../../../Lib/src/constants/CookingConstants";
 import { bufferUntilCommit } from "../../../../Lib/src/locks/scheduleAfterCommit";
+import { importCompiledFolderExports } from "../utils/DynamicImportUtils";
+import { missionInterface as defaultMissionInterface } from "./DefaultInterface";
 
 
 export type LockedPlayerMutation = (lockedPlayer: Player) => void;
@@ -121,6 +123,10 @@ type SpecialMissionCompletion = {
 	campaign: boolean;
 };
 
+type MissionInterfaceModule = {
+	missionInterface: IMission;
+};
+
 type MissionLockContext = {
 	player: Player;
 	missionInfo: PlayerMissionsInfo;
@@ -147,22 +153,25 @@ export function assertPlayerHasNoPendingChanges(player: Player, caller: PlayerRe
 }
 
 export abstract class MissionsController {
+	private static missionInterfaces: Map<string, IMission>;
+
 	private static synchronizeCaller(player: Player, updatedPlayer: Player): Player {
 		Object.assign(player, updatedPlayer);
 		return player;
 	}
 
+	/**
+	 * Load the interfaces of the missions, discovered from their files. The missions without one use the default interface
+	 */
+	static async loadMissionInterfaces(): Promise<void> {
+		MissionsController.missionInterfaces = await importCompiledFolderExports(
+			"core/missions/interfaces",
+			(missionInterfaceModule: MissionInterfaceModule) => missionInterfaceModule.missionInterface
+		);
+	}
+
 	static getMissionInterface(missionId: string): IMission {
-		try {
-			// skipcq: JS-0359 - Mission interfaces are discovered dynamically from mission ids.
-			return (require(`./interfaces/${missionId}`) as {
-				missionInterface: IMission;
-			}).missionInterface;
-		}
-		catch {
-			// skipcq: JS-0359 - Importing the base interface directly would be a cyclic import (DefaultInterface -> IMission -> Player -> MissionController).
-			return require("./DefaultInterface").missionInterface;
-		}
+		return MissionsController.missionInterfaces.get(missionId) ?? defaultMissionInterface;
 	}
 
 	/**

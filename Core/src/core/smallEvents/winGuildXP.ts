@@ -7,6 +7,7 @@ import { Guilds } from "../database/game/models/Guild";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { SmallEventWinGuildXPPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventWinGuildXPPacket";
 import { Maps } from "../maps/Maps";
+import { SmallEventDoNothingPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventDoNothingPacket";
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: async player => {
@@ -16,9 +17,11 @@ export const smallEventFuncs: SmallEventFuncs = {
 		const guild = await Guilds.getById(player.guildId);
 		return Boolean(guild && !guild.isAtMaxLevel());
 	},
-	executeSmallEvent: async (response, player): Promise<void> => {
+	executeSmallEvent: async (player, { response }): Promise<void> => {
 		const guild = await Guilds.getById(player.guildId);
 		if (!guild) {
+			// Only reachable when the event is forced, as canBeExecuted requires a guild
+			response.push(makePacket(SmallEventDoNothingPacket, {}));
 			return;
 		}
 		const xpWon = RandomUtils.crowniclesRandom.integer(

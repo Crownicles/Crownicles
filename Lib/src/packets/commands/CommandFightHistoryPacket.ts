@@ -43,11 +43,13 @@ export type PlayerFightHistoryItem = FightHistoryItemBase & {
 };
 
 /**
- * Fight against a king guard: always initiated by the player, no glory at stake
+ * Fight against a king guard: always initiated by the player, no glory at stake.
+ * The id of the guard is absent for the guards generated on the fly before the library existed
  */
 export type KingGuardFightHistoryItem = FightHistoryItemBase & {
 	kingGuard: {
 		level: number;
+		id?: number;
 	};
 };
 

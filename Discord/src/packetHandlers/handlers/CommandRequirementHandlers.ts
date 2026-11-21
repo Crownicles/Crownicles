@@ -2,7 +2,7 @@ import { packetHandler } from "../PacketHandler";
 import { RequirementEffectPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementEffectPacket";
 import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	effectsErrorTextValue, replyEphemeralErrorMessage
+	effectsErrorTextValue, replyEphemeralErrorMessage, replyEphemerally
 } from "../../utils/ErrorUtils";
 import { RequirementGuildNeededPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementGuildNeededPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
@@ -14,16 +14,14 @@ import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { RequirementWherePacket } from "../../../../Lib/src/packets/commands/requirements/RequirementWherePacket";
 import { RequirementOracleNotMetPacket } from "../../../../Lib/src/packets/commands/CommandBlessingPacket";
 import { MessagesUtils } from "../../utils/MessagesUtils";
-import { MessageFlags } from "discord-api-types/v10";
 import { DisplayUtils } from "../../utils/DisplayUtils";
-import { ButtonInteraction } from "discord.js";
 import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 
 /**
  * Interaction answered with an effect error, and whether its deferred reply belongs to that answer and can be replaced
  */
 type EffectReplyTarget = {
-	interaction: ButtonInteraction | CrowniclesInteraction | null;
+	interaction: CrowniclesInteraction | null;
 	ownsDeferredReply: boolean;
 };
 
@@ -55,16 +53,15 @@ export default class CommandRequirementHandlers {
 	 * the collector and is kept
 	 */
 	private static getEffectReplyTarget(context: PacketContext): EffectReplyTarget {
-		const clickId = context.discord!.buttonInteraction;
-		const buttonInteraction = clickId ? DiscordCache.getButtonInteraction(clickId) : null;
-		if (buttonInteraction) {
+		const buttonClick = MessagesUtils.getButtonClick(context);
+		if (buttonClick) {
 			return {
-				interaction: buttonInteraction, ownsDeferredReply: true
+				interaction: buttonClick, ownsDeferredReply: true
 			};
 		}
 		return {
 			interaction: DiscordCache.getInteraction(context.discord!.interaction),
-			ownsDeferredReply: !clickId
+			ownsDeferredReply: !context.discord!.buttonInteraction
 		};
 	}
 
@@ -79,20 +76,14 @@ export default class CommandRequirementHandlers {
 		if (!interaction) {
 			return;
 		}
-		if (ownsDeferredReply && interaction.deferred) {
-			await interaction.deleteReply();
-		}
-
-		// Without a bind, context is lost for "this"
-		await (interaction.replied || interaction.deferred ? interaction.followUp.bind(interaction) : interaction.reply.bind(interaction))({
+		await replyEphemerally(interaction, {
 			embeds: [
 				new CrowniclesEmbed()
 					.setErrorColor()
 					.formatAuthor(effectsText.title, MessagesUtils.getClickUser(context) ?? interaction.user)
 					.setDescription(effectsText.description)
-			],
-			flags: MessageFlags.Ephemeral
-		});
+			]
+		}, ownsDeferredReply);
 	}
 
 	@packetHandler(RequirementGuildNeededPacket)

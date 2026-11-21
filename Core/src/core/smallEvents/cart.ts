@@ -121,7 +121,9 @@ function generateRandomDestination(player: Player): CartResult {
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
-	executeSmallEvent: (response, player, context): void => {
+	executeSmallEvent: (player, {
+		response, context
+	}): void => {
 		const randomDestination = generateRandomDestination(player);
 
 		const collector = new ReactionCollectorCart(

@@ -108,8 +108,8 @@ function drawBossLadderLevel(params: {
 }
 
 /**
- * Draw the level of a PVE boss (or a king guard) for a player below LOW_LEVEL_PLAYER_THRESHOLD, from its ladder against it
- * @param params.role Role of the boss in the island trip, the king guards being middle bosses
+ * Draw the level of a PVE boss for a player below LOW_LEVEL_PLAYER_THRESHOLD, from its ladder against it
+ * @param params.role Role of the boss in the island trip
  */
 export function getLowLevelPveMonsterLevel(params: {
 	ladder: BossLadder;

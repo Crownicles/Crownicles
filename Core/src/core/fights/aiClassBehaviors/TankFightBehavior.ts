@@ -5,7 +5,7 @@ import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
-import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { PlayerBaseFighter } from "../fighter/PlayerBaseFighter";
 import {
 	canPlayShieldAttack, canStrikeWithShieldAttack, SHIELD_ATTACK_CHANCES
 } from "./ShieldAttackPacing";
@@ -18,7 +18,7 @@ const MAX_IGNORED_COUNTER_BREATH = 5;
  * @param me
  * @param opponent
  */
-export function shouldCounterAttack(me: AiPlayerFighter, opponent: AiPlayerFighter | RealPlayerFighter): boolean {
+export function shouldCounterAttack(me: AiPlayerFighter, opponent: PlayerBaseFighter): boolean {
 	const lastOpponentAction = opponent.getLastFightActionUsed();
 	if (!lastOpponentAction) {
 		return false;
@@ -37,7 +37,7 @@ class TankFightBehavior implements ClassBehavior {
 	private weakeningShieldAttacks = 0;
 
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
-		const opponent = fightView.fightController.getDefendingFighter() as AiPlayerFighter | RealPlayerFighter;
+		const opponent = fightView.fightController.getDefendingFighter() as PlayerBaseFighter;
 		const actions = FightConstants.FIGHT_ACTIONS.PLAYER;
 		const getAction = (actionId: string): FightAction => FightActionDataController.instance.getById(actionId)!;
 		const canUse = (actionId: string): boolean => me.getBreath() >= FightActionDataController.getFightActionBreathCost(actionId);

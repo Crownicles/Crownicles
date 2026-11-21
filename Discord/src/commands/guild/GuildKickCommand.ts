@@ -2,7 +2,9 @@ import { ICommand } from "../ICommand";
 import {
 	makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
+import {
+	CrowniclesInteraction, SendManner
+} from "../../messages/CrowniclesInteraction";
 import i18n from "../../translations/i18n";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { SlashCommandBuilder } from "@discordjs/builders";
@@ -19,9 +21,7 @@ import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { ReactionCollectorGuildKickPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildKick";
 import { PacketUtils } from "../../utils/PacketUtils";
-import {
-	sendErrorMessage, SendManner
-} from "../../utils/ErrorUtils";
+import { sendErrorMessage } from "../../utils/ErrorUtils";
 import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
 import { keycloakConfig } from "../../bot/CrowniclesShard";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";

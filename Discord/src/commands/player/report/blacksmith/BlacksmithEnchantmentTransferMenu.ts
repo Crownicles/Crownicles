@@ -1,20 +1,10 @@
 import {
-	ActionRowBuilder,
 	ButtonBuilder,
-	ButtonInteraction,
 	ButtonStyle,
-	ContainerBuilder,
-	SeparatorBuilder,
-	SeparatorSpacingSize,
-	TextDisplayBuilder
+	ContainerBuilder
 } from "discord.js";
-import {
-	CrowniclesNestedMenu,
-	CrowniclesNestedMenuCollector,
-	CrowniclesNestedMenuCollectorFactory
-} from "../../../../messages/CrowniclesNestedMenus";
+import { CrowniclesNestedMenu } from "../../../../messages/CrowniclesNestedMenus";
 import i18n from "../../../../translations/i18n";
-import { StringUtils } from "../../../../utils/StringUtils";
 import { DisplayUtils } from "../../../../utils/DisplayUtils";
 import {
 	ReactionCollectorBlacksmithEnchantmentTransferReaction,
@@ -24,19 +14,18 @@ import {
 	EnchantmentTransferSource, EnchantmentTransferTarget
 } from "../../../../../../Lib/src/types/EnchantmentTransfer";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
-import { sendInteractionNotForYou } from "../../../../utils/ErrorUtils";
-import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
-import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import { Language } from "../../../../../../Lib/src/Language";
 import { BlacksmithMenuIds } from "./BlacksmithMenuConstants";
-import type { BlacksmithMenuParams } from "./BlacksmithMenu";
+import { CityMenuParams } from "../ReportCityMenuTypes";
 import {
-	addCitySection, createStayInCityButton, handleStayInCityInteraction
-} from "../ReportCityMenu";
-import { ReportCityMenuIds } from "../ReportCityMenuConstants";
+	addCityNavigationRow, addSeparatedCitySection, buildCityMenuContainer, createCityBackButton
+} from "../CityMenuLayout";
+import {
+	CityMenuAction, createCityMenuCollector, createCityReactionAction
+} from "../CityMenuCollector";
 
 type TransferPage = {
-	params: BlacksmithMenuParams;
+	params: CityMenuParams;
 	source: EnchantmentTransferSource;
 };
 
@@ -52,7 +41,7 @@ function getEnchantmentTransferConfirmMenuId(sourceIndex: number, targetIndex: n
 	return `${getEnchantmentTransferSourceMenuId(sourceIndex)}_TARGET_${targetIndex}`;
 }
 
-function getEnchantmentTransfers(params: BlacksmithMenuParams): EnchantmentTransferSource[] {
+function getEnchantmentTransfers(params: CityMenuParams): EnchantmentTransferSource[] {
 	return (params.packet.data.data as ReactionCollectorCityData).blacksmith!.enchantmentTransfers;
 }
 
@@ -78,83 +67,36 @@ function isMatchingTransferReaction(
 }
 
 /**
- * Collector shared by every transfer page: each navigation button carries the id of the menu it opens
- * (restricted to the ones the page offers), and the confirm button sends the matching transfer reaction
+ * Send the transfer of the enchantment of the source onto the target
  */
-function createEnchantmentTransferCollector(
-	params: BlacksmithMenuParams,
-	reachableMenuIds: string[],
-	transfer?: Omit<TransferConfirmPage, "params">
-): CrowniclesNestedMenuCollectorFactory {
+function createTransferAction(page: TransferConfirmPage): CityMenuAction {
 	const {
-		context, interaction, packet, collectorTime
-	} = params;
-	const lng = interaction.userLanguage;
-	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
-		const collector = message.createMessageComponentCollector({ time: collectorTime });
-
-		collector.on("collect", async (buttonInteraction: ButtonInteraction) => {
-			if (buttonInteraction.user.id !== interaction.user.id) {
-				await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
-				return;
-			}
-
-			if (transfer && buttonInteraction.customId === BlacksmithMenuIds.CONFIRM_ENCHANTMENT_TRANSFER) {
-				await DiscordCollectorUtils.deferReply(buttonInteraction);
-				const reactionIndex = packet.reactions.findIndex(reaction => isMatchingTransferReaction(reaction, transfer.source, transfer.target));
-				if (reactionIndex === -1) {
-					CrowniclesLogger.error(`Blacksmith enchantment transfer reaction not found from slot ${transfer.source.slot} to slot ${transfer.target.slot}, category ${transfer.source.category}`);
-					await buttonInteraction.deleteReply();
-					return;
-				}
-				DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
-				return;
-			}
-
-			await DiscordCollectorUtils.deferUpdate(buttonInteraction);
-			if (buttonInteraction.customId === ReportCityMenuIds.STAY_IN_CITY) {
-				handleStayInCityInteraction(packet, context, buttonInteraction);
-			}
-			else if (reachableMenuIds.includes(buttonInteraction.customId)) {
-				await nestedMenus.changeMenu(buttonInteraction.customId);
-			}
-		});
-
-		return collector;
-	};
+		params, source, target
+	} = page;
+	return createCityReactionAction(params, {
+		isMatching: reaction => isMatchingTransferReaction(reaction, source, target),
+		notFoundError: `Blacksmith enchantment transfer reaction not found from slot ${source.slot} to slot ${target.slot}, category ${source.category}`
+	});
 }
 
-function buildTransferContainer(params: BlacksmithMenuParams, description: string): ContainerBuilder {
-	const lng = params.interaction.userLanguage;
-	return new ContainerBuilder()
-		.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(StringUtils.formatHeader(i18n.t("commands:report.city.blacksmith.enchantmentTransferTitle", {
-				lng,
-				pseudo: params.pseudo
-			}))),
-			new TextDisplayBuilder().setContent(description)
-		);
+/**
+ * Navigation buttons carrying the id of the menu they open: a transfer page only reaches the menus it offers
+ */
+function navigateToMenus(menuIds: string[]): ReadonlyMap<string, string> {
+	return new Map(menuIds.map(menuId => [menuId, menuId]));
 }
 
-function addNavigationRow(container: ContainerBuilder, lng: Language, buttons: ButtonBuilder[]): void {
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	container.addActionRowComponents(
-		new ActionRowBuilder<ButtonBuilder>().addComponents(...buttons, createStayInCityButton(lng))
-	);
-}
-
-function createBackButton(menuId: string, label: string): ButtonBuilder {
-	return new ButtonBuilder()
-		.setCustomId(menuId)
-		.setLabel(label)
-		.setEmoji(CrowniclesIcons.city.back)
-		.setStyle(ButtonStyle.Secondary);
+function buildTransferContainer(params: CityMenuParams, description: string): ContainerBuilder {
+	return buildCityMenuContainer(params, {
+		titleKey: "commands:report.city.blacksmith.enchantmentTransferTitle",
+		description
+	});
 }
 
 /**
  * First page: the enchanted equipments whose enchantment can be moved
  */
-function getEnchantmentTransferSourcesMenu(params: BlacksmithMenuParams): CrowniclesNestedMenu {
+function getEnchantmentTransferSourcesMenu(params: CityMenuParams): CrowniclesNestedMenu {
 	const lng = params.interaction.userLanguage;
 	const blacksmith = (params.packet.data.data as ReactionCollectorCityData).blacksmith!;
 	const container = buildTransferContainer(params, i18n.t("commands:report.city.blacksmith.enchantmentTransferSourceSelectDescription", {
@@ -164,8 +106,7 @@ function getEnchantmentTransferSourcesMenu(params: BlacksmithMenuParams): Crowni
 
 	const sourceMenuIds = blacksmith.enchantmentTransfers.map((source, sourceIndex) => {
 		const menuId = getEnchantmentTransferSourceMenuId(sourceIndex);
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		addCitySection({
+		addSeparatedCitySection({
 			container,
 			text: i18n.t("commands:report.city.blacksmith.enchantmentTransferSourcePreview", {
 				lng,
@@ -180,11 +121,11 @@ function getEnchantmentTransferSourcesMenu(params: BlacksmithMenuParams): Crowni
 		return menuId;
 	});
 
-	addNavigationRow(container, lng, [createBackButton(BlacksmithMenuIds.BLACKSMITH_MENU, i18n.t("commands:report.city.blacksmith.backToBlacksmith", { lng }))]);
+	addCityNavigationRow(container, lng, [createCityBackButton(BlacksmithMenuIds.BLACKSMITH_MENU, i18n.t("commands:report.city.blacksmith.backToBlacksmith", { lng }))]);
 
 	return {
 		containers: [container],
-		createCollector: createEnchantmentTransferCollector(params, [BlacksmithMenuIds.BLACKSMITH_MENU, ...sourceMenuIds])
+		createCollector: createCityMenuCollector(params, { menuIds: navigateToMenus([BlacksmithMenuIds.BLACKSMITH_MENU, ...sourceMenuIds]) })
 	};
 }
 
@@ -205,8 +146,7 @@ function getEnchantmentTransferTargetsMenu(page: TransferPage, sourceIndex: numb
 
 	const confirmMenuIds = source.targets.map((target, targetIndex) => {
 		const menuId = getEnchantmentTransferConfirmMenuId(sourceIndex, targetIndex);
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		addCitySection({
+		addSeparatedCitySection({
 			container,
 			text: i18n.t("commands:report.city.blacksmith.enchantmentTransferTargetPreview", {
 				lng,
@@ -220,11 +160,11 @@ function getEnchantmentTransferTargetsMenu(page: TransferPage, sourceIndex: numb
 		return menuId;
 	});
 
-	addNavigationRow(container, lng, [createBackButton(BlacksmithMenuIds.ENCHANTMENT_TRANSFER_MENU, i18n.t("commands:report.city.blacksmith.backToItems", { lng }))]);
+	addCityNavigationRow(container, lng, [createCityBackButton(BlacksmithMenuIds.ENCHANTMENT_TRANSFER_MENU, i18n.t("commands:report.city.blacksmith.backToItems", { lng }))]);
 
 	return {
 		containers: [container],
-		createCollector: createEnchantmentTransferCollector(params, [BlacksmithMenuIds.ENCHANTMENT_TRANSFER_MENU, ...confirmMenuIds])
+		createCollector: createCityMenuCollector(params, { menuIds: navigateToMenus([BlacksmithMenuIds.ENCHANTMENT_TRANSFER_MENU, ...confirmMenuIds]) })
 	};
 }
 
@@ -246,7 +186,7 @@ function getEnchantmentTransferConfirmMenu(page: TransferConfirmPage, sourceInde
 		cost: target.cost
 	}));
 
-	addNavigationRow(container, lng, [
+	addCityNavigationRow(container, lng, [
 		new ButtonBuilder()
 			.setCustomId(BlacksmithMenuIds.CONFIRM_ENCHANTMENT_TRANSFER)
 			.setLabel(i18n.t("commands:report.city.blacksmith.confirmEnchantmentTransfer", {
@@ -256,13 +196,14 @@ function getEnchantmentTransferConfirmMenu(page: TransferConfirmPage, sourceInde
 			.setStyle(target.canAfford ? ButtonStyle.Success : ButtonStyle.Secondary)
 			.setDisabled(!target.canAfford)
 			.setEmoji(CrowniclesIcons.city.blacksmith.enchantmentTransfer),
-		createBackButton(sourceMenuId, i18n.t("commands:report.city.blacksmith.backToItems", { lng }))
+		createCityBackButton(sourceMenuId, i18n.t("commands:report.city.blacksmith.backToItems", { lng }))
 	]);
 
 	return {
 		containers: [container],
-		createCollector: createEnchantmentTransferCollector(params, [sourceMenuId], {
-			source, target
+		createCollector: createCityMenuCollector(params, {
+			menuIds: navigateToMenus([sourceMenuId]),
+			actions: new Map([[BlacksmithMenuIds.CONFIRM_ENCHANTMENT_TRANSFER, createTransferAction(page)]])
 		})
 	};
 }
@@ -270,7 +211,7 @@ function getEnchantmentTransferConfirmMenu(page: TransferConfirmPage, sourceInde
 /**
  * Register every enchantment transfer page (sources, targets of each source, confirmation of each pair)
  */
-export function registerEnchantmentTransferMenus(params: BlacksmithMenuParams, menus: Map<string, CrowniclesNestedMenu>): void {
+export function registerEnchantmentTransferMenus(params: CityMenuParams, menus: Map<string, CrowniclesNestedMenu>): void {
 	const enchantmentTransfers = getEnchantmentTransfers(params);
 	if (enchantmentTransfers.length === 0) {
 		return;

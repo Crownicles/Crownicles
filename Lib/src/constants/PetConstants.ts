@@ -652,7 +652,8 @@ export abstract class PetConstants {
 	static readonly TAGS = {
 		FIRE: "fire",
 		FLYING: "flying",
-		AQUATIC: "aquatic"
+		AQUATIC: "aquatic",
+		NOCTURNAL: "nocturnal"
 	} as const;
 
 	static SEX = {
@@ -674,6 +675,8 @@ export type PostFightPetReactionType = typeof PetConstants.POST_FIGHT_REACTION_T
  * Type representing a pet food type
  */
 export type PetFood = typeof PetConstants.PET_FOOD[keyof typeof PetConstants.PET_FOOD];
+
+export type PetTag = typeof PetConstants.TAGS[keyof typeof PetConstants.TAGS];
 
 export enum PET_ENTITY_GIVE_RETURN {
 	NO_SLOT,

@@ -2,35 +2,30 @@ import {
 	PetAssistanceResult, PetAssistanceState
 } from "../../../../../../../Lib/src/types/PetAssistanceResult";
 import { PetAssistanceFunc } from "../../../../../data/PetAssistance";
-import { RealPlayerFighter } from "../../../fighter/RealPlayerFighter";
-import { AiPlayerFighter } from "../../../fighter/AiPlayerFighter";
-import { PetEntities } from "../../../../database/game/models/PetEntity";
+import { PlayerBaseFighter } from "../../../fighter/PlayerBaseFighter";
 import { PetConstants } from "../../../../../../../Lib/src/constants/PetConstants";
 import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 import { FightActionController } from "../../FightActionController";
 import { FightStatBuffed } from "../../../../../../../Lib/src/types/FightActionResult";
 import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/FightStatModifierOperation";
 
-const use: PetAssistanceFunc = async (fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
+const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
 	// Does nothing first turn.
 	if (turn <= 2) {
-		return null;
+		return Promise.resolve(null);
 	}
 
 	// 85 % of the time, nothing happens
 	if (RandomUtils.crowniclesRandom.bool(0.85)) {
-		return null;
+		return Promise.resolve(null);
 	}
 
 
-	if (opponent instanceof RealPlayerFighter || opponent instanceof AiPlayerFighter) {
-		// Test if the opponent has a mouse
-		const pet = await PetEntities.getById(opponent.player.petId);
-		if (pet?.typeId === PetConstants.PETS.MOUSE) {
-			return {
-				assistanceStatus: PetAssistanceState.AFRAID
-			};
-		}
+	// The elephant is afraid of a mouse taking part in the fight
+	if (opponent instanceof PlayerBaseFighter && opponent.pet?.typeId === PetConstants.PETS.MOUSE) {
+		return Promise.resolve({
+			assistanceStatus: PetAssistanceState.AFRAID
+		});
 	}
 
 	const lastAction = fighter.getLastFightActionUsed();

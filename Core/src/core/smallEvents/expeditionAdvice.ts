@@ -1,10 +1,11 @@
 /* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedPlayerAndMissions callback. */
-import { SmallEventFuncs } from "../../data/SmallEvent";
+import {
+	SmallEventExecutionContext, SmallEventFuncs
+} from "../../data/SmallEvent";
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../database/game/models/Player";
-import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import { PetEntities } from "../database/game/models/PetEntity";
 import { ExpeditionConstants } from "../../../../Lib/src/constants/ExpeditionConstants";
 import { PetUtils } from "../utils/PetUtils";
@@ -30,6 +31,8 @@ import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventCon
 import { MissionsController } from "../missions/MissionsController";
 import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
 import { BlessingManager } from "../blessings/BlessingManager";
+import { notifyQuestStepCompleted } from "../quests/Quests";
+import { QUEST_IDS } from "../../../../Lib/src/constants/QuestConstants";
 
 /**
  * Check if the small event can be executed for this player
@@ -275,6 +278,33 @@ async function handlePlayerWithTalisman(
 }
 
 /**
+ * Properties shared by every packet sent to a player who does not have the talisman yet
+ */
+type WithoutTalismanPacketData = Pick<SmallEventExpeditionAdvicePacket, "alreadyHasTalisman" | "talismanGiven" | "petInExpedition"> & {
+	encounterCount: number;
+};
+
+/**
+ * Tell Velanna's lore about the talisman during the first encounters. The first one starts the expedition talismans quest
+ */
+async function handleTalismanIntro(
+	response: CrowniclesPacket[],
+	player: Player,
+	basePacketData: WithoutTalismanPacketData
+): Promise<void> {
+	response.push(makePacket(SmallEventExpeditionAdvicePacket, {
+		...basePacketData,
+		interactionType: ExpeditionAdviceInteractionType.TALISMAN_INTRO
+	}));
+	if (basePacketData.encounterCount === 1) {
+		await notifyQuestStepCompleted(response, player, {
+			questId: QUEST_IDS.EXPEDITION_TALISMANS,
+			stepId: "meetVelanna"
+		});
+	}
+}
+
+/**
  * Handle the case when player doesn't have talisman yet
  */
 async function handlePlayerWithoutTalisman(
@@ -289,7 +319,7 @@ async function handlePlayerWithoutTalisman(
 	);
 
 	// Base packet properties for all cases when player doesn't have talisman
-	const basePacketData = {
+	const basePacketData: WithoutTalismanPacketData = {
 		alreadyHasTalisman: false,
 		talismanGiven: false,
 		petInExpedition: false,
@@ -301,10 +331,7 @@ async function handlePlayerWithoutTalisman(
 	 * Note: encounterCount already includes current encounter as it's logged before execution
 	 */
 	if (encounterCount <= ExpeditionConstants.TALISMAN_EVENT.TALISMAN_INTRO_ENCOUNTERS) {
-		response.push(makePacket(SmallEventExpeditionAdvicePacket, {
-			...basePacketData,
-			interactionType: ExpeditionAdviceInteractionType.TALISMAN_INTRO
-		}));
+		await handleTalismanIntro(response, player, basePacketData);
 		return;
 	}
 
@@ -349,18 +376,18 @@ async function handlePlayerWithoutTalisman(
 		petSex: conditionResult.petSex,
 		petNickname: conditionResult.petNickname
 	}));
+	await notifyQuestStepCompleted(response, player, {
+		questId: QUEST_IDS.EXPEDITION_TALISMANS,
+		stepId: "anchorTalisman"
+	});
 }
 
 /**
  * Execute the expedition advice small event
  */
-async function executeSmallEvent(
-	response: CrowniclesPacket[],
-	player: Player,
-	context: PacketContext,
-	_playerActiveObjects: PlayerActiveObjects,
-	_testArgs?: string[]
-): Promise<void> {
+async function executeSmallEvent(player: Player, {
+	response, context
+}: SmallEventExecutionContext): Promise<void> {
 	await MissionsController.update(player, response, { missionId: "meetVelanna" });
 
 	const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
@@ -372,7 +399,17 @@ async function executeSmallEvent(
 	}
 }
 
+/**
+ * Velanna is guaranteed to a player who fulfills every condition of the anchor talisman without having it yet,
+ * so that a player who prepared the talisman is not left at the mercy of the draw
+ */
+async function isVelannaGuaranteed(player: Player): Promise<boolean> {
+	return !(await PlayerTalismansManager.getOfPlayer(player.id)).hasTalisman
+		&& (await checkTalismanConditions(player)).conditionMet;
+}
+
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted,
-	executeSmallEvent
+	executeSmallEvent,
+	isGuaranteed: isVelannaGuaranteed
 };

@@ -1,5 +1,5 @@
 import { AiPlayerFighter } from "../fighter/AiPlayerFighter";
-import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { PlayerBaseFighter } from "../fighter/PlayerBaseFighter";
 import { FightActionDataController } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 
@@ -29,7 +29,7 @@ export function hasBreathToSpare(me: AiPlayerFighter, usedUltimateAttacks: numbe
  * Check if the opponent has just started resting or charging its ultimate, which a ram can break
  * @param opponent
  */
-function isOpponentPreparing(opponent: RealPlayerFighter | AiPlayerFighter): boolean {
+function isOpponentPreparing(opponent: PlayerBaseFighter): boolean {
 	const opponentLastActionId = opponent.getLastFightActionUsed()?.id;
 	return opponentLastActionId === FightConstants.FIGHT_ACTIONS.PLAYER.RESTING
 		|| opponentLastActionId === FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_ULTIMATE_ATTACK;
@@ -42,7 +42,7 @@ function isOpponentPreparing(opponent: RealPlayerFighter | AiPlayerFighter): boo
  * @param me
  * @param opponent
  */
-export function shouldUseRamAttack(me: AiPlayerFighter, opponent: RealPlayerFighter | AiPlayerFighter): boolean {
+export function shouldUseRamAttack(me: AiPlayerFighter, opponent: PlayerBaseFighter): boolean {
 	const ramAttack = FightConstants.FIGHT_ACTIONS.PLAYER.RAM_ATTACK;
 	if (me.getBreath() < getBreathCost(ramAttack) || me.getEnergy() < me.getMaxEnergy() * 0.15) {
 		return false;

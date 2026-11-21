@@ -5,7 +5,7 @@ import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
-import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { PlayerBaseFighter } from "../fighter/PlayerBaseFighter";
 import { getUsedGodMoves } from "../FightController";
 
 // Rests heal less after this many uses, so the knight stops resting
@@ -21,7 +21,7 @@ function canAfford(me: AiPlayerFighter, actionId: string): boolean {
 /**
  * Quick attack when faster than the opponent and affordable, simple attack otherwise
  */
-function quickOrSimpleAttack(me: AiPlayerFighter, opponent: AiPlayerFighter | RealPlayerFighter): FightAction {
+function quickOrSimpleAttack(me: AiPlayerFighter, opponent: PlayerBaseFighter): FightAction {
 	const actions = FightConstants.FIGHT_ACTIONS.PLAYER;
 	const useQuick = me.getSpeed() > opponent.getSpeed() && canAfford(me, actions.QUICK_ATTACK);
 	return FightActionDataController.instance.getById(useQuick ? actions.QUICK_ATTACK : actions.SIMPLE_ATTACK)!;
@@ -45,19 +45,19 @@ export abstract class RestingKnightFightBehavior implements ClassBehavior {
 	 * @param opponent
 	 * @param turn
 	 */
-	protected abstract shouldBless(me: AiPlayerFighter, opponent: AiPlayerFighter | RealPlayerFighter, turn: number): boolean;
+	protected abstract shouldBless(me: AiPlayerFighter, opponent: PlayerBaseFighter, turn: number): boolean;
 
 	/**
 	 * Check if the knight should rest no matter what, to stall a fight it cannot win anymore
 	 * @param _me
 	 * @param _opponent
 	 */
-	protected shouldStall(_me: AiPlayerFighter, _opponent: AiPlayerFighter | RealPlayerFighter): boolean {
+	protected shouldStall(_me: AiPlayerFighter, _opponent: PlayerBaseFighter): boolean {
 		return false;
 	}
 
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
-		const opponent = fightView.fightController.getDefendingFighter() as AiPlayerFighter | RealPlayerFighter;
+		const opponent = fightView.fightController.getDefendingFighter() as PlayerBaseFighter;
 		const actions = FightConstants.FIGHT_ACTIONS.PLAYER;
 		const getAction = (actionId: string): FightAction => FightActionDataController.instance.getById(actionId)!;
 
@@ -84,7 +84,7 @@ export abstract class RestingKnightFightBehavior implements ClassBehavior {
 	/**
 	 * The benediction is still available in the fight, affordable, and the personality wants it now
 	 */
-	private canBlessNow(me: AiPlayerFighter, opponent: AiPlayerFighter | RealPlayerFighter, turn: number): boolean {
+	private canBlessNow(me: AiPlayerFighter, opponent: PlayerBaseFighter, turn: number): boolean {
 		return getUsedGodMoves(me, opponent) < 1
 			&& canAfford(me, FightConstants.FIGHT_ACTIONS.PLAYER.BENEDICTION)
 			&& this.shouldBless(me, opponent, turn);
@@ -93,7 +93,7 @@ export abstract class RestingKnightFightBehavior implements ClassBehavior {
 	/**
 	 * Rest when hurt enough, only if the breath regenerated meanwhile allows the heavy attack right after
 	 */
-	private shouldRestBeforeHeavyAttack(me: AiPlayerFighter, opponent: AiPlayerFighter | RealPlayerFighter): boolean {
+	private shouldRestBeforeHeavyAttack(me: AiPlayerFighter, opponent: PlayerBaseFighter): boolean {
 		const heavyAttackCost = FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.HEAVY_ATTACK);
 		const restWillPayOff = me.getBreath() + me.getRegenBreath() >= heavyAttackCost && opponent.getEnergy() > MIN_OPPONENT_ENERGY_TO_REST;
 		return me.getEnergy() < me.getMaxEnergy() * this.restEnergyRatio

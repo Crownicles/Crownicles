@@ -2738,11 +2738,17 @@
         "paidAccepted": [
           "Théobald te muestra una semilla que examina a la luz. Tras pagar **{{cost}} {emote:unitValues.money}**, deposita cuidadosamente esta **semilla** {emote:smallEvents.gardener} en su bolsa."
         ],
-        "moon": [
-          "Théobald mira al cielo nocturno y sonríe a la luz de la luna. Saca con cuidado una semilla de su alforja, murmurando que esta planta sólo podrá confiársele cuando haya suficiente luz de luna. Recibes una **semilla** {emote:smallEvents.gardener}."
-        ],
         "night": [
           "Théobald escruta el cielo cada vez más oscuro con satisfacción. La noche es el momento ideal para confiar esta semilla, ya que la planta necesita oscuridad para florecer. Recibes una **semilla** {emote:smallEvents.gardener}."
+        ],
+        "flyingPet": [
+          "Théobald levanta la vista hacia tu mascota voladora y sonríe. El musgo lunar solo crece en las rocas más altas, donde solo una criatura alada puede llegar a recogerlo. Te entrega una **semilla** {emote:smallEvents.gardener}, seguro de que estará en buenas alas."
+        ],
+        "nocturnalPet": [
+          "El jardinero se fija en los ojos brillantes de tu mascota nocturna y asiente con la cabeza en señal de aprobación. Un compañero capaz de olfatear setas en la oscuridad sabrá cuidar bien de esta planta. Recibes una **semilla** {emote:smallEvents.gardener}."
+        ],
+        "innNight": [
+          "Théobald se fija en tu aspecto descansado y adivina que has pasado la noche en la posada. Quienes han dormido bajo la luna saben lo que la noche aporta a las plantas: te entrega una **semilla** {emote:smallEvents.gardener}."
         ],
         "herbivorePet": [
           "El jardinero mira a tu mascota herbívora con admiración, impresionado por el evidente vínculo que os une. Solo aquellos que cuidan de la naturaleza merecen una planta como esta\", dice, entregándote una **semilla** {emote:smallEvents.gardener}."
@@ -2781,12 +2787,12 @@
           "Théobald sacude la cabeza. La próxima semilla necesita un compañero cercano a la naturaleza. Vuelve con un **familiar** herbívoro que hayas **domado completamente**."
         ],
         "needNight": [
-          "Théobald mira hacia el sol, aún alto en el cielo, y suspira. La próxima semilla sólo puede ofrecerse al **anochecer**. Vuelve cuando el sol se haya puesto.",
-          "El jardinero mira al cielo luminoso y sacude la cabeza. Esta semilla en particular sólo se refugia en la **oscuridad de la noche**."
+          "Teobaldo mira al cielo luminoso y suspira: la seta nocturna solo se encuentra en la oscuridad. Solo se lo confía a un aventurero acompañado de un **familiar nocturno**, que haya **pasado la noche en la posada** en las {{innNightHours}} últimas horas, o con quien se cruce **al caer la noche**.",
+          "El jardinero guarda la semilla de seta nocturna con pesar. Para conseguirla, hay que volver con una **mascota nocturna** capaz de olfatear las setas en la oscuridad, tras pasar una **noche en la posada** de menos de {{innNightHours}} horas, o simplemente **por la noche**."
         ],
         "needMoonlight": [
-          "El jardinero levanta la vista decepcionado. La **luna no es lo bastante visible** para confiar esta semilla. Vuelve cuando brille más en el cielo nocturno.",
-          "Théobald entornó los ojos hacia el cielo. Esta semilla requiere **poderosa luz de luna** para ser ofrecida. Vuelve en una noche más clara."
+          "Teobaldo observa el cielo con decepción: el musgo lunar solo crece en las rocas más altas, donde la luna brilla con más intensidad. Solo se la confía a un aventurero acompañado de un **familiar volador**, que haya **pasado la noche en la posada** en las {{innNightHours}} últimas horas, o con quien se cruce **al caer la noche**.",
+          "El jardinero guarda la semilla de musgo lunar con pesar. Para conseguirla, hay que volver con una **mascota voladora** capaz de recogerla, tras pasar una **noche en la posada** de menos de {{innNightHours}} horas, o simplemente **por la noche**."
         ],
         "needFireAffinity": [
           "Théobald niega con la cabeza. La siguiente semilla requiere una afinidad con el fuego. Tendríais que ser **mago**, tener un **familiar vinculado al fuego** o llevar un **equipo forjado en las llamas**.",
@@ -2851,6 +2857,16 @@
         "El jardinero, incapaz de darte semillas, te ofrece generosamente una de sus plantas como recuerdo de vuestro encuentro:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**"
       ],
       "plantSentToHomeStorage": "{emote:city.homeUpgrades.chest} Apenas la has cogido, la planta desaparece con un ligero destello: ha pasado al cofre de tu casa.",
+      "consolation": {
+        "plant": [
+          "Para que no os vayáis con las manos vacías, Théobald os regala una de sus plantas:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
+          "A la espera de vuestro próximo encuentro, el jardinero te entrega una planta de su carrito:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**"
+        ],
+        "material": [
+          "Para que no os vayáis con las manos vacías, Théobald os regala un material que ha desenterrado en su jardín:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**",
+          "A la espera de vuestro próximo encuentro, el jardinero te entrega un material que no utiliza:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**"
+        ]
+      },
       "material": [
         "Théobald rebusca en su bolsa y saca un material que ha encontrado removiendo la tierra de su jardín. Te lo ofrece con una sonrisa benévola:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**",
         "El jardinero saca de su bolsillo un material que ha desenterrado mientras cavaba esta mañana. Te lo entrega, explicándote que no le sirve:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**"

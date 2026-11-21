@@ -48,7 +48,9 @@ describe("pet small event", () => {
 		});
 		const response = [];
 
-		await smallEventFuncs.executeSmallEvent(response, player, {} as PacketContext);
+		await smallEventFuncs.executeSmallEvent(player, {
+			response, context: {} as PacketContext, playerActiveObjects: {} as never
+		});
 
 		expect(petEntity.destroy).toHaveBeenCalledOnce();
 		expect(player.petId).toBeNull();

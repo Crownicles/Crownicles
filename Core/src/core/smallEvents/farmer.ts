@@ -11,9 +11,7 @@ import { giveFoodToGuild } from "../utils/FoodUtils";
 import {
 	generateRandomItem, giveItemToPlayer
 } from "../utils/ItemUtils";
-import {
-	CrowniclesPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/CrowniclesPacket";
+import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventFarmerPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventFarmerPacket";
 import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
@@ -64,7 +62,9 @@ export const smallEventFuncs: SmallEventFuncs = {
 		}
 		return await PlayerSmallEvents.playerSmallEventCount(player.id, SmallEventConstants.UNIQUE_EVENT_IDS.FARMER) === 0;
 	},
-	executeSmallEvent: async (response: CrowniclesPacket[], player, context: PacketContext): Promise<void> => {
+	executeSmallEvent: async (player, {
+		response, context
+	}): Promise<void> => {
 		let guild;
 		try {
 			guild = await Guilds.getById(player.guildId);

@@ -11,9 +11,12 @@ import { FightAction } from "../../../data/FightAction";
 import {
 	FightConstants, FightRole
 } from "../../../../../Lib/src/constants/FightConstants";
-import { PlayerActiveObjects } from "../../database/game/models/PlayerActiveObjects";
+import {
+	EquippedMainItemSlot, PlayerActiveObjects
+} from "../../database/game/models/PlayerActiveObjects";
 import { EnchantmentUtils } from "../../utils/EnchantmentUtils";
 import { EnchantmentConstants } from "../../../../../Lib/src/constants/EnchantmentConstants";
+import { StatValues } from "../../../../../Lib/src/types/StatValues";
 
 /**
  * Base class for player fighters (human-controlled or AI)
@@ -27,6 +30,12 @@ export abstract class PlayerBaseFighter extends Fighter {
 	public metallicItemCount = 0;
 
 	protected fightRole: FightRole = FightConstants.FIGHT_ROLES.ATTACKER;
+
+	// Equipment the fight stats were loaded with: the gear removed during the fight is computed from it
+	private loadedEquipment?: {
+		activeObjects: PlayerActiveObjects;
+		includePotion: boolean;
+	};
 
 	/**
 	 * @param player
@@ -46,10 +55,18 @@ export abstract class PlayerBaseFighter extends Fighter {
 	}
 
 	/**
-	 * Get the weapon, armor, potion and object currently equipped by the fighter
+	 * Get the share of the fight stats the equipped weapon or armor provides, enchantments and rounding included,
+	 * from the equipment the stats were loaded with, or `null` while the stats are not loaded
+	 * @param slot
 	 */
-	public async getMainActiveObjects(): Promise<PlayerActiveObjects> {
-		return await InventorySlots.getMainSlotsItems(this.player.id);
+	public getEquippedMainItemStatsContribution(slot: EquippedMainItemSlot): StatValues | null {
+		if (!this.loadedEquipment) {
+			return null;
+		}
+		return this.player.getMainItemStatsContribution(this.loadedEquipment.activeObjects, slot, {
+			includePotion: this.loadedEquipment.includePotion,
+			level: this.level
+		});
 	}
 
 	/**
@@ -94,9 +111,15 @@ export abstract class PlayerBaseFighter extends Fighter {
 		const {
 			player, stats, level
 		} = this;
-		stats.attack = player.getCumulativeAttack(playerActiveObjects, includePotion, level);
-		stats.defense = player.getCumulativeDefense(playerActiveObjects, includePotion, level);
-		stats.speed = player.getCumulativeSpeed(playerActiveObjects, includePotion, level);
+		const cumulativeStats = player.getCumulativeStats(playerActiveObjects, {
+			includePotion, level
+		});
+		stats.attack = cumulativeStats.attack;
+		stats.defense = cumulativeStats.defense;
+		stats.speed = cumulativeStats.speed;
+		this.loadedEquipment = {
+			activeObjects: playerActiveObjects, includePotion
+		};
 		stats.breath = player.getBaseBreath(playerActiveObjects);
 		stats.maxBreath = player.getMaxBreath(playerActiveObjects);
 		stats.breathRegen = player.getBreathRegen();

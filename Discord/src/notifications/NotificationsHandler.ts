@@ -28,6 +28,8 @@ import { GuildStatusChangeNotificationPacket } from "../../../Lib/src/packets/no
 import { EnergyFullNotificationPacket } from "../../../Lib/src/packets/notifications/EnergyFullNotificationPacket";
 import { DailyBonusNotificationPacket } from "../../../Lib/src/packets/notifications/DailyBonusNotificationPacket";
 import { ExpeditionFinishedNotificationPacket } from "../../../Lib/src/packets/notifications/ExpeditionFinishedNotificationPacket";
+import { GardenPlantReadyNotificationPacket } from "../../../Lib/src/packets/notifications/GardenPlantReadyNotificationPacket";
+import { GardenAllPlantsReadyNotificationPacket } from "../../../Lib/src/packets/notifications/GardenAllPlantsReadyNotificationPacket";
 import { GDPRExportCompleteNotificationPacket } from "../../../Lib/src/packets/notifications/GDPRExportCompleteNotificationPacket";
 import { SexTypeShort } from "../../../Lib/src/constants/StringConstants";
 import { ZipArchive } from "archiver";
@@ -189,6 +191,21 @@ export abstract class NotificationsHandler {
 					petDisplay: `${petIcon} **${petName}**`
 				});
 				notificationType = NotificationsTypes.PET_EXPEDITION;
+				break;
+			}
+			case GardenPlantReadyNotificationPacket.name: {
+				const packet = notification.packet as GardenPlantReadyNotificationPacket;
+				notificationContent = i18n.t("bot:notificationGardenPlantReady", {
+					lng,
+					count: packet.plantIds.length,
+					plants: packet.plantIds.map(plantId => DisplayUtils.getPlantDisplay(plantId, lng)).join(", ")
+				});
+				notificationType = NotificationsTypes.GARDEN_PLANT_READY;
+				break;
+			}
+			case GardenAllPlantsReadyNotificationPacket.name: {
+				notificationContent = i18n.t("bot:notificationGardenAllPlantsReady", { lng });
+				notificationType = NotificationsTypes.GARDEN_ALL_PLANTS_READY;
 				break;
 			}
 			case GDPRExportCompleteNotificationPacket.name: {

@@ -478,7 +478,7 @@
         "description": "Utilizzare questo comando per sfidare altri giocatori.\nLe battaglie si svolgono turno per turno. A ogni turno si può scegliere un'azione da eseguire.\n\nPer ulteriori informazioni, consultare la pagina della guida: https://guide.crownicles.com/notions-principale/combats."
       },
       "FIGHT_HISTORY": {
-        "description": "Mostra la cronologia dei tuoi ultimi combattimenti: l'avversario affrontato, il risultato e l'andamento della gloria e della classifica di ciascun combattente. Se hai già affrontato una guardia del re, il pulsante **Guardie del re** mostra il tuo record contro le guardie, la tua posizione in classifica e l'albo d'onore del regno."
+        "description": "Mostra la cronologia dei tuoi ultimi combattimenti: l'avversario affrontato, il risultato e l'andamento della gloria e della classifica di ciascun combattente. Se hai già affrontato una guardia del re, il pulsante **Guardie del re** mostra la guardia più forte che hai sconfitto, la tua posizione in classifica e l'albo d'onore del regno."
       },
       "FRIENDLY_FIGHT": {
         "description": "Consente di sfidare un altro giocatore, scelto menzionandolo o in base alla sua posizione in classifica, in un combattimento amichevole. Il giocatore sfidato è controllato da un’IA. Questo combattimento non ha alcuna conseguenza: nessuna gloria, nessuna ricompensa, nessuna perdita di energia e nessun avanzamento nella missione. Il livello di entrambi i combattenti è limitato a {{friendlyFightLevelCap}} : un giocatore di livello inferiore mantiene il proprio livello."
@@ -2327,7 +2327,9 @@
       "guildStatusChange": "Cambio di status all'interno della gilda",
       "energy": "Energia rigenerata",
       "dailyBonus": "Bonus giornaliero",
-      "petExpedition": "Spedizione di animali domestici completata"
+      "petExpedition": "Spedizione di animali domestici completata",
+      "gardenPlantReady": "Pianta da giardino pronta per essere raccolta",
+      "gardenAllPlantsReady": "Tutte le piante del giardino pronte per essere raccolte"
     },
     "enableDisable": "Abilitazione/Disabilitazione",
     "sendLocationField": "Indirizzo di consegna :",
@@ -2347,15 +2349,106 @@
     "off": "Il bot è stato rilasciato con successo dalla manutenzione."
   },
   "missions": {
+    "pages": {
+      "missions": "Missione",
+      "kingChallenge": "La sfida del re",
+      "quests": "Missioni"
+    },
     "kingChallenge": {
-      "button": "La sfida del re",
-      "backButton": "Indietro",
       "title": "La sfida del re di {{pseudo}}",
       "description": "Ogni lunedì, il re lancia una nuova sfida agli avventurieri del regno e premia coloro che la superano.",
       "header": "{emote:kingChallenge.icon} **Sfida del re ({{tier}}/{{tierCount}})**",
       "nextTier": "Guadagna {{objective, number}} {emote:unitValues.score} questa settimana per superare il livello {{nextTier}} (scade {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}",
       "completed": "Avete superato la sfida del re fino all'ultimo livello! Verrà lanciata una nuova sfida {{time}}.",
       "tier": "{emote:kingChallenge.{{status}}} Livello {{tier}}: {{threshold, number}} {emote:unitValues.score} ({{rewards}})"
+    },
+    "quests": {
+      "title": "Missioni di {{pseudo}}",
+      "description": "Le missioni ripercorrono le grandi scoperte che attendono gli avventurieri del regno. Di per sé non offrono alcuna ricompensa: ogni fase viene già ricompensata lungo il percorso.",
+      "questHeader": "{{icon}} **{{name}}**",
+      "progression_one": "{{progressionBar}} {{count}} tappa completata su {{max}}",
+      "progression_other": "{{progressionBar}} {{count}} tappe completate su {{max}}",
+      "currentStep": "{emote:quests.stepCurrent} **Fase {{stepNumber}}** : {{label}}\n{{hint}}",
+      "noOngoingQuest": "Non hai nessuna missione in corso. Man mano che avanzi nelle tue avventure nel regno, scoprirai nuove missioni.",
+      "options": {
+        "quests": "Missioni in corso ({{count}})",
+        "completedQuests": "Missioni completate ({{count}})"
+      },
+      "completedTitle": "Missioni completate di {{pseudo}}",
+      "completedQuest": "{{icon}} **{{name}}** — {emote:quests.completed} {{max}}/{{max}} passaggi",
+      "noCompletedQuest": "Non c'è ancora nessuna missione completata. Le missioni completate vengono salvate qui.",
+      "list": {
+        "expeditionTalismans": {
+          "name": "I talismani da spedizione",
+          "icon": "{emote:expedition.talisman}",
+          "description": "Gli spiriti familiari più esperti possono esplorare da soli terre lontane, a condizione di essere legati al proprio padrone tramite artefatti ancestrali. Velanna e Talvar finiscono sempre per incrociare il cammino degli avventurieri che sono pronti.",
+          "steps": {
+            "meetVelanna": {
+              "label": "Incontrare Velanna",
+              "hint": "*Una guerriera sfigurata a volte percorre le strade del continente e si interessa da vicino agli spiriti guida di coloro che incontra.*"
+            },
+            "anchorTalisman": {
+              "label": "Ottenere il $t(models:talisman.anchor)",
+              "hint": "Velanna te lo affiderà se soddisfi i seguenti requisiti:\n• Livello minimo {{level}}\n• Membro di una gilda\n• Un famiglio sazio e docile\n• Un famiglio già presentato a Talvar"
+            },
+            "successfulExpedition": {
+              "label": "Come organizzare una spedizione di successo",
+              "hint": "*Il $t(models:talisman.anchor) consente di inviare il proprio famiglio ad esplorare terre lontane tramite il comando {command:pet}.*"
+            },
+            "cloneTalisman": {
+              "label": "Ottenere il $t(models:talisman.clone)",
+              "hint": "*Si vocifera che in alcune regioni sia sepolto un manufatto leggendario, che solo un famiglio in spedizione potrebbe portare alla luce.*"
+            }
+          }
+        },
+        "seeds": {
+          "name": "I semi del giardiniere",
+          "icon": "{emote:city.gardenStatus.seed}",
+          "description": "Un giardiniere itinerante affida i suoi semi più rari agli avventurieri che sono riusciti a far crescere quelli precedenti. Finisce sempre per incrociare, lungo i sentieri del bosco, il cammino di coloro che sono pronti a ricevere quelli successivi.",
+          "steps": {
+            "commonHerb": {
+              "label": "Piantare {emote:plants.1} $t(models:plants.1)",
+              "hint": "• Incontrare Théobald, il giardiniere, su una strada forestale\n• Livello minimo {{level}}\n• Un giardino nella vostra abitazione dove piantarla"
+            },
+            "goldenClover": {
+              "label": "Piantare {emote:plants.2} $t(models:plants.2)",
+              "hint": "• Livello {{level}} minimo\n• Prezzo: {{price, number}} {emote:unitValues.money}"
+            },
+            "lunarMoss": {
+              "label": "Piantare {emote:plants.3} $t(models:plants.3)",
+              "hint": "• Livello minimo {{level}}\n• A scelta: un **familiare volante**, una **notte in locanda** di durata inferiore a {{innNightHours}} ore, oppure un **incontro notturno** ({{nightStart}} ore – {{nightEnd}} ore)"
+            },
+            "ironRoot": {
+              "label": "Piantare {emote:plants.4} $t(models:plants.4)",
+              "hint": "• Livello {{level}} minimo\n• Prezzo: {{price, number}} {emote:unitValues.money}"
+            },
+            "nightMushroom": {
+              "label": "Piantare {emote:plants.5} $t(models:plants.5)",
+              "hint": "• Livello minimo {{level}}\n• A scelta: un **familiare notturno**, una **notte in locanda** di durata inferiore a {{innNightHours}} ore, oppure un **incontro notturno** ({{nightStart}} ore – {{nightEnd}} ore)"
+            },
+            "venomousLeaf": {
+              "label": "Piantare {emote:plants.6} $t(models:plants.6)",
+              "hint": "• Livello minimo {{level}}\n• Un **animale da compagnia erbivoro** addestrato"
+            },
+            "fireBulb": {
+              "label": "Piantare {emote:plants.7} $t(models:plants.7)",
+              "hint": "• Livello minimo {{level}}\n• A scelta: essere un **mago**, avere un **familiare del fuoco** o indossare un **equipaggiamento del fuoco**"
+            },
+            "meatPlant": {
+              "label": "Piantare {emote:plants.8} $t(models:plants.8)",
+              "hint": "• Livello minimo {{level}}\n• Un **familiare carnivoro** di rarità $t(items:rarities.{{rarity}}) o superiore"
+            },
+            "crystalFlower": {
+              "label": "Piantare {emote:plants.9} $t(models:plants.9)",
+              "hint": "• Livello {{level}} minimo\n• Prezzo: {{price, number}} {emote:unitValues.money}"
+            },
+            "ancientTree": {
+              "label": "Piantare {emote:plants.10} $t(models:plants.10)",
+              "hint": "• Livello minimo {{level}}\n• Un **familiare erbivoro** addestrato di rarità $t(items:rarities.{{rarity}}) o superiore"
+            }
+          }
+        }
+      }
     },
     "title": "{{pseudo}}",
     "subcategories": {
@@ -2688,11 +2781,14 @@
       ]
     },
     "kingGuard": {
-      "name": "Guardia del re",
-      "recap": {
-        "win": "Non c'era nessun avversario disponibile: {{player}} ha affrontato una guardia del re e l'ha sconfitto. In questo combattimento non c'era in palio alcuna gloria.",
-        "draw": "Non c'era nessun avversario disponibile: {{player}} ha affrontato una guardia del re senza riuscire a spuntarla. In questo combattimento non c'era in palio alcuna gloria.",
-        "loss": "Non c'era nessun avversario disponibile: {{player}} ha affrontato una guardia del re ed è stato sconfitto. In questo combattimento non c'era in palio alcuna gloria."
+      "displayName": "Guardia {{name}}",
+      "unnamed": "una guardia del re",
+      "outcome": {
+        "win": "Non c'era nessun avversario disponibile: {{player}} ha affrontato {{guard}}, guardia del re, e lo ha sconfitto. In questo combattimento non c'era in palio alcuna gloria.",
+        "win_female": "Non c'era nessun avversario disponibile: {{player}} ha affrontato {{guard}}, guardia del re, e l'ha sconfitta. In questo combattimento non c'era in palio alcuna gloria.",
+        "draw": "Non c'era nessun avversario disponibile: {{player}} ha affrontato {{guard}}, guardia del re, senza riuscire a spuntarla. In questo combattimento non c'era in palio alcuna gloria.",
+        "draw_female": "Non essendoci avversari disponibili, {{player}} ha affrontato {{guard}}, guardia del re, senza riuscire a spuntarla. In questo scontro non era in palio alcuna gloria.",
+        "loss": "Non c'era nessun avversario disponibile: {{player}} ha affrontato {{guard}}, guardia del re, ed è stato sconfitto. In questo combattimento non c'era in palio alcuna gloria."
       }
     }
   },
@@ -3017,7 +3113,7 @@
     "noHistory": "Non hai ancora nessun combattimento nella tua storia.",
     "title": "{{pseudo}}La storia dei combattimenti",
     "historyLine": "{{date}}\n{{attackSentence}}\n**Risultato :** {{resultSentence}}\n**La tua gloria:** {emote:unitValues.glory} {{meInitialGlory, number}} -> {{meFinalGlory, number}}{{meLeagueChange}}\n**Gloria opposta :** {emote:unitValues.glory} {{opponentInitialGlory, number}} -> {{opponentFinalGlory, number}}",
-    "kingGuardHistoryLine": "{{date}}\n{emote:fightCommand.crossedSwords} Non c'erano avversari disponibili: hai affrontato una **guardia del re** di livello {{guardLevel}} ({emote:classes.{{guardClassId}}} $t(models:classes.{{guardClassId}}))\n**Risultato:** {{resultSentence}}\n**Gloria:** {emote:unitValues.glory} non era in gioco alcuna gloria",
+    "kingGuardFightLine": "{{date}}\n{emote:fightCommand.crossedSwords} Non c'erano avversari disponibili: hai affrontato **{{guard}}** di livello {{guardLevel}} ({emote:classes.{{guardClassId}}} $t(models:classes.{{guardClassId}}))\n**Risultato:** {{resultSentence}}\n**Gloria:** {emote:unitValues.glory} non era in gioco alcuna gloria",
     "attackSentence": {
       "attacker": "{emote:fightCommand.crossedSwords} Hai attaccato **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))",
       "defender": "{emote:fightCommand.shield} Sei stato attaccato da **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))"
@@ -3035,14 +3131,15 @@
       "openButton": "Guardie del re",
       "backButton": "Cronologia",
       "title": "{emote:fightCommand.crossedSwords} Di fronte alle guardie del re",
-      "record": "**Il tuo record:** guardia di livello {{level}} sconfitto{{aboveLevel}}",
+      "bestDefeatedGuard": "**Miglior guardiano sconfitto:** {{guard}} ({emote:classes.{{classId}}} $t(models:classes.{{classId}}), liv. {{level}}){{aboveLevel}}",
+      "bestDefeatedGuardHint": "*La fama delle guardie aumenta o diminuisce man mano che combattono: la tua guardia migliore, una volta sconfitta, è quella che oggi risulta la più temibile tra quelle che hai battuto.*",
       "aboveLevel_one": ", {{count}} un livello superiore al vostro",
       "aboveLevel_other": ", {{count}} livelli superiori al vostro",
-      "noRecord": "**Il tuo record:** nessun guardia sconfitta finora",
-      "progress": "**Record battuti:** {{recordsBroken, number}} | **Classifica:** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
+      "noDefeatedGuard": "**Miglior guardia sconfitta:** nessuna guardia sconfitta per il momento",
+      "ranking": "**Classifica:** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
       "tally": "**Bilancio:** {emote:fightHistory.won} Vittorie: {{won, number}} · {emote:fightHistory.lost} Sconfitte: {{lost, number}} · {emote:fightHistory.draw} Pareggi: {{draw, number}}",
       "leaderboardTitle": "{emote:other.crown} **Albo d'onore della guardia**",
-      "leaderboardLine": "{{badge}} {{rank, number}}. **{{name}}**: livello di guardia {{level}}",
+      "leaderboardEntry": "{{badge}} {{rank, number}}. **{{name}}** : {{guard}} {emote:classes.{{classId}}}, liv. {{level}}",
       "you": "Voi"
     }
   },

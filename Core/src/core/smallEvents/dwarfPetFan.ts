@@ -21,6 +21,7 @@ import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { PetUtils } from "../utils/PetUtils";
 import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 import { BlessingManager } from "../blessings/BlessingManager";
+import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
 
 /**
  * Return true if the player has a pet AND the pet is not feisty AND the dwarf never saw this pet from it
@@ -28,7 +29,7 @@ import { BlessingManager } from "../blessings/BlessingManager";
  * @param player
  * @param petEntity
  */
-async function canContinueSmallEvent(response: CrowniclesPacket[], player: Player, petEntity: PetEntity): Promise<boolean> {
+async function canContinueSmallEvent(response: CrowniclesPacket[], player: Player, petEntity: PetEntity | null): Promise<boolean> {
 	// Check if the player has shown all the pets
 	if (await DwarfPetsSeen.isAllPetSeen(player)) {
 		await manageAllPetsAreSeen(response, player, petEntity);
@@ -36,7 +37,7 @@ async function canContinueSmallEvent(response: CrowniclesPacket[], player: Playe
 	}
 
 	// Check if the player has a pet
-	if (!player.petId) {
+	if (!petEntity) {
 		response.push(makePacket(SmallEventDwarfPetFanPacket, { interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.NO_PET }));
 		return false;
 	}
@@ -81,8 +82,8 @@ async function canContinueSmallEvent(response: CrowniclesPacket[], player: Playe
  * @param player
  * @param petEntity
  */
-async function manageAllPetsAreSeen(response: CrowniclesPacket[], player: Player, petEntity: PetEntity): Promise<void> {
-	if (player.petId && petEntity.isFeisty()) {
+async function manageAllPetsAreSeen(response: CrowniclesPacket[], player: Player, petEntity: PetEntity | null): Promise<void> {
+	if (petEntity?.isFeisty()) {
 		response.push(makePacket(SmallEventDwarfPetFanPacket, {
 			...petEntity.getBasicInfo(),
 			interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.FEISTY_PET
@@ -163,6 +164,22 @@ async function manageNewPetSeen(response: CrowniclesPacket[], player: Player, pe
 	}
 }
 
+/**
+ * Talvar is guaranteed to a player working towards the anchor talisman whose pet he never saw, since showing it to him
+ * is one of the conditions of the talisman
+ */
+async function isTalvarGuaranteed(player: Player): Promise<boolean> {
+	if (!player.petId || (await PlayerTalismansManager.getOfPlayer(player.id)).hasTalisman) {
+		return false;
+	}
+	const petEntity = await PetEntities.getById(player.petId);
+	if (!petEntity || petEntity.isFeisty()) {
+		return false;
+	}
+	return await PetUtils.isPetAvailable(player, PetConstants.AVAILABILITY_CONTEXT.SMALL_EVENT)
+		&& !await DwarfPetsSeen.isPetSeen(player, petEntity.typeId);
+}
+
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: player => {
 		const destination = player.getDestination();
@@ -174,14 +191,17 @@ export const smallEventFuncs: SmallEventFuncs = {
 			&& [destination.id, origin.id].some(mapId =>
 				[MapConstants.LOCATIONS_IDS.MOUNT_CELESTRUM].includes(mapId));
 	},
-	executeSmallEvent: async (response, player, _context): Promise<void> => {
+	executeSmallEvent: async (player, { response }): Promise<void> => {
 		await MissionsController.update(player, response, { missionId: "meetTalvar" });
 
 		const petEntity = await PetEntities.getById(player.petId);
-		if (!petEntity || !await canContinueSmallEvent(response, player, petEntity)) {
+
+		// The pet check must come after canContinueSmallEvent, which answers the player even when they have no pet
+		if (!await canContinueSmallEvent(response, player, petEntity) || !petEntity) {
 			return;
 		}
 
 		await manageNewPetSeen(response, player, petEntity);
-	}
+	},
+	isGuaranteed: isTalvarGuaranteed
 };

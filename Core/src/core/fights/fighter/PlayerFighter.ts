@@ -185,10 +185,11 @@ export class PlayerFighter extends PlayerBaseFighter {
 				this.pveMembersLoaded = true;
 				const members = await Maps.getGuildMembersOnPveIsland(this.player);
 				for (const member of members) {
-					const memberActiveObjects = await InventorySlots.getMainSlotsItems(member.id);
+					const {
+						attack, speed
+					} = member.getCumulativeStats(await InventorySlots.getMainSlotsItems(member.id));
 					this.pveMembers.push({
-						attack: member.getCumulativeAttack(memberActiveObjects),
-						speed: member.getCumulativeSpeed(memberActiveObjects)
+						attack, speed
 					});
 				}
 			}

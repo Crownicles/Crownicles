@@ -2,6 +2,7 @@
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventPetDropTokenPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventPetDropTokenPacket";
+import { SmallEventDoNothingPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventDoNothingPacket";
 import { Maps } from "../maps/Maps";
 import { PetExpedition } from "../database/game/models/PetExpedition";
 import { PetEntities } from "../database/game/models/PetEntity";
@@ -40,17 +41,14 @@ export const smallEventFuncs: SmallEventFuncs = {
 		const expeditions = await findPetsOnSamePath(link.startMap, link.endMap, player.id);
 		return expeditions.length > 0;
 	},
-	executeSmallEvent: async (response, player): Promise<void> => {
-		const link = MapLinkDataController.instance.getById(player.mapLinkId)!;
-
-		const expeditions = await findPetsOnSamePath(link.startMap, link.endMap, player.id);
-		if (expeditions.length === 0) {
-			return;
-		}
-
-		const expedition = expeditions[RandomUtils.randInt(0, expeditions.length)];
-		const petEntity = await PetEntities.getById(expedition.petId);
-		if (!petEntity) {
+	executeSmallEvent: async (player, { response }): Promise<void> => {
+		// canBeExecuted is skipped when the event is forced, and the expeditions may have ended since it was called
+		const link = MapLinkDataController.instance.getById(player.mapLinkId);
+		const expeditions = link ? await findPetsOnSamePath(link.startMap, link.endMap, player.id) : [];
+		const expedition = expeditions.length > 0 ? RandomUtils.crowniclesRandom.pick(expeditions) : null;
+		const petEntity = expedition ? await PetEntities.getById(expedition.petId) : null;
+		if (!expedition || !petEntity) {
+			response.push(makePacket(SmallEventDoNothingPacket, {}));
 			return;
 		}
 

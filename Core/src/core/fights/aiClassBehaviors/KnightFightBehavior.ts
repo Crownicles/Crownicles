@@ -9,7 +9,7 @@ import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import { getUsedGodMoves } from "../FightController";
 import { simpleOrQuickAttack } from "./EsquireFightBehavior";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
-import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { PlayerBaseFighter } from "../fighter/PlayerBaseFighter";
 import { shouldWinGodMoveRace } from "./KnightGodMoves";
 
 class KnightFightBehavior implements ClassBehavior {
@@ -49,7 +49,7 @@ class KnightFightBehavior implements ClassBehavior {
 	 */
 	private shouldRest(
 		me: AiPlayerFighter,
-		opponent: AiPlayerFighter | RealPlayerFighter,
+		opponent: PlayerBaseFighter,
 		currentRound: number
 	): boolean {
 		return this.hasRestingOpportunity(me)
@@ -62,7 +62,7 @@ class KnightFightBehavior implements ClassBehavior {
 	}
 
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
-		const opponent = fightView.fightController.getDefendingFighter() as AiPlayerFighter | RealPlayerFighter;
+		const opponent = fightView.fightController.getDefendingFighter() as PlayerBaseFighter;
 		const currentRound = fightView.fightController.turn;
 
 		if (currentRound <= 2) {

@@ -5,6 +5,7 @@ import { LogsFightsResults } from "../src/core/database/logs/models/LogsFightsRe
 import { LogsPlayersGloryPoints } from "../src/core/database/logs/models/LogsPlayersGloryPoints";
 import { initModel as initKingGuardResults } from "../src/core/database/logs/models/LogsKingGuardFightsResults";
 import { up as createKingGuardTable } from "../src/core/database/logs/migrations/036-king-guard-fights";
+import { up as addKingGuardRatings } from "../src/core/database/logs/migrations/040-king-guard-ratings";
 import { ClassConstants } from "../../Lib/src/constants/ClassConstants";
 
 /**
@@ -19,6 +20,7 @@ export async function setupKingGuardFightsTable(sequelize: Sequelize): Promise<v
 		type: DataTypes.SMALLINT.UNSIGNED,
 		allowNull: true
 	});
+	await addKingGuardRatings({ context: sequelize.getQueryInterface() });
 	initKingGuardResults(sequelize);
 }
 

@@ -21,6 +21,7 @@ import { DailyMissions } from "../../core/database/game/models/DailyMission";
 import { Campaign } from "../../core/missions/Campaign";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { getKingChallengeProgress } from "../../core/kingChallenge/KingChallenge";
+import { getObtainedQuestsProgress } from "../../core/quests/Quests";
 
 export default class MissionsCommand {
 	@commandRequires(CommandMissionsPacketReq, {
@@ -65,7 +66,8 @@ export default class MissionsCommand {
 			maxCampaignNumber: Campaign.getMaxCampaignNumber(),
 			campaignProgression: missionInfo.campaignProgression,
 			maxSideMissionSlots: toCheckPlayer.getMissionSlotsNumber(),
-			kingChallenge: await getKingChallengeProgress(toCheckPlayer)
+			kingChallenge: await getKingChallengeProgress(toCheckPlayer),
+			quests: await getObtainedQuestsProgress(toCheckPlayer)
 		}));
 	}
 }

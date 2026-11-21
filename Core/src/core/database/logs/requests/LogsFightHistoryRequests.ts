@@ -13,6 +13,7 @@ import {
 	asSeconds, getDateLogs, secondsToMilliseconds, weeksToSeconds
 } from "../../../../../../Lib/src/utils/TimeUtils";
 import { EloGameResult } from "../../../../../../Lib/src/types/EloGameResult";
+import { Week } from "../../../../../../Lib/src/types/TimeTypes";
 import {
 	KING_GUARD_FIGHT_WINNER, KingGuardFightWinner, LogsKingGuardFightsResults
 } from "../models/LogsKingGuardFightsResults";
@@ -90,7 +91,8 @@ export abstract class LogsFightHistoryRequests {
 				opponent: fight.guardClassId
 			},
 			kingGuard: {
-				level: fight.guardLevel
+				level: fight.guardLevel,
+				...fight.guardId ? { id: fight.guardId } : {}
 			}
 		};
 	}
@@ -217,11 +219,12 @@ export abstract class LogsFightHistoryRequests {
 	}
 
 	/**
-	 * Count the number of ranked fights a player has initiated in the last N weeks
+	 * Count the ranked fights of a player on one side of the fight in the last N weeks
 	 * @param keycloakId
 	 * @param weeks
+	 * @param playerColumn - Column holding the player: the initiator for their attacks, the opponent for their defenses
 	 */
-	static async getAttackCountInLastNWeeks(keycloakId: string, weeks: number): Promise<number> {
+	private static async getRankedFightCountInLastNWeeks(keycloakId: string, weeks: Week, playerColumn: "fightInitiatorId" | "player2Id"): Promise<number> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
 		if (!logPlayer) {
 			return 0;
@@ -229,10 +232,28 @@ export abstract class LogsFightHistoryRequests {
 		const since = getDateLogs() - weeksToSeconds(weeks);
 		return await LogsFightsResults.count({
 			where: {
-				fightInitiatorId: logPlayer.id,
+				[playerColumn]: logPlayer.id,
 				friendly: false,
 				date: { [Op.gte]: since }
 			}
 		});
+	}
+
+	/**
+	 * Count the number of ranked fights a player has initiated in the last N weeks
+	 * @param keycloakId
+	 * @param weeks
+	 */
+	static getAttackCountInLastNWeeks(keycloakId: string, weeks: Week): Promise<number> {
+		return LogsFightHistoryRequests.getRankedFightCountInLastNWeeks(keycloakId, weeks, "fightInitiatorId");
+	}
+
+	/**
+	 * Count the number of ranked fights a player has undergone as a defender in the last N weeks
+	 * @param keycloakId
+	 * @param weeks
+	 */
+	static getDefenseCountInLastNWeeks(keycloakId: string, weeks: Week): Promise<number> {
+		return LogsFightHistoryRequests.getRankedFightCountInLastNWeeks(keycloakId, weeks, "player2Id");
 	}
 }

@@ -37,6 +37,11 @@ import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { KingChallengeTierReachedPacket } from "../../../../Lib/src/packets/events/KingChallengeTierReachedPacket";
 import { KingChallengeConstants } from "../../../../Lib/src/constants/KingChallengeConstants";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
+import { MessagesUtils } from "../../utils/MessagesUtils";
+import { QuestUpdatedPacket } from "../../../../Lib/src/packets/events/QuestUpdatedPacket";
+import { QuestUtils } from "../../utils/QuestUtils";
+import { QuestProgress } from "../../../../Lib/src/types/QuestProgress";
+import { APIEmbedField } from "discord.js";
 
 type MissionRewardTotals = {
 	gems: number;
@@ -126,6 +131,71 @@ async function buildPlayerNotificationEmbed(
 		: new CrowniclesEmbed().setTitle(titleText);
 }
 
+const QUEST_UPDATE_KINDS = {
+	OBTAINED: "obtained",
+	PROGRESSED: "progressed",
+	COMPLETED: "completed"
+} as const;
+
+type QuestUpdateKind = typeof QUEST_UPDATE_KINDS[keyof typeof QUEST_UPDATE_KINDS];
+
+/**
+ * Whether a quest update obtains, makes progress in or completes the quest
+ */
+function getQuestUpdateKind(quest: QuestProgress): QuestUpdateKind {
+	if (QuestUtils.isCompleted(quest)) {
+		return QUEST_UPDATE_KINDS.COMPLETED;
+	}
+	return quest.stepsDone === 1 ? QUEST_UPDATE_KINDS.OBTAINED : QUEST_UPDATE_KINDS.PROGRESSED;
+}
+
+/**
+ * Description of a quest update: the quest, its story when it is obtained, and its progression
+ */
+function buildQuestUpdatedDescription(quest: QuestProgress, updateKind: QuestUpdateKind, lng: Language): string {
+	return StringUtils.joinLines([
+		QuestUtils.formatHeader(quest, lng),
+		...updateKind === QUEST_UPDATE_KINDS.OBTAINED
+			? [
+				i18n.t("notifications:quests.description", {
+					lng,
+					description: QuestUtils.getDescription(quest, lng)
+				})
+			]
+			: [],
+		QuestUtils.formatProgression(quest, lng)
+	]);
+}
+
+/**
+ * Fields of a quest update: the step just completed, then the next step or the completion of the quest, then how to follow the quests
+ */
+function buildQuestUpdatedFields(quest: QuestProgress, updateKind: QuestUpdateKind, lng: Language): APIEmbedField[] {
+	const nextStepField: APIEmbedField = updateKind === QUEST_UPDATE_KINDS.COMPLETED
+		? {
+			name: i18n.t("notifications:quests.completed", { lng }),
+			value: i18n.t("notifications:quests.completedValue", { lng })
+		}
+		: {
+			name: i18n.t("notifications:quests.nextStep", { lng }),
+			value: i18n.t("notifications:quests.nextStepValue", {
+				lng,
+				...QuestUtils.getStep(quest, quest.stepsDone, lng)
+			})
+		};
+	return [
+		{
+			name: i18n.t("notifications:quests.stepDone", { lng }),
+			value: QuestUtils.getStep(quest, quest.stepsDone - 1, lng).label
+		},
+		nextStepField,
+		{
+			name: i18n.t("notifications:quests.journal", { lng }),
+			value: i18n.t("notifications:quests.journalValue", { lng })
+		}
+	];
+}
+
 /**
  * Lines describing a king's challenge crossing: the rewards, then the next goal
  */
@@ -202,17 +272,11 @@ export default class EventsHandlers {
 				})
 				: null
 		]));
-		try {
-			const buttonInteraction = context.discord!.buttonInteraction ? DiscordCache.getButtonInteraction(context.discord!.buttonInteraction) : null;
 
-			// A click that could not be acknowledged accepts no follow-up: the destination is then sent in the channel
-			if (buttonInteraction) {
-				await buttonInteraction.followUp({ embeds: [embed] });
-				return;
-			}
-		}
-		catch {
-			// Do nothing
+		// A click that could not be acknowledged accepts no follow-up: the destination is then sent in the channel
+		const buttonClick = MessagesUtils.getButtonClick(context);
+		if (buttonClick && await buttonClick.followUp({ embeds: [embed] })) {
+			return;
 		}
 
 		await interaction.channel.send({ embeds: [embed] });
@@ -411,6 +475,33 @@ export default class EventsHandlers {
 
 		await interaction.channel.send({
 			embeds: [embed.setDescription(StringUtils.joinLines(buildKingChallengeTierReachedLines(packet, lng)))]
+		});
+	}
+
+	@packetHandler(QuestUpdatedPacket)
+	async questUpdated(context: PacketContext, packet: QuestUpdatedPacket): Promise<void> {
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!interaction) {
+			return;
+		}
+
+		const lng = interaction.userLanguage;
+		const updateKind = getQuestUpdateKind(packet.quest);
+		const embed = await buildPlayerNotificationEmbed(packet.keycloakId, "quest updated", pseudo => i18n.t("notifications:quests.title", {
+			lng,
+			context: updateKind,
+			pseudo
+		}));
+		if (!embed) {
+			return;
+		}
+
+		await interaction.channel.send({
+			embeds: [
+				embed
+					.setDescription(buildQuestUpdatedDescription(packet.quest, updateKind, lng))
+					.addFields(buildQuestUpdatedFields(packet.quest, updateKind, lng))
+			]
 		});
 	}
 

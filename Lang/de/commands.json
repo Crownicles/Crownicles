@@ -478,7 +478,7 @@
         "description": "Verwenden Sie diesen Befehl, um andere Spieler herauszufordern.\nDie Kämpfe werden rundenweise ausgetragen. In jeder Runde können Sie eine Aktion auswählen, die Sie ausführen möchten.\n\nFür weitere Informationen können Sie die Seite des Guides besuchen: https://guide.crownicles.com/notions-principale/combats"
       },
       "FIGHT_HISTORY": {
-        "description": "Zeigt den Verlauf deiner letzten Kämpfe an: den besiegten Gegner, das Ergebnis sowie die Entwicklung des Ruhmes und der Liga jedes Kämpfers. Wenn Sie bereits gegen eine Königliche Garde gekämpft haben, zeigt die Schaltfläche **Königliche Garde** Ihre Bilanz gegen die Garde, Ihre Platzierung und die Ehrentafel des Königreichs an."
+        "description": "Zeigt den Verlauf deiner letzten Kämpfe an: den besiegten Gegner, das Ergebnis sowie die Entwicklung des Ruhmes und der Liga jedes Kämpfers. Wenn Sie bereits gegen eine Wache des Königs gekämpft haben, zeigt die Schaltfläche **Wachen des Königs** die beste Wache an, die Sie besiegt haben, sowie Ihre Platzierung und die Ehrentafel des Königreichs."
       },
       "FRIENDLY_FIGHT": {
         "description": "Ermöglicht es dir, gegen einen anderen Spieler – den du entweder namentlich nennst oder anhand seiner Rangliste auswählst – in einem Freundschaftskampf anzutreten. Der Gegner wird von einer KI gesteuert. Dieser Kampf hat keinerlei Konsequenzen: kein Ruhm, keine Belohnung, kein Energieverlust und kein Missionsfortschritt. Die Stufe beider Kämpfer ist auf {{friendlyFightLevelCap}} begrenzt: Ein Spieler mit einer niedrigeren Stufe behält seine Stufe bei."
@@ -2327,7 +2327,9 @@
       "guildStatusChange": "Änderung des Status innerhalb der Gilde",
       "energy": "Regenerierte Energie",
       "dailyBonus": "Täglicher Bonus",
-      "petExpedition": "Vertrautenversand beendet"
+      "petExpedition": "Vertrautenversand beendet",
+      "gardenPlantReady": "Erntefertige Gartenpflanze",
+      "gardenAllPlantsReady": "Alle Pflanzen im Garten, die geerntet werden können"
     },
     "enableDisable": "Aktivieren/Deaktivieren",
     "sendLocationField": "Ort der Versendung :",
@@ -2347,15 +2349,106 @@
     "off": "Der Bot wurde erfolgreich aus der Wartung geholt."
   },
   "missions": {
+    "pages": {
+      "missions": "Aufgaben",
+      "kingChallenge": "Die Herausforderung des Königs",
+      "quests": "Quests"
+    },
     "kingChallenge": {
-      "button": "Die Herausforderung des Königs",
-      "backButton": "Zurück",
       "title": "Die Herausforderung des Königs von {{pseudo}}",
       "description": "Jeden Montag stellt der König den Abenteurern des Königreichs eine neue Herausforderung und belohnt diejenigen, die sie meistern.",
       "header": "{emote:kingChallenge.icon} **Herausforderung des Königs ({{tier}}/{{tierCount}})**",
       "nextTier": "Erreiche diese Woche {{objective, number}} {emote:unitValues.score}, um die Stufe {{nextTier}} zu erreichen (läuft ab am {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}",
       "completed": "Ihr habt die Herausforderung des Königs bis zur letzten Stufe gemeistert! Eine neue Herausforderung wird gestartet: {{time}}.",
       "tier": "{emote:kingChallenge.{{status}}} Stufe {{tier}}: {{threshold, number}} {emote:unitValues.score} ({{rewards}})"
+    },
+    "quests": {
+      "title": "Quests zu {{pseudo}}",
+      "description": "Die Quests erzählen von den großen Entdeckungen, die auf die Abenteurer des Königreichs warten. Sie bringen an sich keine Belohnung ein: Jeder ihrer Schritte wird bereits unterwegs belohnt.",
+      "questHeader": "{{icon}} **{{name}}**",
+      "progression_one": "{{progressionBar}} {{count}} Etappe abgeschlossen auf {{max}}",
+      "progression_other": "{{progressionBar}} {{count}} abgeschlossene Schritte auf {{max}}",
+      "currentStep": "{emote:quests.stepCurrent} **Schritt {{stepNumber}}** : {{label}}\n{{hint}}",
+      "noOngoingQuest": "Du hast derzeit keine laufenden Quests. Im Laufe deiner Abenteuer im Königreich werden nach und nach neue Quests freigeschaltet.",
+      "options": {
+        "quests": "Laufende Quests ({{count}})",
+        "completedQuests": "Abgeschlossene Quests ({{count}})"
+      },
+      "completedTitle": "Abgeschlossene Quests von {{pseudo}}",
+      "completedQuest": "{{icon}} **{{name}}** — {emote:quests.completed} {{max}}/{{max}} Schritte",
+      "noCompletedQuest": "Es wurde noch keine Quest abgeschlossen. Die abgeschlossenen Quests werden hier gespeichert.",
+      "list": {
+        "expeditionTalismans": {
+          "name": "Die Talismane für die Expedition",
+          "icon": "{emote:expedition.talisman}",
+          "description": "Die erfahrensten Begleiter können ferne Länder auf eigene Faust erkunden, vorausgesetzt, sie sind durch uralte Artefakte mit ihrem Meister verbunden. Velanna und Talvar kreuzen immer wieder den Weg der Abenteurer, die dazu bereit sind.",
+          "steps": {
+            "meetVelanna": {
+              "label": "Velanna treffen",
+              "hint": "*Eine Kriegerin mit einer Narbe durchstreift gelegentlich die Straßen des Kontinents und interessiert sich besonders für die Begleiter derer, denen sie begegnet.*"
+            },
+            "anchorTalisman": {
+              "label": "Das erhalten $t(models:talisman.anchor)",
+              "hint": "Velanna vertraut es dir an, wenn du folgende Voraussetzungen erfüllst:\n• Mindeststufe: {{level}}\n• Mitglied einer Gilde:\n• Ein sattes und gehorsames Haustier:\n• Ein Haustier, das Talvar bereits vorgestellt wurde"
+            },
+            "successfulExpedition": {
+              "label": "Eine Expedition erfolgreich durchführen",
+              "hint": "*Mit dem „ $t(models:talisman.anchor) “ kann man seinen Begleiter über den Befehl {command:pet} auf Erkundungstour in ferne Länder schicken.*"
+            },
+            "cloneTalisman": {
+              "label": "Das erhalten $t(models:talisman.clone)",
+              "hint": "*Gerüchten zufolge soll in bestimmten Gegenden ein legendäres Artefakt vergraben sein, das nur ein Begleiter auf einer Expedition ausgraben könnte.*"
+            }
+          }
+        },
+        "seeds": {
+          "name": "Die Samen des Gärtners",
+          "icon": "{emote:city.gardenStatus.seed}",
+          "description": "Ein wandernder Gärtner vertraut seine seltensten Samen den Abenteurern an, denen es gelungen ist, die vorherigen zum Wachsen zu bringen. Auf den Waldwegen begegnet er schließlich immer wieder denen, die bereit sind, die nächsten Samen entgegenzunehmen.",
+          "steps": {
+            "commonHerb": {
+              "label": "Pflanzen {emote:plants.1} $t(models:plants.1)",
+              "hint": "• Dem Gärtner Théobald auf einem Waldweg begegnen\n• Mindeststufe: {{level}}\n• Einen Garten in Ihrem Haus, um sie dort einzupflanzen"
+            },
+            "goldenClover": {
+              "label": "Pflanzen {emote:plants.2} $t(models:plants.2)",
+              "hint": "• Mindeststufe {{level}}\n• Preis: {{price, number}} {emote:unitValues.money}"
+            },
+            "lunarMoss": {
+              "label": "Pflanzen {emote:plants.3} $t(models:plants.3)",
+              "hint": "• Mindeststufe: {{level}}\n• Nach Wahl: ein **fliegender Begleiter**, eine **Übernachtung in der Herberge** von weniger als {{innNightHours}} Stunden oder eine **nächtliche Begegnung** ({{nightStart}} Stunden – {{nightEnd}} Stunden)"
+            },
+            "ironRoot": {
+              "label": "Pflanzen {emote:plants.4} $t(models:plants.4)",
+              "hint": "• Mindeststufe {{level}}\n• Preis: {{price, number}} {emote:unitValues.money}"
+            },
+            "nightMushroom": {
+              "label": "Pflanzen {emote:plants.5} $t(models:plants.5)",
+              "hint": "• Mindeststufe: {{level}}\n• Nach Wahl: ein **nächtlicher Begleiter**, eine **Übernachtung in der Herberge** von weniger als {{innNightHours}} Stunden oder eine **nächtliche Begegnung** ({{nightStart}} Stunden – {{nightEnd}} Stunden)"
+            },
+            "venomousLeaf": {
+              "label": "Pflanzen {emote:plants.6} $t(models:plants.6)",
+              "hint": "• Mindeststufe „ {{level}} “\n• Ein dressierter **pflanzenfressender Begleiter**"
+            },
+            "fireBulb": {
+              "label": "Pflanzen {emote:plants.7} $t(models:plants.7)",
+              "hint": "• Mindeststufe: {{level}}\n• Wahlweise: **Magier** sein, einen **Feuerbegleiter** haben oder **Feuerausrüstung** tragen"
+            },
+            "meatPlant": {
+              "label": "Pflanzen {emote:plants.8} $t(models:plants.8)",
+              "hint": "• Mindeststufe „ {{level}} “\n• Ein **fleischfressender Begleiter** der Seltenheitsstufe „ $t(items:rarities.{{rarity}}) “ oder höher"
+            },
+            "crystalFlower": {
+              "label": "Pflanzen {emote:plants.9} $t(models:plants.9)",
+              "hint": "• Mindeststufe {{level}}\n• Preis: {{price, number}} {emote:unitValues.money}"
+            },
+            "ancientTree": {
+              "label": "Pflanzen {emote:plants.10} $t(models:plants.10)",
+              "hint": "• Mindeststufe „ {{level}} “\n• Ein dressierter **pflanzenfressender Begleiter** der Seltenheitsstufe „ $t(items:rarities.{{rarity}}) “ oder höher"
+            }
+          }
+        }
+      }
     },
     "title": "Aufgaben von {{pseudo}}",
     "subcategories": {
@@ -2688,11 +2781,14 @@
       ]
     },
     "kingGuard": {
-      "name": "Königliche Garde",
-      "recap": {
-        "win": "Es war kein Gegner verfügbar: {{player}} trat gegen einen königlichen Wächter an und besiegte ihn. Bei diesem Kampf stand kein Ruhm auf dem Spiel.",
-        "draw": "Es war kein Gegner verfügbar: {{player}} trat gegen einen königlichen Wächter an, ohne einen Sieger zu ermitteln. Bei diesem Kampf stand kein Ruhm auf dem Spiel.",
-        "loss": "Es war kein Gegner verfügbar: {{player}} trat gegen einen königlichen Wächter an und wurde besiegt. Bei diesem Kampf stand kein Ruhm auf dem Spiel."
+      "displayName": "Wache {{name}}",
+      "unnamed": "ein königlicher Wächter",
+      "outcome": {
+        "win": "Es stand kein Gegner zur Verfügung: {{player}} trat gegen {{guard}}, einen Königswächter, an und besiegte ihn. Bei diesem Kampf ging es nicht um Ruhm.",
+        "win_female": "Es stand kein Gegner zur Verfügung: {{player}} trat gegen {{guard}}, eine Wächterin des Königs, an und besiegte sie. Bei diesem Kampf ging es nicht um Ruhm.",
+        "draw": "Es stand kein Gegner zur Verfügung: {{player}} trat gegen {{guard}}, einen Königswächter, an, ohne dass ein Sieger ermittelt werden konnte. Bei diesem Kampf stand kein Ruhm auf dem Spiel.",
+        "draw_female": "Es stand kein Gegner zur Verfügung: {{player}} trat gegen {{guard}}, den Königswächter, an, ohne dass ein Sieger ermittelt werden konnte. Bei diesem Kampf stand kein Ruhm auf dem Spiel.",
+        "loss": "Es stand kein Gegner zur Verfügung: {{player}} trat gegen {{guard}}, den Königswächter, an und wurde besiegt. Bei diesem Kampf stand kein Ruhm auf dem Spiel."
       }
     }
   },
@@ -3017,7 +3113,7 @@
     "noHistory": "Sie haben noch keine Kämpfe in Ihrem Verlauf.",
     "title": "{{pseudo}}Geschichte der Kämpfe",
     "historyLine": "{{date}}\n{{attackSentence}}\n**Ergebnis:** {{resultSentence}}\n**Ihr Ruhm:** {emote:unitValues.glory} {{meInitialGlory, number}} -> {{meFinalGlory, number}}{{meLeagueChange}} }\n**Gegnerischer Ruhm:** {emote:unitValues.glory} {{opponentInitialGlory, number}} -> {{opponentFinalGlory, number}}",
-    "kingGuardHistoryLine": "{{date}}\n{emote:fightCommand.crossedSwords} Es war kein Gegner verfügbar: Du hast gegen einen **Königswächter** der Stufe {{guardLevel}} ({emote:classes.{{guardClassId}}} $t(models:classes.{{guardClassId}}))\n**Ergebnis:** {{resultSentence}}\n**Ruhm:** {emote:unitValues.glory} Es stand kein Ruhm auf dem Spiel",
+    "kingGuardFightLine": "{{date}}\n{emote:fightCommand.crossedSwords} Es war kein Gegner verfügbar: Du hast gegen **{{guard}}** der Stufe {{guardLevel}} ({emote:classes.{{guardClassId}}} $t(models:classes.{{guardClassId}}))\n**Ergebnis:** {{resultSentence}}\n**Ruhm:** {emote:unitValues.glory} Es stand kein Ruhm auf dem Spiel",
     "attackSentence": {
       "attacker": "{emote:fightCommand.crossedSwords} Sie haben angegriffen **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))",
       "defender": "{emote:fightCommand.shield} Sie wurden von **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}})) angegriffen."
@@ -3035,14 +3131,15 @@
       "openButton": "Königliche Garde",
       "backButton": "Geschichte",
       "title": "{emote:fightCommand.crossedSwords} Gegen die Wachen des Königs",
-      "record": "**Dein Rekord:** Level-Wächter „ {{level}} “ besiegt{{aboveLevel}}",
+      "bestDefeatedGuard": "**Bester besiegter Wächter:** {{guard}} ({emote:classes.{{classId}}} $t(models:classes.{{classId}}), Stuf. {{level}}){{aboveLevel}}",
+      "bestDefeatedGuardHint": "*Die Wachen gewinnen oder verlieren im Laufe ihrer Kämpfe an Ansehen: Ihre beste besiegte Wache ist diejenige, die heute unter den von Ihnen besiegten Wachen am gefürchtetsten ist.*",
       "aboveLevel_one": ", {{count}} eine Stufe über Ihrer eigenen",
       "aboveLevel_other": ", {{count}} Stufen über Ihrer eigenen",
-      "noRecord": "**Ihr Rekord:** Bisher noch kein Wächter besiegt",
-      "progress": "**Gebrochene Rekorde:** {{recordsBroken, number}} | **Rangliste:** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
+      "noDefeatedGuard": "**Bester besiegter Wächter:** Bislang wurde noch kein Wächter besiegt",
+      "ranking": "**Rangliste:** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
       "tally": "**Bilanz:** {emote:fightHistory.won} Siege: {{won, number}} · {emote:fightHistory.lost} Niederlagen: {{lost, number}} · {emote:fightHistory.draw} Unentschieden: {{draw, number}}",
       "leaderboardTitle": "{emote:other.crown} **Ehrenliste der Garde**",
-      "leaderboardLine": "{{badge}} {{rank, number}}. **{{name}}**: Level-Wächter {{level}}",
+      "leaderboardEntry": "{{badge}} {{rank, number}}. **{{name}}**: {{guard}} {emote:classes.{{classId}}}, Stufe {{level}}",
       "you": "Sie"
     }
   },

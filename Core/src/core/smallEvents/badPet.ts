@@ -1,5 +1,7 @@
 /* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedPlayerAndMissions callback. */
-import { SmallEventFuncs } from "../../data/SmallEvent";
+import {
+	SmallEventExecutionContext, SmallEventFuncs
+} from "../../data/SmallEvent";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { BlockingUtils } from "../utils/BlockingUtils";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
@@ -9,7 +11,7 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBadPetSmallEvent";
 import { SmallEventBadPetPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBadPetPacket";
 import {
-	CrowniclesPacket, makePacket, PacketContext
+	CrowniclesPacket, makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	PetEntities, PetEntity
@@ -31,7 +33,6 @@ import { Guilds } from "../database/game/models/Guild";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
-import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 
 /**
  * Result of a bad pet action handler
@@ -540,7 +541,9 @@ async function canBeExecuted(player: Player): Promise<boolean> {
 /**
  * Execute the bad pet small event
  */
-async function executeSmallEvent(response: CrowniclesPacket[], player: Player, context: PacketContext, _playerActiveObjects: PlayerActiveObjects, testArgs?: string[]): Promise<void> {
+async function executeSmallEvent(player: Player, {
+	response, context, testArgs
+}: SmallEventExecutionContext): Promise<void> {
 	let selectedActions: BadPetAction[];
 
 	if (testArgs && testArgs.length > 0) {

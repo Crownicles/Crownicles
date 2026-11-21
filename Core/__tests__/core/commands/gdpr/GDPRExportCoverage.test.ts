@@ -123,6 +123,7 @@ const EXPORTED_TABLES = {
 	"ScheduledDailyBonusNotification": "12_scheduled_notifications.csv",
 	"ScheduledReportNotification": "12_scheduled_notifications.csv",
 	"ScheduledExpeditionNotification": "12_scheduled_notifications.csv",
+	"ScheduledGardenNotification": "12_scheduled_notifications.csv",
 	"Guild": "13_guild_membership.csv",
 	"GuildPet": "14_guild_pets.csv",
 	"Material": "15_materials.csv",
@@ -286,6 +287,7 @@ const PLAYER_DATA_EXPORT_FIELD_COVERAGE = {
 		"defenseGloryPoints",
 		"attackGloryPoints",
 		"gloryPointsLastSeason",
+		"guardGloryPoints",
 		"fightCountdown",
 		"rage",
 		"lastMealAt",
@@ -535,7 +537,8 @@ const LOG_DATA_EXPORT_FIELD_COVERAGE = {
 		exporter: "LogsFightsExporter.ts",
 		csvFile: "logs/101_king_guard_fights.csv",
 		fields: [
-			"classId", "guardClassId", "guardLevel", "playerLevel", "turn", "winner", "date"
+			"classId", "guardClassId", "guardLevel", "playerLevel", "guardId", "playerGuardGlory", "playerGuardGloryChange",
+			"guardGlory", "guardGloryChange", "turn", "winner", "date"
 		]
 	},
 	"LogsPlayersGloryPoints": {

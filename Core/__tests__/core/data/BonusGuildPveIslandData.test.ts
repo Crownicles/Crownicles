@@ -3,7 +3,7 @@ import {
 } from "vitest";
 import { readFileSync } from "fs";
 import { resolve } from "path";
-import bonusGuildPveIsland = require("../../../resources/smallEvents/bonusGuildPVEIsland.json");
+import bonusGuildPveIsland from "../../../resources/smallEvents/bonusGuildPVEIsland.json";
 import { SmallEventBonusGuildPVEIslandEmote } from "../../../../Lib/src/packets/smallEvents/SmallEventBonusGuildPVEIslandPacket";
 
 type Outcome = keyof typeof bonusGuildPveIsland.properties.ranges;

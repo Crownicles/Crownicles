@@ -10,6 +10,7 @@ import { PetConstants } from "../../../../../../Lib/src/constants/PetConstants";
 import type { FightController } from "../../../../../src/core/fights/FightController";
 import type { FightAlteration } from "../../../../../src/data/FightAlteration";
 import type { Fighter } from "../../../../../src/core/fights/fighter/Fighter";
+import type { PlayerBaseFighter } from "../../../../../src/core/fights/fighter/PlayerBaseFighter";
 import { FightActionType } from "../../../../../../Lib/src/types/FightActionType";
 import { buildPetFighter } from "./PetFighterMocks";
 
@@ -20,7 +21,7 @@ function meleeMultiplier(owner: Fighter): number {
 /**
  * Play the start of an owner's turn like the fight controller does: pet first, then the counters are reduced before the action
  */
-async function startOwnerTurn(owner: Fighter): Promise<PetAssistanceResult | null> {
+async function startOwnerTurn(owner: PlayerBaseFighter): Promise<PetAssistanceResult | null> {
 	const result = await unstoppable(owner, buildPetFighter(), 1, {} as FightController);
 	owner.reduceCounters();
 	return result;

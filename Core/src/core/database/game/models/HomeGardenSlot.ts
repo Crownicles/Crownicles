@@ -6,6 +6,9 @@ import {
 import moment from "moment";
 import { PlantId } from "../../../../../../Lib/src/constants/PlantConstants";
 import { TimeConstants } from "../../../../../../Lib/src/constants/TimeConstants";
+import {
+	asMilliseconds, Millisecond
+} from "../../../../../../Lib/src/types/TimeTypes";
 
 export class HomeGardenSlot extends Model {
 	declare readonly homeId: number;
@@ -34,6 +37,16 @@ export class HomeGardenSlot extends Model {
 		const now = Date.now();
 		const plantedTime = this.plantedAt.valueOf();
 		return now - plantedTime >= effectiveGrowthTimeSeconds * TimeConstants.MS_TIME.SECOND;
+	}
+
+	/**
+	 * Get the timestamp in milliseconds at which the plant in this slot is (or was) ready to harvest, or null when the slot is empty
+	 */
+	getReadyAt(effectiveGrowthTimeSeconds: number): Millisecond | null {
+		if (this.isEmpty() || !this.plantedAt) {
+			return null;
+		}
+		return asMilliseconds(this.plantedAt.valueOf() + effectiveGrowthTimeSeconds * TimeConstants.MS_TIME.SECOND);
 	}
 
 	/**
@@ -68,6 +81,15 @@ export class HomeGardenSlots {
 				homeId, slot
 			}
 		});
+	}
+
+	/**
+	 * Get the highest plant id currently planted in the garden of a home, or 0 when the garden is empty.
+	 * Seeds are handed over in increasing plant id order, so it measures how far the player went in the seeds progression.
+	 */
+	public static async getHighestPlantedId(homeId: number): Promise<number> {
+		const gardenSlots = await HomeGardenSlots.getOfHome(homeId);
+		return gardenSlots.reduce((highestPlanted, slot) => Math.max(highestPlanted, slot.plantId), 0);
 	}
 
 	/**

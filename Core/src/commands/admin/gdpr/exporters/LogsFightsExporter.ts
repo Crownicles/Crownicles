@@ -173,6 +173,11 @@ async function exportKingGuardFights(
 			guardClassId: f.guardClassId,
 			guardLevel: f.guardLevel,
 			playerLevel: f.playerLevel,
+			guardId: f.guardId,
+			playerGuardGlory: f.playerGuardGlory,
+			playerGuardGloryChange: f.playerGuardGloryChange,
+			guardGlory: f.guardGlory,
+			guardGloryChange: f.guardGloryChange,
 			turns: f.turn,
 			winner: f.winner,
 			date: f.date

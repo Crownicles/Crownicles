@@ -1,6 +1,5 @@
 import { DataControllerString } from "./DataController";
 import { Data } from "./Data";
-import { readdirSync } from "fs";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 import Player from "../core/database/game/models/Player";
 import { SmallEventConstants } from "../../../Lib/src/constants/SmallEventConstants";
@@ -10,6 +9,7 @@ import { NumberChangeReason } from "../../../Lib/src/constants/LogsConstants";
 import { Effect } from "../../../Lib/src/types/Effect";
 import { WitchActionOutcomeType } from "../../../Lib/src/types/WitchActionOutcomeType";
 import { GenerateRandomItemOptions } from "../core/utils/ItemUtils";
+import { importCompiledFolderExports } from "../core/utils/DynamicImportUtils";
 
 /**
  * Base class for all witch actions
@@ -101,6 +101,10 @@ export type WitchActionFuncs = {
 export type CheckMissionsLike = (player: Player, outcome: WitchActionOutcomeType, response: CrowniclesPacket[], tags: string[]) => void | Promise<void>;
 export type GeneratePotionLike = () => GenerateRandomItemOptions;
 
+type WitchActionModule = {
+	witchSmallEvent?: WitchActionFuncs;
+};
+
 export class WitchActionDataController extends DataControllerString<WitchAction> {
 	static readonly instance = new WitchActionDataController("witch");
 
@@ -108,29 +112,20 @@ export class WitchActionDataController extends DataControllerString<WitchAction>
 
 	/**
 	 * Load the witch action functions from the folder witch these functions describe potion characteristics and missions
-	 * @param id
 	 */
-	public static getWitchActionFunction(id: string): WitchActionFuncs {
-		if (!WitchActionDataController.witchActionsFunctionsCache) {
-			WitchActionDataController.witchActionsFunctionsCache = new Map<string, WitchActionFuncs>();
-			WitchActionDataController.loadWitchActionsFromFolder("dist/Core/src/core/smallEvents/witch", "../core/smallEvents/witch");
-			WitchActionDataController.instance.getValuesArray()
-				.forEach(witchAction => {
-					witchAction.checkOutcomeProbabilities();
-				});
-		}
-		return WitchActionDataController.witchActionsFunctionsCache.get(id) ?? {};
+	public static async loadWitchActionsFunctions(): Promise<void> {
+		WitchActionDataController.witchActionsFunctionsCache = await importCompiledFolderExports(
+			"core/smallEvents/witch",
+			(witchActionModule: WitchActionModule) => witchActionModule.witchSmallEvent
+		);
+		WitchActionDataController.instance.getValuesArray()
+			.forEach(witchAction => {
+				witchAction.checkOutcomeProbabilities();
+			});
 	}
 
-	private static loadWitchActionsFromFolder(path: string, relativePath: string): void {
-		const files = readdirSync(path);
-		for (const file of files) {
-			if (file.endsWith(".js")) {
-				const defaultFunc = require(`${relativePath}/${file.substring(0, file.length - 3)}`).witchSmallEvent;
-				const fightActionName = file.substring(0, file.length - 3);
-				WitchActionDataController.witchActionsFunctionsCache.set(fightActionName, defaultFunc);
-			}
-		}
+	public static getWitchActionFunction(id: string): WitchActionFuncs {
+		return WitchActionDataController.witchActionsFunctionsCache.get(id) ?? {};
 	}
 
 	public getRandomWitchAction(excludedWitchActions: WitchAction[]): WitchAction {
