@@ -11,9 +11,14 @@ export default {
 		configFile: "vitest.config.mts"
 	},
 	mutate: [
+		"src/core/blessings/BlessingManager.ts",
 		"src/core/cooking/CookingService.ts",
 		"src/core/cooking/CookingSlotRotation.ts",
 		"src/core/cooking/RecipeDiscoveryService.ts",
+		"src/core/database/game/models/Guild.ts",
+		"src/core/database/game/models/InventoryInfo.ts",
+		"src/core/database/game/models/InventorySlot.ts",
+		"src/core/database/game/models/PetEntity.ts",
 		"src/core/database/game/models/Player.ts",
 		"src/core/fights/FightController.ts",
 		"src/core/fights/actions/FightActionController.ts",
@@ -146,7 +151,10 @@ export default {
 		"src/core/smallEvents/lottery.ts",
 		"src/core/smallEvents/petFood.ts",
 		"src/core/smallEvents/ultimateFoodMerchant.ts",
-		"src/core/smallEvents/witch.ts"
+		"src/core/smallEvents/witch.ts",
+		"src/core/utils/ItemUtils.ts",
+		"src/core/utils/ShopUtils.ts",
+		"src/core/utils/TannerShopItems.ts"
 	],
 	// Imports reach ../Lib through relative paths that a copied sandbox would break: mutate the files in place (restored at the end)
 	inPlace: true,
