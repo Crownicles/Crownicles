@@ -130,6 +130,15 @@ describe("Talvar, the dwarf pet fan small event", () => {
 			expect(addGems).not.toHaveBeenCalled();
 		});
 
+		it("does not see a pet that cannot be loaded", async () => {
+			vi.spyOn(PetEntities, "getById").mockResolvedValue(null);
+
+			const response = await meet();
+
+			expect(packetOf(response, SmallEventDwarfPetFanPacket).interactionName).toBe(NAMES.NO_PET);
+			expect(DwarfPetsSeen.markPetAsSeen).not.toHaveBeenCalled();
+		});
+
 		it("does not approach a feisty pet", async () => {
 			mockPet(true);
 

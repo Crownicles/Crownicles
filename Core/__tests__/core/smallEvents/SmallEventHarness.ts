@@ -31,6 +31,7 @@ export type TestPlayer = {
 	experience: number;
 	score: number;
 	rage: number;
+	tokens: number;
 	petId: number | null;
 	guildId: number | null;
 	mapLinkId: number;
@@ -40,11 +41,13 @@ export type TestPlayer = {
 	addExperience: ReturnType<typeof vi.fn>;
 	addScore: ReturnType<typeof vi.fn>;
 	addRage: ReturnType<typeof vi.fn>;
+	addTokens: ReturnType<typeof vi.fn>;
 	save: ReturnType<typeof vi.fn>;
 	getMaxHealth: ReturnType<typeof vi.fn>;
+	getMaxStatsValue: ReturnType<typeof vi.fn>;
 };
 
-type NumericField = "money" | "health" | "experience" | "score" | "rage";
+type NumericField = "money" | "health" | "experience" | "score" | "rage" | "tokens";
 
 /**
  * Build a player whose `addX` methods change the matching field by the amount they receive
@@ -60,6 +63,7 @@ export function createTestPlayer(overrides: Partial<Omit<TestPlayer, NumericFiel
 		experience: 0,
 		score: 0,
 		rage: 0,
+		tokens: 0,
 		petId: null,
 		guildId: null,
 		mapLinkId: 1,
@@ -74,12 +78,16 @@ export function createTestPlayer(overrides: Partial<Omit<TestPlayer, NumericFiel
 	player.addExperience = mutate("experience");
 	player.addScore = mutate("score");
 	player.addRage = mutate("rage");
+	player.addTokens = mutate("tokens");
 	player.spendMoney = vi.fn((parameters: EditValueParameters): Promise<TestPlayer> => {
 		player.money -= Math.abs(parameters.amount);
 		return Promise.resolve(player);
 	});
 	player.save = vi.fn().mockResolvedValue(player);
 	player.getMaxHealth = vi.fn().mockReturnValue(100);
+	player.getMaxStatsValue = vi.fn().mockReturnValue({
+		attack: 100, defense: 100, speed: 100
+	});
 	return player;
 }
 
