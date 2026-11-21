@@ -204,6 +204,34 @@ describe('PlayerBaseFighter', () => {
 		});
 	});
 
+	describe('loaded equipment', () => {
+		it('only knows the contribution of its equipment once its stats are loaded', () => {
+			const fighter = new TestPlayerBaseFighter(buildPlayer(50, 0));
+			expect(fighter.getEquippedMainItemStatsContribution('weapon')).toBeNull();
+
+			fighter.callLoadCombatStats(buildZeroStatActiveObjects({}), false);
+
+			expect(fighter.getEquippedMainItemStatsContribution('weapon')).toEqual({
+				attack: 0, defense: 0, speed: 0
+			});
+		});
+
+		it('applies the alteration enchantment of its weapon', () => {
+			const fighter = new TestPlayerBaseFighter(buildPlayer(50, 0));
+
+			fighter.callLoadCombatStats(buildZeroStatActiveObjects({ weaponEnchantmentId: 'burnedDamage1' }), false);
+
+			expect(fighter.getAlterationMultiplier(FightAlterations.BURNED)).toBe(EnchantmentConstants.BURNED_DAMAGE_BONUS_MULTIPLIER);
+		});
+
+		it('displays the glory of its player', () => {
+			const player = buildPlayer(50, 0);
+			player.getGloryPoints = (): number => 1234;
+
+			expect(new TestPlayerBaseFighter(player).getDisplayedGloryPoints()).toBe(1234);
+		});
+	});
+
 	describe('potion stats', () => {
 		it('can exclude potion stats for fights without consequences', () => {
 			const player = buildPlayer(50, 0);
