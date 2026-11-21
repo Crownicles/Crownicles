@@ -1771,7 +1771,7 @@
     "text": "En arrivant aux abords d'un village animé, vous entendez un groupe de personnes parler d'un sanctuaire qui serait hanté. Curieux que vous êtes, vous tendez l'oreille. Le sanctuaire serait à 1 heure de route au sud, et le départ a lieu dans 30 minutes."
   },
   "46": {
-    "text": "À Boug-Coton, devant l'Auberge du Seigneur, le célèbre ménestrel Pérotin paie sa note en chansons. On dit qu'avec sa mandoline et ses poudres, il fait vivre ses chansons pour de bon à ceux qui l'écoutent. Il vous repère dans la foule et vous demande sur quel thème chanter.",
+    "text": "À Boug-Coton, devant l'Auberge du Seigneur, Pérotin, le ménestrel le plus célèbre du pays, paie sa note en chansons. On dit qu'avec sa mandoline et ses poudres, il fait vivre ses chansons pour de bon à ceux qui l'écoutent. Il vous repère dans la foule et vous demande sur quel thème chanter.",
     "possibilities": {
       "end": {
         "outcomes": {
@@ -2718,7 +2718,7 @@
     "text": "En arrivant à Claire de Ville, votre regard est attiré par un bâtiment dont l'entrée est encadrée par deux statues de hiboux en pierre. En vous en approchant, vous comprenez qu'il s'agit de la bibliothèque de la ville. Par la porte entrouverte, vous distinguez d'innombrables rayonnages chargés d'ouvrages et, accroché à un mur de l'entrée, un calendrier fait de larges feuilles reliées entre elles par une lanière de cuir."
   },
   "69": {
-    "text": "Dans la Forêt Du Vieillard, une femme en robe argentée accourt vers vous entre les arbres. Avec ses cheveux clairs et son bâton d'aubépine, on la croirait sortie d'un conte. Elle dit s'appeler Donia et être une fée, et propose de vous bénir pour vous porter chance dans votre quête de la princesse.",
+    "text": "Dans la Forêt Du Vieillard, une femme accourt vers vous entre les arbres. Ses longs cheveux ont la couleur de l'écume, sa robe d'argent brille de petits saphirs et elle tient un bâton d'aubépine. Elle dit s'appeler Donia et être une fée, et propose de vous bénir pour votre quête de la princesse. Vous n'y croyez qu'à moitié, mais son bâton a l'air solide : mieux vaut ne pas la vexer.",
     "possibilities": {
       "accept": {
         "text": "Accepter son offre.",
@@ -2819,7 +2819,7 @@
     "text": "Alors que vous parcourez le désert de La Dune, l'air vous semble devenir de plus en plus sec. À mesure que vous avancez, les grains de sable virevoltent et vous obligent à plisser les yeux. Soudain, vous sentez le sol se raffermir sous vos pieds l'espace d'un pas. Surpris, vous poussez le sable et découvrez une trappe et l'ouvrez. Un gigantesque labyrinthe se révèle devant vos yeux ébahis."
   },
   "71": {
-    "text": "Entre les dunes de la Vallée des Rois, deux tombeaux à demi ensevelis dominent une petite oasis. Vous vous penchez pour boire à une rigole à moitié ensablée quand un rire vous fait sursauter. Un vieil homme barbu, le visage sous une large capuche, se présente : Xirtex. Il vous propose de vous héberger sous sa tente.",
+    "text": "Entre les dunes de la Vallée des Rois, deux tombeaux à demi ensevelis dominent une petite oasis. Assoiffé, vous vous penchez pour boire à une rigole à moitié ensablée quand un rire vous fait sursauter. Un vieil homme barbu, le visage sous une large capuche, se présente : Xirtex. Il vous propose de vous héberger sous sa tente, le temps de vous remettre et de lui raconter vos voyages.",
     "possibilities": {
       "accept": {
         "text": "Accepter son invitation",
@@ -3021,7 +3021,7 @@
     "text": "En arrivant à la plage sentinelle, vous apercevez, amarré, un bateau aux voiles noires et usées. Sur le pont, un homme portant un large tricorne, probablement le capitaine, vous fait signe de le rejoindre."
   },
   "76": {
-    "text": "Depuis des heures, vous longez une rivière dans la Forêt Célestrum, au pied du mont. Un cri sort d'une maison en ruine. Vous frappez. Un vieil homme aux yeux hagards vous ouvre. Il s'appelle Parziter, parle trop vite et vous demande si vous aussi, vous sentez le sol trembler.",
+    "text": "Après des heures de marche dans la Forêt Célestrum, vous trouvez une maison en ruine au bord d'une rivière. Un cri en sort. Vous frappez à la porte vermoulue, et un vieil homme vous ouvre, les yeux hagards et les cheveux en bataille. Il s'appelle Parziter. Il parle trop vite et mélange tout, mais vous comprenez qu'il a besoin d'aide, et il vous demande si vous aussi, vous sentez le sol trembler.",
     "possibilities": {
       "help": {
         "text": "Proposer votre aide.",
