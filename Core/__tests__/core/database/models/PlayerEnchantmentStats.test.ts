@@ -28,6 +28,7 @@ function buildObjectItem(nature: ItemNature, power: number): ObjectItem {
 function buildActiveObjects(params: {
 	weaponEnchantmentId?: string | null;
 	armorEnchantmentId?: string | null;
+	potionStat?: number;
 }): PlayerActiveObjects {
 	const zeroStatsItem = {
 		getAttack: () => 0,
@@ -46,7 +47,13 @@ function buildActiveObjects(params: {
 			itemLevel: 0,
 			itemEnchantmentId: params.armorEnchantmentId ?? null
 		},
-		potion: { item: zeroStatsItem as PlayerActiveObjects['potion']['item'] },
+		potion: {
+			item: {
+				getAttack: () => params.potionStat ?? 0,
+				getDefense: () => params.potionStat ?? 0,
+				getSpeed: () => params.potionStat ?? 0
+			} as PlayerActiveObjects['potion']['item']
+		},
 		object: { item: buildObjectItem(ItemNature.NONE, 0) }
 	};
 }
@@ -149,6 +156,21 @@ describe('Player enchantment stat calculations', () => {
 			expect(player.getMaxBreath(activeObjects)).toBe(playerClass.maxBreath + 3);
 			expect(player.getMaxBreath(buildActiveObjects({}))).toBe(playerClass.maxBreath);
 		});
+	});
+});
+
+describe('Player stat calculations with the active potion', () => {
+	it('counts the stats of the active potion unless it is left out', () => {
+		const player = buildPlayer(LEVEL, CLASS_ID);
+		const baseStats = player.getMaxStatsValue();
+		const activeObjects = buildActiveObjects({ potionStat: 7 });
+
+		expect(player.getCumulativeAttack(activeObjects)).toBe(baseStats.attack + 7);
+		expect(player.getCumulativeDefense(activeObjects)).toBe(baseStats.defense + 7);
+		expect(player.getCumulativeSpeed(activeObjects)).toBe(baseStats.speed + 7);
+		expect(player.getCumulativeAttack(activeObjects, false)).toBe(baseStats.attack);
+		expect(player.getCumulativeDefense(activeObjects, false)).toBe(baseStats.defense);
+		expect(player.getCumulativeSpeed(activeObjects, false)).toBe(baseStats.speed);
 	});
 });
 
