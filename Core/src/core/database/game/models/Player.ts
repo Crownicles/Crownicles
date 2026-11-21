@@ -838,7 +838,7 @@ export class Player extends Model {
 	 * Check if the player has a holy class
 	 */
 	public hasHolyClass(): boolean {
-		return this.class in ClassInfoConstants.HOLY_CLASSES;
+		return ClassInfoConstants.HOLY_CLASSES.includes(this.class);
 	}
 
 	/**
