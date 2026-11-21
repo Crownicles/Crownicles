@@ -1,6 +1,7 @@
 name: Mutation Tests
 
-# Non-blocking: mutates the files listed in `mutate` of each stryker.config.mjs (#5165)
+# Mutates the files listed in `mutate` of each stryker.config.mjs (#5165). Does not block the pull requests, but fails and
+# reports it in an issue when a mutated file falls under the floor of MIN_FILE_SCORE.
 on:
   schedule:
     - cron: '0 3 * * *'
@@ -10,10 +11,16 @@ concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
 
+env:
+  MIN_FILE_SCORE: 75
+
 jobs:
   mutation-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    permissions:
+      contents: read
+      issues: write
     strategy:
       fail-fast: false
       matrix:
@@ -58,7 +65,7 @@ jobs:
 
       - name: Mutation summary
         if: always()
-        run: node .github/scripts/test-reports-summary.mjs mutation ${{ matrix.module }}
+        run: node .github/scripts/test-reports-summary.mjs mutation ${{ matrix.module }} --min-file-score "$MIN_FILE_SCORE"
 
       - name: Upload mutation report
         uses: actions/upload-artifact@v7
@@ -66,3 +73,21 @@ jobs:
         with:
           name: mutation-report-${{ matrix.module }}
           path: ${{ matrix.module }}/reports/mutation/
+
+      # A scheduled run notifies nobody but the author of its schedule: the failure is followed in an issue
+      - name: Report the failure in an issue
+        if: failure() && github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          MODULE: ${{ matrix.module }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          title="Mutation testing: la mutation nocturne de $MODULE échoue"
+          body="Le run $RUN_URL a échoué : un fichier muté est passé sous le plancher de $MIN_FILE_SCORE %, ou les tests ne passent plus. Le résumé du job liste les fichiers concernés, et le rapport HTML est en artefact."
+          number=$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$number" ]; then
+            gh issue comment "$number" --body "$body"
+          else
+            gh issue create --title "$title" --label test --label "not end user" --body "$body"
+          fi

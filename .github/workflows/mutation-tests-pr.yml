@@ -1,0 +1,89 @@
+name: Mutation Tests (changed files)
+
+# Informative: mutates the files a pull request changes among the ones of `mutate` in stryker.config.mjs (#5165).
+# The score is reported in the job summary; the nightly Mutation Tests workflow enforces the floor.
+on:
+  pull_request:
+    branches: [ '**' ]
+    paths: [ Lib/src/**, Core/src/**, Lib/stryker.config.mjs, Core/stryker.config.mjs, .github/workflows/mutation-tests-pr.yml, .github/scripts/mutation-targets.mjs ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mutation-tests-changed-files:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [ Lib, Core ]
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # The merge commit of the pull request and its first parent, the base it is compared to
+          fetch-depth: 2
+
+      - name: Setup Node.js and PNPM
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Select the files to mutate
+        id: targets
+        env:
+          MODULE: ${{ matrix.module }}
+        run: echo "mutate=$(node .github/scripts/mutation-targets.mjs "$MODULE" HEAD^1 HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache PNPM dependencies
+        if: steps.targets.outputs.mutate != ''
+        uses: actions/cache@v6
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-all-deps-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-all-deps-
+
+      - name: Install dependencies
+        if: steps.targets.outputs.mutate != ''
+        run: |
+          pnpm --dir ./Lib install --frozen-lockfile
+          pnpm --dir ./${{ matrix.module }} install --frozen-lockfile
+
+      - name: Create config file
+        if: steps.targets.outputs.mutate != '' && matrix.module == 'Core'
+        run: cp config/config.default.toml config/config.toml
+        working-directory: ./Core
+
+      # Read only: the results of the nightly run spare the mutants the pull request did not change
+      - name: Restore the nightly mutation results
+        if: steps.targets.outputs.mutate != ''
+        uses: actions/cache/restore@v6
+        with:
+          path: ${{ matrix.module }}/reports/stryker-incremental.json
+          key: stryker-incremental-${{ matrix.module }}-${{ github.run_id }}
+          restore-keys: |
+            stryker-incremental-${{ matrix.module }}-
+
+      # Informative: a low score or a run too long for the job is reported without failing the pull request
+      - name: Run mutation tests on the changed files
+        if: steps.targets.outputs.mutate != ''
+        continue-on-error: true
+        timeout-minutes: 60
+        env:
+          MUTATE: ${{ steps.targets.outputs.mutate }}
+        run: pnpm --dir ./${{ matrix.module }} test:mutation --mutate "$MUTATE"
+
+      - name: Mutation summary
+        if: always() && steps.targets.outputs.mutate != ''
+        run: node .github/scripts/test-reports-summary.mjs mutation ${{ matrix.module }}
+
+      - name: Upload mutation report
+        uses: actions/upload-artifact@v7
+        if: always() && steps.targets.outputs.mutate != ''
+        with:
+          name: mutation-report-pr-${{ matrix.module }}
+          path: ${{ matrix.module }}/reports/mutation/
