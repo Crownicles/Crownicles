@@ -3,11 +3,6 @@
     "convoy": {
       "outcomes": {
         "0": {
-          "requirements": {
-            "level": {
-              "max": 30
-            }
-          },
           "money": 350,
           "mapTypesDestination": [
             "ro"
