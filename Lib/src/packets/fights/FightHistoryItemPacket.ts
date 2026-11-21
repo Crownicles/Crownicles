@@ -31,6 +31,7 @@ export class CommandFightHistoryItemPacket extends CrowniclesPacket {
 		attack?: number;
 		speed?: number;
 		breath?: number; // This one is not in %
+		summoning?: number; // Number of allies summoned to attack
 	};
 
 	fightActionEffectReceived?: { // Stat change for the fighter in % (10 = 10%) can be negative

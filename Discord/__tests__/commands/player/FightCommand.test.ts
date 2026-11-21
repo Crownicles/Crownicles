@@ -24,6 +24,7 @@ import { CommandFightEndOfFightPacket } from "../../../../Lib/src/packets/fights
 import { FightRewardPacket } from "../../../../Lib/src/packets/fights/FightRewardPacket";
 import { KingGuardFightRewardPacket } from "../../../../Lib/src/packets/fights/KingGuardFightRewardPacket";
 import { CommandFightStatusPacket } from "../../../../Lib/src/packets/fights/FightStatusPacket";
+import { CommandFightHistoryItemPacket } from "../../../../Lib/src/packets/fights/FightHistoryItemPacket";
 import { FightPlayerStats } from "../../../../Lib/src/types/FightPlayerStats";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { KingGuardIdentity } from "../../../../Lib/src/utils/KingGuardIdentity";
@@ -33,7 +34,7 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	clickOn, collectorPacket, componentsOf, dispatch, embedsOf, ERROR_COLOR, fakeClick, fakeCommand, FakeInteraction,
-	lastMessage, RenderedEmbed, sentPackets, setupRendering, singleMessage
+	lastMessage, RenderedEmbed, renderedText, sentPackets, setupRendering, singleMessage
 } from "../../mocks/DiscordRenderHarness";
 import { knownPlayers } from "../../mocks/DiscordRenderMocks";
 import frenchCommands from "../../../../Lang/fr/commands.json";
@@ -234,6 +235,30 @@ function fighter(keycloakId: string, finalEnergy: number): CommandFightEndOfFigh
 		maxEnergy: 1000
 	};
 }
+
+describe("fight history", () => {
+	it("tells how many allies a monster summoned with its attack", async () => {
+		const command = fakeCommand("Fighter");
+		const fightId = "summoning-fight";
+		await dispatch(command.context, introduction({
+			fightId, fightOpponentKeycloakId: undefined, fightOpponentMonsterId: "crocodile"
+		}));
+
+		await dispatch(command.context, makePacket(CommandFightHistoryItemPacket, {
+			fightId,
+			monsterId: "crocodile",
+			fightActionId: "summonAttack",
+			status: "normal",
+			fightActionEffectDealt: {
+				damages: 120, summoning: 7
+			}
+		}));
+
+		const history = command.interaction.messages.map(renderedText).join("\n");
+		expect(history).toContain("Invocation de 7 alliés");
+		expect(history).toContain("Dégâts infligés : 120");
+	});
+});
 
 describe("end of fight", () => {
 	it.each([

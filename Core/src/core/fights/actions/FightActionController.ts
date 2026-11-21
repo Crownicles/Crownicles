@@ -125,6 +125,9 @@ export abstract class FightActionController {
 			case FightStatBuffed.BREATH_REGEN:
 				target.applyBreathRegenModifier(buff.value, buff.duration ?? 1);
 				break;
+			case FightStatBuffed.SUMMON:
+				// The summoned allies are already counted in the damage: the buff is only recorded to be displayed
+				break;
 			default:
 				return;
 		}

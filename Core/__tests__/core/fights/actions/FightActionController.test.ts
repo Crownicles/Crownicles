@@ -287,7 +287,7 @@ describe("FightActionController.applyBuff on every stat", () => {
 		expect([fighter.getDamageMultiplier(), fighter.getRegenBreath()]).toEqual([1.5, 4]);
 	});
 
-	it("records every applied buff, in order, but not the unhandled ones", () => {
+	it("records every applied buff in order, the summoning included, but not an unknown stat", () => {
 		const fighter = new TestFighter();
 		const result = defaultFightActionResult();
 		const applied = (stat: FightStatBuffed): void => FightActionController.applyBuff(result, {
@@ -296,9 +296,10 @@ describe("FightActionController.applyBuff on every stat", () => {
 
 		applied(FightStatBuffed.ATTACK);
 		applied(FightStatBuffed.SUMMON);
+		applied(99 as FightStatBuffed);
 		applied(FightStatBuffed.BREATH);
 
-		expect(result.buffs?.map(recordedBuff => recordedBuff.stat)).toEqual([FightStatBuffed.ATTACK, FightStatBuffed.BREATH]);
+		expect(result.buffs?.map(recordedBuff => recordedBuff.stat)).toEqual([FightStatBuffed.ATTACK, FightStatBuffed.SUMMON, FightStatBuffed.BREATH]);
 	});
 
 	it("only reduces the healing of a cursed fighter, not its other buffs nor its energy losses", () => {
@@ -480,6 +481,32 @@ describe("simpleDamageFightAction", () => {
 			simpleDamageFightAction(fighters, probabilities, info).damages,
 			simpleDamageFightAction(fighters, probabilities, info, 3).damages
 		]).toEqual([50, 150]);
+	});
+
+	it("records the number of summoned allies of a multiplied attack, to be displayed, and nothing without multiplier", () => {
+		fixFightRandomness();
+		const fighters = {
+			sender: new TestFighter({ level: NEUTRAL_LEVEL }), receiver: new TestFighter()
+		};
+		const info = {
+			attackInfo: {
+				minDamage: 10, averageDamage: 50, maxDamage: 100
+			},
+			statsInfo: {
+				attackerStats: [100], defenderStats: [100], statsEffect: [1]
+			}
+		};
+		const probabilities = {
+			critical: 0, failure: 0
+		};
+
+		expect(simpleDamageFightAction(fighters, probabilities, info).buffs).toBeUndefined();
+		expect(simpleDamageFightAction(fighters, probabilities, info, 7).buffs).toEqual([{
+			selfTarget: true,
+			stat: FightStatBuffed.SUMMON,
+			value: 7,
+			operator: FightStatModifierOperation.MULTIPLIER
+		}]);
 	});
 });
 

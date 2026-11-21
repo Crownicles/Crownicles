@@ -8,6 +8,13 @@ import { PlayerFighter } from "../../../src/core/fights/fighter/PlayerFighter";
 import { AiPlayerFighter } from "../../../src/core/fights/fighter/AiPlayerFighter";
 import { CommandFightIntroduceFightersPacket } from "../../../../Lib/src/packets/fights/FightIntroductionPacket";
 import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
+import { CommandFightHistoryItemPacket } from "../../../../Lib/src/packets/fights/FightHistoryItemPacket";
+import {
+	FightActionResult, FightStatBuffed
+} from "../../../../Lib/src/types/FightActionResult";
+import { FightStatModifierOperation } from "../../../../Lib/src/types/FightStatModifierOperation";
+import { FightActionStatus } from "../../../../Lib/src/types/FightActionStatus";
+import type { FightAction } from "../../../src/data/FightAction";
 
 const ownedPet = { typeId: 1 };
 
@@ -66,5 +73,38 @@ describe("FightView.introduceFight", () => {
 		});
 		expect(packet.fightOpponentMonsterId).toBeUndefined();
 		expect(packet.fightInitiatorPet).toBeUndefined();
+	});
+});
+
+describe("FightView.addActionToHistory", () => {
+	function historyOf(result: FightActionResult): CommandFightHistoryItemPacket {
+		const response: CommandFightHistoryItemPacket[] = [];
+		new FightView({} as PacketContext, {
+			id: "fight", isSilentMode: (): boolean => false
+		} as FightController)
+			.addActionToHistory(response, buildMonsterFighter(), { id: "summonAttack" } as FightAction, result);
+		return response[0];
+	}
+
+	it("tells how many allies a monster summoned to attack", () => {
+		const packet = historyOf({
+			attackStatus: FightActionStatus.NORMAL,
+			damages: 120,
+			buffs: [{
+				selfTarget: true, stat: FightStatBuffed.SUMMON, value: 7, operator: FightStatModifierOperation.MULTIPLIER
+			}]
+		});
+
+		expect(packet.fightActionEffectDealt).toMatchObject({
+			damages: 120, summoning: 7
+		});
+	});
+
+	it("tells no summoning for an attack without summoned allies", () => {
+		const packet = historyOf({
+			attackStatus: FightActionStatus.NORMAL, damages: 40
+		});
+
+		expect(packet.fightActionEffectDealt?.summoning).toBeUndefined();
 	});
 });
