@@ -96,6 +96,7 @@ async topScoreRes(context: PacketContext, packet: CommandTopPacketResScore): Pro
 - Use `i18n.t("namespace:key", { lng })` pattern
 - NEVER edit something else than the french translations, other languages are synced from there in crowdin, so any change will be overwritten.
 - **NEVER use direct speech** (dialogue with quotes like `<< >>` or `" "`) in translations. All text should be narrative/descriptive, not conversational.
+- Before writing or rewriting event texts or outcome conditions, follow the `write-event-texts` skill (`.github/skills/write-event-texts/SKILL.md`): style, lore, place canon and the threshold scale.
 
 ### Docker Development
 - Each service has a `Dockerfile`
