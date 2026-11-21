@@ -1503,7 +1503,7 @@
         "confirmPurchase": "Installer le domaine",
         "confirmRelocate": "Déplacer le domaine",
         "purchaseTitle": "{{pseudo}}, domaine installé !",
-        "purchaseDescription": "{emote:city.guildDomain.menu} Le notaire vous félicite chaleureusement et vous remet les actes officiels scellés du sceau de la ville. Le domaine de votre guilde est désormais enraciné dans cette cité. Les premiers ouvriers se mettent déjà au travail pour préparer le terrain. L'acquisition a coûté **{{cost}} {emote:unitValues.money}** à la trésorerie.",
+        "purchaseDescription": "{emote:city.guildDomain.menu} Le notaire vous félicite chaleureusement et vous remet les actes officiels scellés du sceau de la ville. Le domaine de votre guilde est désormais enraciné dans cette cité. Les premiers ouvriers se mettent déjà au travail pour préparer le terrain.",
         "relocateTitle": "{{pseudo}}, domaine déplacé !",
         "relocateDescription": "{emote:city.guildDomain.menu} Le notaire finalise les documents de transfert et vous les remet avec un sourire professionnel. Les chariots de déménagement sont déjà en route. Le domaine de votre guilde s'installera bientôt dans cette ville, pour **{{cost}} {emote:unitValues.money}** de la trésorerie.",
         "notEnoughTreasuryDescription": "{emote:city.guildDomainNotary} Après avoir consciencieusement examiné les finances de votre guilde, le notaire secoue la tête avec regret. La trésorerie ne contient pas assez de fonds pour cette opération — il vous manque **{{missingTreasury}} {emote:unitValues.money}**. Il vous encourage à revenir lorsque la guilde aura économisé suffisamment.",

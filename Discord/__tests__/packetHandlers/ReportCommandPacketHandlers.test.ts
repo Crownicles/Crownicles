@@ -136,6 +136,7 @@ const ANSWERS: [ReportPacketName, object, string[]][] = [
 	["CommandReportHomeBedRes", { health: 25 }, ["**25**"]],
 	["CommandReportBedCooldownRes", { nextAvailableAt: 1_800_000_000_000 }, ["<t:1800000000:R>"]],
 	["CommandReportEatInnMealCooldownRes", { nextAvailableAt: 1_800_000_000_000 }, ["<t:1800000000:R>"]],
+	["CommandReportGuildDomainPurchaseRes", { cost: 0 }, ["domaine installé", "actes officiels"]],
 	["CommandReportGuildDomainRelocateRes", { cost: 2000 }, ["domaine déplacé", "**2000"]],
 	["CommandReportGuildDomainNotEnoughTreasuryRes", { missingTreasury: 700 }, ["**700"]],
 	["CommandReportGardenCompostRes", {
@@ -169,12 +170,5 @@ describe("report answers", () => {
 		for (const expected of expectedTexts) {
 			expect(text).toContain(expected);
 		}
-	});
-
-	it("tells how much the treasury paid for the guild domain", async () => {
-		const text = renderedText(await renderAnswer("CommandReportGuildDomainPurchaseRes", { cost: 6000 }));
-
-		expect(text).toContain("domaine installé");
-		expect(text).toContain("6000");
 	});
 });
