@@ -196,6 +196,7 @@
     "recalledTitle": "{{pseudo}}uma recordação familiar",
     "recalled_male": "Ao ouvir o teu apelo, {{petDisplay}} abandona a sua busca e regressa para junto de ti, com a cauda baixa e os olhos cheios de reprovação. Ele não traz nada da sua viagem interrompida. Podes ver o desapontamento nos seus olhos - ele vai ficar ressentido contigo durante algum tempo.",
     "recalled_female": "Ao ouvir o teu apelo, {{petDisplay}} abandona a sua busca e regressa para junto de ti, com a cauda baixa e os olhos cheios de reprovação. Ela não traz nada da sua viagem interrompida. Podes ver o desapontamento nos seus olhos - ela vai ficar ressentida contigo durante algum tempo.",
+    "loveLost": "\n\n{emote:expedition.love} Votre familier a perdu **{{loveLost}}** points d'amour.",
     "finishedTitle": "{{pseudo}}A expedição terminou!",
     "finishedDescription": {
       "talisman": {
@@ -903,6 +904,7 @@
       "shopEmptyDescription": "Atualmente, não há serviços a oferecer.",
       "equipmentChangedTitle": "{{pseudo}}, o equipamento mudou!",
       "equipmentChangedDescription": "O equipamento selecionado já não é o mesmo neste local do inventário: foi movido desde que o menu foi aberto. Não foi gasto nada e o menu foi atualizado com o seu inventário atual.",
+      "offerChanged": "Cette offre n'est plus valable : la situation a changé depuis l'ouverture du menu. Rien n'a été dépensé.",
       "exitInn": "Fora da floresta",
       "reactions": {
         "exit": {
@@ -2811,7 +2813,12 @@
     "swapSection": "{emote:equipCommand.swap} **swap:**",
     "noItems": "Não tem de gerir qualquer equipamento!",
     "closeTitle": "{{pseudo}}encerramento do equipamento",
-    "closeDescription": "Fechou o menu Equipamento."
+    "closeDescription": "Fechou o menu Equipamento.",
+    "errors": {
+      "invalid": "Cette action n'est plus possible : votre équipement a changé entre-temps.",
+      "noItem": "Aucun objet n'est équipé dans cette catégorie, il n'y a rien à ranger.",
+      "reserveFull": "Votre réserve est pleine : libérez de la place avant d'y ranger cet objet."
+    }
   },
   "drink": {
     "errors": {
