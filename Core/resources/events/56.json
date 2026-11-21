@@ -3,23 +3,71 @@
     "beach": {
       "outcomes": {
         "0": {
+          "requirements": {
+            "speed": {
+              "max": 249
+            }
+          },
           "money": -100
         },
         "1": {},
         "2": {
-          "health": -3
+          "health": -3,
+          "effect": "feetHurt"
+        },
+        "3": {
+          "requirements": {
+            "speed": {
+              "min": 250
+            }
+          },
+          "karma": 2,
+          "effect": "occupied",
+          "lostTime": 10
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 20
         }
       }
     },
     "drinkBlack": {
       "outcomes": {
         "0": {
+          "requirements": {
+            "health": {
+              "min": 100
+            }
+          },
           "effect": "confounded",
           "health": -70
         },
         "1": {
           "effect": "sleeping",
           "money": 400
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "effect": "sleeping",
+          "health": 10
+        },
+        "3": {
+          "requirements": {
+            "health": {
+              "max": 99
+            }
+          },
+          "effect": "confounded",
+          "health": -20
         }
       }
     },
@@ -30,10 +78,12 @@
           "money": 200,
           "tags": [
             "drinkAlcohol"
-          ]
+          ],
+          "karma": -3
         },
         "1": {
-          "health": 10
+          "health": 10,
+          "karma": 2
         },
         "2": {
           "effect": "occupied",
@@ -41,22 +91,28 @@
         },
         "3": {
           "effect": "freezing",
-          "health": -20
-        }
-      }
-    },
-    "end": {
-      "outcomes": {
-        "0": {
-          "effect": "confounded"
+          "health": -20,
+          "karma": -1
         },
-        "1": {
-          "money": -225
+        "4": {
+          "requirements": {
+            "validClassIds": [
+              24
+            ]
+          },
+          "randomItem": {}
         },
-        "2": {
-          "effect": "occupied",
-          "health": 5,
-          "lostTime": 20
+        "5": {
+          "requirements": {
+            "karma": {
+              "min": 80
+            }
+          },
+          "randomItem": {
+            "rarity": {
+              "min": 3
+            }
+          }
         }
       }
     },
@@ -67,11 +123,83 @@
           "health": 15
         },
         "1": {
+          "requirements": {
+            "level": {
+              "max": 39
+            }
+          },
           "effect": "confounded"
         },
         "2": {
+          "requirements": {
+            "validClassIds": [
+              24
+            ]
+          },
+          "health": 5
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "effect": "freezing"
+        },
+        "4": {},
+        "5": {
+          "requirements": {
+            "level": {
+              "min": 40
+            }
+          },
           "effect": "occupied",
-          "lostTime": 10
+          "lostTime": 15
+        }
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "speed": {
+              "max": 249
+            }
+          },
+          "effect": "confounded",
+          "health": -10
+        },
+        "1": {
+          "money": -225
+        },
+        "2": {
+          "effect": "occupied",
+          "health": 5,
+          "lostTime": 20
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "effect": "sleeping",
+          "health": 10
+        },
+        "4": {
+          "requirements": {
+            "speed": {
+              "min": 250
+            }
+          }
+        },
+        "5": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "effect": "freezing"
         }
       }
     }
@@ -80,8 +208,5 @@
     {
       "mapId": 1
     }
-  ],
-  "tags": [
-    "meetGruffo"
   ]
 }

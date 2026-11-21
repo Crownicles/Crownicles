@@ -3,18 +3,58 @@
     "help": {
       "outcomes": {
         "0": {
+          "requirements": {
+            "attack": {
+              "min": 240
+            }
+          },
           "money": 150,
-          "randomItem": {}
+          "randomItem": {},
+          "karma": 3
         },
         "1": {
+          "requirements": {
+            "level": {
+              "max": 25
+            }
+          },
           "effect": "hurt",
           "health": -18
         },
         "2": {
-          "randomItem": {}
+          "randomItem": {},
+          "karma": 2
         },
         "3": {
-          "money": 50
+          "requirements": {
+            "validPetTypeIds": [
+              1,
+              2
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 60,
+          "money": 50,
+          "karma": 4
+        },
+        "4": {
+          "requirements": {
+            "speed": {
+              "min": 220
+            }
+          },
+          "money": 60,
+          "karma": 2
+        },
+        "5": {
+          "requirements": {
+            "defense": {
+              "min": 210
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 15,
+          "karma": 4
         }
       }
     },
@@ -26,28 +66,123 @@
           "health": -33
         },
         "2": {
+          "requirements": {
+            "validPetTypeIds": [
+              93
+            ]
+          },
           "money": 80,
           "randomItem": {}
+        },
+        "3": {
+          "requirements": {
+            "level": {
+              "min": 55
+            }
+          },
+          "money": 35,
+          "karma": 3
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "max": -40
+            }
+          },
+          "money": 22,
+          "karma": -4
+        },
+        "5": {
+          "requirements": {
+            "health": {
+              "max": 45
+            }
+          },
+          "health": 12,
+          "effect": "occupied",
+          "lostTime": 15
         }
       }
     },
     "question": {
       "outcomes": {
         "0": {
-          "randomItem": {}
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "randomItem": {},
+          "karma": 2
         },
         "1": {
           "effect": "occupied",
           "lostTime": 30
         },
         "2": {
-          "money": 120
+          "requirements": {
+            "level": {
+              "min": 50
+            }
+          },
+          "money": 120,
+          "karma": 3
+        },
+        "3": {
+          "requirements": {
+            "validClassIds": [
+              24
+            ]
+          },
+          "money": 65,
+          "karma": 3
+        },
+        "4": {
+          "requirements": {
+            "petRarity": {
+              "min": 4
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 20,
+          "karma": 2
+        },
+        "5": {
+          "requirements": {
+            "level": {
+              "max": 25
+            }
+          },
+          "effect": "confounded"
         }
       }
     },
     "end": {
       "outcomes": {
-        "0": {}
+        "0": {},
+        "1": {
+          "requirements": {
+            "validPetTypeIds": [
+              3,
+              4
+            ]
+          }
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          }
+        },
+        "3": {
+          "requirements": {
+            "speed": {
+              "min": 200
+            }
+          },
+          "karma": 1
+        }
       }
     }
   },
