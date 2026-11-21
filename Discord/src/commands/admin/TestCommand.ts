@@ -43,12 +43,13 @@ export async function handleCommandTestPacketRes(packet: CommandTestPacketRes, c
 	}
 
 	if (packet.isError) {
-		const content = { content: packet.result };
+		// An embed and not a content: a city menu answered with the same packets turns the reply into components V2, which refuse a content
+		const payload = { embeds: [buildTestErrorEmbed(packet.result)] };
 		if (interaction.replied) {
-			await interaction.channel.send(content);
+			await interaction.channel.send(payload);
 		}
 		else {
-			await interaction.editReply(content);
+			await interaction.editReply(payload);
 		}
 		return;
 	}
@@ -75,6 +76,15 @@ function buildTestResultEmbed(commandName: string, result: string, userAvatarUrl
 		})
 		.setDescription(result)
 		.setColor(<HexColorString> ColorConstants.SUCCESSFUL);
+}
+
+/**
+ * Build the embed of a test command that failed
+ */
+function buildTestErrorEmbed(result: string): CrowniclesEmbed {
+	return new CrowniclesEmbed()
+		.setDescription(result)
+		.setErrorColor();
 }
 
 /**
@@ -121,7 +131,7 @@ async function sendResultWithoutInteraction(packet: CommandTestPacketRes, contex
 	const textChannel = channel as GuildTextBasedChannel;
 
 	if (packet.isError) {
-		await textChannel.send({ content: packet.result }).catch((e: unknown) => {
+		await textChannel.send({ embeds: [buildTestErrorEmbed(packet.result)] }).catch((e: unknown) => {
 			CrowniclesLogger.errorWithObj("Failed to deliver test command error result", e);
 		});
 		return;
