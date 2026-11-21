@@ -129,6 +129,14 @@ export function computePatchCoverage(addedLines, coverageByModule) {
 	};
 }
 
+function fileTable(files) {
+	return [
+		"| File | Covered | Uncovered added lines |",
+		"|---|---|---|",
+		...files.map(file => `| ${file.path} | ${file.total - file.uncovered.length}/${file.total} | ${toRanges(file.uncovered).join(", ")} |`)
+	];
+}
+
 export function formatReport(result, minPercent) {
 	const status = result.percent >= minPercent ? "passes" : "fails";
 	const lines = [
@@ -138,16 +146,41 @@ export function formatReport(result, minPercent) {
 		""
 	];
 	if (result.files.length > 0) {
-		lines.push("| File | Covered | Uncovered added lines |", "|---|---|---|");
-		for (const file of result.files) {
-			lines.push(`| ${file.path} | ${file.total - file.uncovered.length}/${file.total} | ${toRanges(file.uncovered).join(", ")} |`);
-		}
-		lines.push("");
+		lines.push(...fileTable(result.files), "");
 	}
 	if (status === "fails") {
 		lines.push("Add unit tests for these lines. A change only testable by the integration tests can carry the `skip-patch-coverage` label, then rerun the job.", "");
 	}
 	return lines.join("\n");
+}
+
+function addedLinesOf(base, head, modules) {
+	const diff = execFileSync("git", ["diff", "--unified=0", "--no-color", "--no-renames", base, head, "--", ...modules.map(module => `${module}/src`)], {
+		encoding: "utf8",
+		maxBuffer: 64 * 1024 * 1024
+	});
+	return parseAddedLines(diff);
+}
+
+function coverageOf(module) {
+	const lcovPath = join(module, "coverage", "lcov.info");
+	if (!existsSync(lcovPath)) {
+		throw new Error(`Missing ${lcovPath}: run pnpm test:coverage in ${module} first`);
+	}
+	return parseLcov(readFileSync(lcovPath, "utf8"));
+}
+
+/**
+ * Point the uncovered added lines out in the diff of the pull request
+ */
+function annotateUncoveredLines(files) {
+	const annotations = files.flatMap(file => toRanges(file.uncovered).map(range => ({
+		path: file.path, range
+	})));
+	for (const { path, range } of annotations.slice(0, MAX_ANNOTATIONS)) {
+		const [start, end = start] = range.split("-");
+		console.log(`::warning file=${path},line=${start},endLine=${end}::Added lines not covered by the unit tests`);
+	}
 }
 
 function main([base, head, minPercentArgument, ...modules]) {
@@ -157,32 +190,15 @@ function main([base, head, minPercentArgument, ...modules]) {
 		return 1;
 	}
 
-	const diff = execFileSync("git", ["diff", "--unified=0", "--no-color", "--no-renames", base, head, "--", ...modules.map(module => `${module}/src`)], {
-		encoding: "utf8",
-		maxBuffer: 64 * 1024 * 1024
-	});
-	const coverageByModule = new Map(modules.map(module => {
-		const lcovPath = join(module, "coverage", "lcov.info");
-		if (!existsSync(lcovPath)) {
-			throw new Error(`Missing ${lcovPath}: run pnpm test:coverage in ${module} first`);
-		}
-		return [module, parseLcov(readFileSync(lcovPath, "utf8"))];
-	}));
-
-	const result = computePatchCoverage(parseAddedLines(diff), coverageByModule);
+	const coverageByModule = new Map(modules.map(module => [module, coverageOf(module)]));
+	const result = computePatchCoverage(addedLinesOf(base, head, modules), coverageByModule);
 	const report = formatReport(result, minPercent);
 	console.log(report);
 	if (process.env.GITHUB_STEP_SUMMARY) {
 		appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${report}\n`);
 	}
 	if (process.env.GITHUB_ACTIONS) {
-		const annotations = result.files.flatMap(file => toRanges(file.uncovered).map(range => ({
-			path: file.path, range
-		})));
-		for (const { path, range } of annotations.slice(0, MAX_ANNOTATIONS)) {
-			const [start, end = start] = range.split("-");
-			console.log(`::warning file=${path},line=${start},endLine=${end}::Added lines not covered by the unit tests`);
-		}
+		annotateUncoveredLines(result.files);
 	}
 	return result.percent >= minPercent ? 0 : 1;
 }

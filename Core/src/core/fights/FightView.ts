@@ -10,7 +10,7 @@ import { CommandFightIntroduceFightersPacket } from "../../../../Lib/src/packets
 import { CommandFightStatusPacket } from "../../../../Lib/src/packets/fights/FightStatusPacket";
 import { FightAction } from "../../data/FightAction";
 import {
-	FightActionResult, FightStatBuffed
+	FightActionBuff, FightActionResult, FightStatBuffed
 } from "../../../../Lib/src/types/FightActionResult";
 import { CommandFightHistoryItemPacket } from "../../../../Lib/src/packets/fights/FightHistoryItemPacket";
 import { FightStatModifierOperation } from "../../../../Lib/src/types/FightStatModifierOperation";
@@ -30,6 +30,111 @@ import { BuggedFightPacket } from "../../../../Lib/src/packets/fights/BuggedFigh
 import { PetAssistanceResult } from "../../../../Lib/src/types/PetAssistanceResult";
 import { OwnedPet } from "../../../../Lib/src/types/OwnedPet";
 import { getDarkAttackPowerMultiplier } from "./actions/DarkAttackWear";
+
+type HistoryFighter = PlayerFighter | MonsterFighter | AiPlayerFighter;
+
+type HistoryActionResult = FightActionResult | FightAlterationResult | PetAssistanceResult;
+
+type StatsChange = {
+	attack?: number;
+	defense?: number;
+	speed?: number;
+	breath?: number;
+	energy?: number;
+};
+
+type FightActionEffectDealt = NonNullable<CommandFightHistoryItemPacket["fightActionEffectDealt"]>;
+
+type FightActionEffectReceived = NonNullable<CommandFightHistoryItemPacket["fightActionEffectReceived"]>;
+
+const PERCENT_STATS = [
+	FightStatBuffed.ATTACK,
+	FightStatBuffed.DEFENSE,
+	FightStatBuffed.SPEED,
+	FightStatBuffed.BREATH
+];
+
+const ADDED_STATS = [FightStatBuffed.BREATH, FightStatBuffed.ENERGY];
+
+/**
+ * Whether a buff is displayed as a stat change: a multiplied stat, or an added breath or energy
+ */
+function isDisplayedStatChange(buff: FightActionBuff): boolean {
+	return PERCENT_STATS.includes(buff.stat) && buff.operator === FightStatModifierOperation.MULTIPLIER
+		|| ADDED_STATS.includes(buff.stat) && buff.operator === FightStatModifierOperation.ADDITION;
+}
+
+/**
+ * Stat changes an action applied to the fighter (selfTarget) or to its opponent
+ */
+function buildStatsChange(result: HistoryActionResult, selfTarget: boolean): StatsChange {
+	const change: StatsChange = {};
+	for (const buff of result.buffs?.filter(buff => buff.selfTarget === selfTarget && isDisplayedStatChange(buff)) ?? []) {
+		switch (buff.stat) {
+			case FightStatBuffed.ATTACK:
+				change.attack = toSignedPercent(buff.value);
+				break;
+			case FightStatBuffed.DEFENSE:
+				change.defense = toSignedPercent(buff.value);
+				break;
+			case FightStatBuffed.SPEED:
+				change.speed = toSignedPercent(buff.value);
+				break;
+			case FightStatBuffed.BREATH:
+				change.breath = buff.value;
+				break;
+			case FightStatBuffed.ENERGY:
+				change.energy = buff.value;
+				break;
+			default:
+				break;
+		}
+	}
+	return change;
+}
+
+/**
+ * The pet of a player whose action is a pet assistance
+ */
+function getPetIfRelevant(fighter: HistoryFighter, result: HistoryActionResult): OwnedPet | undefined {
+	return !(fighter instanceof MonsterFighter) && fighter.pet && "assistanceStatus" in result
+		? fighter.pet.asOwnedPet()
+		: undefined;
+}
+
+/**
+ * Status of an attack, of an alteration or of a pet assistance
+ */
+function historyStatus(result: HistoryActionResult): string {
+	if ("attackStatus" in result) {
+		return result.attackStatus;
+	}
+	return "state" in result ? result.state : result.assistanceStatus;
+}
+
+function newAlterationOf(result: HistoryActionResult, selfTarget: boolean): string | undefined {
+	return "alterations" in result && result.alterations?.find(alteration => alteration.selfTarget === selfTarget)?.alteration || undefined;
+}
+
+function buildEffectDealt(result: HistoryActionResult): FightActionEffectDealt {
+	return {
+		...buildStatsChange(result, false),
+		newAlteration: newAlterationOf(result, false),
+		damages: result.damages,
+		reflectedDamages: "reflectedDamages" in result ? result.reflectedDamages : undefined,
+		summoning: result.buffs?.find(buff => buff.stat === FightStatBuffed.SUMMON)?.value
+	};
+}
+
+function buildEffectReceived(result: HistoryActionResult): FightActionEffectReceived {
+	return {
+		...buildStatsChange(result, true),
+		newAlteration: newAlterationOf(result, true),
+		damages: result.buffs?.find(
+			buff => buff.selfTarget && buff.stat === FightStatBuffed.DAMAGE && buff.operator === FightStatModifierOperation.ADDITION
+		)?.value
+	};
+}
 
 export class FightView {
 	public context: PacketContext;
@@ -157,77 +262,15 @@ export class FightView {
 	 */
 	addActionToHistory(
 		response: CrowniclesPacket[],
-		fighter: PlayerFighter | MonsterFighter | AiPlayerFighter,
+		fighter: HistoryFighter,
 		fightAction: FightAction,
-		fightActionResult: FightActionResult | FightAlterationResult | PetAssistanceResult
+		fightActionResult: HistoryActionResult
 	): void {
 		if (this.fightController.isSilentMode()) {
 			return;
 		}
-		const buildStatsChange = (selfTarget: boolean): {
-			attack?: number;
-			defense?: number;
-			speed?: number;
-			breath?: number;
-			energy?: number;
-		} => fightActionResult.buffs
-			?.filter(buff =>
-				buff.selfTarget === selfTarget
-				&& ([
-					FightStatBuffed.ATTACK,
-					FightStatBuffed.DEFENSE,
-					FightStatBuffed.SPEED,
-					FightStatBuffed.BREATH
-				].includes(buff.stat)
-					&& buff.operator === FightStatModifierOperation.MULTIPLIER
-					|| [FightStatBuffed.BREATH].includes(buff.stat)
-					&& buff.operator === FightStatModifierOperation.ADDITION
-					|| [FightStatBuffed.ENERGY].includes(buff.stat)
-					&& buff.operator === FightStatModifierOperation.ADDITION))
-			.reduce((acc, buff) => {
-				switch (buff.stat) {
-					case FightStatBuffed.ATTACK:
-						acc.attack = toSignedPercent(buff.value);
-						break;
-					case FightStatBuffed.DEFENSE:
-						acc.defense = toSignedPercent(buff.value);
-						break;
-					case FightStatBuffed.SPEED:
-						acc.speed = toSignedPercent(buff.value);
-						break;
-					case FightStatBuffed.BREATH:
-						acc.breath = buff.value;
-						break;
-					case FightStatBuffed.ENERGY:
-						acc.energy = buff.value;
-						break;
-					default:
-						break;
-				}
-				return acc;
-			}, {} as {
-				attack?: number; defense?: number; speed?: number; breath?: number; energy?: number;
-			}) ?? {};
-
-		/**
-		 * Return the pet if the action is a pet assistance and the fighter has a pet
-		 * @param fighter
-		 * @param fightActionResult
-		 */
-		const getPetIfRelevant = (
-			fighter: PlayerFighter | MonsterFighter | AiPlayerFighter,
-			fightActionResult: FightActionResult | FightAlterationResult | PetAssistanceResult
-		): OwnedPet | undefined => {
-			// Check if the fighter is a player (not a monster) and has a cached pet
-			if (!(fighter instanceof MonsterFighter) && fighter.pet) {
-				if ("assistanceStatus" in fightActionResult) {
-					return fighter.pet.asOwnedPet();
-				}
-			}
-			return undefined;
-		};
-		const usedFightActionId = Object.prototype.hasOwnProperty.call(fightActionResult, "usedAction") ? (fightActionResult as FightActionResult).usedAction!.id : undefined;
-		fightActionResult = Object.prototype.hasOwnProperty.call(fightActionResult, "usedAction") ? (fightActionResult as FightActionResult).usedAction!.result : fightActionResult;
+		const usedAction = Object.prototype.hasOwnProperty.call(fightActionResult, "usedAction") ? (fightActionResult as FightActionResult).usedAction : undefined;
+		const result = usedAction?.result ?? fightActionResult;
 		response.push(makePacket(CommandFightHistoryItemPacket, {
 			fightId: this.fightController.id,
 			fighterKeycloakId: fighter instanceof MonsterFighter ? undefined : fighter.player.keycloakId,
@@ -239,33 +282,13 @@ export class FightView {
 			 *        and fightActionResult.usedAction is what ended up being used
 			 */
 			fightActionId: fightAction.id,
-			usedFightActionId,
-			customMessage: "customMessage" in fightActionResult ? fightActionResult.customMessage : false,
-			customMessageFail: "customMessageFail" in fightActionResult ? fightActionResult.customMessageFail : false,
-			status:
-				"attackStatus" in fightActionResult
-					? fightActionResult.attackStatus // FightAction is an attack, so we have an attackStatus
-					: "state" in fightActionResult
-						? fightActionResult.state // FightAction is an alteration, so we have a state
-						: fightActionResult.assistanceStatus, // FightAction is pet assistance, so we have an assistanceStatus
-			pet: getPetIfRelevant(fighter, fightActionResult),
-			fightActionEffectDealt:
-				{
-					...buildStatsChange(false),
-					newAlteration: "alterations" in fightActionResult && fightActionResult.alterations?.find(alt => !alt.selfTarget)?.alteration || undefined,
-					damages: fightActionResult.damages,
-					reflectedDamages: "reflectedDamages" in fightActionResult ? fightActionResult.reflectedDamages : undefined,
-					summoning: fightActionResult.buffs?.find(buff => buff.stat === FightStatBuffed.SUMMON)?.value
-				},
-			fightActionEffectReceived:
-				{
-					...buildStatsChange(true),
-					newAlteration: "alterations" in fightActionResult && fightActionResult.alterations?.find(alt => alt.selfTarget)?.alteration || undefined,
-					damages:
-					fightActionResult.buffs?.find(
-						buff => buff.selfTarget && buff.stat === FightStatBuffed.DAMAGE && buff.operator === FightStatModifierOperation.ADDITION
-					)?.value
-				}
+			usedFightActionId: usedAction?.id,
+			customMessage: "customMessage" in result ? result.customMessage : false,
+			customMessageFail: "customMessageFail" in result ? result.customMessageFail : false,
+			status: historyStatus(result),
+			pet: getPetIfRelevant(fighter, result),
+			fightActionEffectDealt: buildEffectDealt(result),
+			fightActionEffectReceived: buildEffectReceived(result)
 		}));
 	}
 
