@@ -139,14 +139,14 @@ async function getPlayerAndHome(keycloakId: string): Promise<PlayerAndHome | nul
 		return null;
 	}
 	const home = await Homes.getOfPlayer(player.id);
-	const homeLevel = home?.getLevel();
-	if (!home || !homeLevel || homeLevel.features.cookingSlots <= 0) {
+	const cookingSlots = home?.getLevel()?.features.cookingSlots ?? 0;
+	if (!home || cookingSlots <= 0) {
 		return null;
 	}
 	return {
 		player,
 		home,
-		cookingSlots: homeLevel.features.cookingSlots
+		cookingSlots
 	};
 }
 
