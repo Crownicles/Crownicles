@@ -478,7 +478,7 @@
         "description": "Utiliza este comando para desafiar a otros jugadores.\nLas batallas tienen lugar turno a turno. En cada turno, puedes elegir una acción a realizar.\n\nPara más información, consulta la página de la guía: https://guide.crownicles.com/notions-principale/combats"
       },
       "FIGHT_HISTORY": {
-        "description": "Affiche l'historique de vos derniers combats : l'adversaire affronté, le résultat ainsi que l'évolution de la gloire et de la ligue de chaque combattant. Si vous avez déjà affronté un garde du roi, le bouton **Gardes du roi** présente le meilleur garde que vous avez vaincu, votre classement et le tableau d'honneur du royaume."
+        "description": "Muestra el historial de tus últimos combates: el rival al que te has enfrentado, el resultado y la evolución de la gloria y la liga de cada luchador. Si ya te has enfrentado a un guardia del rey, el botón **Guardias del rey** muestra al mejor guardia al que has derrotado, tu clasificación y el cuadro de honor del reino."
       },
       "FRIENDLY_FIGHT": {
         "description": "Permite enfrentarse a otro jugador, elegido mencionándolo o según su clasificación, en un combate amistoso. El jugador al que te enfrentas está controlado por una IA. Este combate no tiene ninguna consecuencia: ni gloria, ni recompensas, ni pérdida de energía, ni avance en la misión. El nivel de ambos combatientes tiene un límite máximo de {{friendlyFightLevelCap}} : un jugador de nivel inferior conserva su nivel."
@@ -2328,8 +2328,8 @@
       "energy": "Energía regenerada",
       "dailyBonus": "Bonificación diaria",
       "petExpedition": "Envío de mascotas completado",
-      "gardenPlantReady": "Plante du jardin prête à être récoltée",
-      "gardenAllPlantsReady": "Toutes les plantes du jardin prêtes à être récoltées"
+      "gardenPlantReady": "Planta del jardín lista para cosechar",
+      "gardenAllPlantsReady": "Todas las plantas del jardín listas para ser cosechadas"
     },
     "enableDisable": "Activar/Desactivar",
     "sendLocationField": "Dirección de entrega :",
@@ -2351,8 +2351,8 @@
   "missions": {
     "pages": {
       "missions": "Tareas",
-      "kingChallenge": "Défi du roi",
-      "quests": "Quêtes"
+      "kingChallenge": "El desafío del rey",
+      "quests": "Misiones"
     },
     "kingChallenge": {
       "title": "El desafío del rey de {{pseudo}}",
@@ -2363,88 +2363,88 @@
       "tier": "{emote:kingChallenge.{{status}}} Nivel {{tier}}: {{threshold, number}} {emote:unitValues.score} ({{rewards}})"
     },
     "quests": {
-      "title": "Quêtes de {{pseudo}}",
-      "description": "Les quêtes retracent les grandes découvertes qui attendent les aventuriers du royaume. Elles ne rapportent rien par elles-mêmes : chacune de leurs étapes est déjà récompensée en chemin.",
+      "title": "Misiones de {{pseudo}}",
+      "description": "Las misiones narran los grandes descubrimientos que esperan a los aventureros del reino. No reportan ninguna recompensa en sí mismas: cada una de sus etapas ya se recompensa a lo largo del camino.",
       "questHeader": "{{icon}} **{{name}}**",
-      "progression_one": "{{progressionBar}} {{count}} étape accomplie sur {{max}}",
-      "progression_other": "{{progressionBar}} {{count}} étapes accomplies sur {{max}}",
-      "currentStep": "{emote:quests.stepCurrent} **Étape {{stepNumber}}** : {{label}}\n{{hint}}",
-      "noOngoingQuest": "Vous n'avez aucune quête en cours. De nouvelles quêtes se découvrent au fil de vos aventures dans le royaume.",
+      "progression_one": "{{progressionBar}} {{count}} etapa completada en {{max}}",
+      "progression_other": "{{progressionBar}} {{count}} pasos completados en {{max}}",
+      "currentStep": "{emote:quests.stepCurrent} **Paso {{stepNumber}}** : {{label}}\n{{hint}}",
+      "noOngoingQuest": "No tienes ninguna misión en curso. A medida que avanzas en tus aventuras por el reino, irás descubriendo nuevas misiones.",
       "options": {
-        "quests": "Quêtes en cours ({{count}})",
-        "completedQuests": "Quêtes terminées ({{count}})"
+        "quests": "Misiones en curso ({{count}})",
+        "completedQuests": "Misiones completadas ({{count}})"
       },
-      "completedTitle": "Quêtes terminées de {{pseudo}}",
-      "completedQuest": "{{icon}} **{{name}}** — {emote:quests.completed} {{max}}/{{max}} étapes",
-      "noCompletedQuest": "Aucune quête n'est encore terminée. Les quêtes accomplies sont conservées ici.",
+      "completedTitle": "Misiones completadas de {{pseudo}}",
+      "completedQuest": "{{icon}} **{{name}}** — {emote:quests.completed} {{max}}/{{max}} pasos",
+      "noCompletedQuest": "Aún no se ha completado ninguna misión. Las misiones completadas se guardan aquí.",
       "list": {
         "expeditionTalismans": {
-          "name": "Les talismans d'expédition",
+          "name": "Los talismanes de expedición",
           "icon": "{emote:expedition.talisman}",
-          "description": "Les familiers les plus aguerris peuvent explorer seuls les contrées lointaines, à condition d'être liés à leur maître par des artefacts ancestraux. Velanna et Talvar finissent toujours par croiser la route des aventuriers qui sont prêts.",
+          "description": "Los familiares más experimentados pueden explorar por su cuenta tierras lejanas, siempre y cuando estén vinculados a su amo mediante artefactos ancestrales. Velanna y Talvar siempre acaban cruzándose en el camino de los aventureros que están preparados.",
           "steps": {
             "meetVelanna": {
               "label": "Conoce a Velanna",
-              "hint": "*Une guerrière balafrée arpente parfois les routes du continent et s'intéresse de près aux familiers de ceux qu'elle croise.*"
+              "hint": "*Una guerrera con una cicatriz recorre a veces las carreteras del continente y se interesa mucho por los familiares de aquellos con quienes se cruza.*"
             },
             "anchorTalisman": {
-              "label": "Obtenir le $t(models:talisman.anchor)",
-              "hint": "Velanna le confie si vous réunissez :\n• Niveau {{level}} minimum\n• Membre d'une guilde\n• Un familier rassasié et docile\n• Un familier déjà présenté à Talvar"
+              "label": "Obtener el $t(models:talisman.anchor)",
+              "hint": "Velanna te lo confiará si cumples los siguientes requisitos:\n• Nivel mínimo {{level}}\n• Ser miembro de un gremio\n• Una mascota saciada y dócil\n• Una mascota que ya haya sido presentada a Talvar"
             },
             "successfulExpedition": {
-              "label": "Réussir une expédition",
-              "hint": "*Le $t(models:talisman.anchor) permet d'envoyer son familier explorer des contrées lointaines depuis {command:pet}.*"
+              "label": "Cómo llevar a buen término una expedición",
+              "hint": "*El $t(models:talisman.anchor) permite enviar a tu mascota a explorar tierras lejanas desde {command:pet}.*"
             },
             "cloneTalisman": {
-              "label": "Obtenir le $t(models:talisman.clone)",
-              "hint": "*Les rumeurs parlent d'un artefact légendaire enfoui dans certaines contrées, que seul un familier en expédition pourrait déterrer.*"
+              "label": "Obtener el $t(models:talisman.clone)",
+              "hint": "*Se rumorea que hay un artefacto legendario enterrado en ciertas regiones, que solo un familiar que participe en una expedición podría desenterrar.*"
             }
           }
         },
         "seeds": {
-          "name": "Les graines du jardinier",
+          "name": "Las semillas del jardinero",
           "icon": "{emote:city.gardenStatus.seed}",
-          "description": "Un jardinier itinérant confie ses graines les plus rares aux aventuriers qui ont su faire pousser les précédentes. Il finit toujours par croiser, sur les chemins forestiers, la route de ceux qui sont prêts à recevoir la suivante.",
+          "description": "Un jardinero itinerante confía sus semillas más raras a los aventureros que han sabido cultivar las anteriores. Siempre acaba cruzándose, por los senderos del bosque, con aquellos que están dispuestos a recibir la siguiente.",
           "steps": {
             "commonHerb": {
-              "label": "Planter {emote:plants.1} $t(models:plants.1)",
-              "hint": "• Croiser Théobald, le jardinier, sur une route forestière\n• Niveau {{level}} minimum\n• Un jardin dans votre demeure pour la planter"
+              "label": "Plantar {emote:plants.1} $t(models:plants.1)",
+              "hint": "• Encontrarte con Théobald, el jardinero, en un camino forestal\n• Nivel mínimo {{level}}\n• Un jardín en tu casa para plantarla"
             },
             "goldenClover": {
-              "label": "Planter {emote:plants.2} $t(models:plants.2)",
-              "hint": "• Niveau {{level}} minimum\n• Prix : {{price, number}} {emote:unitValues.money}"
+              "label": "Plantar {emote:plants.2} $t(models:plants.2)",
+              "hint": "• Nivel mínimo {{level}}\n• Precio: {{price, number}} {emote:unitValues.money}"
             },
             "lunarMoss": {
-              "label": "Planter {emote:plants.3} $t(models:plants.3)",
-              "hint": "• Niveau {{level}} minimum\n• Au choix : un **familier volant**, une **nuit à l'auberge** de moins de {{innNightHours}} h, ou une **rencontre de nuit** ({{nightStart}} h – {{nightEnd}} h)"
+              "label": "Plantar {emote:plants.3} $t(models:plants.3)",
+              "hint": "• Nivel {{level}} mínimo\n• A elegir: una **mascota voladora**, una **noche en la posada** de menos de {{innNightHours}} h, o un **encuentro nocturno** ({{nightStart}} h – {{nightEnd}} h)"
             },
             "ironRoot": {
-              "label": "Planter {emote:plants.4} $t(models:plants.4)",
-              "hint": "• Niveau {{level}} minimum\n• Prix : {{price, number}} {emote:unitValues.money}"
+              "label": "Plantar {emote:plants.4} $t(models:plants.4)",
+              "hint": "• Nivel mínimo {{level}}\n• Precio: {{price, number}} {emote:unitValues.money}"
             },
             "nightMushroom": {
-              "label": "Planter {emote:plants.5} $t(models:plants.5)",
-              "hint": "• Niveau {{level}} minimum\n• Au choix : un **familier nocturne**, une **nuit à l'auberge** de moins de {{innNightHours}} h, ou une **rencontre de nuit** ({{nightStart}} h – {{nightEnd}} h)"
+              "label": "Plantar {emote:plants.5} $t(models:plants.5)",
+              "hint": "• Nivel {{level}} mínimo\n• A elegir: un **familiar nocturno**, una **noche en la posada** de menos de {{innNightHours}} h, o un **encuentro nocturno** ({{nightStart}} h – {{nightEnd}} h)"
             },
             "venomousLeaf": {
-              "label": "Planter {emote:plants.6} $t(models:plants.6)",
-              "hint": "• Niveau {{level}} minimum\n• Un **familier herbivore** dressé"
+              "label": "Plantar {emote:plants.6} $t(models:plants.6)",
+              "hint": "• Nivel mínimo de « {{level}} »\n• Una **mascota herbívora** adiestrada"
             },
             "fireBulb": {
-              "label": "Planter {emote:plants.7} $t(models:plants.7)",
-              "hint": "• Niveau {{level}} minimum\n• Au choix : être **mage**, un **familier de feu** ou un **équipement de feu** porté"
+              "label": "Plantar {emote:plants.7} $t(models:plants.7)",
+              "hint": "• Nivel mínimo de « {{level}} »\n• A elegir: ser **mago**, tener un **familiar de fuego** o llevar un **equipo de fuego**"
             },
             "meatPlant": {
-              "label": "Planter {emote:plants.8} $t(models:plants.8)",
-              "hint": "• Niveau {{level}} minimum\n• Un **familier carnivore** de rareté $t(items:rarities.{{rarity}}) ou supérieure"
+              "label": "Plantar {emote:plants.8} $t(models:plants.8)",
+              "hint": "• Nivel {{level}} mínimo\n• Una **mascota carnívora** de rareza $t(items:rarities.{{rarity}}) o superior"
             },
             "crystalFlower": {
-              "label": "Planter {emote:plants.9} $t(models:plants.9)",
-              "hint": "• Niveau {{level}} minimum\n• Prix : {{price, number}} {emote:unitValues.money}"
+              "label": "Plantar {emote:plants.9} $t(models:plants.9)",
+              "hint": "• Nivel mínimo {{level}}\n• Precio: {{price, number}} {emote:unitValues.money}"
             },
             "ancientTree": {
-              "label": "Planter {emote:plants.10} $t(models:plants.10)",
-              "hint": "• Niveau {{level}} minimum\n• Un **familier herbivore** dressé de rareté $t(items:rarities.{{rarity}}) ou supérieure"
+              "label": "Plantar {emote:plants.10} $t(models:plants.10)",
+              "hint": "• Nivel {{level}} mínimo\n• Una **mascota herbívora** amaestrada de rareza $t(items:rarities.{{rarity}}) o superior"
             }
           }
         }
@@ -2781,14 +2781,14 @@
       ]
     },
     "kingGuard": {
-      "displayName": "Garde {{name}}",
-      "unnamed": "un garde du roi",
+      "displayName": "Guardia {{name}}",
+      "unnamed": "un guardia del rey",
       "outcome": {
-        "win": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, et l'a vaincu. Aucune gloire n'était en jeu lors de ce combat.",
-        "win_female": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, et l'a vaincue. Aucune gloire n'était en jeu lors de ce combat.",
-        "draw": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, sans parvenir à le départager. Aucune gloire n'était en jeu lors de ce combat.",
-        "draw_female": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, sans parvenir à la départager. Aucune gloire n'était en jeu lors de ce combat.",
-        "loss": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, et a été vaincu. Aucune gloire n'était en jeu lors de ce combat."
+        "win": "No había ningún rival disponible: {{player}} se enfrentó a {{guard}}, guardia del rey, y lo derrotó. En ese combate no había gloria en juego.",
+        "win_female": "No había ningún rival disponible: {{player}} se enfrentó a {{guard}}, guardia del rey, y la derrotó. En este combate no había nada en juego.",
+        "draw": "No había ningún rival disponible: {{player}} se enfrentó a {{guard}}, guardia del rey, sin que se pudiera decidir el resultado. En este combate no había ningún título en juego.",
+        "draw_female": "No había ningún rival disponible: {{player}} se enfrentó a {{guard}}, guardia del rey, sin que se pudiera decidir el resultado. En este combate no había ningún honor en juego.",
+        "loss": "No había ningún rival disponible: {{player}} se enfrentó a {{guard}}, guardia del rey, y fue derrotado. En ese combate no había nada en juego."
       }
     }
   },
@@ -3113,7 +3113,7 @@
     "noHistory": "Aún no tienes ningún combate en tu historial.",
     "title": "{{pseudo}}La historia de los combates",
     "historyLine": "{{date}}\n{{attackSentence}}\n**Resultado:** {{resultSentence}}\n**Tu gloria:** {emote:unitValues.glory} {{meInitialGlory, number}} -> {{meFinalGlory, number}}{{meLeagueChange}}\n**Gloria del adversario:** {emote:unitValues.glory} {{opponentInitialGlory, number}} -> {{opponentFinalGlory, number}}",
-    "kingGuardFightLine": "{{date}}\n{emote:fightCommand.crossedSwords} Aucun adversaire n'était disponible : vous avez affronté **{{guard}}** de niveau {{guardLevel}} ({emote:classes.{{guardClassId}}} $t(models:classes.{{guardClassId}}))\n**Résultat :** {{resultSentence}}\n**Gloire :** {emote:unitValues.glory} aucune gloire n'était en jeu",
+    "kingGuardFightLine": "{{date}}\n{emote:fightCommand.crossedSwords} No había ningún adversario disponible: te has enfrentado a **{{guard}}** de nivel {{guardLevel}} ({emote:classes.{{guardClassId}}} $t(models:classes.{{guardClassId}}))\n**Resultado:** {{resultSentence}}\n**Gloria:** {emote:unitValues.glory} no había gloria en juego",
     "attackSentence": {
       "attacker": "{emote:fightCommand.crossedSwords} Has atacado **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))",
       "defender": "{emote:fightCommand.shield} Has sido atacado por **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))"
@@ -3131,15 +3131,15 @@
       "openButton": "Guardias del rey",
       "backButton": "Historia",
       "title": "{emote:fightCommand.crossedSwords} Frente a los guardias del rey",
-      "bestDefeatedGuard": "**Meilleur garde vaincu :** {{guard}} ({emote:classes.{{classId}}} $t(models:classes.{{classId}}), niv. {{level}}){{aboveLevel}}",
-      "bestDefeatedGuardHint": "*Les gardes gagnent ou perdent en renommée au fil de leurs combats : votre meilleur garde vaincu est celui qui est aujourd'hui le plus redoutable parmi ceux que vous avez battus.*",
+      "bestDefeatedGuard": "**Mejor guardia derrotado:** {{guard}} ({emote:classes.{{classId}}} $t(models:classes.{{classId}}), niv. {{level}}){{aboveLevel}}",
+      "bestDefeatedGuardHint": "*Los guardias ganan o pierden reputación a medida que van librando combates: tu mejor guardia derrotado es aquel que, a día de hoy, resulta el más temible de entre todos los que has vencido.*",
       "aboveLevel_one": ", {{count}} un nivel por encima del tuyo",
       "aboveLevel_other": ", {{count}} niveles superiores al tuyo",
-      "noDefeatedGuard": "**Meilleur garde vaincu :** aucun garde vaincu pour l'instant",
-      "ranking": "**Classement :** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
+      "noDefeatedGuard": "**Mejor guardia derrotado:** de momento no hay ningún guardia derrotado",
+      "ranking": "**Clasificación:** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
       "tally": "**Balance:** {emote:fightHistory.won} Victorias: {{won, number}} · {emote:fightHistory.lost} Derrotas: {{lost, number}} · {emote:fightHistory.draw} Empates: {{draw, number}}",
       "leaderboardTitle": "{emote:other.crown} **Cuadro de honor de la guardia**",
-      "leaderboardEntry": "{{badge}} {{rank, number}}. **{{name}}** : {{guard}} {emote:classes.{{classId}}}, niv. {{level}}",
+      "leaderboardEntry": "{{badge}} {{rank, number}}. **{{name}}**: {{guard}} {emote:classes.{{classId}}}, niv. {{level}}",
       "you": "Tú"
     }
   },
