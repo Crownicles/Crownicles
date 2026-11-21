@@ -899,7 +899,7 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 43 | Vous marchez en pleine nuit sur le Grand Axe. Il fait sombre mais la lune est claire. Vous apercevez devant vous un être éclairé par la lumi |
 | 44 | Lors de votre long périple, vous vous retrouvez au bord d'une large rivière. Ne pouvant la traverser, vous décidez de la longer jusqu'à trou |
 | 45 | En arrivant aux abords d'un village animé, vous entendez un groupe de personnes parler d'un sanctuaire qui serait hanté. Curieux que vous êt |
-| 46 | À Boug-Coton, devant l'Auberge du Seigneur, le célèbre ménestrel Pérotin paie sa note en chansons. On dit qu'avec sa mandoline et ses poudre |
+| 46 | À Boug-Coton, devant l'Auberge du Seigneur, Pérotin, le ménestrel le plus célèbre du pays, paie sa note en chansons. On dit qu'avec sa mando |
 | 47 | Vous êtes tellement épuisé que vous avez du mal à marcher. C'est alors que vous apercevez les remparts effondrés de Ville Forte, vous êtes s |
 | 48 | Vous êtes à la recherche d'un artéfact. Vous le convoitez car celui-ci, d'après les légendes, offrirait richesse et pouvoir à son possesseur |
 | 49 | Après vous être baladé plusieurs minutes sur la plage vous croisez une étrange petite créature, c'est un bernard-l'hermite ! Il semble s'êtr |
@@ -921,14 +921,14 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 66 | Après une brève traversée, le capitaine amarre son navire à ce qui semble être un ponton. Vous êtes bien trop absorbé dans votre contemplati |
 | 67 | Après un peu de marche, vous arrivez au niveau du bateau qui vous a emmené préalablement sur cette île peu hospitalière. Voyant votre fatigu |
 | 68 | En arrivant à Claire de Ville, votre regard est attiré par un bâtiment dont l'entrée est encadrée par deux statues de hiboux en pierre. En v |
-| 69 | Dans la Forêt Du Vieillard, une femme en robe argentée accourt vers vous entre les arbres. Avec ses cheveux clairs et son bâton d'aubépine, |
+| 69 | Dans la Forêt Du Vieillard, une femme accourt vers vous entre les arbres. Ses longs cheveux ont la couleur de l'écume, sa robe d'argent bril |
 | 70 | Alors que vous parcourez le désert de La Dune, l'air vous semble devenir de plus en plus sec. À mesure que vous avancez, les grains de sable |
-| 71 | Entre les dunes de la Vallée des Rois, deux tombeaux à demi ensevelis dominent une petite oasis. Vous vous penchez pour boire à une rigole à |
+| 71 | Entre les dunes de la Vallée des Rois, deux tombeaux à demi ensevelis dominent une petite oasis. Assoiffé, vous vous penchez pour boire à un |
 | 72 | Alors que vous arrivez aux abords de Claire de Ville, vous découvrez que bon nombre de ses habitants se sont déplacés à l'extérieur des gran |
 | 73 | Cheminant avec nonchalance sur la Route des Merveilles, vous vous approchez d'un petit groupe de personnes en demi-cercle autour d'un homme |
 | 74 | Alors que vous déambulez sans but précis, vos narines sont soudainement assaillies par une intense odeur iodée. Une étrange femme vêtue d'un |
 | 75 | En arrivant à la plage sentinelle, vous apercevez, amarré, un bateau aux voiles noires et usées. Sur le pont, un homme portant un large tric |
-| 76 | Depuis des heures, vous longez une rivière dans la Forêt Célestrum, au pied du mont. Un cri sort d'une maison en ruine. Vous frappez. Un vie |
+| 76 | Après des heures de marche dans la Forêt Célestrum, vous trouvez une maison en ruine au bord d'une rivière. Un cri en sort. Vous frappez à l |
 | 77 | En progressant dans un sentier sinueux de la Forêt Celestrum, vous entendez soudain des éclats de voix provenant d'une clairière proche. Int |
 | 78 | Vous progressez sur la route grimpante quand soudain un épais brouillard monte de la Rivière aux Crabes, dont vous apercevez encore vaguemen |
 | 79 | Sur la route grimpante, vous entendez un tintement de clochettes qui se rapproche. Bientôt apparaît un large troupeau de chèvres mené par un |
