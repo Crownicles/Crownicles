@@ -17,6 +17,7 @@ import {
 	CommandReportApartmentBuyRes,
 	CommandReportApartmentClaimRentRes,
 	CommandReportBuyHomeRes,
+	CommandReportCityOfferChangedRes,
 	CommandReportMoveHomeRes,
 	CommandReportUpgradeHomeRes
 } from "../../../Lib/src/packets/commands/CommandReportPacket";
@@ -172,8 +173,7 @@ describe("City home management economy", () => {
 			expect(await Home.count({ where: { ownerId: player.id } })).toBe(0);
 		});
 
-		// Bug: runBuyHomeUnderLock (ReportCityHomeService.ts) never re-checks under the lock that the player still has no home: every queued confirmation debits the price again
-		it.fails("debits the home price once when the purchase is confirmed several times concurrently", async () => {
+		it("debits the home price once when the purchase is confirmed several times concurrently", async () => {
 			const city = getCity(HOME_CITY_ID);
 			const player = await createPlayer(RICH_PLAYER_MONEY);
 			const data = await openCityMenu(player, city);
@@ -188,18 +188,20 @@ describe("City home management economy", () => {
 			expect(await Home.count({ where: { ownerId: player.id } })).toBe(1);
 			expect(await getMoney(player.id)).toBe(RICH_PLAYER_MONEY - shownPrice);
 			expect(packetsOf(responses, CommandReportBuyHomeRes)).toHaveLength(1);
+			expect(packetsOf(responses, CommandReportCityOfferChangedRes)).toHaveLength(CONCURRENT_REQUESTS - 1);
 		});
 
-		// Bug: a buy-home menu opened before the home was bought resets the existing home to level 1 in the new city through Homes.createOrUpdateHome (ReportCityHomeService.ts runBuyHomeUnderLock)
-		it.fails("does not overwrite a home bought or upgraded since the buy menu was opened", async () => {
+		it("does not overwrite a home bought or upgraded since the buy menu was opened", async () => {
 			const city = getCity(HOME_CITY_ID);
 			const player = await createPlayer(RICH_PLAYER_MONEY);
 			const staleData = await openCityMenu(player, city);
 			const upgradedLevel = HomeLevel.getInitialLevel().level + 2;
 			await createHome(player.id, OTHER_CITY_ID, upgradedLevel);
 
-			await cityService.handleBuyHomeReaction(player, city, staleData, []);
+			const response: CrowniclesPacket[] = [];
+			await cityService.handleBuyHomeReaction(player, city, staleData, response);
 
+			expect(response.map(packet => packet.constructor.name)).toEqual(["CommandReportCityOfferChangedRes"]);
 			const homes = await Home.findAll({ where: { ownerId: player.id } });
 			expect(homes.map(home => [home.cityId, home.level])).toEqual([[OTHER_CITY_ID, upgradedLevel]]);
 			expect(await getMoney(player.id)).toBe(RICH_PLAYER_MONEY);
@@ -239,8 +241,7 @@ describe("City home management economy", () => {
 			expect(await getMoney(player.id)).toBe(shownPrice - 1);
 		});
 
-		// Bug: runUpgradeHomeUnderLock (ReportCityHomeService.ts) recomputes the next level from the locked home but charges the price listed for the level the menu showed: each queued confirmation buys one more level at the level-2 price
-		it.fails("upgrades the home exactly once when the upgrade is confirmed several times concurrently", async () => {
+		it("upgrades the home exactly once when the upgrade is confirmed several times concurrently", async () => {
 			const city = getCity(HOME_CITY_ID);
 			const player = await createPlayer(RICH_PLAYER_MONEY);
 			await createHome(player.id, city.id, 1);
@@ -256,6 +257,7 @@ describe("City home management economy", () => {
 			expect((await Home.findOne({ where: { ownerId: player.id } }))?.level).toBe(2);
 			expect(await getMoney(player.id)).toBe(RICH_PLAYER_MONEY - shownPrice);
 			expect(packetsOf(responses, CommandReportUpgradeHomeRes)).toHaveLength(1);
+			expect(packetsOf(responses, CommandReportCityOfferChangedRes)).toHaveLength(CONCURRENT_REQUESTS - 1);
 		});
 	});
 

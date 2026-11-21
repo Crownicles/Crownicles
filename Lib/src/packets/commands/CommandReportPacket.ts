@@ -303,6 +303,10 @@ export class CommandReportEnchanterDisenchantRes extends CrowniclesPacket {
 	enchantmentType!: string;
 }
 
+/** The offer confirmed by the player no longer matches the current state of the game: nothing was spent */
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportCityOfferChangedRes extends CrowniclesPacket {}
+
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportBuyHomeRes extends CrowniclesPacket {
 	cost!: number;

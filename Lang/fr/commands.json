@@ -903,6 +903,7 @@
       "shopEmptyDescription": "Aucun service à proposer pour le moment.",
       "equipmentChangedTitle": "{{pseudo}}, l'équipement a changé !",
       "equipmentChangedDescription": "L'équipement choisi n'est plus le même à cet emplacement de l'inventaire : il a été déplacé depuis l'ouverture du menu. Rien n'a été dépensé et le menu a été mis à jour avec votre inventaire actuel.",
+      "offerChanged": "Cette offre n'est plus valable : la situation a changé depuis l'ouverture du menu. Rien n'a été dépensé.",
       "exitInn": "Sortir de l'auberge",
       "reactions": {
         "exit": {

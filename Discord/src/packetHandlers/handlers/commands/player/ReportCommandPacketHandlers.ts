@@ -22,6 +22,7 @@ import {
 	CommandReportBuyHealNoAlterationPacketRes,
 	CommandReportBuyHealRefusePacketRes,
 	CommandReportBuyHomeRes,
+	CommandReportCityOfferChangedRes,
 	CommandReportEatInnMealCooldownRes,
 	CommandReportEatInnMealRes,
 	CommandReportEnchantNotEnoughCurrenciesRes,
@@ -347,6 +348,11 @@ export default class ReportCommandPacketHandlers {
 			titleKey: "commands:report.city.homes.upgradeItemMaxLevelTitle",
 			descriptionKey: "commands:report.city.homes.upgradeItemMaxLevelDescription"
 		});
+	}
+
+	@packetHandler(CommandReportCityOfferChangedRes)
+	async reportCityOfferChangedRes(context: PacketContext, _packet: CommandReportCityOfferChangedRes): Promise<void> {
+		await handleClassicError(context, "commands:report.city.offerChanged");
 	}
 
 	@packetHandler(CommandReportEquipmentChangedRes)

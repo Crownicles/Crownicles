@@ -15,6 +15,7 @@ import {
 import {
 	CommandReportBedCooldownRes,
 	CommandReportBuyHomeRes,
+	CommandReportCityOfferChangedRes,
 	CommandReportHomeBedAlreadyFullRes,
 	CommandReportHomeBedRes,
 	CommandReportMoveHomeRes,
@@ -95,10 +96,13 @@ function logHomeBedUse(params: HomeBedUseLogParams | null): void {
 }
 
 /**
- * Run the locked buy-home critical section: re-validate the wallet against the
- * freshly-locked player, spend the money, create the home, reset the rent clock
- * of the apartment that becomes rented, and return the purchase log params (or
- * null when the buy is aborted).
+ * Run the locked buy-home critical section: re-validate that the player still
+ * has no home and the wallet against the freshly-locked player, spend the money,
+ * create the home, reset the rent clock of the apartment that becomes rented, and
+ * return the purchase log params (or null when the buy is aborted).
+ *
+ * The player has no home row to lock yet: the Player lock serialises the buys, so
+ * the home bought by a previous confirmation is visible here.
  */
 async function runBuyHomeUnderLock(params: {
 	lockedEntities: readonly HomeLockable[];
@@ -113,6 +117,11 @@ async function runBuyHomeUnderLock(params: {
 	const lockedPlayer = lockedEntities[0] as Player;
 	const lockedApartment = hasApartment ? lockedEntities[1] as Apartment : null;
 
+	if (await Homes.getOfPlayer(lockedPlayer.id)) {
+		response.push(makePacket(CommandReportCityOfferChangedRes, {}));
+		return null;
+	}
+
 	// Re-validate against the freshly-locked row.
 	if (newPrice > lockedPlayer.money) {
 		response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: newPrice - lockedPlayer.money }));
@@ -124,7 +133,11 @@ async function runBuyHomeUnderLock(params: {
 		amount: newPrice,
 		reason: NumberChangeReason.BUY_HOME
 	});
-	await Homes.createOrUpdateHome(lockedPlayer.id, city.id, HomeLevel.getInitialLevel().level);
+	await Home.create({
+		ownerId: lockedPlayer.id,
+		cityId: city.id,
+		level: HomeLevel.getInitialLevel().level
+	});
 	if (lockedApartment) {
 		lockedApartment.lastRentClaimedAt = new Date();
 		await lockedApartment.save();
@@ -188,9 +201,25 @@ export async function handleBuyHomeReaction(player: Player, city: City, data: Re
 }
 
 /**
- * Run the locked upgrade-home critical section: re-validate the wallet and home
- * city against the freshly-locked rows, bump the home level, spend the money,
- * and return the upgrade log params (or null when the upgrade is aborted).
+ * The upgrade of the locked home, provided it is still the one the menu priced:
+ * a confirmation queued behind another upgrade, or a menu opened before the home
+ * changed, must not buy the following level at the price of the displayed one.
+ * Each level of a city has its own price, so the price identifies the level.
+ */
+function getDisplayedUpgradeUnderLock(lockedHome: Locked<Home>, lockedPlayer: Locked<Player>, city: City, upgradePrice: number): HomeLevel | null {
+	const currentLevel = lockedHome.getLevel();
+	const nextLevel = currentLevel ? HomeLevel.getNextUpgrade(currentLevel, lockedPlayer.level) : null;
+	if (!nextLevel || city.getHomeLevelPrice(nextLevel) !== upgradePrice) {
+		return null;
+	}
+	return nextLevel;
+}
+
+/**
+ * Run the locked upgrade-home critical section: re-validate the home city, the
+ * displayed upgrade and the wallet against the freshly-locked rows, bump the home
+ * level, spend the money, and return the upgrade log params (or null when the
+ * upgrade is aborted).
  */
 async function runUpgradeHomeUnderLock(params: {
 	lockedHome: Locked<Home>;
@@ -208,17 +237,21 @@ async function runUpgradeHomeUnderLock(params: {
 	 * could have been moved/deleted by a concurrent reaction,
 	 * or the player could have spent the money elsewhere.
 	 */
-	if (upgradePrice > lockedPlayer.money) {
-		response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: upgradePrice - lockedPlayer.money }));
-		return null;
-	}
 	if (lockedHome.cityId !== city.id) {
 		CrowniclesLogger.error(`Player ${lockedPlayer.keycloakId} home was moved to a different city before the upgrade lock was acquired.`);
 		return null;
 	}
+	const newLevel = getDisplayedUpgradeUnderLock(lockedHome, lockedPlayer, city, upgradePrice);
+	if (!newLevel) {
+		response.push(makePacket(CommandReportCityOfferChangedRes, {}));
+		return null;
+	}
+	if (upgradePrice > lockedPlayer.money) {
+		response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: upgradePrice - lockedPlayer.money }));
+		return null;
+	}
 
-	const oldLevel = lockedHome.getLevel()!;
-	const newLevel = HomeLevel.getNextUpgrade(oldLevel, lockedPlayer.level)!;
+	const oldLevel = lockedHome.level;
 	lockedHome.level = newLevel.level;
 
 	/*
@@ -247,7 +280,7 @@ async function runUpgradeHomeUnderLock(params: {
 	return {
 		keycloakId: lockedPlayer.keycloakId,
 		cityId: city.id,
-		fromLevel: oldLevel.level,
+		fromLevel: oldLevel,
 		toLevel: newLevel.level,
 		price: upgradePrice
 	};

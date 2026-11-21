@@ -21,9 +21,7 @@ vi.mock("../../../src/app", () => ({
 }));
 vi.mock("../../../src/core/database/game/models/Home", async importOriginal => ({
 	...await importOriginal<typeof import("../../../src/core/database/game/models/Home")>(),
-	Homes: {
-		getOfPlayer: vi.fn(), createOrUpdateHome: vi.fn()
-	}
+	Homes: { getOfPlayer: vi.fn() }
 }));
 vi.mock("../../../src/core/database/game/models/Apartment", async importOriginal => ({
 	...await importOriginal<typeof import("../../../src/core/database/game/models/Apartment")>(),
@@ -131,6 +129,7 @@ beforeEach(() => {
 	vi.clearAllMocks();
 	vi.mocked(Apartments.getOfPlayerInCity).mockResolvedValue(null);
 	vi.mocked(Homes.getOfPlayer).mockResolvedValue(null);
+	vi.spyOn(Home, "create").mockResolvedValue({} as Home);
 });
 
 describe("handleBuyHomeReaction", () => {
@@ -171,7 +170,7 @@ describe("handleBuyHomeReaction", () => {
 
 		expect(describePackets(response)).toEqual([["CommandReportNotEnoughMoneyRes", { missingMoney: 1 }]]);
 		expect(lockedPlayer.spendMoney).not.toHaveBeenCalled();
-		expect(Homes.createOrUpdateHome).not.toHaveBeenCalled();
+		expect(Home.create).not.toHaveBeenCalled();
 		expect(MissionsController.update).not.toHaveBeenCalled();
 		expect(logs?.logHomePurchase).not.toHaveBeenCalled();
 	});
@@ -190,12 +189,34 @@ describe("handleBuyHomeReaction", () => {
 		});
 		expect(player.money).toBe(0);
 		expect(player.save).toHaveBeenCalled();
-		expect(Homes.createOrUpdateHome).toHaveBeenCalledWith(player.id, city.id, HomeLevel.getInitialLevel().level);
+		expect(Home.create).toHaveBeenCalledWith({
+			ownerId: player.id, cityId: city.id, level: HomeLevel.getInitialLevel().level
+		});
 		expect(describePackets(response)).toEqual([["CommandReportBuyHomeRes", { cost: price }]]);
 		expect(MissionsController.update).toHaveBeenCalledWith(player, response, { missionId: "buyHome" });
 		expect(logs?.logHomePurchase).toHaveBeenCalledWith({
 			keycloakId: player.keycloakId, cityId: city.id, price
 		});
+	});
+
+	it("buys nothing and tells the offer changed when the locked player already owns a home", async () => {
+		const player = makeHandlerPlayer(price);
+		const home = makeHome(OTHER_CITY_ID, 3);
+		vi.mocked(Homes.getOfPlayer).mockResolvedValue(home);
+		lockRows(player);
+		const response: CrowniclesPacket[] = [];
+
+		await handleBuyHomeReaction(asPlayer(player), city, manageData({
+			newPrice: price, currentMoney: 0
+		}), response);
+
+		expect(describePackets(response)).toEqual([["CommandReportCityOfferChangedRes", {}]]);
+		expect([home.cityId, home.level]).toEqual([OTHER_CITY_ID, 3]);
+		expect(home.save).not.toHaveBeenCalled();
+		expect(player.spendMoney).not.toHaveBeenCalled();
+		expect(Home.create).not.toHaveBeenCalled();
+		expect(MissionsController.update).not.toHaveBeenCalled();
+		expect(logs?.logHomePurchase).not.toHaveBeenCalled();
 	});
 
 	it("restarts the rent clock of the apartment the player owned in the city, which becomes rented", async () => {
@@ -309,6 +330,49 @@ describe("handleUpgradeHomeReaction", () => {
 		expect(player.spendMoney).not.toHaveBeenCalled();
 		expect(poorLockedPlayer.spendMoney).not.toHaveBeenCalled();
 		expect(MissionsController.update).not.toHaveBeenCalled();
+	});
+});
+
+describe("handleUpgradeHomeReaction with an outdated offer", () => {
+	const city = getCity(HOME_CITY_ID);
+	const upgrade = {
+		price: city.getHomeLevelPrice(HomeLevel.LEVEL_2), oldFeatures: HomeLevel.LEVEL_1.features, newFeatures: HomeLevel.LEVEL_2.features
+	};
+
+	async function upgradeLockedHome(lockedHome: Home, lockedPlayer: CityHandlerPlayer): Promise<CrowniclesPacket[]> {
+		const player = makeHandlerPlayer(upgrade.price * 10, 100);
+		vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome(city.id, 1));
+		lockRows(lockedPlayer, [[Home, HOME_ID, lockedHome]]);
+		const response: CrowniclesPacket[] = [];
+		await handleUpgradeHomeReaction(asPlayer(player), city, manageData({
+			upgrade, currentMoney: 0
+		}), response);
+		return response;
+	}
+
+	it("does not buy the next level at the displayed price when the home was upgraded since the menu was opened", async () => {
+		const lockedPlayer = makeHandlerPlayer(upgrade.price * 10, 100);
+		const upgradedHome = makeHome(city.id, 2);
+
+		const response = await upgradeLockedHome(upgradedHome, lockedPlayer);
+
+		expect(describePackets(response)).toEqual([["CommandReportCityOfferChangedRes", {}]]);
+		expect(upgradedHome.level).toBe(2);
+		expect(upgradedHome.save).not.toHaveBeenCalled();
+		expect(lockedPlayer.spendMoney).not.toHaveBeenCalled();
+		expect(MissionsController.update).not.toHaveBeenCalled();
+		expect(logs?.logHomeUpgrade).not.toHaveBeenCalled();
+	});
+
+	it("does not upgrade when the locked player no longer reaches the level required by the displayed upgrade", async () => {
+		const lockedPlayer = makeHandlerPlayer(upgrade.price * 10, HomeLevel.LEVEL_2.requiredPlayerLevel - 1);
+		const home = makeHome(city.id, 1);
+
+		const response = await upgradeLockedHome(home, lockedPlayer);
+
+		expect(describePackets(response)).toEqual([["CommandReportCityOfferChangedRes", {}]]);
+		expect(home.level).toBe(1);
+		expect(lockedPlayer.spendMoney).not.toHaveBeenCalled();
 	});
 });
 
