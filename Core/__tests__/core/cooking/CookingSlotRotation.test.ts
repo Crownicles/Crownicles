@@ -9,6 +9,8 @@ import {
 } from "../../../../Lib/src/constants/CookingConstants";
 import { CookingRecipeDataController } from "../../../src/data/CookingRecipeData";
 
+const ALL_RECIPE_IDS = CookingRecipeDataController.instance.getAll().map(recipe => recipe.id);
+
 describe("CookingSlotRotation", () => {
 	describe("getSlotCycle", () => {
 		it("should return all eligible types for a slot", () => {
@@ -63,19 +65,77 @@ describe("CookingSlotRotation", () => {
 			expect(a?.id).toEqual(b?.id);
 		});
 
-		it("should cycle through recipe types as furnace position changes", () => {
-			const discovered = ["potion_health_1", "potion_energy_1", "potion_attack_1"];
+		it("should move to the next recipe type of the day cycle at each furnace re-roll", () => {
 			const seed = 100;
-			const recipes = [];
-			for (let pos = 0; pos < 10; pos++) {
-				recipes.push(getRecipeForSlotExcluding({
-					slotIndex: 0, furnacePosition: pos, daySeed: seed, discoveredRecipeIds: discovered, excludedRecipeIds: new Set()
-				}));
+			const cycle = getSlotCycle(1, seed);
+			for (let pos = 0; pos < cycle.length * 2; pos++) {
+				const recipe = getRecipeForSlotExcluding({
+					slotIndex: 1, furnacePosition: pos, daySeed: seed, discoveredRecipeIds: ALL_RECIPE_IDS, excludedRecipeIds: new Set()
+				});
+				expect(recipe?.recipeType).toBe(cycle[pos % cycle.length]);
 			}
-			// Should have variation (not all the same recipe)
-			const ids = recipes.filter(r => r !== null).map(r => r!.id);
-			const uniqueIds = new Set(ids);
-			expect(uniqueIds.size).toBeGreaterThanOrEqual(1);
+		});
+
+		it("should fall back on the following type of the cycle when the current one has no known recipe", () => {
+			const seed = 7;
+			const cycle = getSlotCycle(1, seed);
+			const [skippedType, nextType] = [cycle[0], cycle[1]];
+			const discovered = ALL_RECIPE_IDS.filter(id => CookingRecipeDataController.instance.getById(id)?.recipeType !== skippedType);
+			const defaultRecipesOfSkippedType = CookingRecipeDataController.instance.getAll()
+				.filter(recipe => recipe.discoveredByDefault && recipe.recipeType === skippedType)
+				.map(recipe => recipe.id);
+
+			const recipe = getRecipeForSlotExcluding({
+				slotIndex: 1, furnacePosition: 0, daySeed: seed, discoveredRecipeIds: discovered, excludedRecipeIds: new Set(defaultRecipesOfSkippedType)
+			});
+
+			expect(recipe?.recipeType).toBe(nextType);
+		});
+
+		it("should spread the offers among the recipes of a type over the days", () => {
+			const offered = new Set<string>();
+			for (let daySeed = 0; daySeed < 60; daySeed++) {
+				const recipe = getRecipeForSlotExcluding({
+					slotIndex: 1, furnacePosition: 0, daySeed, discoveredRecipeIds: ALL_RECIPE_IDS, excludedRecipeIds: new Set()
+				});
+				if (recipe) {
+					offered.add(recipe.id);
+				}
+			}
+			const typesOffered = new Set([...offered].map(id => CookingRecipeDataController.instance.getById(id)?.recipeType));
+
+			expect(offered.size).toBeGreaterThan(typesOffered.size);
+		});
+
+		it("should offer pet food by default, and never when it is not allowed", () => {
+			const petFoodOffers = (allowPetFoodRecipes?: boolean): number => {
+				let count = 0;
+				for (let pos = 0; pos < 40; pos++) {
+					const recipe = getRecipeForSlotExcluding({
+						slotIndex: 1, furnacePosition: pos, daySeed: 3, discoveredRecipeIds: ALL_RECIPE_IDS, excludedRecipeIds: new Set(),
+						...allowPetFoodRecipes === undefined ? {} : { allowPetFoodRecipes }
+					});
+					if (recipe?.outputType === CookingOutputType.PET_FOOD) {
+						count++;
+					}
+				}
+				return count;
+			};
+
+			expect(petFoodOffers()).toBeGreaterThan(0);
+			expect(petFoodOffers(true)).toBeGreaterThan(0);
+			expect(petFoodOffers(false)).toBe(0);
+			expect(getRecipeForSlotExcluding({
+				slotIndex: 1, furnacePosition: 0, daySeed: 3, discoveredRecipeIds: ALL_RECIPE_IDS, excludedRecipeIds: new Set(), allowPetFoodRecipes: false
+			})).not.toBeNull();
+		});
+
+		it("should let every furnace offer pet food unless told otherwise", () => {
+			const offersPetFood = Array.from({ length: 20 }, (_v, daySeed) => getUniqueRecipesForSlots({
+				cookingSlots: SLOT_CONFIGS.length, furnacePosition: daySeed, daySeed, discoveredRecipeIds: ALL_RECIPE_IDS
+			})).some(recipes => recipes.some(recipe => recipe?.outputType === CookingOutputType.PET_FOOD));
+
+			expect(offersPetFood).toBe(true);
 		});
 	});
 
@@ -270,6 +330,89 @@ describe("CookingSlotRotation", () => {
 	});
 
 
+
+	describe("getUniqueRecipesForSlots station count", () => {
+		it.each([1, 2, SLOT_CONFIGS.length - 1])("should fill exactly %i stations, with or without the level guarantee", cookingSlots => {
+			for (let daySeed = 0; daySeed < 20; daySeed++) {
+				expect(getUniqueRecipesForSlots({
+					cookingSlots, furnacePosition: daySeed, daySeed, discoveredRecipeIds: ALL_RECIPE_IDS
+				})).toHaveLength(cookingSlots);
+				expect(getUniqueRecipesForSlots({
+					cookingSlots, furnacePosition: daySeed, daySeed, discoveredRecipeIds: ALL_RECIPE_IDS, maxRecipeLevelWithoutPenalty: 2
+				})).toHaveLength(cookingSlots);
+			}
+		});
+
+		it("should never offer more stations than the furnace has", () => {
+			expect(getUniqueRecipesForSlots({
+				cookingSlots: SLOT_CONFIGS.length + 3, furnacePosition: 0, daySeed: 1, discoveredRecipeIds: ALL_RECIPE_IDS
+			})).toHaveLength(SLOT_CONFIGS.length);
+		});
+
+		it("should leave a station empty rather than fail when no recipe fits it, even with the level guarantee", () => {
+			const recipes = getUniqueRecipesForSlots({
+				cookingSlots: SLOT_CONFIGS.length,
+				furnacePosition: 0,
+				daySeed: 1,
+				discoveredRecipeIds: [],
+				maxRecipeLevelWithoutPenalty: 2,
+				excludedRecipeIds: new Set(ALL_RECIPE_IDS)
+			});
+
+			expect(recipes).toEqual(new Array(SLOT_CONFIGS.length).fill(null));
+		});
+
+		it("should only force the guaranteed number of stations to the player level, the others offering harder recipes", () => {
+			const maxRecipeLevelWithoutPenalty = 3;
+			let harderOffers = 0;
+			for (let daySeed = 0; daySeed < 50; daySeed++) {
+				const recipes = getUniqueRecipesForSlots({
+					cookingSlots: SLOT_CONFIGS.length, furnacePosition: daySeed, daySeed, discoveredRecipeIds: ALL_RECIPE_IDS, maxRecipeLevelWithoutPenalty
+				});
+				const easyRecipes = recipes.filter(recipe => recipe !== null && recipe.level <= maxRecipeLevelWithoutPenalty);
+				expect(easyRecipes.length).toBeGreaterThanOrEqual(MIN_GUARANTEED_PLAYER_LEVEL_RECIPES);
+				// The guarantee is met on the first two stations: the next ones offer recipes of their whole level range
+				harderOffers += recipes.slice(MIN_GUARANTEED_PLAYER_LEVEL_RECIPES, 4).filter(recipe => recipe !== null && recipe.level > maxRecipeLevelWithoutPenalty).length;
+			}
+
+			expect(harderOffers).toBeGreaterThan(0);
+		});
+	});
+
+	describe("isRecipeSecret distribution", () => {
+		it("should hide about the secret rate of the recipes, varying with the day, the furnace and the station", () => {
+			const secretRate = 0.3;
+			let secrets = 0;
+			let total = 0;
+			const bySlot = new Map<number, number>();
+			for (let daySeed = 0; daySeed < 20; daySeed++) {
+				for (let furnacePosition = 0; furnacePosition < 10; furnacePosition++) {
+					for (let slotIndex = 0; slotIndex < SLOT_CONFIGS.length; slotIndex++) {
+						total++;
+						if (isRecipeSecret({
+							slotIndex, furnacePosition, daySeed, secretRate
+						})) {
+							secrets++;
+							bySlot.set(slotIndex, (bySlot.get(slotIndex) ?? 0) + 1);
+						}
+					}
+				}
+			}
+
+			expect(secrets / total).toBeGreaterThan(secretRate - 0.08);
+			expect(secrets / total).toBeLessThan(secretRate + 0.08);
+			expect(bySlot.size).toBe(SLOT_CONFIGS.length);
+		});
+
+		it("should hide a different set of stations from one re-roll to the next", () => {
+			const pattern = (furnacePosition: number): boolean[] => SLOT_CONFIGS.map((_config, slotIndex) => isRecipeSecret({
+				slotIndex, furnacePosition, daySeed: 5, secretRate: 0.5
+			}));
+			const patterns = new Set(Array.from({ length: 10 }, (_v, pos) => pattern(pos).join()));
+
+			expect(patterns.size).toBeGreaterThan(1);
+		});
+	});
 
 	describe("edge cases", () => {
 		it("should return an empty array when cookingSlots is 0", () => {
