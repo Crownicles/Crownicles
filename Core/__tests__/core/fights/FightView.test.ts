@@ -14,6 +14,8 @@ import {
 } from "../../../../Lib/src/types/FightActionResult";
 import { FightStatModifierOperation } from "../../../../Lib/src/types/FightStatModifierOperation";
 import { FightActionStatus } from "../../../../Lib/src/types/FightActionStatus";
+import { FightAlterationState } from "../../../../Lib/src/types/FightAlterationResult";
+import { PetAssistanceState } from "../../../../Lib/src/types/PetAssistanceResult";
 import type { FightAction } from "../../../src/data/FightAction";
 
 const ownedPet = { typeId: 1 };
@@ -77,7 +79,7 @@ describe("FightView.introduceFight", () => {
 });
 
 describe("FightView.addActionToHistory", () => {
-	function historyOf(result: FightActionResult): CommandFightHistoryItemPacket {
+	function historyOf(result: Parameters<FightView["addActionToHistory"]>[3]): CommandFightHistoryItemPacket {
 		const response: CommandFightHistoryItemPacket[] = [];
 		new FightView({} as PacketContext, {
 			id: "fight", isSilentMode: (): boolean => false
@@ -166,6 +168,39 @@ describe("FightView.addActionToHistory", () => {
 			status: FightActionStatus.MISSED,
 			fightActionEffectDealt: { damages: 5 }
 		});
+	});
+
+	it("reports the state of an alteration with its speed change", () => {
+		const packet = historyOf({
+			state: FightAlterationState.ACTIVE,
+			buffs: [{
+				selfTarget: true, stat: FightStatBuffed.SPEED, value: 0.5, operator: FightStatModifierOperation.MULTIPLIER
+			}]
+		});
+
+		expect(packet.status).toBe(FightAlterationState.ACTIVE);
+		expect(packet.fightActionEffectReceived?.speed).toBe(-50);
+		expect(packet.pet).toBeUndefined();
+	});
+
+	it("shows the pet of a player whose action is a pet assistance, and only then", () => {
+		const response: CommandFightHistoryItemPacket[] = [];
+		const view = new FightView({} as PacketContext, {
+			id: "fight", isSilentMode: (): boolean => false
+		} as FightController);
+		const player = buildPlayerFighter<PlayerFighter>("initiator", true);
+
+		view.addActionToHistory(response, player, { id: "petAssistance" } as FightAction, {
+			assistanceStatus: PetAssistanceState.SUCCESS, damages: 10
+		});
+		view.addActionToHistory(response, player, { id: "simpleAttack" } as FightAction, {
+			attackStatus: FightActionStatus.NORMAL, damages: 10
+		});
+
+		expect(response.map(packet => [packet.fighterKeycloakId, packet.status, packet.pet])).toEqual([
+			["initiator", PetAssistanceState.SUCCESS, ownedPet],
+			["initiator", FightActionStatus.NORMAL, undefined]
+		]);
 	});
 
 	it("tells no summoning for an attack without summoned allies", () => {
