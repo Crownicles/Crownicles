@@ -70,9 +70,11 @@ function mutationSummary(modules, minFileScore) {
 		"|---|---|---|---|---|---|"
 	];
 	const scores = [];
+	const missingReports = [];
 	for (const module of modules) {
 		const moduleScores = mutationScoresOf(module);
 		if (!moduleScores) {
+			missingReports.push(module);
 			lines.push(`| ${module} | n/a | | | | |`);
 			continue;
 		}
@@ -83,6 +85,12 @@ function mutationSummary(modules, minFileScore) {
 	if (minFileScore === null) {
 		return {
 			lines, failed: false
+		};
+	}
+	if (missingReports.length > 0) {
+		lines.push("", `**No mutation report for ${missingReports.join(", ")}**: the floor of ${minFileScore} % cannot be checked.`);
+		return {
+			lines, failed: true
 		};
 	}
 	const under = filesUnderFloor(scores, minFileScore);
