@@ -111,12 +111,13 @@ export type FakeCommand = {
 /**
  * Create a command interaction, cache it like CommandsManager does and return it with the context Core answers with
  */
-export function fakeCommand(userName = "Player", lng: Language = "fr"): FakeCommand {
-	const user = fakeUser(userName);
-	const messages: RenderedMessage[] = [];
-	const collectors: ReactionCollector[] = [];
-	const reactions: string[] = [];
-	const record = (method: string) => (payload: unknown): Promise<Message> => {
+type MessageRecorder = (method: string) => (payload: unknown) => Promise<Message>;
+
+/**
+ * Recorder of the messages displayed through an interaction: each displayed message can be edited and reacted to
+ */
+function messageRecorder(messages: RenderedMessage[], collectors: ReactionCollector[], reactions: string[]): MessageRecorder {
+	return method => (payload: unknown): Promise<Message> => {
 		messages.push({
 			method, payload
 		});
@@ -135,10 +136,18 @@ export function fakeCommand(userName = "Player", lng: Language = "fr"): FakeComm
 			delete: (): Promise<void> => Promise.resolve()
 		}) as Message);
 	};
+}
+
+/**
+ * Command interaction whose displayed messages, collectors and reactions are recorded
+ */
+function fakeInteraction(user: FakeUser, lng: Language): FakeInteraction {
+	const messages: RenderedMessage[] = [];
+	const collectors: ReactionCollector[] = [];
+	const reactions: string[] = [];
+	const record = messageRecorder(messages, collectors, reactions);
 	interactionCount++;
-	// A translation missing in a previous test which failed before checking its display must not fail this one
-	missingTranslations.splice(0);
-	const interaction: FakeInteraction = {
+	return {
 		id: `command-${interactionCount}`,
 		userLanguage: lng,
 		user,
@@ -163,6 +172,16 @@ export function fakeCommand(userName = "Player", lng: Language = "fr"): FakeComm
 		isStringSelectMenu: (): boolean => false,
 		isCommand: (): boolean => true
 	};
+}
+
+/**
+ * Create a command interaction, cache it like CommandsManager does and return it with the context Core answers with
+ */
+export function fakeCommand(userName = "Player", lng: Language = "fr"): FakeCommand {
+	const user = fakeUser(userName);
+	// A translation missing in a previous test which failed before checking its display must not fail this one
+	missingTranslations.splice(0);
+	const interaction = fakeInteraction(user, lng);
 	// The fake implements the members of CrowniclesInteraction the front-end calls, not the whole discord.js class
 	DiscordCache.cacheInteraction(interaction as unknown as CrowniclesInteraction);
 	const keycloakId = `${userName}-keycloak-id`;
@@ -219,30 +238,41 @@ let missingTranslationsTracked = false;
  * Register the mention of every slash command, as CommandsManager does when the bot starts, and record the missing translations.
  * Call it once the translations are loaded, in a beforeAll
  */
-export function setupRendering(): void {
+function registerCommandMentions(): void {
 	const builder = JSON.parse(readFileSync(resolve(__dirname, "../../../Lang/en/discordBuilder.json"), "utf8")) as Record<string, {
 		name?: string; options?: Record<string, { name?: string }>;
 	}>;
-	for (const command of Object.values(builder)) {
-		if (!command.name) {
-			continue;
-		}
+	const commands = Object.values(builder).flatMap(command => (command.name
+		? [{
+			name: command.name, options: Object.values(command.options ?? {})
+		}]
+		: []));
+	for (const command of commands) {
 		BotUtils.commandsMentions.set(command.name, `</${command.name}:0>`);
-		for (const option of Object.values(command.options ?? {})) {
+		for (const option of command.options) {
 			BotUtils.commandsMentions.set(`${command.name} ${option.name}`, `</${command.name} ${option.name}:0>`);
 		}
 	}
-	recordCastClickAnswers();
-	if (!missingTranslationsTracked) {
-		missingTranslationsTracked = true;
-		i18next.default.options.saveMissing = true;
-		i18next.default.on("missingKey", (_languages: readonly string[], namespace: string, key: string) => {
-			// DisplayUtils.getPetDisplay translates an inline template on purpose: i18next returns it interpolated
-			if (!key.includes("{{")) {
-				missingTranslations.push(`${namespace}:${key}`);
-			}
-		});
+}
+
+function trackMissingTranslations(): void {
+	if (missingTranslationsTracked) {
+		return;
 	}
+	missingTranslationsTracked = true;
+	i18next.default.options.saveMissing = true;
+	i18next.default.on("missingKey", (_languages: readonly string[], namespace: string, key: string) => {
+		// DisplayUtils.getPetDisplay translates an inline template on purpose: i18next returns it interpolated
+		if (!key.includes("{{")) {
+			missingTranslations.push(`${namespace}:${key}`);
+		}
+	});
+}
+
+export function setupRendering(): void {
+	registerCommandMentions();
+	recordCastClickAnswers();
+	trackMissingTranslations();
 }
 
 /**
