@@ -101,14 +101,27 @@ describe("checkNameString", () => {
 		expect(checkNameString("a12 34", range)).toBe(true);
 	});
 
-	// Bug: the "two spaces in a row" pattern is anchored to the end of the name ("( {2})+$"), so it only refuses trailing spaces
-	it.fails("refuses two spaces in a row inside a name", () => {
+	it("refuses two spaces in a row anywhere in a name", () => {
 		expect(checkNameString("a  bcd", range)).toBe(false);
+		expect(checkNameString("  abcd", range)).toBe(false);
 	});
 
-	// Bug: the "two accented letters in a row" pattern is anchored to the end of the name, so it only refuses a trailing pair
-	it.fails("refuses two accented letters in a row inside a name", () => {
+	it("refuses two accented letters in a row anywhere in a name", () => {
 		expect(checkNameString("aééb", range)).toBe(false);
+		expect(checkNameString("éàbcd", range)).toBe(false);
+	});
+
+	it.each([
+		"Médor",
+		"Noël",
+		"Rex le Fou",
+		"L'Élu",
+		"Zoé et Léa",
+		"Brûlé-Joë",
+		"Ça va",
+		"Été 2024"
+	])("still accepts the typical name %j", name => {
+		expect(checkNameString(name, range)).toBe(true);
 	});
 });
 
