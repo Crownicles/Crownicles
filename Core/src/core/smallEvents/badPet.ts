@@ -551,6 +551,30 @@ async function resolveOutcomeUnderLock(
 }
 
 /**
+ * Whether the chosen action takes food from the stock of the guild of the player
+ */
+function takesGuildFood(reactionId: string | undefined, player: Player): boolean {
+	return reactionId !== undefined && GUILD_FOOD_ACTION_IDS.includes(reactionId) && player.guildId !== null;
+}
+
+/**
+ * Resolve the outcome with the guild locked too
+ * @returns false when the guild was disbanded during the choice, the outcome then still has to be resolved without it
+ */
+async function resolveWithGuildFood(player: Player, resolveOutcome: (lockedPlayer: Locked<Player>) => Promise<void>): Promise<boolean> {
+	try {
+		await withLockedPlayerAndMissions(player.id, resolveOutcome, getOutcomeLockKeys(player, true));
+		return true;
+	}
+	catch (error) {
+		if (error instanceof LockedRowNotFoundError) {
+			return false;
+		}
+		throw error;
+	}
+}
+
+/**
  * Create the end callback for the reaction collector
  */
 function getEndCallback(player: Player): EndCallback {
@@ -559,23 +583,11 @@ function getEndCallback(player: Player): EndCallback {
 
 		const reaction = collector.getFirstReaction();
 		const reactionId = (reaction?.reaction.data as { id?: string } | undefined)?.id;
-
 		const resolveOutcome = (lockedPlayer: Locked<Player>): Promise<void> => resolveOutcomeUnderLock(lockedPlayer, player.petId, reactionId, response);
 
-		if (reactionId !== undefined && GUILD_FOOD_ACTION_IDS.includes(reactionId) && player.guildId) {
-			try {
-				await withLockedPlayerAndMissions(player.id, resolveOutcome, getOutcomeLockKeys(player, true));
-				return;
-			}
-			catch (error) {
-				if (!(error instanceof LockedRowNotFoundError)) {
-					throw error;
-				}
-
-				// The guild can be disbanded during the choice: the outcome is then resolved without its food
-			}
+		if (takesGuildFood(reactionId, player) && await resolveWithGuildFood(player, resolveOutcome)) {
+			return;
 		}
-
 		await withLockedPlayerAndMissionsSafe(player, "badPet endCallback", resolveOutcome, getOutcomeLockKeys(player, false));
 	};
 }
