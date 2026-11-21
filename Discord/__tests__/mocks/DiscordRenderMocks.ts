@@ -30,6 +30,14 @@ export const keycloakUtilsMock = {
 				isError: true,
 				status: 404
 			})),
+		getUsersFromIds: vi.fn((_config: unknown, keycloakIds: string[]) => Promise.resolve({
+			isError: false,
+			payload: {
+				users: keycloakIds.map(keycloakId => knownPlayers.has(keycloakId)
+					? { attributes: { gameUsername: [knownPlayers.get(keycloakId)] } }
+					: null)
+			}
+		})),
 		getKeycloakIdFromDiscordId: vi.fn(() => Promise.resolve({
 			isError: false,
 			payload: { keycloakId: "keycloak-id" }
