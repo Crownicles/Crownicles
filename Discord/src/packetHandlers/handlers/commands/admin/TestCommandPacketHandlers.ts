@@ -1,7 +1,7 @@
 import { packetHandler } from "../../../PacketHandler";
 import { CommandTestPacketRes } from "../../../../../../Lib/src/packets/commands/CommandTestPacket";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
-import { handleCommandTestPacketRes } from "../../../../commands/admin/TestCommand";
+import { handleCommandTestPacketRes } from "../../../../commands/admin/TestCommandResult";
 
 export default class TestCommandPacketHandlers {
 	@packetHandler(CommandTestPacketRes)
