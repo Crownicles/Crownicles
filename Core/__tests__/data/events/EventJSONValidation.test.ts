@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { readdirSync, readFileSync } from "fs";
 import { join } from "path";
+import { MaterialType } from "../../../../Lib/src/types/MaterialType";
+import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
+
+const materialTypes: string[] = Object.values(MaterialType);
+const enchantmentKinds = [...new Set(ItemEnchantment.getAllEnchantments().map(e => e.kind.id))];
+const enchantmentTypes = [...new Set(ItemEnchantment.getAllEnchantments().map(e => e.kind.type.id))];
 
 describe("Event JSON Validation", () => {
 	const eventsDir = join(__dirname, "../../../resources/events");
@@ -17,7 +23,12 @@ describe("Event JSON Validation", () => {
 		"campaignCurrentMissionId",
 		"validPetTypeIds",
 		"petRarity",
-		"validClassIds"
+		"validClassIds",
+		"cookingLevel",
+		"materials",
+		"enchantment",
+		"weaponLevel",
+		"armorLevel"
 	];
 
 	eventFiles.forEach(filename => {
@@ -133,7 +144,7 @@ describe("Event JSON Validation", () => {
 				if (!eventData?.possibilities) return;
 
 				const invalidRanges: string[] = [];
-				const rangeBasedRequirements = ["level", "karma", "health", "defense", "attack", "speed", "petRarity"];
+				const rangeBasedRequirements = ["level", "karma", "health", "defense", "attack", "speed", "petRarity", "cookingLevel", "weaponLevel", "armorLevel"];
 				
 				Object.entries(eventData.possibilities).forEach(([possibilityKey, possibility]: [string, any]) => {
 					if (!possibility.outcomes) return;
@@ -184,6 +195,31 @@ describe("Event JSON Validation", () => {
 						if (typeof outcome.requirements.campaignCurrentMissionId !== "number") {
 							invalidFields.push(`${possibilityKey}.outcomes.${outcomeKey}.requirements.campaignCurrentMissionId should be number, got ${typeof outcome.requirements.campaignCurrentMissionId}`);
 						}
+					});
+				});
+
+				expect(invalidFields).toEqual([]);
+			});
+
+			it("should only use known material types and enchantments", () => {
+				if (!eventData?.possibilities) return;
+
+				const invalidFields: string[] = [];
+
+				Object.entries(eventData.possibilities).forEach(([possibilityKey, possibility]: [string, any]) => {
+					Object.entries(possibility.outcomes ?? {}).forEach(([outcomeKey, outcome]: [string, any]) => {
+						const path = `${possibilityKey}.outcomes.${outcomeKey}.requirements`;
+						const { materials, enchantment } = outcome.requirements ?? {};
+						if (materials?.type !== undefined && !materialTypes.includes(materials.type)) {
+							invalidFields.push(`${path}.materials.type ${materials.type} is not a material type`);
+						}
+						if (enchantment?.slot !== undefined && !["weapon", "armor"].includes(enchantment.slot)) {
+							invalidFields.push(`${path}.enchantment.slot ${enchantment.slot} should be weapon or armor`);
+						}
+						(enchantment?.types ?? []).filter((type: string) => !enchantmentTypes.includes(type))
+							.forEach((type: string) => invalidFields.push(`${path}.enchantment.types ${type} is not an enchantment type`));
+						(enchantment?.kinds ?? []).filter((kind: string) => !enchantmentKinds.includes(kind))
+							.forEach((kind: string) => invalidFields.push(`${path}.enchantment.kinds ${kind} is not an enchantment kind`));
 					});
 				});
 

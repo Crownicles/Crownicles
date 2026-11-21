@@ -184,7 +184,15 @@ function getReportResultConditionTriplets(packet: CommandReportBigEventResultRes
 			packet.effect?.name === Effect.OCCUPIED.id,
 			"timeLost",
 			{ timeLost: packet.effect ? minutesDisplayIntl(packet.effect.time, lng) : 0 }
-		]
+		],
+		...(packet.materials ?? []).map((material): ConditionTriplet => [
+			material.quantity !== 0,
+			material.quantity < 0 ? "materialLost" : "materialWon",
+			{
+				materialId: material.materialId,
+				quantity: Math.abs(material.quantity)
+			}
+		])
 	];
 }
 
