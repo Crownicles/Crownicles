@@ -749,7 +749,7 @@ describe("craft outputs", () => {
 		it("should route the whole batch as surplus when the guild disappeared during the craft", async () => {
 			vi.mocked(withLockedEntities).mockImplementation((keys, body) => {
 				if (keys.some(key => key.model === Guild)) {
-					return Promise.reject(new LockedRowNotFoundError(keys[0]));
+					return Promise.reject(new LockedRowNotFoundError("guilds", 9));
 				}
 				return body([lockedCook] as never);
 			});
