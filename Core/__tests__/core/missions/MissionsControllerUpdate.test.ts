@@ -939,14 +939,14 @@ const recipes: RecipeDisplayInfo[] = [{
 			[60, 0.49, MissionDifficulty.MEDIUM],
 			[60, 0.5, MissionDifficulty.HARD]
 		])("gives a player of level %i drawing %f a mission of difficulty %i", (level, draw, difficulty) => {
-			vi.spyOn(RandomUtils.crowniclesRandom, "realZeroToOneInclusive").mockReturnValue(draw);
+			vi.spyOn(RandomUtils.crowniclesRandom, "realZeroToOneExclusive").mockReturnValue(draw);
 
 			expect(MissionsController.getRandomDifficulty(buildPlayer({ level }))).toBe(difficulty);
 		});
 
-		// Bug: the draw is inclusive of 1, which is not below the summed probabilities (1), so a low level player only offered easy missions gets a hard one
-		it.fails("only gives easy missions to a low level player, even on the highest draw", () => {
-			vi.spyOn(RandomUtils.crowniclesRandom, "realZeroToOneInclusive").mockReturnValue(1);
+		// The draw excludes 1, which would not be below the summed probabilities (1) and would give a hard mission
+		it("only gives easy missions to a low level player, even on the highest draw", () => {
+			vi.spyOn(RandomUtils.crowniclesRandom, "realZeroToOneExclusive").mockReturnValue(1 - Number.EPSILON);
 
 			expect(MissionsController.getRandomDifficulty(buildPlayer({ level: 1 }))).toBe(MissionDifficulty.EASY);
 		});
