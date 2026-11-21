@@ -21,7 +21,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import { ReactionCollectorBadPetReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorBadPetSmallEvent";
 import { SmallEventBadPetPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBadPetPacket";
 import {
-	asPlayer, createTestPlayer, endWithoutReaction, ignoresOtherPlayers, isBlocked, packetOf, react, runSmallEvent, SmallEventRun, TestPlayer, useSmallEventHarness
+	asPlayer, createTestPlayer, endWithoutReaction, ignoresOtherPlayers, isBlocked, packetOf, packetsOf, react, runSmallEvent, SmallEventRun, TestPlayer, useSmallEventHarness
 } from "./SmallEventHarness";
 
 vi.mock("../../../src/core/utils/withLockedPlayerAndMissionsSafe", async () => ({
@@ -282,7 +282,9 @@ describe("Moltiar, the bad pet small event", () => {
 		vi.mocked(withLockedPlayerAndMissionsSafe).mockClear();
 		await choose(ACTIONS.WAIT);
 		player.petId = null;
-		await choose(ACTIONS.WAIT);
+		const response = await react(await runSmallEvent(smallEventFuncs, player, { testArgs: [ACTIONS.WAIT] }), () => true);
+		expect(packetsOf(response, SmallEventBadPetPacket)).toEqual([]);
+		expect(PetEntity.findOne).toHaveBeenCalledOnce();
 
 		expect(vi.mocked(withLockedPlayerAndMissionsSafe).mock.calls.map(([lockedPlayer, context, _body, keys]) => [lockedPlayer, context, keys])).toEqual([
 			[player, "badPet endCallback", [PetEntity.lockKey(7)]],
@@ -318,17 +320,40 @@ describe("Moltiar, the bad pet small event", () => {
 		await expect(react(run, reaction => (reaction.data as ReactionCollectorBadPetReaction).id === ACTIONS.GIVE_MEAT)).rejects.toThrow("database down");
 	});
 
-	it("does not change the love of a pet that is no longer the one of the player once the lock is taken", async () => {
+	it.each([
+		["replaced by another pet", 8],
+		["left to the shelter", null]
+	])("neither changes nor announces anything when the pet was %s during the choice", async (_case, petIdOnceLocked) => {
 		const run = await runSmallEvent(smallEventFuncs, player, { testArgs: [ACTIONS.CALM] });
-		vi.mocked(withLockedPlayerAndMissionsSafe).mockImplementationOnce((_player, _context, body) => body(asPlayer(Object.assign(createBadPetPlayer(), { petId: 8 }))));
+		vi.mocked(withLockedPlayerAndMissionsSafe).mockImplementationOnce((_player, _context, body) => body(asPlayer(Object.assign(createBadPetPlayer(), { petId: petIdOnceLocked }))));
 
 		const response = await react(run, () => true);
 
-		expect(packetOf(response, SmallEventBadPetPacket)).toMatchObject({
-			loveLost: LOVE_LOST.WAIT, interactionType: ACTIONS.WAIT
-		});
+		expect(packetsOf(response, SmallEventBadPetPacket)).toEqual([]);
 		expect(PetEntity.findOne).not.toHaveBeenCalled();
 		expect(petEntity.changeLovePoints).not.toHaveBeenCalled();
+	});
+
+	it("resolves a food action of a player without guild under the player and pet locks only", async () => {
+		player.guildId = null;
+		vi.mocked(withLockedPlayerAndMissionsSafe).mockClear();
+		vi.mocked(withLockedPlayerAndMissions).mockClear();
+
+		const packet = await choose(ACTIONS.GIVE_MEAT);
+
+		expect(packet.interactionType).toBe(OUTCOMES.GIVE_MEAT_NO_FOOD);
+		expect(withLockedPlayerAndMissions).not.toHaveBeenCalled();
+		expect(vi.mocked(withLockedPlayerAndMissionsSafe).mock.calls.map(([, , , keys]) => keys)).toEqual([[PetEntity.lockKey(7)]]);
+	});
+
+	it("takes no food from a guild the player left during the choice, even though it was locked", async () => {
+		const takeFood = vi.spyOn(Guild, "withLocked");
+		vi.mocked(withLockedPlayerAndMissions).mockImplementationOnce((_playerId, body) => body(asPlayer(Object.assign(createBadPetPlayer(), { guildId: 4 }))) as never);
+
+		const packet = await choose(ACTIONS.GIVE_MEAT);
+
+		expect(packet.interactionType).toBe(OUTCOMES.GIVE_MEAT_NO_FOOD);
+		expect(takeFood).not.toHaveBeenCalled();
 	});
 
 	it("makes the pet lose the love of waiting when its kind is unknown", async () => {
