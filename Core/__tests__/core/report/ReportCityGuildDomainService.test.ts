@@ -124,6 +124,22 @@ describe("handleGuildDomainNotaryReaction", () => {
 		}));
 	});
 
+	it("charges nothing and tells the offer changed when the domain is already in the city", async () => {
+		const player = guildMember(7);
+		const guild = makeHandlerGuild({
+			treasury: RELOCATION_COST, domainCityId: DOMAIN_CITY_ID
+		});
+		lockGuild(guild);
+
+		const response = await notary(player);
+
+		expect(describePackets(response)).toEqual([["CommandReportCityOfferChangedRes", {}]]);
+		expect([guild.domainCityId, guild.treasury]).toEqual([DOMAIN_CITY_ID, RELOCATION_COST]);
+		expect(guild.save).not.toHaveBeenCalled();
+		expect(logs?.logGuildDomainPurchase).not.toHaveBeenCalled();
+		expect(MissionsController.update).not.toHaveBeenCalled();
+	});
+
 	it("tells the missing treasury and moves nothing when the guild cannot pay", async () => {
 		const player = guildMember(7);
 		const guild = makeHandlerGuild({
