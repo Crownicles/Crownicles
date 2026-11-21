@@ -17,9 +17,8 @@ import {
 	ReactionCollectorFight, ReactionCollectorFightData
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorFight";
 import { ReactionCollectorReactPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import {
-	CommandFightCancelPacketReq, CommandFightRefusePacketRes
-} from "../../../../Lib/src/packets/commands/CommandFightPacket";
+import { CommandFightRefusePacketRes } from "../../../../Lib/src/packets/commands/CommandFightPacket";
+import { CommandFightCancelPacketReq } from "../../../../Lib/src/packets/commands/CommandFightCancelPacket";
 import { CommandFightIntroduceFightersPacket } from "../../../../Lib/src/packets/fights/FightIntroductionPacket";
 import { CommandFightEndOfFightPacket } from "../../../../Lib/src/packets/fights/EndOfFightPacket";
 import { FightRewardPacket } from "../../../../Lib/src/packets/fights/FightRewardPacket";
@@ -141,8 +140,10 @@ function introduction(overrides: Partial<CommandFightIntroduceFightersPacket> = 
 
 function introOf(interaction: FakeInteraction): RenderedEmbed {
 	const intro = interaction.messages.find(message => message.method === "editReply" || message.method === "channel.send");
-	expect(intro).toBeDefined();
-	return embedsOf(intro!)[0];
+	if (!intro) {
+		throw new Error("The fight intro was not displayed");
+	}
+	return embedsOf(intro)[0];
 }
 
 describe("fight introduction", () => {
@@ -205,18 +206,20 @@ describe("fight introduction", () => {
 	});
 
 	it("cancels a fight whose introduction cannot be displayed and ignores its next packets", async () => {
-		const { context } = fakeCommand("Fighter");
+		const {
+			context, discord
+		} = fakeCommand("Fighter");
 		const orphanContext = {
 			...context,
 			discord: {
-				...context.discord!,
+				...discord,
 				interaction: "forgotten-interaction"
 			}
 		};
 		const fight = introduction();
 
 		await dispatch(orphanContext, fight);
-		await dispatch(orphanContext, makePacket(CommandFightStatusPacket, { fightId: fight.fightId }));
+		await dispatch(orphanContext, Object.assign(new CommandFightStatusPacket(), { fightId: fight.fightId }));
 
 		const cancels = sentPackets(CommandFightCancelPacketReq);
 		expect(cancels).toHaveLength(1);

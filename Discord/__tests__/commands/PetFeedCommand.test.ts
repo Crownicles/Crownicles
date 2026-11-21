@@ -16,7 +16,7 @@ import { CommandPetFeedSuccessPacket } from "../../../Lib/src/packets/commands/C
 import { ReactionCollectorPetFeedWithGuild } from "../../../Lib/src/packets/interaction/ReactionCollectorPetFeedWithGuild";
 import { ReactionCollectorPetFeedWithoutGuild } from "../../../Lib/src/packets/interaction/ReactionCollectorPetFeedWithoutGuild";
 import { ReactionCollectorReactPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { PetConstants } from "../../../Lib/src/constants/PetConstants";
+import { PetFood } from "../../../Lib/src/types/PetFood";
 import { OwnedPet } from "../../../Lib/src/types/OwnedPet";
 import { makePacket } from "../../../Lib/src/packets/CrowniclesPacket";
 import {
@@ -48,10 +48,10 @@ async function openGuildFeed(): Promise<FakeInteraction> {
 	} = fakeCommand("Owner");
 	await dispatch(context, collectorPacket(new ReactionCollectorPetFeedWithGuild(PET, [
 		{
-			food: PetConstants.PET_FOOD.COMMON_FOOD, amount: 3, maxAmount: 25
+			food: PetFood.CANDY, amount: 3, maxAmount: 25
 		},
 		{
-			food: PetConstants.PET_FOOD.ULTIMATE_FOOD, amount: 1, maxAmount: 5
+			food: PetFood.ULTIMATE, amount: 1, maxAmount: 5
 		}
 	])));
 	return interaction;
@@ -95,7 +95,7 @@ describe("pet feed without guild", () => {
 		const {
 			interaction, context
 		} = fakeCommand("Owner");
-		await dispatch(context, collectorPacket(new ReactionCollectorPetFeedWithoutGuild(PET, PetConstants.PET_FOOD.CARNIVOROUS_FOOD, 80)));
+		await dispatch(context, collectorPacket(new ReactionCollectorPetFeedWithoutGuild(PET, PetFood.MEAT, 80)));
 
 		const message = singleMessage(interaction);
 		expect(embedsOf(message)[0].description).toContain("80");

@@ -96,12 +96,22 @@ export type FakeInteraction = {
 
 let interactionCount = 0;
 
+export type DiscordContext = NonNullable<PacketContext["discord"]>;
+
+/**
+ * Command of a player cached by the front-end, with the context Core answers it with
+ */
+export type FakeCommand = {
+	interaction: FakeInteraction;
+	context: PacketContext;
+	keycloakId: string;
+	discord: DiscordContext;
+};
+
 /**
  * Create a command interaction, cache it like CommandsManager does and return it with the context Core answers with
  */
-export function fakeCommand(userName = "Player", lng: Language = "fr"): {
-	interaction: FakeInteraction; context: PacketContext;
-} {
+export function fakeCommand(userName = "Player", lng: Language = "fr"): FakeCommand {
 	const user = fakeUser(userName);
 	const messages: RenderedMessage[] = [];
 	const collectors: ReactionCollector[] = [];
@@ -155,19 +165,32 @@ export function fakeCommand(userName = "Player", lng: Language = "fr"): {
 	};
 	// The fake implements the members of CrowniclesInteraction the front-end calls, not the whole discord.js class
 	DiscordCache.cacheInteraction(interaction as unknown as CrowniclesInteraction);
-	const context = {
-		keycloakId: `${userName}-keycloak-id`,
-		discord: {
-			interaction: interaction.id,
-			user: user.id,
-			channel: "channel-id",
-			language: lng
-		}
-	} as PacketContext;
-	knownPlayers.set(context.keycloakId!, userName);
-	return {
-		interaction, context
+	const keycloakId = `${userName}-keycloak-id`;
+	const discord: DiscordContext = {
+		interaction: interaction.id,
+		user: user.id,
+		channel: "channel-id",
+		language: lng,
+		shardId: 0
 	};
+	knownPlayers.set(keycloakId, userName);
+	return {
+		interaction,
+		context: {
+			keycloakId, discord
+		} as PacketContext,
+		keycloakId,
+		discord
+	};
+}
+
+/**
+ * Last collector created on the messages of the interaction
+ */
+export function latestCollector(interaction: FakeInteraction): ReactionCollector {
+	const collector = interaction.collectors.at(-1);
+	expect(collector).toBeDefined();
+	return collector as ReactionCollector;
 }
 
 /**
@@ -463,7 +486,7 @@ let collectorCount = 0;
  */
 export function collectorPacket(collector: CoreReactionCollector, endTime = Date.now() + 60_000): ReactionCollectorCreationPacket {
 	collectorCount++;
-	return Object.assign(new ReactionCollectorCreationPacket(), collector.creationPacket(`collector-${collectorCount}`, endTime));
+	return Object.assign(new ReactionCollectorCreationPacket(), collector.creationPacket(`collector-${collectorCount}`, endTime, true));
 }
 
 /**
@@ -483,9 +506,7 @@ export function sentPackets<T extends CrowniclesPacket>(packetClass?: abstract n
  * Click of the player on a menu of his command, cached as the front-end does before telling Core, with the context Core
  * answers the click with
  */
-export function answeredClick(command: {
-	interaction: FakeInteraction; context: PacketContext;
-}, customId = "menu-button"): {
+export function answeredClick(command: FakeCommand, customId = "menu-button"): {
 	click: FakeClick; context: PacketContext;
 } {
 	const click = fakeClick(command.interaction.user, customId);
@@ -496,7 +517,7 @@ export function answeredClick(command: {
 		context: {
 			...command.context,
 			discord: {
-				...command.context.discord!,
+				...command.discord,
 				buttonInteraction: click.id
 			}
 		}

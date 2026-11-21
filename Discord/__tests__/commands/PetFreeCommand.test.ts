@@ -34,7 +34,7 @@ import {
 	CrowniclesPacket, makePacket
 } from "../../../Lib/src/packets/CrowniclesPacket";
 import {
-	answeredClick, clickOn, collectorPacket, componentsOf, dispatch, embedsOf, ERROR_COLOR, FakeClick, fakeClick, fakeCommand,
+	answeredClick, clickOn, collectorPacket, componentsOf, dispatch, embedsOf, ERROR_COLOR, FakeClick, fakeClick, FakeCommand, fakeCommand,
 	FakeInteraction, lastMessage, RenderedEmbed, sentPackets, setupRendering, singleMessage
 } from "../mocks/DiscordRenderHarness";
 
@@ -96,9 +96,7 @@ describe("pet free refusals", () => {
 	});
 });
 
-async function openConfirmation(freeCost: number): Promise<{
-	interaction: FakeInteraction; context: ReturnType<typeof fakeCommand>["context"];
-}> {
+async function openConfirmation(freeCost: number): Promise<FakeCommand> {
 	const command = fakeCommand("Owner");
 	await dispatch(command.context, collectorPacket(new ReactionCollectorPetFree(1, "m", "Rex", freeCost)));
 	return command;

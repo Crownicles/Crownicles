@@ -19,7 +19,7 @@ import { Badge } from "../../../../Lib/src/types/Badge";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import {
-	clickOn, componentsOf, dispatch, embedsOf, ERROR_COLOR, fakeClick, fakeCommand, fakeUser, lastMessage, mainItem,
+	clickOn, componentsOf, dispatch, embedsOf, ERROR_COLOR, fakeClick, FakeCommand, fakeCommand, fakeUser, lastMessage, mainItem,
 	RenderedEmbed, setupRendering, singleMessage, supportItem
 } from "../../mocks/DiscordRenderHarness";
 
@@ -67,10 +67,10 @@ async function renderProfile(data: ProfileData): Promise<{
 	embed: RenderedEmbed; reactions: string[];
 }> {
 	const {
-		interaction, context
+		interaction, context, keycloakId
 	} = fakeCommand("Hero");
 	await dispatch(context, makePacket(CommandProfilePacketRes, {
-		keycloakId: context.keycloakId!,
+		keycloakId,
 		playerData: data
 	}));
 	const [embed] = embedsOf(singleMessage(interaction));
@@ -256,11 +256,11 @@ function inventoryData(overrides: Partial<InventoryData> = {}): InventoryData {
 	};
 }
 
-async function renderInventory(data: InventoryData, talismans: Partial<CommandInventoryPacketRes> = {}): Promise<ReturnType<typeof fakeCommand>> {
+async function renderInventory(data: InventoryData, talismans: Partial<CommandInventoryPacketRes> = {}): Promise<FakeCommand> {
 	const command = fakeCommand("Hero");
 	await dispatch(command.context, makePacket(CommandInventoryPacketRes, {
 		foundPlayer: true,
-		keycloakId: command.context.keycloakId!,
+		keycloakId: command.keycloakId,
 		data,
 		...talismans
 	}));
