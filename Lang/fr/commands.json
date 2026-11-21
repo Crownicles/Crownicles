@@ -856,6 +856,8 @@
     "remainingEnergyTitle": "Énergie restante :",
     "startPoint": "Point de départ :",
     "timeLost": "** | {emote:clocks.10} Temps perdu : **{{timeLost}}",
+    "materialLost": "** | {emote:materials.{{materialId}}} Matériau utilisé : **$t(models:materials.{{materialId}}) x{{quantity, number}}",
+    "materialWon": "** | {emote:materials.{{materialId}}} Matériau obtenu : **$t(models:materials.{{materialId}}) x{{quantity, number}}",
     "travelPathTitle": "Voyage actuel :",
     "travellingDescription": "Tout se passe bien depuis votre dernière aventure {{smallEventEmoji}}. Prochain arrêt prévu {{time}}.",
     "travellingDescriptionEndTravel": "Tout se passe bien dans votre aventure, vous arriverez bientôt à destination.",

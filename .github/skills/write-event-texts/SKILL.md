@@ -133,6 +133,11 @@ L'échelle est calée sur les 130 joueurs réguliers en production, c'est-à-dir
 - **« Fort » veut dire vraiment fort**, le premier dixième. Être dans le premier quart, c'est juste « correct ».
 - **Un niveau 60 est encore le début du jeu.**
 - **Classes et familiers.** Une condition sur une seule classe ou un seul type de familier peut ne toucher que 1 à 2 % des joueurs : c'est voulu. Des issues rares, avec une part de joueurs concernés très variable, rendent l'event plus riche.
+- **Cuisine, matériaux, enchantements et amélioration de l'équipement.** Des conditions existent aussi sur le niveau de cuisine (`cookingLevel`), les matériaux du sac (`materials`), l'enchantement de l'arme ou de l'armure équipée (`enchantment`) et leur amélioration chez le forgeron (`weaponLevel`, `armorLevel`). Une issue peut aussi consommer (`consumeMaterials`) ou donner (`giveMaterials`) des matériaux. Formats et repères en production : `reference.md` de l'atelier, section « Cuisine, matériaux et équipement ».
+  - Cuisine : 47 % des joueurs réguliers sont au niveau 0 ; « bon cuisinier » = `min` 70 (10 %), « chef » = `min` 90 (5 %).
+  - Les matériaux sont très répandus : une condition de matériau raconte ce que le joueur a dans son sac, pas un joueur rare.
+  - Le matériau doit correspondre au texte : pour une corde, vise les `ids` des cordes, pas le type `rope` qui contient aussi les tissus.
+  - Une condition `materials` ne retire rien : le texte ne dit pas que le matériau est perdu. Si l'issue l'utilise, c'est `consumeMaterials`, et le jeu affiche lui-même ce qui est retiré.
 - **Karma.**
   - Il part de 0 et n'est pas encore en production.
   - Les seuils sont `min` 0, 50, 80 ou 100, et `max` -30 ou -50.
@@ -169,3 +174,4 @@ Les 21 events déjà réécrits (1, 2, 10 à 20, 30, 39, 46, 56, 69, 71, 76, 89)
 - **Seuils** : « fort » veut dire le premier dixième des joueurs réguliers, pas le premier cinquième. Voir « L'échelle des seuils ».
 - **Classes et familiers** : une issue qui ne concerne que 1 à 2 % des joueurs est voulue.
 - **Events 69 et 76** : une intro trop raccourcie perd ce qui motive les choix ; jusqu'à 400 caractères quand c'est nécessaire. Voir « Structure d'un event ».
+- **Cuisine, matériaux, équipement** : des issues doivent dépendre du niveau de cuisine, des matériaux et des enchantements ou améliorations de l'équipement, et certaines peuvent consommer des matériaux. Voir « L'échelle des seuils ».

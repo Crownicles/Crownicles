@@ -178,6 +178,14 @@ export class CommandReportBigEventResultRes extends CrowniclesPacket {
 
 	tokens!: number;
 
+	/**
+	 * Materials won (positive quantity) or consumed (negative quantity)
+	 */
+	materials?: {
+		materialId: number;
+		quantity: number;
+	}[];
+
 	oneshot!: boolean;
 }
 

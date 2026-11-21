@@ -1,16 +1,20 @@
 import { describe, expect, it, beforeEach, vi } from "vitest";
-import { getValidOutcomesForPlayer, PossibilityOutcome } from "../../../src/data/events/PossibilityOutcome";
+import { getValidOutcomesForPlayer, pickMaterialsToConsume, PossibilityOutcome } from "../../../src/data/events/PossibilityOutcome";
 import Player from "../../../src/core/database/game/models/Player";
 import { PlayerMissionsInfos } from "../../../src/core/database/game/models/PlayerMissionsInfo";
 import { PetEntities } from "../../../src/core/database/game/models/PetEntity";
 import { InventorySlots } from "../../../src/core/database/game/models/InventorySlot";
 import { PetDataController } from "../../../src/data/Pet";
+import { Materials } from "../../../src/core/database/game/models/Material";
+import { MaterialDataController } from "../../../src/data/Material";
 
 // Mock des dépendances
 vi.mock("../../../src/core/database/game/models/PlayerMissionsInfo");
 vi.mock("../../../src/core/database/game/models/PetEntity");
 vi.mock("../../../src/core/database/game/models/InventorySlot");
 vi.mock("../../../src/data/Pet");
+vi.mock("../../../src/core/database/game/models/Material");
+vi.mock("../../../src/data/Material");
 
 describe("PossibilityOutcome Requirements", () => {
 	let mockPlayer: Partial<Player>;
@@ -305,6 +309,75 @@ describe("PossibilityOutcome Requirements", () => {
 
 			expect(validOutcomes).toHaveLength(1);
 			expect(validOutcomes[0][0]).toBe("basicOutcome");
+		});
+	});
+	describe("Cooking, material and equipment requirements", () => {
+		const isValid = async (requirements: PossibilityOutcome["requirements"]): Promise<boolean> =>
+			(await getValidOutcomesForPlayer({ outcome: { requirements } }, mockPlayer as Player)).length === 1;
+
+		beforeEach(() => {
+			mockPlayer = {
+				...mockPlayer,
+				cookingLevel: 40
+			} as Partial<Player>;
+			vi.mocked(InventorySlots.getPlayerActiveObjects).mockResolvedValue({
+				weapon: { itemLevel: 3, itemEnchantmentId: "burnedDamage1" },
+				armor: { itemLevel: 0, itemEnchantmentId: null }
+			} as any);
+			vi.mocked(Materials.getPlayerMaterials).mockResolvedValue([
+				{ materialId: 5, quantity: 2 },
+				{ materialId: 7, quantity: 1 }
+			] as any);
+			vi.mocked(MaterialDataController.instance.getById).mockImplementation(id =>
+				({ "5": { type: "rope", rarity: 1 }, "7": { type: "wood", rarity: 3 } } as any)[id]);
+		});
+
+		it("should check the cooking level", async () => {
+			expect(await isValid({ cookingLevel: { min: 40 } })).toBe(true);
+			expect(await isValid({ cookingLevel: { min: 41 } })).toBe(false);
+		});
+
+		it("should sum the quantity of the materials matching the filters", async () => {
+			expect(await isValid({ materials: { type: "rope" } })).toBe(true);
+			expect(await isValid({ materials: { type: "rope", quantity: { min: 3 } } })).toBe(false);
+			expect(await isValid({ materials: { quantity: { min: 3 } } })).toBe(true);
+			expect(await isValid({ materials: { rarity: { min: 3 } } })).toBe(true);
+			expect(await isValid({ materials: { ids: [6] } })).toBe(false);
+		});
+
+		it("should accept a material requirement asking for none", async () => {
+			expect(await isValid({ materials: { type: "metal", quantity: { max: 0 } } })).toBe(true);
+			expect(await isValid({ materials: { type: "rope", quantity: { max: 0 } } })).toBe(false);
+		});
+
+		it("should check the enchantment of the equipped items", async () => {
+			expect(await isValid({ enchantment: {} })).toBe(true);
+			expect(await isValid({ enchantment: { types: ["magic"] } })).toBe(true);
+			expect(await isValid({ enchantment: { kinds: ["pvpAttack"] } })).toBe(false);
+			expect(await isValid({ enchantment: { slot: "armor" } })).toBe(false);
+			expect(await isValid({ enchantment: { level: { min: 2 } } })).toBe(false);
+		});
+
+		it("should only allow consuming materials the player owns", async () => {
+			const consuming = (quantity: number): Promise<unknown[]> => getValidOutcomesForPlayer(
+				{ outcome: { consumeMaterials: { type: "rope", quantity } } },
+				mockPlayer as Player
+			);
+			expect(await consuming(2)).toHaveLength(1);
+			expect(await consuming(3)).toHaveLength(0);
+		});
+
+		it("should consume the most plentiful matching materials first", () => {
+			vi.mocked(MaterialDataController.instance.getById).mockImplementation(id =>
+				({ "5": { type: "rope", rarity: 1 }, "7": { type: "wood", rarity: 3 }, "8": { type: "rope", rarity: 2 } } as any)[id]);
+			const owned = [{ materialId: 5, quantity: 2 }, { materialId: 7, quantity: 9 }, { materialId: 8, quantity: 4 }];
+			expect(pickMaterialsToConsume(owned, { type: "rope" }, 5)).toEqual([{ materialId: 8, quantity: 4 }, { materialId: 5, quantity: 1 }]);
+			expect(pickMaterialsToConsume(owned, { type: "rope" }, 7)).toEqual([]);
+		});
+
+		it("should check the upgrade level of the equipped weapon and armor", async () => {
+			expect(await isValid({ weaponLevel: { min: 3 } })).toBe(true);
+			expect(await isValid({ armorLevel: { min: 1 } })).toBe(false);
 		});
 	});
 });
