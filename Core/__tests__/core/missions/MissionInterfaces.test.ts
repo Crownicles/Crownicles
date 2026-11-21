@@ -191,9 +191,12 @@ describe("Mission interfaces", () => {
 			expect(meetOracle.updateSaveBlob(0, blob("x"), {})).toBeNull();
 		});
 
-		// Bug: MissionTag iterates the indexes of its tags with `for...in` and checks them with `in`, so any non-empty tag list matches
-		it.fails("meetOracle does not match the tags of another event", () => {
+		it("meetOracle does not match the tags of another event", () => {
 			expect(meetOracle.areParamsMatchingVariantAndBlob(0, { tags: ["bigFeast"] }, null)).toBe(false);
+		});
+
+		it("meetOracle matches when one of its tags is among several others", () => {
+			expect(meetOracle.areParamsMatchingVariantAndBlob(0, { tags: ["bigFeast", "meetOracleAltar"] }, null)).toBe(true);
 		});
 	});
 

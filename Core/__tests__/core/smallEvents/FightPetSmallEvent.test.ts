@@ -69,9 +69,7 @@ describe("fight pet small event", () => {
 			}))).toBe(SmallEventConstants.FIGHT_PET.BASE_ACTION_AMOUNT + 1);
 		});
 
-		// Bug: fightPet.ts:38 checks `player.class in CLASSES_WITH_BONUS_ACTION`, which tests the indexes of the array (0 and 1)
-		// instead of its values: the infantrymen never get their bonus action
-		it.fails("offers a bonus action to the infantrymen", async () => {
+		it("offers a bonus action to the infantrymen", async () => {
 			for (const infantryClass of [ClassConstants.CLASSES_ID.INFANTRYMAN, ClassConstants.CLASSES_ID.POWERFUL_INFANTRYMAN]) {
 				expect(await offeredActionsCount(createTestPlayer({
 					class: infantryClass, level: LEVEL_TO_UNLOCK
@@ -79,8 +77,7 @@ describe("fight pet small event", () => {
 			}
 		});
 
-		// Bug: same check as above, the recruits and the fighters (classes 0 and 1) get the bonus action of the infantrymen
-		it.fails("does not offer a bonus action to the recruits and the fighters", async () => {
+		it("does not offer a bonus action to the recruits and the fighters", async () => {
 			for (const otherClass of [ClassConstants.CLASSES_ID.RECRUIT, ClassConstants.CLASSES_ID.FIGHTER]) {
 				expect(await offeredActionsCount(createTestPlayer({
 					class: otherClass, level: LEVEL_TO_UNLOCK
