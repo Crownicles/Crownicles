@@ -11,6 +11,9 @@ export default {
 		configFile: "vitest.config.mts"
 	},
 	mutate: [
+		"src/core/cooking/CookingService.ts",
+		"src/core/cooking/CookingSlotRotation.ts",
+		"src/core/cooking/RecipeDiscoveryService.ts",
 		"src/core/database/game/models/Player.ts",
 		"src/core/missions/MissionsController.ts",
 		"src/core/missions/interfaces/buyApartment.ts",
@@ -59,6 +62,11 @@ export default {
 		"src/core/missions/interfaces/upgradeHomeLevel.ts",
 		"src/core/missions/interfaces/visitCityNpc.ts",
 		"src/core/missions/interfaces/winBossWithDifferentClasses.ts",
+		"src/core/report/ReportBigEventService.ts",
+		"src/core/report/ReportCookingService.ts",
+		"src/core/report/ReportGardenService.ts",
+		"src/core/report/ReportPveService.ts",
+		"src/core/report/ReportSmallEventService.ts",
 		"src/core/smallEvents/altar.ts",
 		"src/core/smallEvents/badPet.ts",
 		"src/core/smallEvents/dwarfPetFan.ts",
