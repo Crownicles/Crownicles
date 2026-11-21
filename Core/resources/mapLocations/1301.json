@@ -1,0 +1,8 @@
+{
+  "type": "mangrove",
+  "biomes": [
+    "swamp"
+  ],
+  "canBeGoToPlaceMissionDestination": false,
+  "attribute": "pve_island"
+}

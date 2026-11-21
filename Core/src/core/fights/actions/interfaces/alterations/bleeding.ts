@@ -16,7 +16,7 @@ export const BLEEDING_TURNS_TO_HEAL = 3;
 
 /**
  * Monsters that are immune to bleeding
- * These monster IDs match the monster.id property (skeleton, rockGolem, magmaTitan, shinyElementary, celestialGuardian, yukiOnna)
+ * These monster IDs match the monster.id property (skeleton, rockGolem, magmaTitan, shinyElementary, celestialGuardian, yukiOnna, corruptedSylvan, motherTree)
  */
 const IMMUNE_MONSTERS = [
 	"skeleton",
@@ -24,7 +24,9 @@ const IMMUNE_MONSTERS = [
 	"magmaTitan",
 	"shinyElementary",
 	"celestialGuardian",
-	"yukiOnna"
+	"yukiOnna",
+	"corruptedSylvan",
+	"motherTree"
 ];
 
 const use: FightAlterationFunc = (affected, _fightAlteration, opponent) => {

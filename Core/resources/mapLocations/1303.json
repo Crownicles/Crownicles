@@ -1,0 +1,9 @@
+{
+  "type": "fungalGrove",
+  "biomes": [
+    "swamp",
+    "forest"
+  ],
+  "canBeGoToPlaceMissionDestination": false,
+  "attribute": "pve_island"
+}
