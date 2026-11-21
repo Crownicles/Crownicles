@@ -51,7 +51,10 @@ type BadPetActionResult = {
 /**
  * Handler function signature for bad pet actions
  */
-type BadPetActionHandler = (petEntity: PetEntity, petModel: Pet, player: Player) => Promise<BadPetActionResult>;
+/**
+ * @param lockedGuildId - The guild locked for the outcome, the only one food can be taken from; null when none is
+ */
+type BadPetActionHandler = (petEntity: PetEntity, petModel: Pet, player: Player, lockedGuildId: number | null) => Promise<BadPetActionResult>;
 
 /**
  * Structure defining a bad pet action
@@ -190,9 +193,9 @@ function takeGuildFood(guildId: number, guildFoodKey: GuildFoodPropertyKey): Pro
  * Handle giving food to pet - generic handler for both meat and vegetables
  * @param guildFoodKey - The key for the guild food property (carnivorousFood or herbivorousFood)
  * @param petModel - Pet model to check diet compatibility
- * @param player - Player giving the food
+ * @param lockedGuildId - The guild locked for the outcome, which the food is taken from; null when none is
  */
-async function handleGiveFood(guildFoodKey: GuildFoodPropertyKey, petModel: Pet, player: Player): Promise<BadPetActionResult> {
+async function handleGiveFood(guildFoodKey: GuildFoodPropertyKey, petModel: Pet, lockedGuildId: number | null): Promise<BadPetActionResult> {
 	const {
 		LOVE_LOST, OUTCOME_TYPES
 	} = SmallEventConstants.BAD_PET;
@@ -211,7 +214,7 @@ async function handleGiveFood(guildFoodKey: GuildFoodPropertyKey, petModel: Pet,
 			dislikesOutcome: OUTCOME_TYPES.GIVE_VEG_DISLIKES
 		};
 
-	if (!player.guildId || !await takeGuildFood(player.guildId, guildFoodKey)) {
+	if (lockedGuildId === null || !await takeGuildFood(lockedGuildId, guildFoodKey)) {
 		return {
 			loveLost: LOVE_LOST.GIVE_FOOD.NO_FOOD,
 			interactionType: foodConfig.noFoodOutcome
@@ -238,15 +241,15 @@ async function handleGiveFood(guildFoodKey: GuildFoodPropertyKey, petModel: Pet,
 /**
  * Handle give meat action - depends on guild inventory and pet's diet
  */
-function handleGiveMeat(_petEntity: PetEntity, petModel: Pet, player: Player): Promise<BadPetActionResult> {
-	return handleGiveFood(PetConstants.PET_FOOD.CARNIVOROUS_FOOD, petModel, player);
+function handleGiveMeat(_petEntity: PetEntity, petModel: Pet, _player: Player, lockedGuildId: number | null): Promise<BadPetActionResult> {
+	return handleGiveFood(PetConstants.PET_FOOD.CARNIVOROUS_FOOD, petModel, lockedGuildId);
 }
 
 /**
  * Handle give vegetables action - depends on guild inventory and pet's diet
  */
-function handleGiveVeg(_petEntity: PetEntity, petModel: Pet, player: Player): Promise<BadPetActionResult> {
-	return handleGiveFood(PetConstants.PET_FOOD.HERBIVOROUS_FOOD, petModel, player);
+function handleGiveVeg(_petEntity: PetEntity, petModel: Pet, _player: Player, lockedGuildId: number | null): Promise<BadPetActionResult> {
+	return handleGiveFood(PetConstants.PET_FOOD.HERBIVOROUS_FOOD, petModel, lockedGuildId);
 }
 
 /**
@@ -453,7 +456,7 @@ type BadPetActionResultWithEntity = BadPetActionResult & {
  * This is intentional behavior - when the collector expires without player input,
  * the event resolves with the default "wait" outcome rather than being cancelled.
  */
-async function executeActionHandler(reactionId: string | undefined, player: Player): Promise<BadPetActionResultWithEntity> {
+async function executeActionHandler(reactionId: string | undefined, player: Player, lockedGuildId: number | null): Promise<BadPetActionResultWithEntity> {
 	const {
 		LOVE_LOST, ACTION_IDS
 	} = SmallEventConstants.BAD_PET;
@@ -488,7 +491,7 @@ async function executeActionHandler(reactionId: string | undefined, player: Play
 		};
 	}
 
-	const result = await handler(petEntity, petModel, player);
+	const result = await handler(petEntity, petModel, player, lockedGuildId);
 	return {
 		...result, petEntity
 	};
@@ -517,25 +520,34 @@ function getOutcomeLockKeys(player: Player, withGuild: boolean): LockKey<Model>[
 }
 
 /**
+ * Rows locked for the outcome, besides the player ones
+ */
+interface OutcomeLockedRows {
+	petId: number | null;
+	guildId: number | null;
+}
+
+/**
  * Resolve the chosen action on the locked rows and answer its outcome
  * @param lockedPlayer - The player, read under the lock
- * @param petIdAtEvent - The pet whose row was locked: a pet that changed meanwhile is left untouched
+ * @param lockedRows - The pet and the guild locked when the event ended
  * @param reactionId - The chosen action, undefined when the collector timed out
  * @param response - Packets answered to the player
  */
 async function resolveOutcomeUnderLock(
 	lockedPlayer: Locked<Player>,
-	petIdAtEvent: number | null,
+	lockedRows: OutcomeLockedRows,
 	reactionId: string | undefined,
 	response: CrowniclesPacket[]
 ): Promise<void> {
-	const result = lockedPlayer.petId === petIdAtEvent
-		? await executeActionHandler(reactionId, lockedPlayer)
-		: {
-			loveLost: SmallEventConstants.BAD_PET.LOVE_LOST.WAIT,
-			interactionType: SmallEventConstants.BAD_PET.ACTION_IDS.WAIT,
-			petEntity: null
-		};
+	// The pet left (shelter, sale, freeing) or was replaced during the choice: no outcome applies to it any more
+	if (lockedPlayer.petId === null || lockedPlayer.petId !== lockedRows.petId) {
+		return;
+	}
+
+	// Only the locked guild can give food, and only while the player still belongs to it
+	const guildId = lockedPlayer.guildId === lockedRows.guildId ? lockedRows.guildId : null;
+	const result = await executeActionHandler(reactionId, lockedPlayer, guildId);
 
 	await applyLoveLoss(result.petEntity, result.loveLost, lockedPlayer, response);
 
@@ -554,16 +566,16 @@ async function resolveOutcomeUnderLock(
  * Whether the chosen action takes food from the stock of the guild of the player
  */
 function takesGuildFood(reactionId: string | undefined, player: Player): boolean {
-	return reactionId !== undefined && GUILD_FOOD_ACTION_IDS.includes(reactionId) && player.guildId !== null;
+	return GUILD_FOOD_ACTION_IDS.some(actionId => actionId === reactionId) && player.guildId !== null;
 }
 
 /**
  * Resolve the outcome with the guild locked too
  * @returns false when the guild was disbanded during the choice, the outcome then still has to be resolved without it
  */
-async function resolveWithGuildFood(player: Player, resolveOutcome: (lockedPlayer: Locked<Player>) => Promise<void>): Promise<boolean> {
+async function resolveWithGuildFood(player: Player, resolveOutcome: (lockedPlayer: Locked<Player>, lockedGuildId: number | null) => Promise<void>): Promise<boolean> {
 	try {
-		await withLockedPlayerAndMissions(player.id, resolveOutcome, getOutcomeLockKeys(player, true));
+		await withLockedPlayerAndMissions(player.id, lockedPlayer => resolveOutcome(lockedPlayer, player.guildId), getOutcomeLockKeys(player, true));
 		return true;
 	}
 	catch (error) {
@@ -583,12 +595,14 @@ function getEndCallback(player: Player): EndCallback {
 
 		const reaction = collector.getFirstReaction();
 		const reactionId = (reaction?.reaction.data as { id?: string } | undefined)?.id;
-		const resolveOutcome = (lockedPlayer: Locked<Player>): Promise<void> => resolveOutcomeUnderLock(lockedPlayer, player.petId, reactionId, response);
+		const resolveOutcome = (lockedPlayer: Locked<Player>, lockedGuildId: number | null): Promise<void> => resolveOutcomeUnderLock(lockedPlayer, {
+			petId: player.petId, guildId: lockedGuildId
+		}, reactionId, response);
 
 		if (takesGuildFood(reactionId, player) && await resolveWithGuildFood(player, resolveOutcome)) {
 			return;
 		}
-		await withLockedPlayerAndMissionsSafe(player, "badPet endCallback", resolveOutcome, getOutcomeLockKeys(player, false));
+		await withLockedPlayerAndMissionsSafe(player, "badPet endCallback", lockedPlayer => resolveOutcome(lockedPlayer, null), getOutcomeLockKeys(player, false));
 	};
 }
 
