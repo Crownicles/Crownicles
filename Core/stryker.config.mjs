@@ -11,7 +11,20 @@ export default {
 		configFile: "vitest.config.mts"
 	},
 	mutate: [
-		"src/core/missions/MissionsController.ts"
+		"src/core/missions/MissionsController.ts",
+		"src/core/smallEvents/altar.ts",
+		"src/core/smallEvents/badPet.ts",
+		"src/core/smallEvents/dwarfPetFan.ts",
+		"src/core/smallEvents/expeditionAdvice.ts",
+		"src/core/smallEvents/fightPet.ts",
+		"src/core/smallEvents/gardener.ts",
+		"src/core/smallEvents/gobletsGame.ts",
+		"src/core/smallEvents/interactOtherPlayers.ts",
+		"src/core/smallEvents/limoges.ts",
+		"src/core/smallEvents/lottery.ts",
+		"src/core/smallEvents/petFood.ts",
+		"src/core/smallEvents/ultimateFoodMerchant.ts",
+		"src/core/smallEvents/witch.ts"
 	],
 	// Imports reach ../Lib through relative paths that a copied sandbox would break: mutate the files in place (restored at the end)
 	inPlace: true,
