@@ -11,7 +11,15 @@ export default {
 		configFile: "vitest.config.mts"
 	},
 	mutate: [
-		"src/core/missions/MissionsController.ts"
+		"src/core/cooking/CookingService.ts",
+		"src/core/cooking/CookingSlotRotation.ts",
+		"src/core/cooking/RecipeDiscoveryService.ts",
+		"src/core/missions/MissionsController.ts",
+		"src/core/report/ReportBigEventService.ts",
+		"src/core/report/ReportCookingService.ts",
+		"src/core/report/ReportGardenService.ts",
+		"src/core/report/ReportPveService.ts",
+		"src/core/report/ReportSmallEventService.ts"
 	],
 	// Imports reach ../Lib through relative paths that a copied sandbox would break: mutate the files in place (restored at the end)
 	inPlace: true,
