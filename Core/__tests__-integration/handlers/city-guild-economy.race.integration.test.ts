@@ -151,8 +151,7 @@ describe("City guild economy", () => {
 			expect([guild.domainCityId, guild.treasury]).toEqual([OTHER_CITY_ID, GuildDomainConstants.DOMAIN_RELOCATION_COST - 1]);
 		});
 
-		// Bug: handleGuildDomainNotaryReaction (ReportCityGuildDomainService.ts) never checks under the lock that the domain is not already in the city: once the first confirmation bought it, every queued one "relocates" it to the same city for the relocation cost
-		it.fails("charges the domain purchase once when it is confirmed several times concurrently", async () => {
+		it("charges the domain purchase once when it is confirmed several times concurrently", async () => {
 			const {
 				player, guildId
 			} = await createChiefWithGuild({
@@ -169,6 +168,7 @@ describe("City guild economy", () => {
 			expect(guild.domainCityId).toBe(DOMAIN_CITY_ID);
 			expect(guild.treasury).toBe(RICH_TREASURY - GuildDomainConstants.DOMAIN_PURCHASE_COST);
 			expect(packetNames(responses).filter(name => name === "CommandReportGuildDomainRelocateRes")).toEqual([]);
+			expect(packetNames(responses).filter(name => name === "CommandReportCityOfferChangedRes")).toHaveLength(CONCURRENT_REQUESTS - 1);
 		});
 	});
 

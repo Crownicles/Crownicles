@@ -10,6 +10,7 @@ import {
 	CrowniclesPacket, makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
+	CommandReportCityOfferChangedRes,
 	CommandReportGuildDomainNotEnoughTreasuryRes,
 	CommandReportGuildDomainPurchaseRes,
 	CommandReportGuildDomainRelocateRes,
@@ -69,6 +70,11 @@ export async function handleGuildDomainNotaryReaction(player: Player, city: City
 			return null;
 		}
 
+		// A confirmation queued behind the one that brought the domain here must not pay a relocation to the same city
+		if (guild.domainCityId === city.id) {
+			return { kind: "alreadyHere" as const };
+		}
+
 		const isRelocation = guild.domainCityId !== null;
 		const fromCityId = guild.domainCityId;
 		const cost = isRelocation
@@ -91,6 +97,11 @@ export async function handleGuildDomainNotaryReaction(player: Player, city: City
 	});
 
 	if (outcome === null) {
+		return;
+	}
+
+	if (outcome.kind === "alreadyHere") {
+		response.push(makePacket(CommandReportCityOfferChangedRes, {}));
 		return;
 	}
 
