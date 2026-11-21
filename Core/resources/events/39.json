@@ -59,7 +59,7 @@
         "5": {
           "requirements": {
             "attack": {
-              "min": 250
+              "min": 700
             }
           },
           "money": 220,
@@ -97,7 +97,7 @@
         "3": {
           "requirements": {
             "level": {
-              "max": 25
+              "max": 30
             }
           },
           "randomItem": {},
@@ -128,7 +128,7 @@
         "1": {
           "requirements": {
             "level": {
-              "max": 40
+              "max": 30
             }
           },
           "karma": -3
@@ -136,7 +136,7 @@
         "2": {
           "requirements": {
             "speed": {
-              "min": 250
+              "min": 350
             }
           },
           "money": 180,
@@ -164,7 +164,7 @@
         "5": {
           "requirements": {
             "defense": {
-              "min": 250
+              "min": 520
             }
           },
           "karma": -5,
@@ -181,7 +181,7 @@
         "1": {
           "requirements": {
             "speed": {
-              "min": 220
+              "min": 350
             }
           },
           "randomItem": {},
@@ -191,7 +191,7 @@
         "2": {
           "requirements": {
             "level": {
-              "max": 25
+              "max": 55
             }
           },
           "money": 30,
@@ -217,7 +217,7 @@
         "1": {
           "requirements": {
             "level": {
-              "max": 50
+              "max": 55
             }
           },
           "money": -300
@@ -234,7 +234,7 @@
         "3": {
           "requirements": {
             "attack": {
-              "min": 250
+              "min": 600
             }
           },
           "money": 60,
