@@ -128,6 +128,7 @@ import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import {
 	asPlayer, makeHandlerPlayer
 } from "./CityHandlerFixture";
+import { makeHome } from "../ModelStubs";
 
 const player = makeHandlerPlayer(0);
 const context = {} as PacketContext;
@@ -327,12 +328,6 @@ describe("material shops", () => {
 });
 
 describe("herbalist", () => {
-	function makeHome(level: number): Home {
-		return Object.assign(Object.create(Home.prototype) as Home, {
-			id: 3, ownerId: 1, cityId: "coco_village", level
-		});
-	}
-
 	it("sells the remote harvest talisman only to a player with a garden and grants it once bought", async () => {
 		const talismans = {
 			hasRemoteHarvestTalisman: false, save: vi.fn().mockResolvedValue(undefined)
@@ -344,12 +339,16 @@ describe("herbalist", () => {
 		const talisman = findItem(options, ShopItemType.REMOTE_HARVEST_TALISMAN);
 
 		// A level 1 home has no garden plot, a level 2 one has some
-		vi.mocked(Homes.getOfPlayer).mockResolvedValueOnce(makeHome(1));
+		vi.mocked(Homes.getOfPlayer).mockResolvedValueOnce(makeHome({
+			cityId: "coco_village", level: 1
+		}));
 		const noGarden = await buy(talisman, 1);
 		vi.mocked(Homes.getOfPlayer).mockResolvedValueOnce(null);
 		const homeless = await buy(talisman, 1);
 		expect(talismans.hasRemoteHarvestTalisman).toBe(false);
-		vi.mocked(Homes.getOfPlayer).mockResolvedValueOnce(makeHome(2));
+		vi.mocked(Homes.getOfPlayer).mockResolvedValueOnce(makeHome({
+			cityId: "coco_village", level: 2
+		}));
 		const bought = await buy(talisman, 1);
 
 		expect(talisman.price).toBe(GardenConstants.REMOTE_HARVEST_TALISMAN_PRICE);

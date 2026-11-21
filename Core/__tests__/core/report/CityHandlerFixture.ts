@@ -4,6 +4,7 @@ import type { CrowniclesPacket } from "../../../../Lib/src/packets/CrowniclesPac
 import { ZERO_STATS } from "../../../../Lib/src/types/StatValues";
 import type { Player } from "../../../src/core/database/game/models/Player";
 import { Guild } from "../../../src/core/database/game/models/Guild";
+import { asPlayer } from "../ModelStubs";
 
 /**
  * Player of a city handler: money moves as the real `spendMoney` / `addMoney` would move it, without missions nor logs
@@ -60,12 +61,7 @@ export function makeHandlerPlayer(money: number, level = 1): CityHandlerPlayer {
 	return player;
 }
 
-/**
- * The handlers only use the members stubbed by {@link makeHandlerPlayer}, which a Sequelize model cannot be built with
- */
-export function asPlayer(player: CityHandlerPlayer): Player {
-	return player as unknown as Player;
-}
+export { asPlayer };
 
 /**
  * Entities handed to the critical sections, looked up by the model and id of each lock key

@@ -34,8 +34,11 @@ import { Guild } from "../database/game/models/Guild";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
-import { LockKey } from "../../../../Lib/src/locks/withLockedEntities";
+import {
+	Locked, LockedRowNotFoundError, LockKey
+} from "../../../../Lib/src/locks/withLockedEntities";
 import { withLockedPlayerAndMissionsSafe } from "../utils/withLockedPlayerAndMissionsSafe";
+import { withLockedPlayerAndMissions } from "../utils/withLockedPlayerAndMissions";
 
 /**
  * Result of a bad pet action handler
@@ -498,13 +501,18 @@ async function executeActionHandler(reactionId: string | undefined, player: Play
  */
 
 /**
- * Rows the outcome changes besides the player ones: the pet loses love and the guild can lose food.
+ * Actions that take food from the stock of the guild
+ */
+const GUILD_FOOD_ACTION_IDS: readonly string[] = [SmallEventConstants.BAD_PET.ACTION_IDS.GIVE_MEAT, SmallEventConstants.BAD_PET.ACTION_IDS.GIVE_VEG];
+
+/**
+ * Rows the outcome changes besides the player ones: the pet loses love and, when asked, the guild loses food.
  * Locked together with the player rows, in canonical order, since the end callback runs after the lock of the report.
  */
-function getOutcomeLockKeys(player: Player): LockKey<Model>[] {
+function getOutcomeLockKeys(player: Player, withGuild: boolean): LockKey<Model>[] {
 	return [
 		...player.petId ? [PetEntity.lockKey(player.petId)] : [],
-		...player.guildId ? [Guild.lockKey(player.guildId)] : []
+		...withGuild && player.guildId ? [Guild.lockKey(player.guildId)] : []
 	];
 }
 
@@ -516,7 +524,7 @@ function getOutcomeLockKeys(player: Player): LockKey<Model>[] {
  * @param response - Packets answered to the player
  */
 async function resolveOutcomeUnderLock(
-	lockedPlayer: Player,
+	lockedPlayer: Locked<Player>,
 	petIdAtEvent: number | null,
 	reactionId: string | undefined,
 	response: CrowniclesPacket[]
@@ -552,12 +560,23 @@ function getEndCallback(player: Player): EndCallback {
 		const reaction = collector.getFirstReaction();
 		const reactionId = (reaction?.reaction.data as { id?: string } | undefined)?.id;
 
-		await withLockedPlayerAndMissionsSafe(
-			player,
-			"badPet endCallback",
-			lockedPlayer => resolveOutcomeUnderLock(lockedPlayer, player.petId, reactionId, response),
-			getOutcomeLockKeys(player)
-		);
+		const resolveOutcome = (lockedPlayer: Locked<Player>): Promise<void> => resolveOutcomeUnderLock(lockedPlayer, player.petId, reactionId, response);
+
+		if (reactionId !== undefined && GUILD_FOOD_ACTION_IDS.includes(reactionId) && player.guildId) {
+			try {
+				await withLockedPlayerAndMissions(player.id, resolveOutcome, getOutcomeLockKeys(player, true));
+				return;
+			}
+			catch (error) {
+				if (!(error instanceof LockedRowNotFoundError)) {
+					throw error;
+				}
+
+				// The guild can be disbanded during the choice: the outcome is then resolved without its food
+			}
+		}
+
+		await withLockedPlayerAndMissionsSafe(player, "badPet endCallback", resolveOutcome, getOutcomeLockKeys(player, false));
 	};
 }
 
