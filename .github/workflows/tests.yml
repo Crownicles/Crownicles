@@ -3,10 +3,10 @@ name: Module Tests
 on:
   pull_request:
     branches: [ '**' ]
-    paths: [ Lib/**, Discord/**, Core/**, Lang/**, .github/workflows/**, .github/actions/**, .github/scripts/test-reports-summary*, .github/scripts/patch-coverage* ]
+    paths: [ Lib/**, Discord/**, Core/**, Lang/**, .github/workflows/**, .github/actions/**, .github/scripts/test-reports-summary*, .github/scripts/patch-coverage*, .github/scripts/mutation-targets* ]
   push:
     branches: [ develop, master ]
-    paths: [ Lib/**, Discord/**, Core/**, Lang/**, .github/workflows/**, .github/actions/**, .github/scripts/test-reports-summary*, .github/scripts/patch-coverage* ]
+    paths: [ Lib/**, Discord/**, Core/**, Lang/**, .github/workflows/**, .github/actions/**, .github/scripts/test-reports-summary*, .github/scripts/patch-coverage*, .github/scripts/mutation-targets* ]
   workflow_dispatch:
 
 concurrency:
