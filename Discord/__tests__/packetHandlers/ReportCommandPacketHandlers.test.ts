@@ -136,6 +136,7 @@ const ANSWERS: [ReportPacketName, object, string[]][] = [
 	["CommandReportHomeBedRes", { health: 25 }, ["**25**"]],
 	["CommandReportBedCooldownRes", { nextAvailableAt: 1_800_000_000_000 }, ["<t:1800000000:R>"]],
 	["CommandReportEatInnMealCooldownRes", { nextAvailableAt: 1_800_000_000_000 }, ["<t:1800000000:R>"]],
+	["CommandReportCityOfferChangedRes", {}, ["Cette offre n'est plus valable", "Rien n'a été dépensé"]],
 	["CommandReportGuildDomainPurchaseRes", { cost: 0 }, ["domaine installé", "actes officiels"]],
 	["CommandReportGuildDomainRelocateRes", { cost: 2000 }, ["domaine déplacé", "**2000"]],
 	["CommandReportGuildDomainNotEnoughTreasuryRes", { missingTreasury: 700 }, ["**700"]],

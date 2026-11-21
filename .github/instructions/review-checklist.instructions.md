@@ -119,6 +119,9 @@ Apply this section when a change has a non-local blast radius: a shared abstract
 ## 9. Tests
 
 - [ ] **New logic has test coverage** where applicable — especially for utility functions and data transformations
+- [ ] **The added lines are covered** — the `Coverage of the added lines` step of Module Tests fails a pull request when less than 70 % of the lines it adds to `src/` are covered by the unit tests. Cover them instead of relying on the `skip-patch-coverage` label, reserved to a change only testable by the integration tests (lock races, migrations) and to be justified in the PR description
+- [ ] **New business logic is mutation-tested** — a new file holding game rules, economy or missions (Core or Lib) is added to `mutate` in its module's `stryker.config.mjs`, with tests reaching the floor of the nightly Mutation Tests (75 % per file). A surviving mutant that changes nothing observable is justified with `// Stryker disable next-line <mutator>: <reason>`, not hidden by removing the file from `mutate`
+- [ ] **Coverage floors only go up** — the `thresholds` of a `vitest.config.mts` are raised when a PR increases the coverage, and never lowered without an explanation in the PR description
 - [ ] **No tautological new tests** — new tests must verify observable behavior, state changes, packets, rendered UI, or regression cases. Avoid tests that only mirror the implementation, assert mocked return values, or check that a function returns the same fixture it was given. Stubs and fixtures reproduce what the real flow creates, not what the implementation assumes: a `stealWeapon` test built the fighter class the code expected instead of the `PlayerFighter` of a PvP fight, and passed while the steal always failed in game (#5064)
 
 ## 10. Concurrency (DB writes)

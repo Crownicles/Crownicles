@@ -42,7 +42,9 @@ cd RestWs && pnpm start
 ### Testing & Code Quality
 - Tests: `pnpm test` (Vitest framework)
 - Coverage: `pnpm test:coverage` (measures every file of `src/` and fails under the `thresholds` floors of `vitest.config.mts`: raise them when the coverage improves)
+- Coverage of a PR: CI also requires 70 % of the lines the PR adds to `src/` to be covered (`.github/scripts/patch-coverage.mjs`, label `skip-patch-coverage` to bypass it for integration-only changes)
 - Mutation: `pnpm test:mutation` in Core and Lib (Stryker, only on the files listed in `mutate` of `stryker.config.mjs`; Core mutates the files in place and restores them at the end, so do not interrupt it with `kill -9`)
+  - The nightly Mutation Tests workflow fails, and opens or updates an issue, when a mutated file scores under 75 %. On a PR, Mutation Tests (changed files) mutates only the changed files among `mutate`, for information
 - Linting: `pnpm eslint` / `pnpm eslintFix`
 - Build: `pnpm tsc` (outputs to `dist/`)
 

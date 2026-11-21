@@ -3,10 +3,10 @@ name: Module Tests
 on:
   pull_request:
     branches: [ '**' ]
-    paths: [ Lib/**, Discord/**, Core/**, Lang/**, .github/workflows/**, .github/actions/**, .github/scripts/test-reports-summary.mjs ]
+    paths: [ Lib/**, Discord/**, Core/**, Lang/**, .github/workflows/**, .github/actions/**, .github/scripts/test-reports-summary*, .github/scripts/patch-coverage* ]
   push:
     branches: [ develop, master ]
-    paths: [ Lib/**, Discord/**, Core/**, Lang/**, .github/workflows/**, .github/actions/**, .github/scripts/test-reports-summary.mjs ]
+    paths: [ Lib/**, Discord/**, Core/**, Lang/**, .github/workflows/**, .github/actions/**, .github/scripts/test-reports-summary*, .github/scripts/patch-coverage* ]
   workflow_dispatch:
 
 concurrency:
@@ -17,9 +17,18 @@ jobs:
   test-all-modules:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: read
+      pull-requests: read
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          # The merge commit of a pull request and its first parent, the base it is compared to
+          fetch-depth: 2
+
+      - name: Test the report scripts
+        run: node --test .github/scripts/patch-coverage.test.mjs .github/scripts/test-reports-summary.test.mjs .github/scripts/mutation-targets.test.mjs
 
       - name: Setup Node.js and PNPM
         uses: ./.github/actions/setup-pnpm
@@ -80,3 +89,18 @@ jobs:
       - name: Coverage summary
         if: always()
         run: node .github/scripts/test-reports-summary.mjs coverage Lib Discord Core
+
+      # The coverage of the whole modules hides untested new code: the lines a pull request adds must be covered too (#5165)
+      - name: Coverage of the added lines
+        if: success() && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          # Read at run time, so that adding the label then rerunning the job is enough
+          if gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/labels" --jq '.[].name' | grep -qx skip-patch-coverage; then
+            echo "::notice::skip-patch-coverage label: the coverage of the added lines is reported without being enforced"
+            node .github/scripts/patch-coverage.mjs HEAD^1 HEAD 0 Lib Discord Core
+          else
+            node .github/scripts/patch-coverage.mjs HEAD^1 HEAD 70 Lib Discord Core
+          fi
