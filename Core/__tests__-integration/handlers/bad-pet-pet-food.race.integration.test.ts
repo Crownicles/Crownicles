@@ -113,18 +113,16 @@ describe("badPet and petFood outcomes under concurrent writes", () => {
 		matches: (reaction: ReactionCollectorCreationPacket["reactions"][number]) => boolean,
 		testArgs?: string[]
 	): Promise<CrowniclesPacket[]> {
-		let collector: ReactionCollectorInstance | undefined;
-		const build = reactionsCollector.ReactionCollectorInstance.prototype.build;
-		vi.spyOn(reactionsCollector.ReactionCollectorInstance.prototype, "build").mockImplementation(function (this: ReactionCollectorInstance) {
-			collector = this;
-			return build.call(this);
-		});
+		// The spy calls the real build and records the collector each call was made on
+		const buildSpy = vi.spyOn(reactionsCollector.ReactionCollectorInstance.prototype, "build");
 		await funcs.executeSmallEvent(player, {
 			response: [],
 			context: { keycloakId: player.keycloakId } as PacketContext,
 			playerActiveObjects: {} as PlayerActiveObjects,
 			testArgs
 		});
+		const collector: ReactionCollectorInstance | undefined = buildSpy.mock.contexts.at(-1);
+		buildSpy.mockRestore();
 		if (!collector) {
 			throw new Error("The small event should open a collector");
 		}
