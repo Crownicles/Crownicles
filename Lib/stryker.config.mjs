@@ -11,7 +11,9 @@ export default {
 		configFile: "vitest.config.mts"
 	},
 	mutate: [
-		"src/locks/**/*.ts"
+		"src/locks/**/*.ts",
+		"src/types/TimeTypes.ts",
+		"src/utils/**/*.ts"
 	],
 	coverageAnalysis: "perTest",
 	incremental: true,

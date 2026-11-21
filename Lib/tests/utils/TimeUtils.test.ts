@@ -1,5 +1,13 @@
 import { afterEach, describe, it, expect, vi } from "vitest";
-import { getNextWeekDayMidnight, getWeekNumber, minutesDisplayIntl, weeksToSeconds } from "../../src/utils/TimeUtils";
+import {
+	asDays, asHours, asMilliseconds, asMinutes, asSeconds, asWeeks,
+	dateDisplay, dateToLogs, datesAreOnSameDay, daysToMilliseconds, daysToMinutes, daysToSeconds,
+	finishInTimeDisplay, getDateLogs, getDayNumber, getNextWeekDayMidnight, getOneDayAgo, getTimeFromXHoursAgo,
+	getTodayMidnight, getTomorrowMidnight, getWeekNumber, hoursToMilliseconds, hoursToMinutes, hoursToSeconds,
+	millisecondsToDays, millisecondsToHours, millisecondsToMinutes, millisecondsToSeconds, minutesDisplayIntl,
+	minutesToHours, minutesToMilliseconds, printTimeBeforeDate, resetIsNow, sDiff, seasonEndIsNow,
+	secondsToMilliseconds, todayIsSunday, weeksToMilliseconds, weeksToSeconds
+} from "../../src/utils/TimeUtils";
 import { DayOfTheWeek } from "../../src/constants/TimeConstants";
 import {LANGUAGE} from "../../src/Language";
 
@@ -170,5 +178,195 @@ describe("getNextWeekDayMidnight", () => {
 
 		expect(getNextWeekDayMidnight(DayOfTheWeek.SUNDAY)).toBe(endOfDay(2025, 0, 12));
 		expect(getNextWeekDayMidnight(DayOfTheWeek.SATURDAY)).toBe(endOfDay(2025, 0, 18));
+	});
+});
+
+describe("getNextWeekDayMidnight edge cases", () => {
+	afterEach(() => {
+		vi.useRealTimers();
+	});
+
+	it("still returns the end of today at the very last millisecond of the day", () => {
+		vi.useFakeTimers();
+		const lastMillisecondOfSunday = new Date(2025, 0, 12, 23, 59, 59, 999);
+		vi.setSystemTime(lastMillisecondOfSunday);
+
+		expect(getNextWeekDayMidnight(DayOfTheWeek.SUNDAY)).toBe(lastMillisecondOfSunday.valueOf());
+	});
+
+	it("keeps the end of the day when a daylight saving change happens before the reset", () => {
+		const previousTimezone = process.env.TZ;
+		process.env.TZ = "Europe/Paris";
+		try {
+			vi.useFakeTimers();
+			vi.setSystemTime(new Date(2025, 2, 26, 12)); // Wednesday, the clocks go forward on Sunday the 30th
+
+			const reset = new Date(getNextWeekDayMidnight(DayOfTheWeek.SUNDAY));
+
+			expect([reset.getDate(), reset.getHours(), reset.getMinutes()]).toEqual([30, 23, 59]);
+		}
+		finally {
+			if (previousTimezone === undefined) {
+				delete process.env.TZ;
+			}
+			else {
+				process.env.TZ = previousTimezone;
+			}
+		}
+	});
+});
+
+describe("time unit conversions", () => {
+	it("converts between every unit", () => {
+		expect(minutesToMilliseconds(asMinutes(2))).toBe(120_000);
+		expect(hoursToMilliseconds(asHours(2))).toBe(7_200_000);
+		expect(hoursToMinutes(asHours(2))).toBe(120);
+		expect(minutesToHours(asMinutes(90))).toBe(1.5);
+		expect(millisecondsToHours(asMilliseconds(5_400_000))).toBe(1.5);
+		expect(millisecondsToSeconds(asMilliseconds(1500))).toBe(1.5);
+		expect(secondsToMilliseconds(asSeconds(2))).toBe(2000);
+		expect(daysToMilliseconds(asDays(2))).toBe(172_800_000);
+		expect(weeksToMilliseconds(asWeeks(2))).toBe(1_209_600_000);
+		expect(millisecondsToDays(asMilliseconds(129_600_000))).toBe(1.5);
+		expect(hoursToSeconds(asHours(2))).toBe(7200);
+		expect(daysToMinutes(asDays(2))).toBe(2880);
+		expect(daysToSeconds(asDays(2))).toBe(172_800);
+	});
+
+	it("counts a started half minute as a whole minute", () => {
+		expect(millisecondsToMinutes(asMilliseconds(89_999))).toBe(1);
+		expect(millisecondsToMinutes(asMilliseconds(90_000))).toBe(2);
+	});
+
+	it("subtracts second timestamps", () => {
+		expect(sDiff(asSeconds(100), asSeconds(40))).toBe(60);
+	});
+});
+
+describe("dates of the current moment", () => {
+	afterEach(() => {
+		vi.useRealTimers();
+	});
+
+	const now = new Date(2025, 0, 8, 15, 30, 45, 678); // Wednesday
+
+	function freezeAt(date: Date): void {
+		vi.useFakeTimers();
+		vi.setSystemTime(date);
+	}
+
+	it("truncates the log timestamps to the second", () => {
+		freezeAt(now);
+
+		expect(getDateLogs()).toBe(Math.floor(now.valueOf() / 1000));
+		expect(dateToLogs(new Date(1_700_000_000_999))).toBe(1_700_000_000);
+	});
+
+	it("gives today's and tomorrow's midnight", () => {
+		freezeAt(now);
+
+		expect(getTodayMidnight()).toEqual(new Date(2025, 0, 8));
+		expect(getTomorrowMidnight()).toEqual(new Date(2025, 0, 9));
+	});
+
+	it("numbers the days since the epoch", () => {
+		freezeAt(new Date(Date.UTC(1970, 0, 3, 23, 59)));
+
+		expect(getDayNumber()).toBe(2);
+	});
+
+	it("gives the timestamp of one day ago", () => {
+		freezeAt(now);
+
+		expect(getOneDayAgo()).toBe(now.valueOf() - 86_400_000);
+	});
+
+	it("gives the date a given number of hours ago", () => {
+		freezeAt(now);
+
+		expect(getTimeFromXHoursAgo(5)).toEqual(new Date(2025, 0, 8, 10, 30, 45, 678));
+	});
+
+	it("tells whether today is a sunday", () => {
+		freezeAt(now);
+		expect(todayIsSunday()).toBe(false);
+
+		freezeAt(new Date(2025, 0, 12, 8));
+		expect(todayIsSunday()).toBe(true);
+	});
+
+	it("detects the weekly reset during the last five minutes of sunday", () => {
+		const endOfSunday = new Date(2025, 0, 12, 23, 59, 59, 999).valueOf();
+
+		freezeAt(new Date(endOfSunday - 5 * 60_000));
+		expect(resetIsNow()).toBe(true);
+
+		freezeAt(new Date(endOfSunday - 5 * 60_000 - 1));
+		expect(resetIsNow()).toBe(false);
+	});
+
+	it("detects the season end during the last twenty minutes of saturday", () => {
+		const endOfSaturday = new Date(2025, 0, 11, 23, 59, 59, 999).valueOf();
+
+		freezeAt(new Date(endOfSaturday - 20 * 60_000));
+		expect(seasonEndIsNow()).toBe(true);
+
+		freezeAt(new Date(endOfSaturday - 20 * 60_000 - 1));
+		expect(seasonEndIsNow()).toBe(false);
+	});
+});
+
+describe("datesAreOnSameDay", () => {
+	it("compares the year, the month and the day", () => {
+		const reference = new Date(2025, 4, 10, 1);
+
+		expect(datesAreOnSameDay(reference, new Date(2025, 4, 10, 23))).toBe(true);
+		expect(datesAreOnSameDay(reference, new Date(2024, 4, 10, 1))).toBe(false);
+		expect(datesAreOnSameDay(reference, new Date(2025, 5, 10, 1))).toBe(false);
+		expect(datesAreOnSameDay(reference, new Date(2025, 4, 11, 1))).toBe(false);
+	});
+});
+
+describe("discord timestamps", () => {
+	const date = new Date(1_700_000_000_999);
+
+	it("displays a relative time to the second", () => {
+		expect(finishInTimeDisplay(date)).toBe("<t:1700000000:R>");
+		expect(printTimeBeforeDate(date.valueOf())).toBe("<t:1700000000:R>");
+	});
+
+	it("displays a full date to the second", () => {
+		expect(dateDisplay(date)).toBe("<t:1700000000:F>");
+	});
+});
+
+describe("minutesDisplayIntl without Intl.DurationFormat", () => {
+	afterEach(() => {
+		vi.unstubAllGlobals();
+	});
+
+	it.each([
+		[0, LANGUAGE.FRENCH, "< 1 minute"],
+		[1, LANGUAGE.ENGLISH, "1 minute"],
+		[2, LANGUAGE.ENGLISH, "2 minutes"],
+		[60, LANGUAGE.FRENCH, "1 heure"],
+		[120, LANGUAGE.ENGLISH, "2 hours"],
+		[1440, LANGUAGE.FRENCH, "1 jour"],
+		[2880, LANGUAGE.ENGLISH, "2 days"],
+		[125, LANGUAGE.FRENCH, "2 heures et 5 minutes"],
+		[1445, LANGUAGE.ENGLISH, "1 day and 5 minutes"],
+		[3040, LANGUAGE.FRENCH, "2 jours, 2 heures et 40 minutes"],
+		[3040, LANGUAGE.ENGLISH, "2 days, 2 hours and 40 minutes"],
+		[125, "fr-CA", "2 heures et 5 minutes"]
+	])("formats %i minutes in %s", (minutes, lng, expected) => {
+		vi.stubGlobal("Intl", {});
+
+		expect(minutesDisplayIntl(minutes, lng)).toBe(expected);
+	});
+
+	it("falls back when the runtime has no Intl at all", () => {
+		vi.stubGlobal("Intl", undefined);
+
+		expect(minutesDisplayIntl(125, LANGUAGE.ENGLISH)).toBe("2 hours and 5 minutes");
 	});
 });
