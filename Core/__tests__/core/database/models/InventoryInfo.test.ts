@@ -74,6 +74,10 @@ describe("InventoryInfo", () => {
 		expect([info.weaponSlots, info.armorSlots, info.potionSlots, info.objectSlots]).toEqual(expected);
 	});
 
+	it("should identify the inventory info by its player when saving it", () => {
+		expect(buildInfo().where()).toEqual({ playerId: 7 });
+	});
+
 	it("should give 0 as last daily timestamp when the player never took a daily", () => {
 		expect(buildInfo({ lastDailyAt: null }).getLastDailyAtTimestamp()).toBe(0);
 	});
