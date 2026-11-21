@@ -19,8 +19,6 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import {
 	EnchantmentCost, ItemEnchantment
 } from "../../../../Lib/src/types/ItemEnchantment";
-import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
-import { Settings } from "../database/game/models/Setting";
 import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import {
@@ -34,32 +32,48 @@ import {
 	getListedInventorySlotUnderLock, removeListedEnchantmentUnderLock
 } from "./ReportListedEquipment";
 
-type EnchantableItem = NonNullable<ReactionCollectorCityData["enchanter"]>["enchantableItems"][number];
+type EnchanterData = NonNullable<ReactionCollectorCityData["enchanter"]>;
+
+type EnchantableItem = EnchanterData["enchantableItems"][number];
+
+/**
+ * The enchantment and its price, as displayed by the enchanter menu
+ */
+type EnchanterOffer = {
+	enchantment: ItemEnchantment;
+	price: EnchantmentCost;
+};
 
 /**
  * Locked rows and request data shared by the steps of a paid enchantment
  */
-type LockedEnchantContext = {
+type LockedEnchantContext = EnchanterOffer & {
 	lockedPlayer: Locked<Player>;
 	lockedMissionsInfo: Locked<PlayerMissionsInfo>;
-	enchantment: ItemEnchantment;
 	response: CrowniclesPacket[];
 };
 
-async function getEnchantmentOfTheDay(): Promise<ItemEnchantment | null> {
-	const enchantment = ItemEnchantment.getById(await Settings.ENCHANTER_ENCHANTMENT_ID.getValue());
+/**
+ * The offer the menu displayed. It is honoured even if the enchantment of the day rotated while the menu was open:
+ * the player gets exactly what was shown at the price that was shown, which they could have had a moment earlier.
+ */
+function getDisplayedOffer(enchanter: EnchanterData): EnchanterOffer | null {
+	const enchantment = ItemEnchantment.getById(enchanter.enchantmentId);
 	if (!enchantment) {
-		CrowniclesLogger.error("No enchantment found for enchanter. Check ENCHANTER_ENCHANTMENT_ID setting.");
+		CrowniclesLogger.error(`The enchanter menu displayed the unknown enchantment ${enchanter.enchantmentId}.`);
 		return null;
 	}
-	return enchantment;
+	return {
+		enchantment,
+		price: enchanter.enchantmentCost
+	};
 }
 
 function findListedEnchantableItem(
 	reaction: ReactionCollectorEnchantReaction,
-	data: ReactionCollectorCityData
+	enchanter: EnchanterData | undefined
 ): EnchantableItem | undefined {
-	return data.enchanter?.enchantableItems.find(listed => listed.slot === reaction.slot && listed.category === reaction.itemCategory);
+	return enchanter?.enchantableItems.find(listed => listed.slot === reaction.slot && listed.category === reaction.itemCategory);
 }
 
 /**
@@ -88,9 +102,9 @@ async function getEnchantableSlotUnderLock(
 /**
  * Whether the locked rows cover the price. Pushes the missing-currencies response otherwise.
  */
-function hasEnoughCurrenciesUnderLock(context: LockedEnchantContext, price: EnchantmentCost): boolean {
+function hasEnoughCurrenciesUnderLock(context: LockedEnchantContext): boolean {
 	const {
-		lockedPlayer, lockedMissionsInfo, response
+		lockedPlayer, lockedMissionsInfo, price, response
 	} = context;
 	if (lockedPlayer.money >= price.money && lockedMissionsInfo.gems >= price.gems) {
 		return true;
@@ -107,11 +121,10 @@ function hasEnoughCurrenciesUnderLock(context: LockedEnchantContext, price: Ench
  */
 async function executeEnchantUnderLock(
 	context: LockedEnchantContext,
-	itemToEnchant: InventorySlot,
-	price: EnchantmentCost
+	itemToEnchant: InventorySlot
 ): Promise<void> {
 	const {
-		lockedPlayer, lockedMissionsInfo, enchantment, response
+		lockedPlayer, lockedMissionsInfo, enchantment, price, response
 	} = context;
 
 	itemToEnchant.itemEnchantmentId = enchantment.id;
@@ -168,12 +181,11 @@ async function enchantListedItemUnderLock(
 		return;
 	}
 
-	const price = context.enchantment.getEnchantmentCost(context.lockedPlayer.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE);
-	if (!hasEnoughCurrenciesUnderLock(context, price)) {
+	if (!hasEnoughCurrenciesUnderLock(context)) {
 		return;
 	}
 
-	await executeEnchantUnderLock(context, itemToEnchant, price);
+	await executeEnchantUnderLock(context, itemToEnchant);
 }
 
 /**
@@ -188,14 +200,14 @@ export async function handleEnchantReaction(
 	data: ReactionCollectorCityData,
 	response: CrowniclesPacket[]
 ): Promise<void> {
-	const listedItem = findListedEnchantableItem(reaction, data);
-	if (!listedItem) {
+	const listedItem = findListedEnchantableItem(reaction, data.enchanter);
+	if (!data.enchanter || !listedItem) {
 		response.push(makePacket(CommandReportEquipmentChangedRes, {}));
 		return;
 	}
 
-	const enchantment = await getEnchantmentOfTheDay();
-	if (!enchantment) {
+	const offer = getDisplayedOffer(data.enchanter);
+	if (!offer) {
 		return;
 	}
 
@@ -206,7 +218,7 @@ export async function handleEnchantReaction(
 		await enchantListedItemUnderLock({
 			lockedPlayer,
 			lockedMissionsInfo,
-			enchantment,
+			...offer,
 			response
 		}, reaction, listedItem);
 	});
