@@ -8,6 +8,8 @@ import { FightActionStatus } from "../../../../../Lib/src/types/FightActionStatu
 import type { FightController } from "../../../../src/core/fights/FightController";
 import { FightView } from "../../../../src/core/fights/FightView";
 import { FighterStatus } from "../../../../src/core/fights/FighterStatus";
+import { FightAlteration } from "../../../../src/data/FightAlteration";
+import { FightStatModifierOperation } from "../../../../../Lib/src/types/FightStatModifierOperation";
 
 // Mock necessary external modules
 vi.mock("../../../../../Lib/src/utils/RandomUtils", () => ({
@@ -441,6 +443,92 @@ describe('Fighter', () => {
 			expect(undefinedFighter.getRandomAvailableFightAction().id).toBe('action1');
 
 			mockInteger.mockRestore();
+		});
+	});
+
+	describe('stats and breath', () => {
+		function alteration(id: string): FightAlteration {
+			return Object.assign(new FightAlteration(), { id });
+		}
+
+		it('keeps its breath between zero and its maximum', () => {
+			const fighter = new TestFighter(10, []);
+			fighter.setBreath(5);
+
+			expect([fighter.addBreath(-10), fighter.addBreath(100), fighter.addBreath(-1)]).toEqual([0, 100, 99]);
+		});
+
+		it('only uses its breath when it has enough of it', () => {
+			const fighter = new TestFighter(10, []);
+			fighter.setBreath(4);
+
+			expect([fighter.useBreath(4), fighter.getBreath(), fighter.useBreath(1), fighter.getBreath()]).toEqual([true, 0, false, 0]);
+		});
+
+		it('regenerates its breath, half of it rounded up early in the fight, without exceeding its maximum', () => {
+			const fighter = new TestFighter(10, []);
+			fighter.setBreath(0);
+			fighter.regenerateBreath(true);
+			expect(fighter.getBreath()).toBe(5);
+			fighter.regenerateBreath(false);
+			expect(fighter.getBreath()).toBe(15);
+			fighter.setBreath(95);
+			fighter.regenerateBreath(false);
+			expect(fighter.getBreath()).toBe(100);
+		});
+
+		it('heals without exceeding its maximum energy and is not hurt by a null damage', () => {
+			const fighter = new TestFighter(10, []);
+			fighter.damage(30);
+
+			expect([fighter.heal(10), fighter.heal(100), fighter.damage(0)]).toEqual([80, 100, 100]);
+		});
+
+		it('only removes the stat modifiers of the given origin', () => {
+			const fighter = new TestFighter(10, []);
+			const origin = createMockFightAction('origin', 0);
+			const otherOrigin = createMockFightAction('other', 0);
+			const modifier = (from: FightAction): { origin: FightAction; operation: FightStatModifierOperation; value: number } => ({
+				origin: from, operation: FightStatModifierOperation.ADDITION, value: 10
+			});
+			fighter.applyAttackModifier(modifier(origin));
+			fighter.applyAttackModifier(modifier(otherOrigin));
+			fighter.applyDefenseModifier(modifier(origin));
+			fighter.applyDefenseModifier(modifier(otherOrigin));
+			fighter.applySpeedModifier(modifier(origin));
+			fighter.applySpeedModifier(modifier(otherOrigin));
+
+			fighter.removeAttackModifiers(origin);
+			fighter.removeDefenseModifiers(origin);
+			fighter.removeSpeedModifiers(origin);
+
+			expect([fighter.getAttack(), fighter.getDefense(), fighter.getSpeed()]).toEqual([50, 40, 60]);
+			expect([fighter.hasAttackModifier(origin), fighter.hasDefenseModifier(origin), fighter.hasSpeedModifier(origin)]).toEqual([false, false, false]);
+			expect([fighter.hasAttackModifier(otherOrigin), fighter.hasDefenseModifier(otherOrigin), fighter.hasSpeedModifier(otherOrigin)]).toEqual([true, true, true]);
+		});
+
+		it('keeps its first alteration and restarts it when it suffers from it again', () => {
+			const fighter = new TestFighter(10, []);
+			const poisoned = alteration('poisoned');
+			fighter.newAlteration(poisoned);
+			fighter.alterationTurn = 2;
+
+			expect(fighter.newAlteration(alteration('burned'))).toBe(poisoned);
+			expect(fighter.alterationTurn).toBe(2);
+			expect(fighter.newAlteration(poisoned)).toBe(poisoned);
+			expect(fighter.alterationTurn).toBe(0);
+		});
+
+		it('gives its last action, skipping its alterations but not when it ran out of breath', () => {
+			const fighter = new TestFighter(10, []);
+			const attack = createMockFightAction('attack', 0);
+			expect(fighter.getLastFightActionUsed()).toBeNull();
+
+			fighter.fightActionsHistory = [createMockFightAction('first', 0), attack, alteration('poisoned')];
+			expect(fighter.getLastFightActionUsed()).toBe(attack);
+
+			fighter.fightActionsHistory = [attack, alteration('outOfBreath')];
+			expect(fighter.getLastFightActionUsed()).toBeNull();
 		});
 	});
 });
