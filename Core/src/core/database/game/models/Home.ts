@@ -73,27 +73,6 @@ export class Homes {
 		}));
 	}
 
-	public static async createOrUpdateHome(ownerId: number, cityId: string, level: number): Promise<Home> {
-		let home = await Home.findOne({
-			where: { ownerId }
-		});
-
-		if (home) {
-			home.cityId = cityId;
-			home.level = level;
-			await home.save();
-		}
-		else {
-			home = await Home.create({
-				ownerId,
-				cityId,
-				level
-			});
-		}
-
-		return home;
-	}
-
 	public static async deleteOfPlayer(playerId: number): Promise<void> {
 		const home = await Home.findOne({ where: { ownerId: playerId } });
 
