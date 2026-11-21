@@ -12,6 +12,7 @@ import { setCrowniclesInstanceForTests } from "../../../../src/app";
 import { Effect } from "../../../../../Lib/src/types/Effect";
 import { NumberChangeReason } from "../../../../../Lib/src/constants/LogsConstants";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
+import { ClassInfoConstants } from "../../../../../Lib/src/constants/ClassInfoConstants";
 import { PVEConstants } from "../../../../../Lib/src/constants/PVEConstants";
 import { PlayersConstants } from "../../../../../Lib/src/constants/PlayersConstants";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
@@ -293,14 +294,16 @@ describe("Player state", () => {
 			expect(buildPlayer({ class: ClassConstants.CLASSES_ID.MYSTIC_MAGE }).hasHolyClass()).toBe(false);
 		});
 
-		// Bug: `this.class in HOLY_CLASSES` checks the indexes of the array (0 to 4) instead of the class ids it holds
-		it.fails("gives a holy class to the knights", () => {
-			expect(buildPlayer({ class: ClassConstants.CLASSES_ID.KNIGHT }).hasHolyClass()).toBe(true);
+		it("gives a holy class to every class of the holy lineage", () => {
+			for (const holyClass of ClassInfoConstants.HOLY_CLASSES) {
+				expect(buildPlayer({ class: holyClass }).hasHolyClass()).toBe(true);
+			}
 		});
 
-		// Bug: same as above, the recruit (id 0) is taken for a holy class
-		it.fails("does not give a holy class to the recruits", () => {
-			expect(buildPlayer({ class: ClassConstants.CLASSES_ID.RECRUIT }).hasHolyClass()).toBe(false);
+		it("does not give a holy class to the classes whose id is an index of the holy classes", () => {
+			for (const index of ClassInfoConstants.HOLY_CLASSES.keys()) {
+				expect(buildPlayer({ class: index }).hasHolyClass()).toBe(false);
+			}
 		});
 	});
 
