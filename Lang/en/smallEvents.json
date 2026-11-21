@@ -2738,11 +2738,17 @@
         "paidAccepted": [
           "Theobald shows you a seed he examines in the light. After having exchanged **{{cost}} {emote:unitValues.money}**, you store this **seed** {emote:smallEvents.gardener} in your bag."
         ],
-        "moon": [
-          "Théobald lifts his eyes to the night sky and smiles when he sees the moon glow. He takes a seed out of his bag presumptuously whispering that this plant can only be entrusted under sufficient moonlight. You receive a **seed** {emote:smallEvents.gardener}."
-        ],
         "night": [
           "Theobald watches the dark sky with satisfaction. The night is ideal for entrusting this seed, because the plant needs darkness to flourish. You receive a **seed** {emote:smallEvents.gardener}."
+        ],
+        "flyingPet": [
+          "Theobald looks up at your flying pet and smiles. Moon moss grows only on the highest cliffs, where only a winged creature can reach it to pick it. He hands you a **seed** {emote:smallEvents.gardener}, confident that it will be in good wings."
+        ],
+        "nocturnalPet": [
+          "The gardener notices the gleaming eyes of your nocturnal companion and nods approvingly. A companion capable of sniffing out mushrooms in the dark will be able to look after this plant. You receive a **seed** {emote:smallEvents.gardener}."
+        ],
+        "innNight": [
+          "Théobald notices how rested you look and guesses that you spent the night at the inn. Those who have slept under the moon know what the night brings to plants: he hands you a **seed** {emote:smallEvents.gardener}."
         ],
         "herbivorePet": [
           "The gardener watches your herbivore pet with admiration, impressed by the obvious bond that unites you. Only those who take care of nature can take care of such a plant, does he tell you by tending you a **seed** {emote:smallEvents.gardener}."
@@ -2781,12 +2787,12 @@
           "Theobald shakes the hue. The next seed requires a companion close to nature. Return with a **herbivore pet** that you have **fully tamed**."
         ],
         "needNight": [
-          "Théobald looks at the sun still high in the sky and sigh. The next seed can only be gifted at **fall of the night**. Come back when the sun has set.",
-          "The gardener observes the bright sky and shakes the hue. This particuly seed only trusts in the **darkened at night**."
+          "Theobald looks up at the bright sky and sighs: the night mushroom can only be found in the dark. He reveals this only to an adventurer accompanied by a **nocturnal familiar**, who has **spent the night at the inn** in the {{innNightHours}} last few hours, or whom he encounters **after dark**.",
+          "The gardener puts away the night mushroom seed with regret. To obtain it, you must return with a **night pet** capable of sniffing out mushrooms in the dark, after spending less than {{innNightHours}} hours at the **inn**, or simply **at night**."
         ],
         "needMoonlight": [
-          "The gardener watches the sky with disappointment. The **moon is not visible enough** to entrust this seed. Come back when it shines more in the night sky.",
-          "Theobald scrutinizes the firmament by narrowing his eyes. This seed requires a **powerful moonlight to be gifted. Return to a brighter night."
+          "Théobald gazes at the sky with disappointment: moon moss grows only on the highest rocks, where the moon shines brightest. He entrusts it only to an adventurer accompanied by a **flying familiar**, who has **spent the night at the inn** in the {{innNightHours}} past few hours, or whom he encounters **at nightfall**.",
+          "The gardener puts away the moon moss seed with regret. To obtain it, you must return with a **flying pet** capable of picking it, after spending a **night at the inn** for less than {{innNightHours}} hours, or simply **at night**."
         ],
         "needFireAffinity": [
           "Théobald shakes his head. The next seed requires an affinity for fire. You would need to be a **mage**, have a **fire-bound familiar**, or wear **equipment forged in flames**.",
@@ -2851,6 +2857,16 @@
         "The gardener, unable to give you seed, has managed one of his plants in memory of your encounter:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**"
       ],
       "plantSentToHomeStorage": "{emote:city.homeUpgrades.chest} As soon as you pick it up, the plant disappears with a faint sparkle: it has been added to your home's chest.",
+      "consolation": {
+        "plant": [
+          "So you don't leave empty-handed, Théobald is giving you one of his plants:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
+          "While waiting for your next meeting, the gardener slips you a plant from his cart:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**"
+        ],
+        "material": [
+          "So you don't leave empty-handed, Théobald is giving you a material he dug up in his garden:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**",
+          "While waiting for your next meeting, the gardener hands you a material he isn't using:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**"
+        ]
+      },
       "material": [
         "Theobald searches in his besace and leaves a sailor he found by returning the land from his garden. It offers you a kind smile:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**",
         "The gardener comes out of his pocket a sailor he degraded by beating this morning. He tends it to you by explaining that he doesn't have the utility:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**"

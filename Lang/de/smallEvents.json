@@ -2738,11 +2738,17 @@
         "paidAccepted": [
           "Theobald zeigt dir einen Samen, den er im Licht untersucht. Nachdem du **{{cost}} {emote:unitValues.money}** bezahlt hast, verstaust du den **Samen** {emote:smallEvents.gardener} sorgsam in deiner Tasche."
         ],
-        "moon": [
-          "Theobald blickt zum Nachthimmel auf und lächelt, als er den Mond leuchten sieht. Vorsichtig zieht er einen Samen aus seiner Satteltasche und murmelt, dass diese Pflanze nur bei ausreichendem Mondlicht anvertraut werden kann. Sie erhalten einen **Samen** {emote:smallEvents.gardener}."
-        ],
         "night": [
           "Theobald sucht zufrieden den verdunkelten Himmel ab. Die Nacht ist ideal, um diesen Samen anzuvertrauen, denn die Pflanze braucht die Dunkelheit, um zu gedeihen. Sie erhalten einen **Samen** {emote:smallEvents.gardener}."
+        ],
+        "flyingPet": [
+          "Theobald blickt zu Ihrem fliegenden Begleiter auf und lächelt. Das Mondmoos wächst nur auf den höchsten Felsen, wo nur ein geflügeltes Wesen es pflücken kann. Er übergibt euch einen **Samen** {emote:smallEvents.gardener}, in der Gewissheit, dass er in guten Flügeln liegt."
+        ],
+        "nocturnalPet": [
+          "Der Gärtner bemerkt die leuchtenden Augen deines nächtlichen Begleiters und nickt anerkennend. Ein Begleiter, der im Dunkeln Pilze aufspüren kann, wird sich gut um diese Pflanze kümmern. Du erhältst einen **Samen** {emote:smallEvents.gardener}."
+        ],
+        "innNight": [
+          "Théobald bemerkt, wie ausgeruht Sie aussehen, und ahnt, dass Sie die Nacht im Gasthaus verbracht haben. Wer schon einmal im Mondlicht geschlafen hat, weiß, was die Nacht den Pflanzen bringt: Er reicht Ihnen einen **Samen** {emote:smallEvents.gardener}."
         ],
         "herbivorePet": [
           "Der Gärtner betrachtet Ihren pflanzenfressenden Vertrauten mit Bewunderung und ist beeindruckt von der offensichtlichen Verbindung, die zwischen Ihnen besteht. Nur diejenigen, die sich um die Natur kümmern, verdienen eine solche Pflanze\", gesteht er und reicht Ihnen einen **Samen** {emote:smallEvents.gardener}."
@@ -2781,12 +2787,12 @@
           "Theobald schüttelt den Kopf. Der nächste Samen benötigt einen naturverbundenen Begleiter. Kehren Sie mit einem **Pflanzenfresser-Familientier** zurück, das Sie **vollständig gezähmt** haben."
         ],
         "needNight": [
-          "Theobald blickt auf die noch hoch am Himmel stehende Sonne und seufzt. Der nächste Samen kann erst bei **Nachtanbruch** angeboten werden. Kommen Sie wieder, wenn die Sonne untergegangen ist.",
-          "Der Gärtner beobachtet den leuchtenden Himmel und schüttelt den Kopf. Dieser besondere Samen vertraut sich nur in der **Dunkelheit der Nacht** an."
+          "Theobald blickt in den leuchtenden Himmel und seufzt: Der Nachtpilz kommt nur in der Dunkelheit vor. Er verrät dies nur einem Abenteurer, der von einem **nächtlichen Begleiter** begleitet wird, der in den letzten Stunden **die Nacht im Gasthaus verbracht** hat ( {{innNightHours}} ) oder dem er **bei Einbruch der Dunkelheit** begegnet.",
+          "Der Gärtner räumt den Samen des Nachtpilzes mit Bedauern weg. Um ihn zu erhalten, muss man mit einem **Nachtbegleiter** zurückkehren, der Pilze im Dunkeln aufspüren kann, und zwar nach einer **Nacht in der Herberge** von weniger als {{innNightHours}} Stunden oder einfach **nachts**."
         ],
         "needMoonlight": [
-          "Der Gärtner beobachtet enttäuscht den Himmel. Der **Mond ist nicht sichtbar genug**, um diesen Samen anzuvertrauen. Kommen Sie wieder, wenn er am Nachthimmel heller leuchtet.",
-          "Théobald sucht mit zusammengekniffenen Augen das Firmament ab. Dieser Samen benötigt einen **kräftigen Mondschein**, um angeboten zu werden. Kommen Sie in einer helleren Nacht wieder."
+          "Théobald blickt enttäuscht zum Himmel: Das Mondmoos wächst nur auf den höchsten Felsen, dort, wo der Mond am stärksten scheint. Er vertraut ihn nur einem Abenteurer an, der von einem **fliegenden Begleiter** begleitet wird, der in den letzten Stunden **die Nacht im Gasthaus verbracht** hat oder dem er **bei Einbruch der Dunkelheit** begegnet. {{innNightHours}}",
+          "Der Gärtner räumt den Mondmoossamen mit Bedauern weg. Um ihn zu erhalten, muss man mit einem **fliegenden Begleiter** zurückkehren, der ihn pflücken kann, und zwar nach einer **Nacht in der Herberge** von weniger als {{innNightHours}} Stunden oder einfach **nachts**."
         ],
         "needFireAffinity": [
           "Théobald schüttelt den Kopf. Der nächste Samen erfordert eine Affinität zum Feuer. Ihr müsst entweder ein **Magier** sein, einen **feuergebundenen Begleiter** besitzen oder eine **in Flammen geschmiedete Ausrüstung** tragen.",
@@ -2851,6 +2857,16 @@
         "Der Gärtner, der Ihnen keinen Samen geben kann, schenkt Ihnen großzügig eine seiner Pflanzen als Andenken an Ihre Begegnung:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**"
       ],
       "plantSentToHomeStorage": "{emote:city.homeUpgrades.chest} Kaum habt ihr sie in die Hand genommen, verschwindet die Pflanze in einem leichten Funkeln: Sie ist nun in der Truhe eures Hauses gelandet.",
+      "consolation": {
+        "plant": [
+          "Damit Sie nicht mit leeren Händen nach Hause gehen müssen, schenkt Ihnen Théobald eine seiner Pflanzen:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
+          "Bis zu eurem nächsten Treffen schiebt euch der Gärtner eine Pflanze aus seinem Wagen zu:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**"
+        ],
+        "material": [
+          "Damit Sie nicht mit leeren Händen nach Hause gehen, schenkt Ihnen Théobald ein Material, das er in seinem Garten ausgegraben hat:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**",
+          "Bis zu eurem nächsten Treffen reicht euch der Gärtner ein Material, das er nicht benötigt:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**"
+        ]
+      },
       "material": [
         "Theobald greift in seinen Beutel und holt ein Material heraus, das er beim Umgraben der Erde in seinem Garten gefunden hat. Er bietet es Ihnen mit einem freundlichen Lächeln an:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**",
         "Der Gärtner zieht ein Material aus seiner Tasche, das er heute Morgen beim Umgraben ausgegraben hat. Er hält es Ihnen hin und erklärt Ihnen, dass er es nicht gebrauchen kann:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**"

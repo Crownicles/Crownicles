@@ -1,4 +1,17 @@
 {
+  "quests": {
+    "title_obtained": "{{pseudo}}, you'll get a new quest!",
+    "title_progressed": "{{pseudo}}, your quest is moving forward!",
+    "title_completed": "{{pseudo}}, you're on a quest!",
+    "description": "> {{description}}",
+    "stepDone": "{emote:quests.stepDone} Step completed",
+    "nextStep": "{emote:quests.stepCurrent} Next step",
+    "nextStepValue": "**Step {{stepNumber}}**: {{label}}\n{{hint}}",
+    "completed": "{emote:quests.completed} Quest completed",
+    "completedValue": "All the steps in this quest have been completed: it has been added to your completed quests.",
+    "journal": "{emote:quests.icon} Quest Log",
+    "journalValue": "Track the progress of all your quests with the {command:missions} command."
+  },
   "kingChallenge": {
     "title_one": "{{pseudo}}, you have cleared the level {{tier}}/{{tierCount}} of the King's Challenge!",
     "title_other": "{{pseudo}}, you've completed {{count}} levels of the King's Challenge, all the way up to level {{tier}}/{{tierCount}}!",

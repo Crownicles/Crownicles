@@ -478,7 +478,7 @@
         "description": "Usa este comando para desafiar outros jogadores.\nAs batalhas decorrem numa base de turno a turno. Em cada turno, podes escolher uma ação para executar.\n\nPara mais informações, consulta a página do guia: https://guide.crownicles.com/notions-principale/combats"
       },
       "FIGHT_HISTORY": {
-        "description": "Mostra o histórico das tuas últimas lutas: o adversário enfrentado, o resultado, bem como a evolução da glória e da liga de cada lutador. Se já enfrentaste um guarda do rei, o botão **Guarda do Rei** apresenta o teu registo contra os guardas, a tua classificação e o quadro de honra do reino."
+        "description": "Mostra o histórico das tuas últimas lutas: o adversário enfrentado, o resultado, bem como a evolução da glória e da liga de cada lutador. Se já enfrentaste um guarda do rei, o botão **Guarda do Rei** apresenta o melhor guarda que derrotaste, a tua classificação e o quadro de honra do reino."
       },
       "FRIENDLY_FIGHT": {
         "description": "Permite enfrentar outro jogador, escolhido ao mencioná-lo ou através da sua classificação, num combate amigável. O jogador adversário é controlado por uma IA. Este combate não tem quaisquer consequências: não há glória, nem recompensas, nem perda de energia, nem progressão na missão. O nível dos dois combatentes está limitado a {{friendlyFightLevelCap}} : um jogador de nível inferior mantém o seu nível."
@@ -2327,7 +2327,9 @@
       "guildStatusChange": "Mudança de estatuto no seio da guilda",
       "energy": "Energia regenerada",
       "dailyBonus": "Bónus diário",
-      "petExpedition": "Expedição de animais de estimação concluída"
+      "petExpedition": "Expedição de animais de estimação concluída",
+      "gardenPlantReady": "Planta do jardim pronta para ser colhida",
+      "gardenAllPlantsReady": "Todas as plantas do jardim prontas para serem colhidas"
     },
     "enableDisable": "Ativar/Desativar",
     "sendLocationField": "Endereço de entrega :",
@@ -2347,15 +2349,106 @@
     "off": "O bot foi libertado com sucesso da manutenção."
   },
   "missions": {
+    "pages": {
+      "missions": "Tarefas",
+      "kingChallenge": "O Desafio do Rei",
+      "quests": "Missões"
+    },
     "kingChallenge": {
-      "button": "O Desafio do Rei",
-      "backButton": "Voltar",
       "title": "Desafio do rei de {{pseudo}}",
       "description": "Todas as segundas-feiras, o rei lança um novo desafio aos aventureiros do reino e recompensa aqueles que o superam.",
       "header": "{emote:kingChallenge.icon} **Desafio do Rei ({{tier}}/{{tierCount}})**",
       "nextTier": "Ganha {{objective, number}} {emote:unitValues.score} esta semana para atingir o nível {{nextTier}} (expira {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}",
       "completed": "Conseguiste superar o desafio do rei até ao último nível! Será lançado um novo desafio em {{time}}.",
       "tier": "{emote:kingChallenge.{{status}}} Nível {{tier}}: {{threshold, number}} {emote:unitValues.score} ({{rewards}})"
+    },
+    "quests": {
+      "title": "Missões de {{pseudo}}",
+      "description": "As missões retratam as grandes descobertas que aguardam os aventureiros do reino. Por si só, não oferecem qualquer recompensa: cada uma das suas etapas já é recompensada ao longo do percurso.",
+      "questHeader": "{{icon}} **{{name}}**",
+      "progression_one": "{{progressionBar}} {{count}} etapa concluída em {{max}}",
+      "progression_other": "{{progressionBar}} {{count}} etapas concluídas em {{max}}",
+      "currentStep": "{emote:quests.stepCurrent} **Etapa {{stepNumber}}** : {{label}}\n{{hint}}",
+      "noOngoingQuest": "Não tem nenhuma missão em curso. À medida que avança nas suas aventuras pelo reino, irá descobrir novas missões.",
+      "options": {
+        "quests": "Missões em curso ({{count}})",
+        "completedQuests": "Missões concluídas ({{count}})"
+      },
+      "completedTitle": "Missões concluídas de {{pseudo}}",
+      "completedQuest": "{{icon}} **{{name}}** — {emote:quests.completed} {{max}}/{{max}} etapas",
+      "noCompletedQuest": "Ainda não foi concluída nenhuma missão. As missões concluídas ficam guardadas aqui.",
+      "list": {
+        "expeditionTalismans": {
+          "name": "Os talismãs de expedição",
+          "icon": "{emote:expedition.talisman}",
+          "description": "Os familiares mais experientes podem explorar sozinhos as terras distantes, desde que estejam ligados ao seu mestre por meio de artefactos ancestrais. Velanna e Talvar acabam sempre por cruzar o caminho dos aventureiros que estão preparados.",
+          "steps": {
+            "meetVelanna": {
+              "label": "Conheça a Velanna",
+              "hint": "*Uma guerreira com uma cicatriz percorre, por vezes, as estradas do continente e mostra grande interesse pelos familiares daqueles com quem se cruza.*"
+            },
+            "anchorTalisman": {
+              "label": "Obter o $t(models:talisman.anchor)",
+              "hint": "A Velanna confia-te esta missão se reunires:\n• Nível mínimo {{level}}\n• Membro de uma guilda\n• Um animal de estimação saciado e dócil\n• Um animal de estimação já apresentado ao Talvar"
+            },
+            "successfulExpedition": {
+              "label": "Como ter sucesso numa expedição",
+              "hint": "*O $t(models:talisman.anchor) permite enviar o seu animal de estimação para explorar terras longínquas a partir de {command:pet}.*"
+            },
+            "cloneTalisman": {
+              "label": "Obter o $t(models:talisman.clone)",
+              "hint": "*Os rumores falam de um artefacto lendário enterrado em certas regiões, que só um animal de estimação em expedição poderia desenterrar.*"
+            }
+          }
+        },
+        "seeds": {
+          "name": "As sementes do jardineiro",
+          "icon": "{emote:city.gardenStatus.seed}",
+          "description": "Um jardineiro itinerante confia as suas sementes mais raras aos aventureiros que conseguiram cultivar as anteriores. Acaba sempre por cruzar, nos caminhos da floresta, o caminho daqueles que estão prontos para receber a próxima.",
+          "steps": {
+            "commonHerb": {
+              "label": "Plantar {emote:plants.1} $t(models:plants.1)",
+              "hint": "• Encontrar o Théobald, o jardineiro, numa estrada florestal\n• Nível mínimo de « {{level}} »\n• Um jardim na sua casa para a plantar"
+            },
+            "goldenClover": {
+              "label": "Plantar {emote:plants.2} $t(models:plants.2)",
+              "hint": "• Nível mínimo {{level}}\n• Preço: {{price, number}} {emote:unitValues.money}"
+            },
+            "lunarMoss": {
+              "label": "Plantar {emote:plants.3} $t(models:plants.3)",
+              "hint": "• Nível mínimo {{level}}\n• À escolha: um **animal de estimação voador**, uma **noite na pousada** com menos de {{innNightHours}} h, ou um **encontro noturno** ({{nightStart}} h – {{nightEnd}} h)"
+            },
+            "ironRoot": {
+              "label": "Plantar {emote:plants.4} $t(models:plants.4)",
+              "hint": "• Nível mínimo {{level}}\n• Preço: {{price, number}} {emote:unitValues.money}"
+            },
+            "nightMushroom": {
+              "label": "Plantar {emote:plants.5} $t(models:plants.5)",
+              "hint": "• Nível {{level}} mínimo\n• À escolha: um **familiar noturno**, uma **noite na estalagem** com duração inferior a {{innNightHours}} h, ou um **encontro noturno** ({{nightStart}} h – {{nightEnd}} h)"
+            },
+            "venomousLeaf": {
+              "label": "Plantar {emote:plants.6} $t(models:plants.6)",
+              "hint": "• Nível mínimo de {{level}}\n• Um **animal de estimação herbívoro** treinado"
+            },
+            "fireBulb": {
+              "label": "Plantar {emote:plants.7} $t(models:plants.7)",
+              "hint": "• Nível mínimo {{level}}\n• À escolha: ser **mago**, ter um **familiar de fogo** ou usar um **equipamento de fogo**"
+            },
+            "meatPlant": {
+              "label": "Plantar {emote:plants.8} $t(models:plants.8)",
+              "hint": "• Nível mínimo de {{level}}\n• Um **animal de estimação carnívoro** com raridade de $t(items:rarities.{{rarity}}) ou superior"
+            },
+            "crystalFlower": {
+              "label": "Plantar {emote:plants.9} $t(models:plants.9)",
+              "hint": "• Nível mínimo {{level}}\n• Preço: {{price, number}} {emote:unitValues.money}"
+            },
+            "ancientTree": {
+              "label": "Plantar {emote:plants.10} $t(models:plants.10)",
+              "hint": "• Nível mínimo de {{level}}\n• Um **animal de estimação herbívoro** treinado com raridade de $t(items:rarities.{{rarity}}) ou superior"
+            }
+          }
+        }
+      }
     },
     "title": "{{pseudo}}",
     "subcategories": {
@@ -2688,11 +2781,14 @@
       ]
     },
     "kingGuard": {
-      "name": "Guarda Real",
-      "recap": {
-        "win": "Não havia nenhum adversário disponível: {{player}} enfrentou um guarda do rei e derrotou-o. Não havia glória em jogo neste combate.",
-        "draw": "Não havia nenhum adversário disponível: {{player}} enfrentou um guarda do rei, sem conseguir decidir o resultado. Não havia glória em jogo neste combate.",
-        "loss": "Não havia nenhum adversário disponível: {{player}} enfrentou um guarda do rei e foi derrotado. Não havia glória em jogo neste combate."
+      "displayName": "Guarda {{name}}",
+      "unnamed": "um guarda do rei",
+      "outcome": {
+        "win": "Não havia nenhum adversário disponível: {{player}} enfrentou {{guard}}, guarda do rei, e derrotou-o. Não havia glória em jogo neste combate.",
+        "win_female": "Não havia nenhum adversário disponível: {{player}} enfrentou {{guard}}, guarda do rei, e derrotou-a. Não havia glória em jogo neste combate.",
+        "draw": "Não havia nenhum adversário disponível: {{player}} enfrentou {{guard}}, guarda do rei, sem conseguir decidir o resultado. Não havia glória em jogo neste combate.",
+        "draw_female": "Não havia nenhum adversário disponível: {{player}} enfrentou {{guard}}, guarda do rei, sem conseguir decidir o resultado. Não havia glória em jogo neste combate.",
+        "loss": "Não havia nenhum adversário disponível: {{player}} enfrentou {{guard}}, guarda do rei, e foi derrotado. Não havia glória em jogo neste combate."
       }
     }
   },
@@ -3017,7 +3113,7 @@
     "noHistory": "Ainda não tens nenhum combate no teu historial.",
     "title": "{{pseudo}}A história dos combates",
     "historyLine": "{{date}}\n{{attackSentence}}\n**Resultado:** {{resultSentence}}\n**A tua glória:** {emote:unitValues.glory} {{meInitialGlory, number}} -> {{meFinalGlory, number}}{{meLeagueChange}}\n**Glória oposta:** {emote:unitValues.glory} {{opponentInitialGlory, number}} -> {{opponentFinalGlory, number}}",
-    "kingGuardHistoryLine": "{{date}}\n{emote:fightCommand.crossedSwords} Não havia nenhum adversário disponível: enfrentaste um **guarda do rei** de nível {{guardLevel}} ({emote:classes.{{guardClassId}}} $t(models:classes.{{guardClassId}}))\n**Resultado:** {{resultSentence}}\n**Glória:** {emote:unitValues.glory} não havia glória em jogo",
+    "kingGuardFightLine": "{{date}}\n{emote:fightCommand.crossedSwords} Não havia nenhum adversário disponível: enfrentaste **{{guard}}** de nível {{guardLevel}} ({emote:classes.{{guardClassId}}} $t(models:classes.{{guardClassId}}))\n**Resultado:** {{resultSentence}}\n**Glória:** {emote:unitValues.glory} não havia glória em jogo",
     "attackSentence": {
       "attacker": "{emote:fightCommand.crossedSwords} Atacou **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))",
       "defender": "{emote:fightCommand.shield} Foi atacado por **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))"
@@ -3035,14 +3131,15 @@
       "openButton": "Guarda Real",
       "backButton": "Histórico",
       "title": "{emote:fightCommand.crossedSwords} Frente aos guardas do rei",
-      "record": "**O teu recorde:** defesa de nível {{level}} derrotado{{aboveLevel}}",
+      "bestDefeatedGuard": "**Melhor guarda derrotado:** {{guard}} ({emote:classes.{{classId}}} $t(models:classes.{{classId}}), niv. {{level}}){{aboveLevel}}",
+      "bestDefeatedGuardHint": "*Os guardas ganham ou perdem prestígio ao longo dos seus combates: o seu melhor guarda derrotado é aquele que, neste momento, é o mais temível entre aqueles que já derrotou.*",
       "aboveLevel_one": ", {{count}} um nível acima do seu",
       "aboveLevel_other": ", {{count}} níveis acima do seu",
-      "noRecord": "**O seu recorde:** ainda não derrotou nenhum guarda",
-      "progress": "**Recordes batidos:** {{recordsBroken, number}} | **Classificação:** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
+      "noDefeatedGuard": "**Melhor guarda derrotado:** ainda não há nenhum guarda derrotado",
+      "ranking": "**Classificação:** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
       "tally": "**Balanço:** {emote:fightHistory.won} Vitórias: {{won, number}} · {emote:fightHistory.lost} Derrotas: {{lost, number}} · {emote:fightHistory.draw} Empates: {{draw, number}}",
       "leaderboardTitle": "{emote:other.crown} **Quadro de honra da guarda**",
-      "leaderboardLine": "{{badge}} {{rank, number}}. **{{name}}**: guarda-nível {{level}}",
+      "leaderboardEntry": "{{badge}} {{rank, number}}. **{{name}}** : {{guard}} {emote:classes.{{classId}}}, nível {{level}}",
       "you": "Vocês"
     }
   },

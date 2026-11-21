@@ -478,7 +478,7 @@
         "description": "Use this command to challenge other players.\nBattles take place on a turn-by-turn basis. Each turn, you can choose an action to perform.\n\nFor more information, please visit the guide page: https://guide.crownicles.com/notions-principale/combats"
       },
       "FIGHT_HISTORY": {
-        "description": "Displays a history of your most recent battles: the opponent you faced, the result, and each fighter’s progress in glory and league rank. If you have already fought a King’s Guard, the **King’s Guards** button shows your record against the Guards, your ranking, and the kingdom’s honor roll."
+        "description": "Displays a history of your most recent battles: the opponent you faced, the result, and each fighter’s progress in glory and league rank. If you have already fought a King's Guard, the **King's Guards** button shows the best King's Guard you have defeated, your ranking, and the kingdom's Hall of Fame."
       },
       "FRIENDLY_FIGHT": {
         "description": "Allows you to face off against another player—chosen by naming them or based on their ranking—in a friendly battle. The opponent is controlled by AI. This battle has no consequences: no glory, no rewards, no energy lost, and no mission progress. The level of both combatants is capped at {{friendlyFightLevelCap}} : a player of a lower level retains their current level."
@@ -2327,7 +2327,9 @@
       "guildStatusChange": "Change of guild status",
       "energy": "Regenerated energy",
       "dailyBonus": "Daily bonus",
-      "petExpedition": "Pet expedition completed"
+      "petExpedition": "Pet expedition completed",
+      "gardenPlantReady": "Garden plant ready to be harvested",
+      "gardenAllPlantsReady": "All the plants in the garden that are ready to be harvested"
     },
     "enableDisable": "Enable/Disable",
     "sendLocationField": "Send location:",
@@ -2347,15 +2349,106 @@
     "off": "The bot was successfully released from maintenance."
   },
   "missions": {
+    "pages": {
+      "missions": "Missions",
+      "kingChallenge": "The King's Challenge",
+      "quests": "Quests"
+    },
     "kingChallenge": {
-      "button": "The King's Challenge",
-      "backButton": "Back",
       "title": "The King's Challenge {{pseudo}}",
       "description": "Every Monday, the king issues a new challenge to the kingdom's adventurers and rewards those who rise to it.",
       "header": "{emote:kingChallenge.icon} **King's Challenge ({{tier}}/{{tierCount}})**",
       "nextTier": "Earn {{objective, number}} {emote:unitValues.score} this week to reach the {{nextTier}} milestone (expires {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}",
       "completed": "You've risen to the king's challenge all the way to the final level! A new challenge will be launched at {{time}}.",
       "tier": "{emote:kingChallenge.{{status}}} Level {{tier}}: {{threshold, number}} {emote:unitValues.score} ({{rewards}})"
+    },
+    "quests": {
+      "title": "Quests for {{pseudo}}",
+      "description": "Quests chronicle the great discoveries that await adventurers in the kingdom. They do not yield any rewards in and of themselves: each stage of the quest is rewarded along the way.",
+      "questHeader": "{{icon}} **{{name}}**",
+      "progression_one": "{{progressionBar}} {{count}} milestone achieved on {{max}}",
+      "progression_other": "{{progressionBar}} {{count}} milestones achieved on {{max}}",
+      "currentStep": "{emote:quests.stepCurrent} **Step {{stepNumber}}**: {{label}}\n{{hint}}",
+      "noOngoingQuest": "You don't have any active quests. New quests will become available as you explore the kingdom.",
+      "options": {
+        "quests": "Current Quests ({{count}})",
+        "completedQuests": "Completed Quests ({{count}})"
+      },
+      "completedTitle": "Completed quests from {{pseudo}}",
+      "completedQuest": "{{icon}} **{{name}}** — {emote:quests.completed} {{max}}/{{max}} steps",
+      "noCompletedQuest": "No quests have been completed yet. Completed quests are saved here.",
+      "list": {
+        "expeditionTalismans": {
+          "name": "Expedition Talismans",
+          "icon": "{emote:expedition.talisman}",
+          "description": "Even the most seasoned familiars can explore distant lands on their own, provided they are bound to their master by ancestral artifacts. Velanna and Talvar always end up crossing paths with adventurers who are ready.",
+          "steps": {
+            "meetVelanna": {
+              "label": "Meet Velanna",
+              "hint": "*A scarred warrior sometimes roams the continent's roads and takes a keen interest in the familiars of those she encounters.*"
+            },
+            "anchorTalisman": {
+              "label": "Get the $t(models:talisman.anchor)",
+              "hint": "Velanna will entrust this to you if you meet the following requirements:\n• Minimum level: {{level}}\n• Guild member\n• A well-fed and docile pet\n• A pet that has already been introduced to Talvar"
+            },
+            "successfulExpedition": {
+              "label": "How to Have a Successful Expedition",
+              "hint": "*The $t(models:talisman.anchor) allows you to send your pet to explore distant lands using the {command:pet} command.*"
+            },
+            "cloneTalisman": {
+              "label": "Get the $t(models:talisman.clone)",
+              "hint": "*Rumors speak of a legendary artifact buried in certain regions, which only a familiar on an expedition could unearth.*"
+            }
+          }
+        },
+        "seeds": {
+          "name": "The Gardener's Seeds",
+          "icon": "{emote:city.gardenStatus.seed}",
+          "description": "A wandering gardener entrusts his rarest seeds to the adventurers who have successfully grown the previous ones. He always ends up crossing paths—on forest trails—with those who are ready to receive the next batch.",
+          "steps": {
+            "commonHerb": {
+              "label": "Plant {emote:plants.1} $t(models:plants.1)",
+              "hint": "• Run into Théobald, the gardener, on a forest road\n• Minimum level: {{level}}\n• A garden in your home where you can plant it"
+            },
+            "goldenClover": {
+              "label": "Plant {emote:plants.2} $t(models:plants.2)",
+              "hint": "• Minimum level {{level}}\n• Price: {{price, number}} {emote:unitValues.money}"
+            },
+            "lunarMoss": {
+              "label": "Plant {emote:plants.3} $t(models:plants.3)",
+              "hint": "• Minimum level: {{level}}\n• Choose one: a **flying pet**, one **night at an inn** lasting less than {{innNightHours}} h, or a **nighttime encounter** ({{nightStart}} h – {{nightEnd}} h)"
+            },
+            "ironRoot": {
+              "label": "Plant {emote:plants.4} $t(models:plants.4)",
+              "hint": "• Minimum level {{level}}\n• Price: {{price, number}} {emote:unitValues.money}"
+            },
+            "nightMushroom": {
+              "label": "Plant {emote:plants.5} $t(models:plants.5)",
+              "hint": "• Minimum level: {{level}}\n• Choose one: a **nighttime companion**, a **night at an inn** lasting less than {{innNightHours}} h, or a **nighttime encounter** ({{nightStart}} h – {{nightEnd}} h)"
+            },
+            "venomousLeaf": {
+              "label": "Plant {emote:plants.6} $t(models:plants.6)",
+              "hint": "• Minimum level: {{level}}\n• A trained **herbivorous pet**"
+            },
+            "fireBulb": {
+              "label": "Plant {emote:plants.7} $t(models:plants.7)",
+              "hint": "• Minimum level: {{level}}\n• Choose one: be a **mage**, have a **fire familiar**, or be wearing **fire gear**"
+            },
+            "meatPlant": {
+              "label": "Plant {emote:plants.8} $t(models:plants.8)",
+              "hint": "• Minimum level: {{level}}\n• A **carnivorous pet** with a rarity of $t(items:rarities.{{rarity}}) or higher"
+            },
+            "crystalFlower": {
+              "label": "Plant {emote:plants.9} $t(models:plants.9)",
+              "hint": "• Minimum level {{level}}\n• Price: {{price, number}} {emote:unitValues.money}"
+            },
+            "ancientTree": {
+              "label": "Plant {emote:plants.10} $t(models:plants.10)",
+              "hint": "• Minimum level: {{level}}\n• A trained **herbivorous pet** with a rarity of $t(items:rarities.{{rarity}}) or higher"
+            }
+          }
+        }
+      }
     },
     "title": "{{pseudo}}'s missions",
     "subcategories": {
@@ -2688,11 +2781,14 @@
       ]
     },
     "kingGuard": {
-      "name": "King's Guard",
-      "recap": {
-        "win": "No opponent was available: {{player}} faced a royal guard and defeated him. No glory was at stake in this fight.",
-        "draw": "No opponent was available: {{player}} faced a royal guard but was unable to defeat him. No glory was at stake in this fight.",
-        "loss": "No opponent was available: {{player}} faced a royal guard and was defeated. No glory was at stake in this fight."
+      "displayName": "Guard {{name}}",
+      "unnamed": "a royal guard",
+      "outcome": {
+        "win": "No opponent was available: {{player}} faced off against {{guard}}, the king's guard, and defeated him. No glory was at stake in this fight.",
+        "win_female": "No opponent was available: {{player}} faced off against {{guard}}, the king's guard, and defeated her. No glory was at stake in this battle.",
+        "draw": "No opponent was available: {{player}} faced off against {{guard}}, the king's guard, but the match ended in a draw. No glory was at stake in this fight.",
+        "draw_female": "No opponent was available: {{player}} faced off against {{guard}}, the king's guard, but the match ended in a draw. No glory was at stake in this battle.",
+        "loss": "No opponent was available: {{player}} faced off against {{guard}}, the king's guard, and was defeated. No glory was at stake in this fight."
       }
     }
   },
@@ -3017,7 +3113,7 @@
     "noHistory": "You don't have any battles in your history yet.",
     "title": "{{pseudo}}, your fight history",
     "historyLine": "{{date}}\n{{attackSentence}}\n**Result :** {{resultSentence}}\n**Your glory:** {emote:unitValues.glory} {{meInitialGlory, number}} -> {{meFinalGlory, number}}{{meLeagueChange}}\n**Opposite glory :** {emote:unitValues.glory} {{opponentInitialGlory, number}} -> {{opponentFinalGlory, number}}",
-    "kingGuardHistoryLine": "{{date}}\n{emote:fightCommand.crossedSwords} No opponents were available: you fought a **King's Guard** at level {{guardLevel}} ({emote:classes.{{guardClassId}}} $t(models:classes.{{guardClassId}}))\n**Result:** {{resultSentence}}\n**Glory:** {emote:unitValues.glory} No glory was at stake",
+    "kingGuardFightLine": "{{date}}\n{emote:fightCommand.crossedSwords} No opponents were available: you fought **{{guard}}** at level {{guardLevel}} ({emote:classes.{{guardClassId}}} $t(models:classes.{{guardClassId}}))\n**Result:** {{resultSentence}}\n**Glory:** {emote:unitValues.glory} No glory was at stake",
     "attackSentence": {
       "attacker": "{emote:fightCommand.crossedSwords} You attacked **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))",
       "defender": "{emote:fightCommand.shield} You were attacked by **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))"
@@ -3035,14 +3131,15 @@
       "openButton": "The King's Guards",
       "backButton": "History",
       "title": "{emote:fightCommand.crossedSwords} Facing the king's guards",
-      "record": "**Your record:** Level {{level}} defeated{{aboveLevel}}",
+      "bestDefeatedGuard": "**Best Defeated Guardian:** {{guard}} ({emote:classes.{{classId}}} $t(models:classes.{{classId}}), level {{level}}){{aboveLevel}}",
+      "bestDefeatedGuardHint": "*Guards gain or lose reputation as they fight: your best defeated guard is the one who is currently the most formidable among those you have defeated.*",
       "aboveLevel_one": ", {{count}} one level above yours",
       "aboveLevel_other": ", {{count}} levels above yours",
-      "noRecord": "**Your record:** no guards defeated so far",
-      "progress": "**Records broken:** {{recordsBroken, number}} | **Rankings:** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
+      "noDefeatedGuard": "**Best Guard Defeated:** No guards have been defeated so far",
+      "ranking": "**Rankings:** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
       "tally": "**Record:** {emote:fightHistory.won} Wins: {{won, number}} · {emote:fightHistory.lost} Losses: {{lost, number}} · {emote:fightHistory.draw} Draws: {{draw, number}}",
       "leaderboardTitle": "{emote:other.crown} **Guard Hall of Fame**",
-      "leaderboardLine": "{{badge}} {{rank, number}}. **{{name}}**: level guard {{level}}",
+      "leaderboardEntry": "{{badge}} {{rank, number}}. **{{name}}**: {{guard}} {emote:classes.{{classId}}}, level {{level}}",
       "you": "You"
     }
   },
