@@ -35,7 +35,10 @@ jobs:
         id: targets
         env:
           MODULE: ${{ matrix.module }}
-        run: echo "mutate=$(node .github/scripts/mutation-targets.mjs "$MODULE" HEAD^1 HEAD)" >> "$GITHUB_OUTPUT"
+        # Assigned apart from the echo, so that a failure of the selection fails the step instead of mutating nothing
+        run: |
+          targets=$(node .github/scripts/mutation-targets.mjs "$MODULE" HEAD^1 HEAD)
+          echo "mutate=$targets" >> "$GITHUB_OUTPUT"
 
       - name: Cache PNPM dependencies
         if: steps.targets.outputs.mutate != ''
