@@ -196,6 +196,7 @@
     "recalledTitle": "{{pseudo}}un ricordo familiare",
     "recalled_male": "Sentendo il vostro richiamo, {{petDisplay}} abbandona la sua ricerca e torna da voi, con la coda bassa e gli occhi pieni di rimprovero. Non porta nulla dal suo viaggio interrotto. Si può leggere la delusione nei suoi occhi: per un po' di tempo non vi sopporterà.",
     "recalled_female": "Sentendo il vostro richiamo, {{petDisplay}} abbandona la sua ricerca e torna da voi, con la coda bassa e gli occhi pieni di rimprovero. Non porta nulla dal suo viaggio interrotto. Si può vedere la delusione nei suoi occhi: per un po' di tempo non vi sopporterà.",
+    "loveLost": "\n\n{emote:expedition.love} Votre familier a perdu **{{loveLost}}** points d'amour.",
     "finishedTitle": "{{pseudo}}La spedizione è finita!",
     "finishedDescription": {
       "talisman": {
@@ -903,6 +904,7 @@
       "shopEmptyDescription": "Al momento non ci sono servizi da offrire.",
       "equipmentChangedTitle": "{{pseudo}}, l'attrezzatura è cambiata!",
       "equipmentChangedDescription": "L'equipaggiamento selezionato non è più lo stesso in quella posizione dell'inventario: è stato spostato dopo l'apertura del menu. Non è stato speso nulla e il menu è stato aggiornato con il tuo inventario attuale.",
+      "offerChanged": "Cette offre n'est plus valable : la situation a changé depuis l'ouverture du menu. Rien n'a été dépensé.",
       "exitInn": "Fuori dal bosco",
       "reactions": {
         "exit": {
@@ -2811,7 +2813,12 @@
     "swapSection": "{emote:equipCommand.swap} **scambio:**",
     "noItems": "Non dovete gestire alcuna attrezzatura!",
     "closeTitle": "{{pseudo}}chiusura dell'attrezzatura",
-    "closeDescription": "Il menu delle attrezzature è stato chiuso."
+    "closeDescription": "Il menu delle attrezzature è stato chiuso.",
+    "errors": {
+      "invalid": "Cette action n'est plus possible : votre équipement a changé entre-temps.",
+      "noItem": "Aucun objet n'est équipé dans cette catégorie, il n'y a rien à ranger.",
+      "reserveFull": "Votre réserve est pleine : libérez de la place avant d'y ranger cet objet."
+    }
   },
   "drink": {
     "errors": {
