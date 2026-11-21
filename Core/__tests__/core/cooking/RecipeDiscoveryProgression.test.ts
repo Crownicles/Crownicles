@@ -39,6 +39,12 @@ describe("RecipeDiscoveryService progression unlocks", () => {
 		expect(levels).toEqual([...levels].sort((a, b) => a - b));
 	});
 
+	it.each(PROGRESSION_SOURCES)("should only unlock recipes granted by $source, never default ones", ({ source }) => {
+		const unlocks = RecipeDiscoveryService.getProgressionUnlocks(source);
+
+		expect(unlocks.every(unlock => !unlock.recipe.discoveredByDefault && unlock.recipe.discoverySource === source)).toBe(true);
+	});
+
 	it("should be stable across calls so the retroactive backfill matches the runtime order", () => {
 		expect(RecipeDiscoveryService.getProgressionUnlocks(RecipeDiscoverySource.CAMPAIGN_MILESTONE))
 			.toEqual(RecipeDiscoveryService.getProgressionUnlocks(RecipeDiscoverySource.CAMPAIGN_MILESTONE));
