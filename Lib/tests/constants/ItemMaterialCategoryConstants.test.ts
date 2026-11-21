@@ -41,6 +41,17 @@ describe("ItemMaterialCategoryConstants", () => {
 	});
 
 	describe("pickDistinctMaterials", () => {
+		it("keeps the materials of an item stable across versions, as the blacksmith announces the next upgrades", () => {
+			const pool = [10, 20, 30, 40, 50, 60, 70];
+
+			expect([1, 2, 3].map(level => pickDistinctMaterials(pool, 12, MaterialRarity.COMMON, level, 3))).toEqual([
+				[60, 40, 20],
+				[40, 20, 50],
+				[20, 50, 10]
+			]);
+			expect(pickDistinctMaterials(pool, 12, MaterialRarity.RARE, 1, 3)).toEqual([70, 40, 20]);
+		});
+
 		it("returns empty when distinctCount <= 0 or pool empty", () => {
 			expect(pickDistinctMaterials([1, 2, 3], 5, MaterialRarity.COMMON, 1, 0)).toEqual([]);
 			expect(pickDistinctMaterials([], 5, MaterialRarity.COMMON, 1, 3)).toEqual([]);

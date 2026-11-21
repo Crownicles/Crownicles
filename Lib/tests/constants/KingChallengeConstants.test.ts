@@ -70,6 +70,13 @@ describe("KingChallengeConstants", () => {
 		})).toEqual({
 			ladder: [2, 3, 4, 5], champion: [10, 20]
 		});
+		expect(KingChallengeConstants.pushReferenceScores({
+			ladder: [1], champion: [10, 11, 12, 13]
+		}, {
+			ladder: 5, champion: 20
+		})).toEqual({
+			ladder: [1, 5], champion: [11, 12, 13, 20]
+		});
 	});
 
 	describe("getReachedTier", () => {
