@@ -1,16 +1,16 @@
 {
   "quests": {
-    "title_obtained": "{{pseudo}}, vous obtenez une nouvelle quête !",
-    "title_progressed": "{{pseudo}}, votre quête progresse !",
-    "title_completed": "{{pseudo}}, vous accomplissez une quête !",
+    "title_obtained": "{{pseudo}}, dann erhältst du eine neue Quest!",
+    "title_progressed": "{{pseudo}}, deine Quest schreitet voran!",
+    "title_completed": "{{pseudo}}, dann erfüllst du eine Quest!",
     "description": "> {{description}}",
-    "stepDone": "{emote:quests.stepDone} Étape accomplie",
-    "nextStep": "{emote:quests.stepCurrent} Prochaine étape",
-    "nextStepValue": "**Étape {{stepNumber}}** : {{label}}\n{{hint}}",
-    "completed": "{emote:quests.completed} Quête accomplie",
-    "completedValue": "Toutes les étapes de cette quête sont accomplies : elle rejoint vos quêtes terminées.",
-    "journal": "{emote:quests.icon} Journal de quêtes",
-    "journalValue": "Suivez la progression de toutes vos quêtes avec la commande {command:missions}."
+    "stepDone": "{emote:quests.stepDone} Schritt abgeschlossen",
+    "nextStep": "{emote:quests.stepCurrent} Nächster Schritt",
+    "nextStepValue": "**Etappe „ {{stepNumber}}“**: {{label}}\n{{hint}}",
+    "completed": "{emote:quests.completed} Quest abgeschlossen",
+    "completedValue": "Alle Schritte dieser Quest sind abgeschlossen: Sie wird zu Ihren abgeschlossenen Quests hinzugefügt.",
+    "journal": "{emote:quests.icon} Quest-Tagebuch",
+    "journalValue": "Verfolgen Sie den Fortschritt all Ihrer Quests mit dem Befehl {command:missions}."
   },
   "kingChallenge": {
     "title_one": "{{pseudo}}, ihr habt die Stufe {{tier}}/{{tierCount}} der Herausforderung des Königs gemeistert!",
