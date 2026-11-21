@@ -1,3 +1,4 @@
+import { Model } from "sequelize";
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
@@ -50,8 +51,9 @@ import {
 	Guilds, Guild
 } from "../database/game/models/Guild";
 import {
-	Locked, LockedRowNotFoundError, withLockedEntities
+	Locked, LockedRowNotFoundError, LockKey, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
+import { withLockedPlayerAndMissions } from "../utils/withLockedPlayerAndMissions";
 import { Materials } from "../database/game/models/Material";
 import { PotionDataController } from "../../data/Potion";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -138,12 +140,12 @@ async function getPlayerAndHome(keycloakId: string): Promise<PlayerAndHome | nul
 	}
 	const home = await Homes.getOfPlayer(player.id);
 	const homeLevel = home?.getLevel();
-	if (!homeLevel || homeLevel.features.cookingSlots <= 0) {
+	if (!home || !homeLevel || homeLevel.features.cookingSlots <= 0) {
 		return null;
 	}
 	return {
 		player,
-		home: home!,
+		home,
 		cookingSlots: homeLevel.features.cookingSlots
 	};
 }
@@ -772,13 +774,9 @@ function getTimePotionLimitError(slot: CookingSlotData | undefined, requestedRec
 }
 
 async function loadCookingCraftContext(
-	keycloakId: string,
+	data: PlayerAndHome,
 	packet: CommandReportCookingCraftReq
-): Promise<CookingCraftContext | null> {
-	const data = await getPlayerAndHome(keycloakId);
-	if (!data) {
-		return null;
-	}
+): Promise<CookingCraftContext> {
 	const {
 		player, home, cookingSlots
 	} = data;
@@ -907,50 +905,23 @@ async function giveBackWeeklyTimePotionUnderLock(lockedPlayer: Locked<Player>): 
 }
 
 /**
- * Mirror the persisted count on the craft player without dirtying it, for the menu shown after the craft
- */
-function mirrorTimePotionsCooked(player: Player, lockedPlayer: Locked<Player>): void {
-	player.timePotionsCookedThisWeek = lockedPlayer.timePotionsCookedThisWeek;
-	player.changed("timePotionsCookedThisWeek", false);
-}
-
-/**
- * Cook the recipe. A time potion is first taken from the weekly limit under the player lock, and given back
- * when the craft brews none, so the limit holds even for concurrent crafts.
+ * Cook the recipe. A time potion is first taken from the weekly limit, and given back when the craft brews none.
  * @returns null when the weekly limit is reached, nothing being consumed
  */
-async function executeCraftWithinWeeklyLimit({
+async function executeCraftWithinWeeklyLimitUnderLock({
 	player, recipe, home
 }: ReadyCookingCraftContext): Promise<CraftResult | null> {
-	const craft = (): Promise<CraftResult> => CookingService.executeCraft({
-		player, recipe, homeId: home.id
-	});
-	if (!CookingService.isTimePotionRecipe(recipe)) {
-		return await craft();
-	}
-
-	const taken = await Player.withLocked(player.id, async lockedPlayer => {
-		const hasTaken = await takeWeeklyTimePotionUnderLock(lockedPlayer);
-		mirrorTimePotionsCooked(player, lockedPlayer);
-		return hasTaken;
-	});
-	if (!taken) {
+	const isTimePotion = CookingService.isTimePotionRecipe(recipe);
+	if (isTimePotion && !await takeWeeklyTimePotionUnderLock(player)) {
 		return null;
 	}
-
-	let result: CraftResult | undefined;
-	try {
-		result = await craft();
-		return result;
+	const result = await CookingService.executeCraft({
+		player, recipe, homeId: home.id
+	});
+	if (isTimePotion && !result.success) {
+		await giveBackWeeklyTimePotionUnderLock(player);
 	}
-	finally {
-		if (!result?.success) {
-			await Player.withLocked(player.id, async lockedPlayer => {
-				await giveBackWeeklyTimePotionUnderLock(lockedPlayer);
-				mirrorTimePotionsCooked(player, lockedPlayer);
-			});
-		}
-	}
+	return result;
 }
 
 /**
@@ -984,32 +955,18 @@ function buildTimePotionLimitBlock({
 	};
 }
 
-async function executeReadyCookingCraft(
+async function executeReadyCookingCraftUnderLock(
 	craftContext: ReadyCookingCraftContext,
 	packetContext: PacketContext
 ): Promise<CrowniclesPacket[]> {
 	const response: CrowniclesPacket[] = [];
-	const result = await executeCraftWithinWeeklyLimit(craftContext);
+	const result = await executeCraftWithinWeeklyLimitUnderLock(craftContext);
 	if (!result) {
 		return [await buildBlockedCraftResponse(buildTimePotionLimitBlock(craftContext))];
 	}
 	if (craftContext.player.pinnedCookingRecipeId === craftContext.recipe.id) {
-		const observedPinnedId = craftContext.recipe.id;
-		await Player.withLocked(craftContext.player.id, async lockedPlayer => {
-			if (lockedPlayer.pinnedCookingRecipeId === observedPinnedId) {
-				lockedPlayer.pinnedCookingRecipeId = null;
-				await lockedPlayer.save();
-
-				// Mirror the persisted value without dirtying the instance, or the mission update below throws (#4890)
-				craftContext.player.pinnedCookingRecipeId = null;
-				craftContext.player.changed("pinnedCookingRecipeId", false);
-			}
-
-			/*
-			 * otherwise: another shard pinned a different recipe between our check
-			 * and the lock, do not clobber their decision.
-			 */
-		});
+		craftContext.player.pinnedCookingRecipeId = null;
+		await craftContext.player.save();
 	}
 	const outputResult = await processCraftOutput({
 		context: packetContext,
@@ -1059,16 +1016,16 @@ async function executeReadyCookingCraft(
 	return response;
 }
 
-export async function handleCookingCraft(
-	keycloakId: string,
+/**
+ * Validate and cook the requested recipe. The validation runs on the ingredients read under the lock,
+ * so a concurrent craft that already used them is refused instead of cooking again.
+ */
+async function craftUnderLock(
+	data: PlayerAndHome,
 	packet: CommandReportCookingCraftReq,
 	context: PacketContext
 ): Promise<CrowniclesPacket[]> {
-	const craftContext = await loadCookingCraftContext(keycloakId, packet);
-	if (craftContext === null) {
-		return [];
-	}
-
+	const craftContext = await loadCookingCraftContext(data, packet);
 	const validationError = getTimePotionLimitError(craftContext.slot, packet.recipeId) ?? validateCraftRequest(
 		craftContext.slot,
 		craftContext.recipe,
@@ -1084,7 +1041,47 @@ export async function handleCookingCraft(
 		return [await buildBlockedCookingCraftPacket(craftContext, CookingCraftErrors.CRAFT_UNAVAILABLE)];
 	}
 
-	return await executeReadyCookingCraft(readyCraftContext, context);
+	return await executeReadyCookingCraftUnderLock(readyCraftContext, context);
+}
+
+/**
+ * Rows a craft mutates besides the player ones: the home plant storage, and the guild pantry for pet food
+ */
+function getCraftLockKeys({
+	player, home
+}: PlayerAndHome, recipeId: CookingRecipeId): LockKey<Model>[] {
+	const guildId = player.guildId;
+	const storesPetFood = CookingRecipeDataController.instance.getById(recipeId)?.outputType === CookingOutputType.PET_FOOD;
+	return [Home.lockKey(home.id), ...guildId !== null && storesPetFood ? [Guild.lockKey(guildId)] : []];
+}
+
+export async function handleCookingCraft(
+	keycloakId: string,
+	packet: CommandReportCookingCraftReq,
+	context: PacketContext
+): Promise<CrowniclesPacket[]> {
+	const data = await getPlayerAndHome(keycloakId);
+	if (!data) {
+		return [];
+	}
+
+	try {
+		return await withLockedPlayerAndMissions(
+			data.player.id,
+			lockedPlayer => craftUnderLock({
+				...data,
+				player: lockedPlayer
+			}, packet, context),
+			getCraftLockKeys(data, packet.recipeId)
+		);
+	}
+	catch (error) {
+		if (error instanceof LockedRowNotFoundError) {
+			// The player, their home or their guild disappeared before the lock: nothing was cooked
+			return [];
+		}
+		throw error;
+	}
 }
 
 export async function handleCookingMenu(
