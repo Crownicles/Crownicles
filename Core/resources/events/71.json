@@ -20,7 +20,7 @@
         "3": {
           "requirements": {
             "level": {
-              "min": 60
+              "min": 130
             }
           },
           "health": 55
@@ -36,7 +36,7 @@
         "5": {
           "requirements": {
             "level": {
-              "max": 25
+              "max": 30
             }
           },
           "effect": "lost"
@@ -58,7 +58,7 @@
         "3": {
           "requirements": {
             "level": {
-              "max": 30
+              "max": 55
             }
           },
           "effect": "occupied",
@@ -104,7 +104,7 @@
         "3": {
           "requirements": {
             "speed": {
-              "min": 220
+              "min": 350
             }
           },
           "karma": 2
@@ -126,7 +126,7 @@
         "0": {
           "requirements": {
             "attack": {
-              "min": 250
+              "min": 700
             }
           },
           "money": 525,
@@ -161,7 +161,7 @@
         "4": {
           "requirements": {
             "defense": {
-              "min": 220
+              "min": 520
             }
           },
           "money": 180,
@@ -189,7 +189,7 @@
         "1": {
           "requirements": {
             "attack": {
-              "min": 260
+              "min": 700
             }
           },
           "effect": "occupied",

@@ -26,7 +26,7 @@
         "2": {
           "requirements": {
             "level": {
-              "max": 25
+              "max": 30
             }
           },
           "effect": "jailed"
@@ -55,7 +55,7 @@
         "5": {
           "requirements": {
             "level": {
-              "min": 100
+              "min": 130
             }
           },
           "effect": "occupied",
@@ -132,7 +132,7 @@
         "6": {
           "requirements": {
             "level": {
-              "max": 25
+              "max": 55
             }
           },
           "effect": "occupied",
@@ -178,7 +178,7 @@
         "3": {
           "requirements": {
             "attack": {
-              "min": 250
+              "min": 700
             }
           },
           "effect": "occupied",
@@ -218,7 +218,7 @@
         "6": {
           "requirements": {
             "level": {
-              "min": 100
+              "min": 130
             }
           },
           "effect": "drunk",
@@ -233,7 +233,7 @@
         "0": {
           "requirements": {
             "speed": {
-              "max": 199
+              "max": 40
             }
           },
           "effect": "jailed",
@@ -250,7 +250,7 @@
         "3": {
           "requirements": {
             "speed": {
-              "min": 250
+              "min": 500
             }
           },
           "health": 10,
@@ -278,7 +278,7 @@
         "6": {
           "requirements": {
             "level": {
-              "max": 25
+              "max": 30
             }
           },
           "health": -10,

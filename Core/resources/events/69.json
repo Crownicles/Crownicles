@@ -9,7 +9,7 @@
         "1": {
           "requirements": {
             "level": {
-              "max": 25
+              "max": 30
             }
           },
           "effect": "occupied",
@@ -62,7 +62,7 @@
         "2": {
           "requirements": {
             "speed": {
-              "min": 250
+              "min": 350
             }
           },
           "effect": "occupied",
@@ -71,7 +71,7 @@
         "3": {
           "requirements": {
             "defense": {
-              "min": 250
+              "min": 520
             }
           },
           "health": 10
@@ -97,7 +97,7 @@
         "1": {
           "requirements": {
             "level": {
-              "max": 25
+              "max": 30
             }
           },
           "health": -10,
@@ -106,7 +106,7 @@
         "2": {
           "requirements": {
             "attack": {
-              "min": 250
+              "min": 600
             }
           },
           "health": -5
@@ -114,7 +114,7 @@
         "3": {
           "requirements": {
             "speed": {
-              "min": 250
+              "min": 350
             }
           },
           "effect": "occupied",
@@ -149,7 +149,7 @@
         "2": {
           "requirements": {
             "speed": {
-              "min": 250
+              "min": 350
             }
           },
           "effect": "occupied",

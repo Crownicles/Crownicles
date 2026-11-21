@@ -18,7 +18,7 @@
         "2": {
           "requirements": {
             "level": {
-              "max": 30
+              "max": 55
             }
           },
           "money": -180
@@ -35,7 +35,7 @@
         "4": {
           "requirements": {
             "speed": {
-              "min": 250
+              "min": 500
             }
           },
           "money": 100,
@@ -59,7 +59,7 @@
         "1": {
           "requirements": {
             "level": {
-              "max": 30
+              "max": 55
             }
           },
           "health": -30,
@@ -76,7 +76,7 @@
         "3": {
           "requirements": {
             "attack": {
-              "min": 300
+              "min": 700
             }
           },
           "money": 2000
@@ -84,7 +84,7 @@
         "4": {
           "requirements": {
             "defense": {
-              "min": 250
+              "min": 520
             }
           },
           "health": -5
@@ -142,7 +142,7 @@
         "5": {
           "requirements": {
             "speed": {
-              "min": 200
+              "min": 350
             }
           },
           "health": 8,
@@ -155,7 +155,7 @@
         "0": {
           "requirements": {
             "speed": {
-              "min": 250
+              "min": 350
             }
           },
           "condition": {
@@ -193,7 +193,7 @@
         "2": {
           "requirements": {
             "level": {
-              "max": 30
+              "max": 55
             }
           },
           "health": -100,
@@ -203,7 +203,7 @@
         "3": {
           "requirements": {
             "level": {
-              "min": 40
+              "min": 120
             }
           },
           "health": 8,
