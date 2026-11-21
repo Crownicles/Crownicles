@@ -99,6 +99,7 @@ async topScoreRes(context: PacketContext, packet: CommandTopPacketResScore): Pro
 - Use `i18n.t("namespace:key", { lng })` pattern
 - French (`Lang/fr/`) is the reference locale. Every key added, edited or removed in French must be added, updated or removed in the same change in every other locale (`de`, `en`, `es`, `it`, `pt`), keeping the same placeholders (`{{variable}}`, `{emote:...}`, `{command:...}`, `$t(...)`). The `Translations` CI workflow (`.github/scripts/check-translations.mjs`) enforces it; a French-only fix that does not affect the other languages (typo, wording) can skip the update with the `no-translation-sync` PR label.
 - **NEVER use direct speech** (dialogue with quotes like `<< >>` or `" "`) in translations. All text should be narrative/descriptive, not conversational.
+- Before writing or rewriting event texts or outcome conditions, follow the `write-event-texts` skill (`.github/skills/write-event-texts/SKILL.md`): style, lore, place canon and the threshold scale.
 
 ### Docker Development
 - Each service has a `Dockerfile`
