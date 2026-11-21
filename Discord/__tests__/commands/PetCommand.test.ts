@@ -25,12 +25,16 @@ import {
 	CommandPetExpeditionPacketRes,
 	CommandPetExpeditionRecallPacketRes,
 	CommandPetExpeditionResolvePacketReq,
+	CommandPetExpeditionResolvePacketRes,
 	ExpeditionInProgressData
 } from "../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
 import { makePacket } from "../../../Lib/src/packets/CrowniclesPacket";
 import { OwnedPet } from "../../../Lib/src/types/OwnedPet";
 import { PetBasicInfo } from "../../../Lib/src/types/PetBasicInfo";
-import { ExpeditionConstants } from "../../../Lib/src/constants/ExpeditionConstants";
+import {
+	ExpeditionConstants, ExpeditionLocationType
+} from "../../../Lib/src/constants/ExpeditionConstants";
+import { getPetExpeditionPreferences } from "../../../Lib/src/constants/PetExpeditionPreferences";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import {
 	answeredClick, clickOn, componentsOf, dispatch, embedsOf, ERROR_COLOR, fakeClick, fakeCommand, lastMessage, sentPackets,
@@ -386,5 +390,111 @@ describe("pet expedition answers", () => {
 		const message = singleMessage(command.interaction);
 		expect(message.method).toBe("channel.send");
 		expect(embedsOf(message)[0].description).toContain("Les astres ne sont pas alignés");
+	});
+});
+
+const PET_PREFERENCES = getPetExpeditionPreferences(PET_INFO.petTypeId);
+
+function resolution(overrides: Partial<CommandPetExpeditionResolvePacketRes>, locationType: ExpeditionLocationType): CommandPetExpeditionResolvePacketRes {
+	return makePacket(CommandPetExpeditionResolvePacketRes, {
+		success: true,
+		partialSuccess: false,
+		totalFailure: false,
+		loveChange: 2,
+		pet: PET_INFO,
+		expedition: {
+			id: "expedition",
+			durationMinutes: 60,
+			displayDurationMinutes: 60,
+			riskRate: 10,
+			difficulty: 10,
+			wealthRate: 1,
+			locationType,
+			mapLocationId: 1
+		},
+		petLikedExpedition: false,
+		...overrides
+	});
+}
+
+async function renderResolution(packet: CommandPetExpeditionResolvePacketRes): Promise<string> {
+	const command = fakeCommand("Owner");
+	const {
+		click, context
+	} = answeredClick(command);
+	await dispatch(context, packet);
+	const [embed] = embedsOf(singleMessage(click));
+	return `${embed.author?.name}\n${embed.description}`;
+}
+
+describe("pet expedition resolution", () => {
+	it("lists every reward brought back by a successful expedition the pet liked", async () => {
+		const text = await renderResolution(resolution({
+			rewards: {
+				money: 150,
+				experience: 80,
+				points: 40,
+				tokens: 2,
+				itemGiven: true,
+				cloneTalismanFound: true,
+				materialLoot: [
+					{
+						materialId: 1, quantity: 2
+					}
+				]
+			},
+			badgeEarned: "expert_expediteur",
+			petLikedExpedition: true
+		}, PET_PREFERENCES?.liked[0] ?? ExpeditionConstants.EXPEDITION_LOCATION_TYPES.FOREST));
+
+		expect(text).toContain("Owner, retour triomphal !");
+		for (const reward of ["**150**", "**80**", "**40**", "Jetons gagnés : **2**", "équipement aléatoire", "DÉCOUVERTE EXCEPTIONNELLE", "Expéditeur Expert", "Chlorate de potassium"]) {
+			expect(text).toContain(reward);
+		}
+		expect(text).not.toContain("n'a pas apprécié");
+	});
+
+	it("only lists the rewards actually won", async () => {
+		const text = await renderResolution(resolution({
+			rewards: {
+				money: 150,
+				experience: 0,
+				points: 0
+			}
+		}, ExpeditionConstants.EXPEDITION_LOCATION_TYPES.FOREST));
+
+		expect(text).toContain("**150**");
+		expect(text).not.toContain("Expérience gagnée");
+		expect(text).not.toContain("Points gagnés");
+	});
+
+	it("warns that a disliked destination reduced a partial success", async () => {
+		const disliked = PET_PREFERENCES?.disliked[0];
+		expect(disliked).toBeDefined();
+		const text = await renderResolution(resolution({
+			success: false,
+			partialSuccess: true,
+			loveChange: -1,
+			rewards: {
+				money: 20,
+				experience: 0,
+				points: 0
+			}
+		}, disliked ?? ExpeditionConstants.EXPEDITION_LOCATION_TYPES.FOREST));
+
+		expect(text).toContain("Owner, retour mitigé");
+		expect(text).toContain("n'a pas apprécié cette destination");
+	});
+
+	it("brings back nothing from a total failure, even from a liked destination", async () => {
+		const text = await renderResolution(resolution({
+			success: false,
+			totalFailure: true,
+			loveChange: -3,
+			petLikedExpedition: true
+		}, ExpeditionConstants.EXPEDITION_LOCATION_TYPES.FOREST));
+
+		expect(text).toContain("Owner, expédition échouée");
+		expect(text).not.toContain("Butin rapporté");
 	});
 });
