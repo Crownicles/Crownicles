@@ -14,10 +14,10 @@ export default defineConfig({
 			reportsDirectory: './coverage',
 			// Floors checked by `pnpm test:coverage` in CI: raise them when the coverage improves, never lower them
 			thresholds: {
-				lines: 27,
-				branches: 23,
-				functions: 35,
-				statements: 27
+				lines: 51,
+				branches: 41,
+				functions: 57,
+				statements: 51
 			}
 		},
 		environment: 'node',
