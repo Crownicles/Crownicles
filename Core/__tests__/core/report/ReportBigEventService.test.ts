@@ -375,7 +375,7 @@ describe("doRandomBigEvent", () => {
 			const fallback = asPlayer(explorerRow());
 			const warn = vi.spyOn(CrowniclesLogger, "warn").mockReturnValue(undefined);
 			vi.spyOn(Players, "getById").mockResolvedValue(fallback);
-			vi.mocked(withLockedEntities).mockRejectedValue(new LockedRowNotFoundError(Player.lockKey(row.id)));
+			vi.mocked(withLockedEntities).mockRejectedValue(new LockedRowNotFoundError("players", row.id));
 			await startBigEvent(event);
 
 			const response = await choose("north");

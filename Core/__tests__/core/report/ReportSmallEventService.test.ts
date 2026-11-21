@@ -99,7 +99,7 @@ beforeEach(() => {
 			});
 			return Promise.resolve();
 		}
-	}) as ReturnType<typeof PlayerSmallEvents.createPlayerSmallEvent>);
+	}) as unknown as ReturnType<typeof PlayerSmallEvents.createPlayerSmallEvent>); // Only the save of the new record is used
 	vi.spyOn(PacketUtils, "pushInternalError").mockReturnValue(undefined);
 	vi.mocked(withLockedPlayerAndMissionsSafe).mockImplementation((_player, _label, body) => body(lockedPlayer));
 });

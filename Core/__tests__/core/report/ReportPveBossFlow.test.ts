@@ -670,7 +670,7 @@ describe("doPVEBoss fight outcome", () => {
 		});
 
 		it("should still reward the player when the guild disappeared meanwhile", async () => {
-			vi.mocked(withLockedEntities).mockRejectedValue(new LockedRowNotFoundError(Guild.lockKey(3)));
+			vi.mocked(withLockedEntities).mockRejectedValue(new LockedRowNotFoundError("guilds", 3));
 
 			const response = await endFight(fightWith({ winner: winner() }));
 
