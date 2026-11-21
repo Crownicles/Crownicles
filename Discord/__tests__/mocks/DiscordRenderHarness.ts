@@ -2,7 +2,7 @@ import {
 	expect, vi
 } from "vitest";
 import {
-	Message, ReactionCollector
+	CommandInteraction, Message, ReactionCollector
 } from "discord.js";
 // skipcq: JS-C1003 - i18next does not expose itself as an ES Module.
 import * as i18next from "i18next";
@@ -169,6 +169,22 @@ export function fakeCommand(userName = "Player", lng: Language = "fr"): {
 }
 
 /**
+ * A click cached by the front-end is cast to CrowniclesInteraction, whose methods call the discord.js prototype ones:
+ * record what they display in the messages of the fake click
+ */
+function recordCastClickAnswers(): void {
+	for (const method of ["reply", "editReply", "followUp"] as const) {
+		vi.spyOn(CommandInteraction.prototype, method).mockImplementation(function (this: { messages?: RenderedMessage[] }, payload: unknown) {
+			this.messages?.push({
+				method, payload
+			});
+			const message = fakeCollectorMessage();
+			return Promise.resolve(Object.assign(message, { resource: { message } }) as never);
+		});
+	}
+}
+
+/**
  * Translation keys requested during the test without existing in any language
  */
 const missingTranslations: string[] = [];
@@ -191,6 +207,7 @@ export function setupRendering(): void {
 			BotUtils.commandsMentions.set(`${command.name} ${option.name}`, `</${command.name} ${option.name}:0>`);
 		}
 	}
+	recordCastClickAnswers();
 	if (!missingTranslationsTracked) {
 		missingTranslationsTracked = true;
 		i18next.default.options.saveMissing = true;
@@ -292,6 +309,7 @@ export function expectFullyTranslated(message: RenderedMessage): void {
 	expect(text).not.toMatch(RAW_KEY);
 	expect(text).not.toContain("NOT FOUND");
 	expect(text).not.toContain("{{");
+	expect(text).not.toMatch(/\{[A-Za-z]+\}/);
 	expect(text).not.toMatch(/\bundefined\b/);
 	expect(text).not.toMatch(/\bNaN\b/);
 	expect(text).not.toContain("[object Object]");
