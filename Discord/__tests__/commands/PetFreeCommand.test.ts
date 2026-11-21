@@ -130,7 +130,7 @@ describe("pet free confirmation", () => {
 		expect(embedsOf(singleMessage(click))[0].description).toContain("Adieu **");
 	});
 
-	// Bug: the own pet of a guild member may leave a piece of meat in the guild pantry and a feisty pet costs money, but the accept handler ignores freeCost and luckyMeat, unlike the shelter flow (PetFreeCommand.ts handleCommandPetFreeAcceptPacketRes)
+	// Bug: Core credits the guild with a piece of meat when an own pet leaves (luckyMeat), but handleCommandPetFreeAcceptPacketRes never tells it, unlike the shelter flow. The feisty cost is shown on the confirmation, before the click
 	it.fails("tells the player about the meat his freed pet left to the guild", async () => {
 		const { interaction } = await openConfirmation(0);
 
