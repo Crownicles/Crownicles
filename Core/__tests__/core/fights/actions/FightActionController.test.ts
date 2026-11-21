@@ -423,15 +423,21 @@ describe("FightActionController.useSecondAttack", () => {
 		expect(sender.getBreath()).toBe(0);
 	});
 
-	// Bug: the out of breath action is an alteration, absent from the fight action functions: using it throws instead of failing the attack
-	it.fails("makes the sender run out of breath most of the time when it lacks breath", () => {
-		fixFightRandomness({ mathRandom: 0 });
+	it("makes the sender run out of breath most of the time when it lacks breath", () => {
+		fixFightRandomness({ mathRandom: FightConstants.OUT_OF_BREATH_FAILURE_PROBABILITY - 0.01 });
 		loadPlayerAttacks();
-		const sender = new TestFighter({ breath: 0 });
+		const sender = new TestFighter({ breath: SIMPLE_ATTACK.breath - 1 });
+		const receiver = new TestFighter({ energy: 1000 });
 
-		const result = FightActionController.useSecondAttack(sender, new TestFighter(), SIMPLE_ATTACK, 3, NO_FIGHT);
+		const result = FightActionController.useSecondAttack(sender, receiver, SIMPLE_ATTACK, 3, NO_FIGHT);
 
-		expect(result.usedAction?.id).toBe(FightConstants.FIGHT_ACTIONS.ALTERATION.OUT_OF_BREATH);
+		expect(result.usedAction).toEqual({
+			id: FightConstants.FIGHT_ACTIONS.ALTERATION.OUT_OF_BREATH,
+			result: {
+				fail: true, attackStatus: FightActionStatus.MISSED
+			}
+		});
+		expect([sender.getBreath(), receiver.getEnergy()]).toEqual([SIMPLE_ATTACK.breath - 1, 1000]);
 	});
 });
 

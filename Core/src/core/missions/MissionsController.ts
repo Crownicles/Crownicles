@@ -722,7 +722,7 @@ export abstract class MissionsController {
 		for (let i = Constants.MISSIONS.SLOTS_LEVEL_PROBABILITIES.length - 1; i >= 0; i--) {
 			const probability = Constants.MISSIONS.SLOTS_LEVEL_PROBABILITIES[i];
 			if (player.level >= probability.LEVEL) {
-				const randomNumber = RandomUtils.crowniclesRandom.realZeroToOneInclusive();
+				const randomNumber = RandomUtils.crowniclesRandom.realZeroToOneExclusive();
 				return randomNumber < probability.EASY
 					? MissionDifficulty.EASY
 					: randomNumber < probability.MEDIUM + probability.EASY
