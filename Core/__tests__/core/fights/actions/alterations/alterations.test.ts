@@ -36,7 +36,7 @@ import stunned from "../../../../../src/core/fights/actions/interfaces/alteratio
 import targeted from "../../../../../src/core/fights/actions/interfaces/alterations/targeted";
 import weak from "../../../../../src/core/fights/actions/interfaces/alterations/weak";
 import {
-	fightActionById, monsterById, required
+	fightActionById, monsterById
 } from "../../FightTestData";
 
 const PLAYER_ACTIONS = FightConstants.FIGHT_ACTIONS.PLAYER;
@@ -380,16 +380,15 @@ describe("fight alterations", () => {
 		});
 
 		it("may end from the third turn with damage growing with the length of the fight", () => {
-			expect([curseDamage(3, 5), curseDamage(3, 20), curseDamage(3, FightConstants.MAX_TURNS), curseDamage(3, 40)]).toEqual([180, 267, 302, 302]);
+			expect([curseDamage(3, 5), curseDamage(3, 20), curseDamage(3, FightConstants.MAX_TURNS), curseDamage(3, 40)]).toEqual([300, 445, 503, 503]);
 			expect(damagesAt(cursed, FightAlterations.CURSED, {
 				alterationTurn: 3, opponent: boostedOpponent(), rolls: { mathRandom: 0.49 }
-			})).toBe(180);
+			})).toBe(300);
 			expect(statesAt(cursed, FightAlterations.CURSED, [3], { mathRandom: 0.5 })).toEqual([FightAlterationState.ACTIVE]);
 		});
 
-		// Bug: the alteration is removed (alterationTurn reset to 0) before its length is read, so the bonus for a long curse is always 0
-		it.fails("deals more damage the longer the curse lasted", () => {
-			expect(curseDamage(4, 5)).toBeGreaterThan(required(curseDamage(3, 5), "curse damage"));
+		it("deals more damage the longer the curse lasted", () => {
+			expect([curseDamage(3, 5), curseDamage(4, 5), curseDamage(5, 5)]).toEqual([300, 420, 540]);
 		});
 
 		it("always ends on its fifth turn", () => {
