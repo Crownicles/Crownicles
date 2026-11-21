@@ -3,10 +3,10 @@ name: Module Tests
 on:
   pull_request:
     branches: [ '**' ]
-    paths: [ Lib/**, Discord/**, Core/**, Lang/**, .github/workflows/**, .github/actions/** ]
+    paths: [ Lib/**, Discord/**, Core/**, Lang/**, .github/workflows/**, .github/actions/**, .github/scripts/test-reports-summary.mjs ]
   push:
     branches: [ develop, master ]
-    paths: [ Lib/**, Discord/**, Core/**, Lang/**, .github/workflows/**, .github/actions/** ]
+    paths: [ Lib/**, Discord/**, Core/**, Lang/**, .github/workflows/**, .github/actions/**, .github/scripts/test-reports-summary.mjs ]
   workflow_dispatch:
 
 concurrency:
@@ -40,7 +40,7 @@ jobs:
           pnpm --dir ./Core install --frozen-lockfile
 
       - name: Run Lib tests
-        run: pnpm --dir ./Lib test
+        run: pnpm --dir ./Lib test:coverage
 
       - name: Upload Lib test results
         uses: actions/upload-artifact@v7
@@ -54,7 +54,7 @@ jobs:
         working-directory: ./Discord
 
       - name: Run Discord tests
-        run: pnpm --dir ./Discord test
+        run: pnpm --dir ./Discord test:coverage
 
       - name: Upload Discord test results
         uses: actions/upload-artifact@v7
@@ -68,7 +68,7 @@ jobs:
         working-directory: ./Core
 
       - name: Run Core tests
-        run: pnpm --dir ./Core test
+        run: pnpm --dir ./Core test:coverage
 
       - name: Upload Core test results
         uses: actions/upload-artifact@v7
@@ -76,3 +76,7 @@ jobs:
         with:
           name: core-test-results
           path: Core/test-results.xml
+
+      - name: Coverage summary
+        if: always()
+        run: node .github/scripts/test-reports-summary.mjs coverage Lib Discord Core
