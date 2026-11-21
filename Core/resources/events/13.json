@@ -273,7 +273,7 @@
           },
           "karma": 5,
           "mapTypesDestination": [
-            "mo"
+            "ro"
           ]
         },
         "2": {
@@ -299,7 +299,6 @@
           "karma": 1
         },
         "4": {
-          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "max": -100
@@ -389,7 +388,6 @@
           "karma": -5
         },
         "5": {
-          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "max": -50
@@ -403,7 +401,6 @@
           "karma": -20
         },
         "6": {
-          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "max": -50
