@@ -2,13 +2,18 @@
   "possibilities": {
     "accept": {
       "outcomes": {
-        "0": {},
+        "0": {
+          "effect": "occupied",
+          "lostTime": 15
+        },
         "1": {
           "requirements": {
             "level": {
               "max": 25
             }
-          }
+          },
+          "effect": "occupied",
+          "lostTime": 30
         },
         "2": {
           "requirements": {
@@ -23,7 +28,9 @@
             "validPetTypeIds": [
               3
             ]
-          }
+          },
+          "effect": "occupied",
+          "lostTime": 15
         },
         "4": {
           "requirements": {
@@ -66,14 +73,17 @@
             "defense": {
               "min": 250
             }
-          }
+          },
+          "health": 10
         },
         "4": {
           "requirements": {
             "petRarity": {
               "min": 4
             }
-          }
+          },
+          "effect": "occupied",
+          "lostTime": 20
         }
       }
     },
@@ -98,21 +108,26 @@
             "attack": {
               "min": 250
             }
-          }
+          },
+          "health": -5
         },
         "3": {
           "requirements": {
             "speed": {
               "min": 250
             }
-          }
+          },
+          "effect": "occupied",
+          "lostTime": 15
         },
         "4": {
           "requirements": {
             "validPetTypeIds": [
               1
             ]
-          }
+          },
+          "effect": "occupied",
+          "lostTime": 10
         }
       }
     },
@@ -136,7 +151,9 @@
             "speed": {
               "min": 250
             }
-          }
+          },
+          "effect": "occupied",
+          "lostTime": 10
         },
         "3": {
           "requirements": {

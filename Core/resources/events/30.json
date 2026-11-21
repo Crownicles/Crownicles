@@ -55,7 +55,7 @@
         "5": {
           "requirements": {
             "level": {
-              "min": 60
+              "min": 100
             }
           },
           "effect": "occupied",
@@ -218,7 +218,7 @@
         "6": {
           "requirements": {
             "level": {
-              "min": 50
+              "min": 100
             }
           },
           "effect": "drunk",

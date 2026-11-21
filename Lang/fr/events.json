@@ -1081,61 +1081,61 @@
     "text": "Alors que vous voyagez sur la Route des Merveilles, vous découvrez un coffret ! Malheureusement, il est verrouillé..."
   },
   "30": {
-    "text": "Sur le Chemin aux Loups, à l'écart des berges glissantes de la Vacarme, un château pavoisé domine les bananeraies du Duc Benatis. Il y fête ses 21 ans, comme chaque année. À l'entrée principale, un garde vous fait signe : le duc veut que tout le monde soit de la fête, et le festin est servi.",
+    "text": "Sur le Chemin aux Loups, au-dessus des berges glissantes de la Vacarme, se dresse le château du Duc Benatis, entouré de ses plantations de bananes. Le duc y fête ses 21 ans, comme chaque année. À l'entrée, un garde vous fait signe : tout le monde est invité, et le festin est servi.",
     "possibilities": {
       "duke": {
         "text": "Aller voir le duc.",
         "outcomes": {
-          "0": "Vous vous frayez un chemin jusqu'au duc et vantez la splendeur de sa fête. Ravi, il claque des doigts : un valet vous mène à une chambre d'amis, où vous vous reposez un moment, loin des musiciens et du grondement de la rivière.",
-          "1": "Vous complimentez le duc sur ses bananeraies, les plus belles de la région selon vous. Flatté, et visiblement content de vous voir parmi ses invités, il vous glisse une bourse en vous priant d'en faire bon usage, puis retourne à sa fête.",
-          "2": "Vous voulez complimenter le duc et lui assurez qu'il ne fait pas du tout ses 30 ans. Le silence tombe sur la salle. Vexé jusqu'à la moustache, le duc vous fait conduire dans un cachot du château, où l'on vous oublie jusqu'au lendemain.",
-          "3": "À peine avez-vous ouvert la bouche qu'un garde se penche à l'oreille du duc : votre visage lui rappelle des voyageurs détroussés sur la route. On vous reconduit par la poterne et l'on vous pousse sur le talus boueux qui descend vers la rivière.",
-          "4": "Votre perroquet vous devance et répète à tue-tête le compliment que vous murmuriez en chemin. Le duc rit aux éclats, le lui fait redire devant toute la salle et vous remet une bourse bien garnie avant de vous laisser profiter de la fête.",
-          "5": "Le duc remarque vos cicatrices et votre équipement usé par les routes. Il en oublie le compliment et vous presse de questions sur les îles et leurs monstres. Pour vous remercier de vos récits, il vous fait remettre une bourse avant de vous laisser filer."
+          "0": "Vous vous frayez un chemin jusqu'au duc et lui dites que sa fête est magnifique. Ravi, il claque des doigts. Un valet vous conduit à une chambre d'amis, où vous vous reposez un moment au calme.",
+          "1": "Vous complimentez le duc sur ses bananes, les meilleures de la région selon vous. Flatté, il vous remercie d'être venu. Il vous glisse une bourse et vous demande d'en faire bon usage, puis il retourne à sa fête.",
+          "2": "Vous voulez complimenter le duc et lui assurez qu'il ne fait pas du tout ses 30 ans. Toute la salle se tait. Vexé, le duc vous fait jeter dans un cachot du château. On vous y laisse jusqu'au lendemain.",
+          "3": "Vous avez à peine ouvert la bouche qu'un garde parle à l'oreille du duc. Il vous a reconnu : on raconte que vous détroussez les voyageurs. Deux gardes vous jettent dehors, et vous tombez rudement sur les cailloux du chemin.",
+          "4": "Avant que vous ayez dit un mot, votre perroquet répète à tue-tête le compliment que vous prépariez en chemin. Le duc éclate de rire. Il fait recommencer l'oiseau devant toute la salle, puis vous remet une bourse bien garnie.",
+          "5": "Le duc remarque vos cicatrices et votre équipement usé par les routes. Il en oublie votre compliment et vous pose mille questions sur les îles et leurs monstres. Pour vous remercier de vos récits, il vous fait remettre une bourse."
         }
       },
       "gift": {
-        "text": "Lui offrir un cadeau.",
+        "text": "Offrir un cadeau au duc.",
         "outcomes": {
-          "0": "Vous fouillez votre sac sans rien trouver de digne d'un duc, et lui tendez finalement une bourse de pièces. Il l'accepte avec un large sourire. Derrière lui, un homme en noir la compte déjà et inscrit la somme dans un épais registre.",
-          "1": "Le duc vous voit approcher, devine votre intention et vous arrête d'un geste aimable : votre présence lui suffit. Vous restez un long moment à discuter avec lui de bananes, de chasse et de la Charte, qu'il trouve démodée, puis vous quittez la fête.",
-          "2": "Au moment où vous allez lui tendre votre cadeau, le duc se lève et annonce qu'il en offre un à chacun de ses invités. Le vôtre n'aurait plus guère de sens ; vous le gardez et acceptez le paquet qu'un serviteur vous tend.",
-          "3": "Le duc vous reconnaît avant même que vous n'ouvriez votre sac : on lui a raconté vos services rendus aux voyageurs. Il refuse tout présent, s'absente un instant et revient avec une pièce de sa propre collection, qu'il tient à vous offrir.",
-          "4": "L'intendant du duc vous barre la route et vous dévisage comme un homme qui a déjà entendu parler de vous. Il exige une contribution aux frais de la fête, compte vos pièces lui-même, puis vous fait reconduire sans que vous ayez vu le duc.",
-          "5": "Votre familier vous arrache le paquet des mains, file entre les tables et le dépose sur les genoux du duc avant de s'asseoir sagement. Conquis, le duc veut l'acheter ; vous refusez, et il vous paie le spectacle d'une poignée de pièces.",
-          "6": "N'ayant pas grand-chose à offrir, vous cueillez un bouquet de fleurs sauvages au bord du chemin. Le duc, touché par ce présent sans prétention, vous fait asseoir près de lui et vous fait servir à manger un long moment."
+          "0": "Vous fouillez votre sac sans rien trouver de digne d'un duc. Vous lui tendez finalement une bourse, qu'il accepte avec un large sourire. Derrière lui, un homme en noir compte déjà les pièces et note la somme dans un gros registre.",
+          "1": "Le duc devine votre intention et vous arrête d'un geste aimable : votre présence lui suffit. Vous discutez longuement avec lui de bananes, de chasse et de la Charte, qu'il trouve démodée. Puis vous quittez la fête.",
+          "2": "Vous allez offrir votre cadeau quand le duc se lève : il annonce qu'il en offre un à chacun de ses invités. Le vôtre n'a plus de sens. Vous le gardez et acceptez le paquet qu'un serviteur vous tend.",
+          "3": "Le duc vous reconnaît avant que vous ayez ouvert votre sac : on lui a raconté comment vous aidez les voyageurs. Il refuse tout cadeau. Il s'absente un instant et revient avec un objet de sa collection, qu'il tient à vous offrir.",
+          "4": "L'intendant du duc vous barre la route. Il a entendu parler de vous et vous regarde avec méfiance. Il exige que vous payiez votre part des frais de la fête et compte lui-même vos pièces. Puis il vous fait raccompagner. Vous n'aurez pas vu le duc.",
+          "5": "Votre familier vous arrache le paquet des mains, file entre les tables et le dépose sur les genoux du duc. Toute la salle éclate de rire. Amusé, le duc vous fait remettre quelques pièces pour le spectacle.",
+          "6": "Vous n'avez pas grand-chose à offrir, alors vous cueillez un bouquet de fleurs sauvages au bord du chemin. Le duc est touché par ce cadeau tout simple. Il vous fait asseoir près de lui, et on vous sert à manger."
         }
       },
       "party": {
         "text": "Rester à la fête.",
         "outcomes": {
-          "0": "Vous vous mêlez aux invités et profitez de la fête : musiciens, jongleurs, plats qui n'en finissent pas. Elle se prolonge tard dans la nuit, et vous ne quittez le château que les jambes lourdes et l'esprit encore plein de musique.",
-          "1": "Le garde de la salle remarque vos bottes couvertes de la boue du chemin et vous prie de revenir dans une tenue convenable. Un jeune cireur posté près de l'entrée vous les fait briller contre quelques pièces, et vous pouvez profiter de la fête.",
-          "2": "Encore éprouvé par la route, vous vous attablez devant le buffet. Bananes rôties, au miel, en beignets : le duc n'a rien laissé au hasard. Vous mangez à votre faim et sentez vos forces revenir peu à peu.",
-          "3": "Les gardes du duc organisent un concours de bras de fer dans la cour, et les paris montent vite. Vous couchez trois adversaires de suite sur la table, sous les acclamations des invités, et repartez avec la cagnotte.",
-          "4": "Partout où vous passez, les invités serrent leur bourse contre eux. Un garde ne vous lâche plus d'une semelle et vous fait comprendre que votre présence gâche la fête. Après un moment de malaise, vous préférez vous éclipser.",
-          "5": "Votre familier repère le buffet de bananes avant vous et le dévalise en quelques instants, pelures comprises. L'intendant vous présente la note avec un sourire pincé, et vous passez un long moment à vous excuser auprès des cuisiniers.",
-          "6": "Des nobles de la Vallée veulent entendre vos aventures et lèvent leur verre à chacune d'elles, puis aux vieilles lignées, puis contre la Charte. Vous ne refusez aucun toast et quittez le château en titubant."
+          "0": "Vous vous mêlez aux invités et profitez de la fête : musiciens, jongleurs, plats à n'en plus finir. La fête dure tard dans la nuit. Vous quittez le château les jambes lourdes, la tête encore pleine de musique.",
+          "1": "Le garde de la salle remarque vos bottes pleines de boue et vous demande de revenir dans une tenue correcte. Près de l'entrée, un jeune cireur vous les nettoie contre quelques pièces. Vous pouvez enfin profiter de la fête.",
+          "2": "Épuisé par la route, vous vous attablez devant le buffet. Bananes rôties, au miel, en beignets : le duc a tout prévu. Vous mangez à votre faim et sentez vos forces revenir peu à peu.",
+          "3": "Les gardes du duc organisent un concours de bras de fer, et les paris montent vite. Vous battez trois adversaires d'affilée sous les cris des invités et repartez avec la cagnotte.",
+          "4": "Partout où vous passez, les invités serrent leur bourse contre eux. Un garde ne vous lâche plus d'une semelle et vous fait comprendre que votre présence gâche la fête. Après un moment de gêne, vous préférez partir.",
+          "5": "Votre familier repère le buffet de bananes avant vous et le vide en quelques instants, pelures comprises. L'intendant vous présente la note, l'air pincé. Vous passez ensuite un long moment à vous excuser auprès des cuisiniers.",
+          "6": "Des nobles de la Vallée veulent entendre le récit de vos voyages. Ils lèvent leur verre à chaque histoire, puis aux vieilles lignées, puis à l'abolition de la Charte. Vous ne refusez aucun toast et quittez le château en titubant."
         }
       },
       "steal": {
-        "text": "Aller voler des bananes dans son exploitation.",
+        "text": "Voler des bananes dans ses plantations.",
         "outcomes": {
-          "0": "Les bras chargés de régimes, vous vous dirigez vers la sortie de l'exploitation quand un cueilleur vous aperçoit et donne l'alerte. Trop chargé pour courir, vous êtes rattrapé par les gardes, qui vous enferment au château jusqu'au lendemain.",
-          "1": "Vous vous glissez entre les bananiers pendant que tout le monde festoie, remplissez votre sac et ressortez sans croiser personne. Assis au bord du chemin, vous dévorez votre butin et vous sentez nettement mieux.",
-          "2": "Vous remplissez votre sac sans remarquer la pancarte plantée devant le tas : ces bananes avaient été mises de côté, impropres à la vente. Une heure plus tard, votre ventre vous le fait amèrement regretter.",
-          "3": "Un cueilleur vous surprend et donne l'alerte, mais vous êtes déjà loin : vous sautez la clôture, dévalez le talus et semez les gardes sur le chemin. Une fois à l'abri, vous mangez les quelques bananes qui ont survécu à la course.",
-          "4": "Un vieux cueilleur vous surprend, vous observe un long moment puis hausse les épaules : on lui a dit du bien de vous, il ne vous dénoncera pas. Il vous tend un régime bien mûr et vous prie de partir avant le passage des gardes.",
-          "5": "Votre familier grimpe au sommet des bananiers et fait pleuvoir les régimes à vos pieds sans un bruit. Vous filez avant que quiconque ne remarque les arbres dégarnis et festoyez à l'abri d'un rocher, au bord du chemin.",
-          "6": "En ressortant de l'exploitation, vous posez le pied sur une pelure et glissez jusqu'au bas du talus, au ras des eaux de la Vacarme. Vous vous relevez couvert de boue et d'écorchures, le sac à moitié vide."
+          "0": "Les bras chargés de bananes, vous approchez de la sortie quand un cueilleur vous aperçoit et donne l'alerte. Trop chargé pour courir, vous êtes vite rattrapé par les gardes. Ils vous enferment au château jusqu'au lendemain.",
+          "1": "Vous vous glissez entre les bananiers pendant que tout le monde fait la fête. Vous remplissez votre sac et ressortez sans croiser personne. Assis au bord du chemin, vous dévorez votre butin et vous sentez nettement mieux.",
+          "2": "Vous remplissez votre sac sans voir la pancarte plantée devant le tas : ces bananes ont été mises de côté, car elles sont impropres à la vente. Une heure plus tard, votre ventre vous le fait amèrement regretter.",
+          "3": "Un cueilleur vous surprend et donne l'alerte, mais vous êtes déjà loin. Vous sautez la clôture et semez les gardes sur le chemin. Une fois à l'abri, vous mangez les quelques bananes qui ont survécu à la course.",
+          "4": "Un vieux cueilleur vous surprend et vous observe un long moment. On lui a dit du bien de vous : il ne vous dénoncera pas. Il vous donne même quelques bananes bien mûres, que vous mangez en vous éloignant avant le passage des gardes.",
+          "5": "Votre familier grimpe en haut des bananiers et fait tomber les bananes à vos pieds sans un bruit. Vous filez avant que quelqu'un remarque les arbres dégarnis, puis vous vous régalez à l'abri, au bord du chemin.",
+          "6": "En sortant des plantations, vous marchez sur une pelure et dévalez le talus sur le dos. Vous vous relevez couvert de boue et d'écorchures. La moitié de vos bananes est restée en route, éparpillée dans l'herbe."
         }
       },
       "end": {
         "outcomes": {
-          "0": "Vous n'avez pas le cœur à faire la fête aujourd'hui. Vous saluez le garde, tournez le dos aux lanternes du château et reprenez tranquillement votre route le long de la rivière.",
-          "1": "Vous déclinez l'invitation et reprenez votre route. Quelques pas plus loin, vous glissez sur une banane trop mûre tombée d'une charrette du duc et vous écorchez légèrement le genou sur les cailloux du chemin.",
-          "2": "Vous déclinez l'invitation, mais votre familier, lui, a déjà filé vers le buffet. Il revient un moment plus tard avec un régime de bananes, que vous partagez au bord du chemin en attendant qu'il ait fini de se pourlécher.",
-          "3": "Vous déclinez poliment l'invitation. Le garde, qui vous a reconnu et vous tient en estime, court aux cuisines et revient vous glisser une part de gâteau d'anniversaire pour la route. Vous la mangez en marchant, de bien meilleure humeur."
+          "0": "Vous n'avez pas le cœur à faire la fête aujourd'hui. Vous remerciez le garde pour l'invitation, tournez le dos au château et reprenez tranquillement votre route.",
+          "1": "Vous déclinez l'invitation et reprenez votre route. Quelques pas plus loin, vous glissez sur une banane trop mûre tombée d'une charrette du duc. Vous vous écorchez légèrement le genou sur les cailloux du chemin.",
+          "2": "Vous déclinez l'invitation, mais votre familier a déjà filé vers le buffet. Il revient un moment plus tard, les bras pleins de bananes. Vous les partagez avec lui au bord du chemin avant de repartir.",
+          "3": "Vous déclinez poliment l'invitation. Le garde vous a reconnu et vous salue avec respect. Il court aux cuisines et revient avec une part de gâteau d'anniversaire pour la route. Vous la mangez en marchant, de bien meilleure humeur."
         }
       }
     }
@@ -1443,55 +1443,55 @@
     "text": "Faisant route, vous croisez un marchand itinérant, qui vous interpelle. Il dit avoir des objets qui pourraient vous intéresser, et ce à des prix tout à fait abordables."
   },
   "39": {
-    "text": "À Mergagnan, entre les filets qui sèchent sur le port et la Plage Sentinelle toute proche, un mercenaire du nom de Price vous aborde. Épée au côté, sourire charmeur, il cherche un contrat et vous jauge avec un intérêt un peu trop poli.",
+    "text": "À Mergagnan, sur le port où sèchent les filets, à deux pas de la Plage Sentinelle, un mercenaire nommé Price vous aborde. L'épée au côté et le sourire charmeur, il cherche du travail et vous observe avec un peu trop d'attention.",
     "possibilities": {
       "convoy": {
         "text": "Le payer pour vous escorter jusqu'à votre prochaine destination.",
         "outcomes": {
-          "0": "Contre quelques pièces, Price accepte de vous accompagner. Au pied d'un rocher, une épée rutilante est plantée jusqu'à la garde. Vous tirez en vain, Price la dégage d'une main. Sans vous il ne serait jamais passé par là : il vous remet bien plus que son salaire.",
-          "1": "Contre quelques pièces, Price vous escorte. En chemin, votre familier se fige, aux aguets, puis vous entraîne vers un fossé où traîne une sacoche abandonnée. Vous partagez son contenu avec Price et gardez de l'argent, ainsi qu'un objet qui vous sera utile.",
-          "2": "Contre quelques pièces, Price vous escorte. Vous cheminez un moment sans histoire, hormis quelques voleurs surgis d'un fourré : Price en met un à terre et les autres détalent. Vous vous quittez ensuite, la bourse un peu plus légère.",
-          "3": "Price accepte la mission, mais il a reconnu votre nom : il sait qu'un tel client ira rarement se plaindre à la Garde. Au bivouac, un cliquetis vous réveille, il vide votre bourse. Vous vous jetez sur lui, et un coup de poing à la tempe vous laisse sonné.",
-          "4": "Price vous traite autrement que les clients ordinaires : poli tout le long du chemin, il guette la route à votre place. Au moment de se quitter, il vous rend votre paiement avec un petit supplément, comme si votre compagnie valait le détour.",
-          "5": "Contre quelques pièces, Price vous escorte. Trois brigands vous barrent la route, mais à deux vous les dispersez en quelques échanges. Price fouille leurs poches, puis vous cède une part qui dépasse largement son salaire."
+          "0": "Contre quelques pièces, Price accepte de vous accompagner. En chemin, vous trouvez une épée brillante plantée dans un rocher. Vous tirez de toutes vos forces, sans succès. Price essaie à son tour et la dégage. Sans vous, il ne serait jamais passé par là : il vous donne bien plus que son salaire.",
+          "1": "Contre quelques pièces, Price vous escorte. En chemin, votre familier s'arrête net, puis file vers un fossé où traîne une sacoche abandonnée. Vous en partagez le contenu avec Price : vous gardez une bonne somme et un objet qui pourra vous servir.",
+          "2": "Contre quelques pièces, Price vous escorte. Le trajet est calme, à part quelques voleurs qui surgissent d'un fourré. Price en met un à terre et les autres s'enfuient. Vous vous quittez ensuite, la bourse allégée de son salaire.",
+          "3": "Price accepte, mais il a entendu parler de vous : un client comme vous n'ira pas se plaindre à la garde. Le soir, au campement, un bruit de pièces vous réveille. Price vide votre bourse. Vous vous jetez sur lui, il vous sonne d'un coup de poing à la tempe et s'enfuit avec votre argent.",
+          "4": "Sur la route, un marchand vous reconnaît, vous salue chaleureusement et tient à vous offrir quelques pièces pour un service passé. Impressionné, Price refuse d'être payé pour l'escorte : il préfère rester dans les bonnes grâces d'un client comme vous.",
+          "5": "Contre quelques pièces, Price vous escorte. Trois brigands vous barrent la route. Vous en mettez deux à terre avant que Price ait dégainé, et le troisième s'enfuit. Price fouille leurs poches et vous laisse la plus grosse part, bien plus que son salaire."
         }
       },
       "meal": {
         "text": "Faire connaissance autour d'un bon repas.",
         "outcomes": {
-          "0": "Vous proposez un repas à Price, qui accepte. Au Coin du Feu, entre poisson grillé et chaudrée, vous parlez, riez et échangez des astuces. Au bout de quelques heures, il doit aller honorer un contrat et vous quitte avec un léger pincement au cœur.",
-          "1": "Vous proposez à Price de faire plus ample connaissance autour d'un repas. Il décline poliment, un contrat l'attend sur le port, et il s'éloigne entre les filets qui sèchent. Vous restez seul devant l'enseigne de l'auberge.",
-          "2": "Au Coin du Feu, Price passe plus de temps à faire la conversation à votre familier qu'à vous, et lui réserve les meilleurs morceaux. Il vous souffle l'adresse d'un contrat, et l'avance qu'il vous cède couvre largement le repas.",
-          "3": "Price a vite compris que vous débutez. Entre deux crevettes frites, il vous montre comment parer un coup de manche, puis vous laisse en cadeau un objet qui traînait au fond de son sac avant de partir honorer un contrat.",
-          "4": "Au Coin du Feu, Price s'accroche à l'addition et refuse que vous sortiez un denier. La soirée file entre deux histoires de contrats, et il vous quitte en glissant quelques pièces dans votre main, comme s'il vous les devait bien."
+          "0": "Vous proposez un repas à Price, qui accepte. Au Coin du Feu, entre poisson grillé et crevettes frites, vous parlez, riez et échangez des astuces. Au bout de quelques heures, un contrat l'appelle ailleurs, et il vous quitte à regret.",
+          "1": "Vous proposez à Price de faire plus ample connaissance autour d'un repas. Il refuse poliment : un contrat l'attend sur le port. Il s'éloigne d'un pas pressé et vous laisse seul devant l'auberge.",
+          "2": "Au Coin du Feu, Price remarque vite votre familier. Il vous parle d'une caisse qu'un marchand du port a égarée et dont la prime l'intéresse. Après le repas, votre familier la retrouve entre deux entrepôts, et Price partage la prime avec vous.",
+          "3": "Au Coin du Feu, Price comprend vite que vous débutez. Entre deux crevettes frites, il vous donne quelques conseils pour vos premiers combats. Avant de partir pour un contrat, il vous laisse un objet qui traînait au fond de son sac.",
+          "4": "Au Coin du Feu, Price remarque que les habitués vous saluent avec respect. Il vous confie alors une course qu'il ne peut pas faire lui-même : remettre un paquet à un marchand du port. Vous vous en chargez dans la soirée, et Price vous paie bien."
         }
       },
       "steal": {
         "text": "Tenter de lui voler de l'argent.",
         "outcomes": {
-          "0": "Vous vous glissez derrière lui pour lui faucher sa bourse, mais il vous repère avant même que vous la touchiez. Un direct à la mâchoire vous envoie au sol, et vous mettez un bon moment à retrouver vos esprits.",
-          "1": "Vous approchez la main de sa ceinture, il vous remarque aussitôt mais vous laisse partir, non sans un regard plein de mépris. Vous décampez sans demander votre reste, intimidé, et les mains vides.",
-          "2": "Vous frôlez Price dans la foule du port et sa bourse change de main sans un bruit. Il ne s'aperçoit de rien et poursuit son chemin en sifflotant, pendant que vous comptez votre butin à l'abri d'une ruelle.",
-          "3": "Price a reconnu votre nom avant même que vous leviez la main. Il détache sa bourse et vous la lance avec un sourire las : quelques piécettes et des jetons de plomb, gardés pour les gens de votre espèce.",
-          "4": "Pendant que vous occupez Price de vos questions, votre familier se faufile jusqu'à sa ceinture et revient avec la bourse. Price cherche un moment ce qui lui manque, hausse les épaules et s'éloigne, tandis que vous rangez le butin.",
-          "5": "Il vous surprend la main sur sa bourse et vous frappe aux côtes. Votre armure encaisse le plus gros du choc, et il n'insiste pas, secoué d'avoir tapé dans du métal. Vous repartez avec un hématome, sans un sou de plus."
+          "0": "Vous vous glissez derrière Price pour lui prendre sa bourse, mais il vous repère avant même que vous la touchiez. Un coup de poing à la mâchoire vous envoie au sol, et vous mettez un bon moment à retrouver vos esprits.",
+          "1": "Vous approchez la main de sa ceinture. Price le remarque aussitôt, mais votre maladresse lui montre que vous débutez : il se contente d'un regard plein de mépris. Vous partez sans demander votre reste, les mains vides.",
+          "2": "En passant près de Price dans la foule du port, vous lui prenez sa bourse d'un geste vif. Il ne s'aperçoit de rien et s'éloigne en sifflotant. À l'abri d'une ruelle, vous comptez votre butin.",
+          "3": "Price vous a reconnu avant même que vous leviez la main. Avec un sourire las, il détache une bourse et vous la lance. À l'intérieur, quelques pièces et beaucoup de jetons de plomb : il la garde exprès pour les voleurs de votre genre.",
+          "4": "Pendant que vous occupez Price avec vos questions, votre familier se glisse jusqu'à sa ceinture et revient avec sa bourse. Price ne remarque rien et vous quitte sur une poignée de main. Un peu plus loin, vous comptez le butin.",
+          "5": "Price vous surprend la main sur sa bourse et vous frappe aux côtes. Votre armure encaisse le plus gros du coup. Price secoue sa main endolorie et n'insiste pas. Vous repartez avec un bleu, et sans une pièce de plus."
         }
       },
       "follow": {
         "text": "Le suivre discrètement.",
         "outcomes": {
-          "0": "Vous suivez Price entre les étals et les caisses du port, mais la foule se referme sur lui à l'angle d'un entrepôt. Vous tournez un moment parmi les filets sans retrouver sa trace, et le temps passe.",
-          "1": "Vous gardez Price en vue jusqu'à une remise à filets, où il s'entretient à voix basse avec une silhouette encapuchonnée. Quand ils se séparent, vous ramassez sur un tonneau un objet que l'un d'eux a oublié.",
-          "2": "Price vous repère au troisième coin de rue. Amusé par votre filature, il vous glisse quelques pièces en vous suggérant de trouver un autre passe-temps, puis disparaît entre deux entrepôts.",
-          "3": "Price s'engouffre dans une ruelle du port. Trois silhouettes s'y tiennent et se tournent vers vous d'un même mouvement, comme si elles vous attendaient. Vous reculez, le cœur battant, et il vous faut un moment pour vous calmer."
+          "0": "Vous suivez Price sur le port, mais vous le perdez de vue dans la foule, à l'angle d'un entrepôt. Vous tournez un moment entre les étals sans retrouver sa trace, puis vous abandonnez.",
+          "1": "Vous pressez le pas pour ne pas perdre Price de vue. Il entre dans une cabane de pêcheurs et parle à voix basse avec une personne encapuchonnée. Quand ils repartent, vous trouvez sur un tonneau un objet que l'un d'eux a oublié.",
+          "2": "Price vous repère au troisième coin de rue. Votre filature maladroite l'amuse plus qu'elle ne l'inquiète : il vous lance quelques pièces, vous conseille d'aller plutôt manger un morceau, puis disparaît entre deux entrepôts.",
+          "3": "Price entre dans une ruelle du port où trois hommes l'attendent. L'un d'eux vous reconnaît et vous désigne du menton. Les trois se tournent vers vous. Vous reculez, le cœur battant, et il vous faut un moment pour vous calmer."
         }
       },
       "end": {
         "outcomes": {
           "0": "Vous restez quelques minutes à discuter avec Price, de la marée, des contrats et du prix des escortes, avant de le laisser retourner à ses affaires.",
-          "1": "Vous vous séparez après quelques mots. Quelques rues plus loin, un groupe à l'air peu amène vous encercle dans une ruelle du port et allège votre bourse sous la menace de ses gourdins avant de disparaître.",
-          "2": "Vous discutez quelques minutes avec Price, puis vous vous séparez. Quelques rues plus loin, un groupe à l'air peu amène vous barre la route, vous dévisage, puis s'écarte sans un mot pour vous laisser passer.",
-          "3": "Après une brève discussion, vous vous séparez. Quelques rues plus loin, un groupe vous encercle, mais le premier à lever le bras s'effondre et les autres détalent, laissant dans la poussière une bourse que vous ramassez."
+          "1": "Vous vous séparez après quelques mots. Quelques rues plus loin, une bande vous encercle dans une ruelle du port. Vous semblez une proie facile : sous la menace de leurs gourdins, vous leur cédez une bonne partie de votre argent.",
+          "2": "Vous discutez quelques minutes avec Price, puis vous vous séparez. Quelques rues plus loin, une bande vous barre la route. L'un d'eux vous reconnaît et fait signe aux autres de s'écarter. Ils vous laissent passer sans un mot.",
+          "3": "Vous vous séparez après une brève discussion. Quelques rues plus loin, une bande vous encercle. Vous mettez à terre le premier qui lève la main sur vous, et les autres s'enfuient. L'un d'eux a perdu sa bourse : vous la ramassez."
         }
       }
     }
@@ -1771,84 +1771,84 @@
     "text": "En arrivant aux abords d'un village animé, vous entendez un groupe de personnes parler d'un sanctuaire qui serait hanté. Curieux que vous êtes, vous tendez l'oreille. Le sanctuaire serait à 1 heure de route au sud, et le départ a lieu dans 30 minutes."
   },
   "46": {
-    "text": "À Boug-Coton, devant l'Auberge du Seigneur, le célèbre ménestrel Pérotin règle son ardoise en chansons. On dit qu'avec sa mandoline et ses poudres, il fait vivre ses couplets pour de bon à qui les écoute. Il vous repère dans l'attroupement et vous demande le thème du prochain.",
+    "text": "À Boug-Coton, devant l'Auberge du Seigneur, le célèbre ménestrel Pérotin paie sa note en chansons. On dit qu'avec sa mandoline et ses poudres, il fait vivre ses chansons pour de bon à ceux qui l'écoutent. Il vous repère dans la foule et vous demande sur quel thème chanter.",
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Faute de réponse, Pérotin hausse les épaules, vous oublie et reprend ses rengaines ordinaires, justes et sans âme, celles qui suffisent à payer un souper. L'attroupement se clairsème. Vous reprenez votre chemin sans avoir rien vu de ses prodiges.",
-          "1": "Votre silence fait de vous un cobaye idéal. Pérotin vous souffle sa poudre, vous mène dans la ruelle voisine et chante un laboratoire où vous torturez savamment un cochon magnifique. Votre patron vous offre deux objets ; vous vous réveillez hébété, avec le moins précieux.",
-          "2": "Curieux de ce que cache votre silence, Pérotin vous fait boire de quoi penser tout haut. Vous ne dites rien. Il force la dose et tend l'oreille : toujours rien, pas l'ombre d'une pensée. Pris de panique, il appelle la Garde, qui vous enferme pour folie.",
-          "3": "Pérotin vous fait boire de quoi penser tout haut et n'entend rien, pas l'ombre d'une pensée. Paniqué, il appelle la Garde. Le sergent vous reconnaît, se porte garant de votre tête et vous allonge sur un banc près de l'auberge. Vous y dormez trois heures, le temps que tout passe.",
-          "4": "Vous ne répondez pas, et Pérotin s'approche, une pincée de poudre au bout des doigts. Votre familier gronde ; le ménestrel sursaute et respire toute la pincée. Il vous prend pour un aubergiste impayé, bredouille des excuses et vous règle une ardoise qui n'est pas la vôtre."
+          "0": "Faute de réponse, Pérotin hausse les épaules et reprend ses chansons habituelles, justes mais sans âme. Rien ne s'anime, et la foule s'en va peu à peu. Vous reprenez votre route.",
+          "1": "Pérotin voit dans votre silence un cobaye idéal. Il vous souffle sa poudre au visage et vous emmène dans la ruelle voisine. Sa chanson vous fait torturer un cochon dans un laboratoire. Votre patron vous offre deux objets. Au réveil, hébété, vous n'avez plus que le moins précieux.",
+          "2": "Intrigué par votre silence, Pérotin vous fait boire une fiole qui fait penser tout haut. Vous ne dites rien. Il double la dose : toujours rien, pas l'ombre d'une pensée. Paniqué, il appelle la Garde, qui vous enferme pour folie.",
+          "3": "Pérotin vous fait boire une fiole qui fait penser tout haut, et n'entend rien. Paniqué, il appelle la Garde. Le sergent vous reconnaît : il refuse de vous enfermer et vous allonge sur un banc près de l'auberge. Vous y dormez trois heures.",
+          "4": "Vous ne répondez pas, et Pérotin approche avec une pincée de poudre. Votre familier gronde. Le ménestrel sursaute et respire toute la pincée. Il vous prend pour un aubergiste à qui il doit de l'argent et vous paie sa dette. Vous gardez les pièces sans rien dire."
         }
       },
       "singCrazyLove": {
         "text": "Chanter un amour fou.",
         "outcomes": {
-          "0": "Le premier accord vous couche dans un lit, auprès de votre bien-aimée. Puis vous remarquez la sangle à votre taille, et l'absence de vos bras comme de vos jambes. Pérotin conclut que tout cela n'était qu'un rêve ; vous retrouvez vos membres, mais pas votre calme.",
-          "1": "La chanson vous embarque en mer avec un seul matelot, votre amour. Sur une île déserte, une croix marque un coffre, et vous repartez avec le coffre, sans le matelot. Au réveil, Pérotin a empoché l'or pour prix de la mélodie, mais l'objet du trésor est bien dans vos mains.",
-          "2": "Pérotin a entendu votre nom à propos du Concours, mais renonce à chanter vos noces avec une princesse qui refuse tout le monde. Il entonne la Vieille et le Faux Monstre, où vous tenez le monstre. La poudre est trop légère, vous connaissez la fin : vingt minutes perdues, poliment.",
-          "3": "Votre familier vient se poser sur le manche de la mandoline, et Pérotin, ravi, l'ajoute au refrain. La vision tourne à la noce de village : on danse, on pleure, on trinque. Quand elle se dissipe, l'attroupement ému a rempli le chapeau, et le ménestrel partage.",
-          "4": "Pérotin vous dévisage, sourit, et chante votre passion pour une détrousseuse de grands chemins qui vous ressemble trait pour trait. Vous filez le parfait amour jusqu'au matin. Au réveil, la belle s'est envolée et votre bourse a maigri ; le ménestrel jure n'y être pour rien.",
-          "5": "Pérotin remarque vos bandages et change de couplet : l'amante de sa chanson passe la nuit à panser vos plaies avec une ferveur inquiétante. Au réveil, quelqu'un a bel et bien refait vos pansements, et le ménestrel sifflote en rebouchant un pot d'onguent."
+          "0": "Dès le premier accord, vous voilà dans un lit, auprès de votre bien-aimée. Puis vous sentez une sangle autour de votre taille. Vous n'avez plus ni bras ni jambes. Pérotin voit votre panique et conclut que tout n'était qu'un rêve. Vos membres reviennent, mais vous restez secoué.",
+          "1": "La chanson vous emmène en mer avec un seul matelot : votre amour. Sur une île déserte, une croix marque un trésor. Par cupidité, vous repartez avec le coffre et sans le matelot. Au réveil, Pérotin a gardé l'or pour sa chanson, mais vous tenez un objet bien réel.",
+          "2": "Pérotin a entendu parler de vous au Concours, mais la princesse refuse tous les champions : pas de noces à chanter. Il chante plutôt la Vieille et le Faux Monstre, où vous jouez le monstre. Sa poudre est trop légère et vous connaissez la fin : vingt minutes perdues.",
+          "3": "Votre familier se pose sur le manche de la mandoline. Ravi, Pérotin l'ajoute à sa chanson, qui tourne à la noce de village : on danse, on pleure, on trinque. Quand la vision se dissipe, la foule émue a rempli le chapeau, et Pérotin partage avec vous.",
+          "4": "Pérotin vous dévisage, sourit, et chante votre amour pour une voleuse de grand chemin qui vous ressemble trait pour trait. Vous filez le parfait amour. Au réveil, la belle a disparu et votre bourse est plus légère. Pérotin jure n'y être pour rien.",
+          "5": "Pérotin remarque vos bandages et change de couplet : dans sa chanson, votre amante passe la nuit à soigner vos plaies. Au réveil, vos pansements ont bel et bien été refaits. Pérotin sifflote en refermant un pot d'onguent."
         }
       },
       "singHero": {
         "text": "Chanter votre vie et vos exploits d'aventurier.",
         "outcomes": {
-          "0": "Pérotin ne connaît du métier que ce qu'on en dit dans les auberges, et vos deux ou trois étapes ne l'aident guère. Sa chanson vous promène dans une forêt sans histoire, jusqu'à une clairière vide. Vous en ressortez cinq minutes plus tard, déçu de la ballade comme du ménestrel.",
-          "1": "Pérotin vous renvoie deux minutes en arrière, juste avant votre demande. Sa poudre est si fidèle que vous refaites la même demande, et lui la même chanson, en boucle. Seul à s'en apercevoir, il prend pitié à la fin de la journée et vous fait respirer de quoi rompre le charme.",
-          "2": "La chanson vous mène, en rêve ou pour de bon, dans les caves creusées sous l'auberge, par un passage semé de pièges que vous évitez tous. Dans la salle aux coffres, Pérotin détale avec l'essentiel. Il vous reste le coffre principal, son or, un objet, et une nausée tenace.",
-          "3": "La chanson vous fait descendre dans les caves sous l'auberge, entre des pièges que vous enjambez sans ralentir. Quand Pérotin file avec les coffres, vous le rattrapez à la troisième marche. Beau joueur, il rend la moitié des bourses et un objet, et jure que c'était prévu.",
-          "4": "Vous lui racontez vos embuscades déjouées et vos nuits sur les routes. Pérotin n'a rien à inventer : sa chanson fait revivre vos étapes à tout l'attroupement, et les nobles sortis de l'auberge en redemandent. Le chapeau se remplit, et il vous en laisse la moitié.",
-          "5": "Pérotin vous ramène deux minutes plus tôt, et vous voilà à redemander la même chanson, encore et encore. Au vingtième tour, votre familier, excédé, se met à brailler à contretemps. La mandoline déraille, la boucle casse, et vous n'y laissez qu'une petite heure.",
-          "6": "Pérotin n'a pas fini le premier couplet que les villageois ajoutent les leurs : chacun a un service rendu à raconter, et votre nom dedans. La chanson devient la leur plus que la sienne. À la fin, une vieille femme vous met un objet dans les mains et refuse de le reprendre."
+          "0": "Pérotin ne connaît le métier d'aventurier que par les récits d'auberge, et vos rares exploits ne l'aident guère. Sa chanson vous promène dans une forêt banale, jusqu'à une clairière vide. Vous en sortez cinq minutes plus tard, déçu.",
+          "1": "Pérotin vous ramène deux minutes en arrière, juste avant votre demande. Sa poudre est si fidèle que vous refaites la même demande, et lui la même chanson. Cela tourne en boucle toute la journée. Le soir, il a pitié de vous et vous fait respirer un antidote.",
+          "2": "La chanson vous mène dans les caves sous l'auberge, en rêve ou pour de bon. Vous évitez tous les pièges. Dans la salle aux coffres, Pérotin file avec presque tout le butin. Il vous laisse le coffre principal, son or et un objet. Sa poudre vous donne la nausée.",
+          "3": "La chanson vous fait descendre dans les caves sous l'auberge. Vous passez les pièges sans ralentir. Quand Pérotin file avec le butin, vous le rattrapez dans l'escalier. Beau joueur, il vous rend la moitié de l'or et un objet, et jure que c'était prévu.",
+          "4": "Vous lui racontez vos années de route et les embuscades déjouées. Pérotin n'a rien à inventer : sa chanson fait revivre vos aventures à toute la foule. Les nobles sortis de l'auberge en redemandent. Le chapeau se remplit, et il vous en laisse la moitié.",
+          "5": "Pérotin vous ramène deux minutes en arrière, et vous redemandez la même chanson, encore et encore. Au vingtième tour, votre familier, excédé, se met à crier. Pérotin perd la mesure et la boucle se brise. Vous n'y perdez qu'une heure.",
+          "6": "Pérotin a à peine commencé que les villageois ajoutent leurs couplets : chacun connaît un service que vous avez rendu. La chanson devient la leur. À la fin, une vieille femme vous met un objet dans les mains et refuse de le reprendre."
         }
       },
       "singLove": {
         "text": "Chanter un amour terne et redondant.",
         "outcomes": {
-          "0": "Vous voilà dans une vieille masure, à retourner la terre avec votre amour, récoltant chaque mois juste de quoi tenir. Vous y passez trente ans sans ennui. Pérotin vous réveille six heures plus tard : il a eu la main lourde, et chaque minute de chanson vous a valu un mois.",
-          "1": "Qu'on puisse réclamer un amour sans couleur inquiète Pérotin, qui vous croit au fond du trou. Il range ses poudres et vous chante, tout doucement, une chanson de réconfort. Vous n'étiez pas triste en arrivant, mais elle vous fait un bien fou tout de même.",
-          "2": "Vous voyant si savant en amours sans passion, Pérotin vous chante un couple où votre moitié, c'est vous. La dispute entre vous et vous dégénère devant ses admirateurs. Il arrête tout et réclame un dédommagement ; vous payez, encore tout triste de vous être quitté.",
-          "3": "Pérotin vous chante un couple où votre moitié, c'est vous, et la scène de ménage tourne au pugilat. Vous avez la main lourde : un seul coup, et vous vous étendez vous-même sur le pavé. L'attroupement, qui n'avait jamais vu cela, couvre de pièces votre mâchoire endolorie.",
-          "4": "Pérotin avise votre familier, immobile depuis votre arrivée, et tient son modèle. Sa chanson décrit un amour si lent, si égal, si parfaitement tiède que vous piquez du nez au deuxième couplet. Vous vous réveillez contre le mur de l'auberge, la bête endormie sur vos genoux.",
-          "5": "Pérotin vous chante un couple où votre moitié, c'est vous, et la dispute dégénère devant ses admirateurs. Il réclame un dédommagement, mais ceux-ci, qui vous connaissent de nom, se cotisent à votre place. Le surplus vous revient, pour vous consoler de la rupture."
+          "0": "Vous voilà dans une vieille ferme, à cultiver la terre avec votre amour. Chaque mois, la récolte suffit tout juste. Vous y vivez trente ans sans vous ennuyer. Pérotin vous réveille six heures plus tard : il a forcé la dose, et chaque minute de chanson a duré un mois.",
+          "1": "Cette demande inquiète Pérotin : qui réclame un amour sans couleur doit être bien malheureux. Il range ses poudres et vous chante tout doucement une chanson de réconfort. Vous n'étiez pas triste, mais elle vous fait un bien fou.",
+          "2": "Pérotin vous chante un couple où votre moitié, c'est vous. La dispute entre vous et vous-même éclate devant la foule. Il arrête tout et vous fait payer le dérangement. Vous payez, encore triste de vous être quitté.",
+          "3": "Pérotin vous chante un couple où votre moitié, c'est vous. La scène de ménage tourne à la bagarre. Vous frappez fort : d'un seul coup, vous vous mettez vous-même à terre. La foule n'a jamais vu ça et vous lance des pièces. Votre mâchoire, elle, vous fait mal.",
+          "4": "Pérotin remarque votre familier, qui n'a pas bougé depuis votre arrivée, et s'en inspire. Il chante un amour si lent et si tiède que vous vous endormez au deuxième couplet. Vous vous réveillez contre le mur de l'auberge, votre familier endormi sur vos genoux.",
+          "5": "Pérotin vous chante un couple où votre moitié, c'est vous. La dispute éclate devant la foule, et il vous fait payer le dérangement. Des badauds qui vous connaissent de nom paient à votre place, et donnent même trop. Le reste vous revient, pour vous consoler."
         }
       },
       "singRoyalty": {
         "text": "Chanter la royauté et le pouvoir en place.",
         "outcomes": {
-          "0": "Pérotin sait flatter quand l'ardoise est longue : il chante les louanges des ducs, des comtes et de leurs aïeux. Un seigneur du voisinage, descendu à l'auberge, s'arrête, la main sur le cœur. À la dernière note, il vous remet, à vous comme au ménestrel, une bourse bien ronde.",
-          "1": "Pérotin, qui n'aime guère le pouvoir en place, vous souffle sa poudre et vous fait marcher sur le trône à la tête du peuple. Une corde casse. Vous êtes debout sur une table de l'Auberge du Seigneur, une fourche à la main, devant des nobles muets. La Garde vous enferme pour folie.",
-          "2": "Pérotin vous prête pour une journée les yeux de la reine Aliénor. Vous y gagnez des audiences interminables, des broderies et des ragots sur une fille qui a encore refusé un champion. Rien d'utile, tout sort de ses fioles. Vous revenez à vous quelques instants plus tard.",
-          "3": "Pérotin chante les louanges des ducs et des comtes, et un seigneur descendu à l'auberge s'arrête, conquis. Puis son regard tombe sur vous, et son sourire se fige. La bourse va tout entière au ménestrel, qui hausse les épaules d'un air désolé. Vous repartez les mains vides.",
-          "4": "À la vue de votre harnois, Pérotin ravale un couplet moins prudent et entonne la geste des sept Élus. Le temps d'une chanson, vous chevauchez aux côtés de la reine Ermengarde. À la fin, un vieux noble sorti de l'auberge vous serre la main et vous laisse un objet de sa jeunesse.",
-          "5": "Pérotin vous fait marcher sur le trône à la tête du peuple, puis une corde casse. Vous voilà debout sur une table de l'auberge, fourche en main. Vous sautez par la fenêtre avant que la Garde ait contourné les nobles, et laissez passer l'orage derrière la forge, une petite heure.",
-          "6": "Pérotin trouve sa royauté toute faite : votre familier. La chanson le couronne, lui donne une cour, des impôts et un bouffon, qui est vous. Les nobles, hilares, paient un deuxième couplet, puis un troisième. Vous repartez la bourse plus lourde et l'orgueil plus léger."
+          "0": "Pérotin a des dettes, alors il flatte : il chante les louanges des ducs, des comtes et de leurs ancêtres. Un seigneur descendu à l'auberge s'arrête pour écouter, la main sur le cœur. À la dernière note, il donne une grosse bourse au ménestrel, et une autre à vous.",
+          "1": "Pérotin n'aime pas le pouvoir en place. Il vous souffle sa poudre, et vous voilà à la tête du peuple, en marche vers le palais. Une corde casse. Vous êtes debout sur une table de l'auberge, une fourche à la main, devant des nobles muets. La Garde vous enferme pour folie.",
+          "2": "La chanson vous fait vivre une journée dans la peau de la reine Aliénor : des audiences sans fin, des broderies, et des ragots sur une fille qui a encore refusé un champion. Rien d'utile, tout sort des fioles de Pérotin. Vous revenez à vous quelques instants plus tard.",
+          "3": "Pérotin chante les louanges des ducs et des comtes. Un seigneur descendu à l'auberge s'arrête, conquis. Puis il vous reconnaît, et son sourire disparaît. Il donne sa bourse au ménestrel seul, qui hausse les épaules d'un air désolé. Vous repartez les mains vides.",
+          "4": "En voyant votre armure, Pérotin garde pour lui ses couplets contre le pouvoir et chante l'histoire des sept Élus. Le temps d'une chanson, vous chevauchez à leurs côtés. À la fin, un vieux noble sorti de l'auberge vous serre la main et vous offre un objet de sa jeunesse.",
+          "5": "Pérotin vous met à la tête du peuple, en marche vers le palais, puis une corde casse. Vous voilà debout sur une table de l'auberge, une fourche à la main. Vous sautez par la fenêtre avant que la Garde arrive, et restez caché derrière la forge pendant une heure.",
+          "6": "Pérotin remarque votre familier, une bête peu commune, et en fait le roi de sa chanson. Il lui donne une cour, des impôts et un bouffon : vous. Les nobles, hilares, paient un deuxième couplet, puis un troisième. Vous repartez la bourse plus lourde, un peu vexé tout de même."
         }
       },
       "singWork": {
         "text": "Chanter le métier de ménestrel.",
         "outcomes": {
-          "0": "Attristé par la demande, Pérotin vous donne son rôle : vous vous voyez arriver, réclamer cette chanson, et vous vous la chantez, sans fin. Il rompt la boucle d'une gorgée d'antidote. Affolé, vous courez demander au premier passant quel jour on est : le même, mais déjà le soir.",
-          "1": "Nostalgique, Pérotin chante ses débuts. Vous voilà sur les bancs de maître Périssien, bercé par ses leçons et ses fumigations. À la dernière, le vieux maître doit vous léguer sa mandoline ; Pérotin, qui y tient, change la fin, et vous repartez avec un autre objet, bien réel.",
-          "2": "Pérotin chante son rêve : vous jouez seul dans une ruelle du village, une guitare aux doigts, quand un grand seigneur vous commande une ballade sur son amour. Vous l'improvisez. Le seigneur était réel, sa pile d'or aussi ; vous en laissez une part au ménestrel, en guise de don.",
-          "3": "Pérotin chante la misère du métier, et votre familier comprend avant vous : il attrape le chapeau et fait le tour de l'attroupement, en insistant auprès des nobles sortis de l'auberge. Personne n'ose refuser. Le ménestrel, bon prince, vous laisse la part du quêteur.",
-          "4": "Pérotin juge qu'un débutant apprend mieux en pratiquant. Il vous met un tambourin dans les mains et vous fait battre la mesure tout le temps de son tour de chant, sans poudre et sans pitié. Vous y gagnez des ampoules, quelques pièces, et un respect neuf pour le métier.",
-          "5": "Pérotin vous donne son rôle, et vous voilà à vous réclamer cette chanson, puis à vous la chanter, sans fin. Mais vous avez encaissé pire que ses poudres : au bout de deux heures, la vision se fendille toute seule, et vous en sortez avant qu'il ait débouché l'antidote.",
-          "6": "Pérotin chante son rêve : vous jouez dans une ruelle quand un grand seigneur vous commande une ballade sur son amour. Vous l'improvisez. Le seigneur était réel, et il vous a reconnu : sa pile d'or va au ménestrel, qui vous en concède quelques pièces pour la peine."
+          "0": "Attristé par la demande, Pérotin vous donne son rôle. Vous vous voyez arriver et vous réclamer cette chanson, puis vous vous la chantez, encore et encore. Il finit par vous faire boire un antidote. Affolé, vous demandez à un passant quel jour on est : le même, mais déjà le soir.",
+          "1": "Nostalgique, Pérotin chante ses débuts. Vous voilà l'élève de maître Périssien, bercé par ses leçons et ses potions. À la dernière leçon, le vieux maître doit vous offrir sa mandoline. Pérotin y tient trop : il change la fin, et vous repartez avec un autre objet, bien réel.",
+          "2": "Pérotin chante son rêve : vous jouez de la guitare, seul dans une ruelle, quand un grand seigneur vous demande une chanson sur son amour. Vous l'improvisez. Le seigneur était bien réel, et son or aussi. Vous en donnez une part à Pérotin.",
+          "3": "Pérotin chante la misère du métier, et votre familier comprend avant vous : il prend le chapeau et fait le tour de la foule, en insistant auprès des nobles. Personne n'ose refuser. Pérotin vous laisse une bonne part de la quête.",
+          "4": "Pérotin juge qu'un débutant apprend mieux en pratiquant. Il vous met un tambourin dans les mains et vous fait battre la mesure pendant tout son tour de chant, sans poudre ni pitié. Vous y gagnez des ampoules et quelques pièces.",
+          "5": "Pérotin vous donne son rôle, et vous voilà à vous réclamer cette chanson, puis à vous la chanter, sans fin. Mais vous avez encaissé pire que ses poudres. Au bout de deux heures, la vision se brise d'elle-même, avant qu'il ait sorti son antidote.",
+          "6": "Pérotin chante son rêve : vous jouez dans une ruelle quand un grand seigneur vous demande une chanson sur son amour. Vous l'improvisez. Le seigneur était bien réel, mais il vous a reconnu : il donne son or à Pérotin seul, qui vous en laisse quelques pièces."
         }
       },
       "singSober": {
         "text": "Demander une chanson sans poudre ni fiole.",
         "outcomes": {
-          "0": "Piqué, Pérotin range ses fioles et joue à sec. La chanson est jolie, juste, et parfaitement ordinaire : rien ne bouge, personne ne s'envole, deux badauds bâillent. Il termine sans vous regarder. Vous avez écouté dix minutes de mandoline, ni plus ni moins.",
-          "1": "Sans ses poudres, Pérotin serre les dents et joue. Pendant trois mesures, la mandoline chante toute seule : la place tangue, les pavés fredonnent, un noble se prend pour une cruche. Puis il perd la note et tout retombe d'un coup. Vous restez un moment à chercher où est le haut.",
-          "2": "Pérotin hésite, puis vous entraîne à l'écart : devant vous, il veut bien essayer. Les mains un peu tremblantes, il joue tout bas un air de son vieux maître. Rien ne s'anime, mais quelque chose se dénoue entre vos épaules, et vos douleurs de route s'effacent avec la dernière note.",
-          "3": "Pérotin vous toise : pour quelqu'un dont on parle ainsi dans les auberges, la chanson sans accessoires se paie d'avance, et double. L'attroupement approuve. Vous payez, il joue un air convenable où rien ne s'anime, et salue avec un sourire que vous n'aimez pas.",
-          "4": "À jeun, Pérotin perd la note à la troisième mesure, et la mandoline se met à vibrer seule. Vous posez la main sur la caisse, comme sur un cristal qui s'emballe, et la vibration se range. La chanson s'anime, sagement, jusqu'au bout. Stupéfait, il vous offre un objet de sa besace.",
-          "5": "Sans poudre, la chanson est jolie et rien de plus, jusqu'à ce que votre familier se mette à hurler en mesure. L'attroupement, qui s'ennuyait, éclate de rire et en redemande. Pérotin, bon comédien, prétend que le duo était prévu et vous laisse une part du chapeau."
+          "0": "Vexé, Pérotin range ses fioles et joue sans rien. La chanson est jolie, juste, et parfaitement ordinaire : rien ne s'anime, et deux badauds bâillent. Il termine sans vous regarder. Vous avez écouté dix minutes de mandoline, rien de plus.",
+          "1": "Sans ses poudres, Pérotin serre les dents et joue. Pendant trois mesures, la mandoline chante toute seule : la place tangue, les pavés fredonnent, un noble se prend pour une cruche. Puis Pérotin perd la note et tout s'arrête. Vous restez un moment à chercher où est le haut.",
+          "2": "Pérotin hésite, puis vous emmène à l'écart : il vous fait assez confiance pour essayer. Les mains un peu tremblantes, il joue tout bas un air de son vieux maître. Rien ne s'anime, mais vos épaules se détendent et vos douleurs s'effacent avec la dernière note.",
+          "3": "Pérotin vous toise : il a entendu parler de vous dans les auberges. Pour vous, la chanson se paie d'avance, et au double du prix. La foule approuve. Vous payez, il joue un air correct où rien ne s'anime, puis salue avec un sourire moqueur.",
+          "4": "Sans ses poudres, Pérotin perd la note à la troisième mesure, et la mandoline se met à vibrer toute seule. Vous posez la main sur l'instrument, et la vibration se calme. La chanson s'anime alors sans à-coups jusqu'au bout. Stupéfait, Pérotin vous offre un objet de son sac.",
+          "5": "Sans poudre, la chanson est jolie et rien de plus, jusqu'à ce que votre familier se mette à hurler en mesure. La foule, qui s'ennuyait, éclate de rire et en redemande. Pérotin, bon comédien, prétend que le duo était prévu et vous laisse une part du chapeau."
         }
       }
     }
@@ -2247,57 +2247,57 @@
     "text": "Sans doute à cause de la rude tempête d'hier, un arbre est tombé sur le petit sentier de forêt où vous marchez. Son tronc faisant 3 bons mètres d'épaisseur, il vous bloque le passage !"
   },
   "56": {
-    "text": "Sur la Plage Sentinelle, le sable fin refroidit et l'air iodé se charge de sel. Le soleil plonge derrière les dunes : il vous faut un abri. Au sommet d'une dune, une tente grise abrite Gruffo, alchimiste des marais, qui cherche un cobaye pour ses potions, contre une bourse bien garnie.",
+    "text": "Le soleil se couche sur la Plage Sentinelle et le vent fraîchit sur le sable fin. Il vous faut un abri pour la nuit. En haut d'une dune, vous entrez dans une tente : Gruffo, un alchimiste des marais, cherche quelqu'un pour goûter ses nouvelles potions et promet de bien payer.",
     "possibilities": {
       "beach": {
         "text": "Ignorer l'alchimiste et aller profiter de la plage.",
         "outcomes": {
-          "0": "Vous laissez vos affaires au bord de l'eau et filez prendre un bain de minuit dans la mer turquoise. Au retour sur le sable, vos sacs ont été fouillés : une partie de vos pièces a disparu, et personne n'a rien vu.",
-          "1": "Dans les rochers, une horde de petits crustacés, célèbres pour leur nombre sur cette plage, s'agite à vos pieds. Vous les observez quelques instants, puis vous reprenez le chemin du retour, le sable encore tiède sous vos semelles.",
-          "2": "Le ventre vide, vous fouillez sous une pierre à la recherche de crustacés. Un grand oiseau fond soudain sur le bernard-l'ermite que vous veniez d'apercevoir. Surpris, vous reculez, votre pied dérape sur les rochers et vous vous foulez la cheville.",
-          "3": "Vous gagnez la mer à grandes brasses. Au retour, un gamin détale avec votre sac : vous le rattrapez avant les rochers, récupérez vos affaires et le laissez partir, penaud. Il vous faut quelques minutes pour reprendre votre souffle.",
-          "4": "Dès que vous posez vos affaires, les vacanciers les surveillent d'un œil méfiant. Un sauveteur vous demande poliment de vous éloigner et vous escorte jusqu'aux rochers. Il vous faut bien vingt minutes pour retrouver un peu de calme."
+          "0": "Vous laissez vos affaires sur le sable et partez nager dans la mer sombre. En revenant, vous voyez une silhouette s'éloigner de votre sac en courant. Vous la poursuivez, mais elle disparaît entre les dunes. Dans votre sac, une partie de vos pièces manque.",
+          "1": "En marchant dans les rochers, vous tombez sur des dizaines de petits crabes qui courent en tous sens : cette plage en est pleine. Vous les regardez filer sous les pierres à votre approche, puis vous reprenez le chemin du retour.",
+          "2": "Vous n'avez rien mangé de la journée. Vous soulevez une pierre pour chercher des crabes, quand un grand oiseau plonge et attrape le bernard-l'ermite que vous visiez. Surpris, vous reculez, votre pied glisse sur la roche et vous vous tordez la cheville.",
+          "3": "Vous laissez vos affaires sur le sable et partez nager. En revenant, vous voyez un gamin s'enfuir avec votre sac. Vous le rattrapez avant les rochers, reprenez votre bien et le laissez partir. Il vous faut quelques minutes pour retrouver votre souffle.",
+          "4": "Sur la plage, des pêcheurs remontent leurs filets. Ils vous reconnaissent, rangent leurs paniers et ne vous quittent plus des yeux. L'un d'eux vous suit jusqu'aux rochers pour s'assurer que vous partez. Vous perdez une vingtaine de minutes à les contourner."
         }
       },
       "drinkBlack": {
         "text": "Boire la potion noire.",
         "outcomes": {
-          "0": "Considérant que c'est de l'argent facile, vous avalez la décoction fumante. Quelques gorgées plus tard, des vomissements vous secouent, puis les convulsions. Vous tenez bon, mais il vous faudra presque quarante minutes pour reprendre vos esprits et poursuivre votre aventure.",
-          "1": "Vous acceptez de servir de cobaye et Gruffo vous tend une fiole contenant un liquide charbonné. Une fois bu, le sommeil vous terrasse. Vous vous réveillez trois heures plus tard, installé sur une branche de cocotier, une bourse remplie d'or au pied de l'arbre.",
-          "2": "Gruffo vous reconnaît et hésite un instant avant de vous tendre une décoction à peine amère. Vous vous endormez paisiblement sur sa paillasse, et vous réveillez en pleine forme.",
-          "3": "Vous avalez la décoction sans trop réfléchir, mais votre corps épuisé la rejette aussitôt. Vomissements et vertiges vous clouent au sol. Gruffo vous couvre d'une couverture avant que vous ne repreniez vos esprits."
+          "0": "De l'argent si facile, ça ne se refuse pas : vous avalez la décoction noire et fumante. Après quelques gorgées, vous êtes pris de vomissements, puis de convulsions. Vous tenez le coup, mais il vous faut près de quarante minutes pour reprendre vos esprits.",
+          "1": "Vous acceptez de servir de cobaye. Gruffo vous tend une fiole d'un liquide noir comme du charbon. À peine l'avez-vous bue que vous vous endormez. Vous vous réveillez trois heures plus tard sur la branche d'un cocotier, une bourse pleine d'or au pied de l'arbre.",
+          "2": "Gruffo vous reconnaît. Il refuse de vous faire courir le moindre risque et vous sert une version bien plus douce de sa potion noire. Vous vous endormez sur sa paillasse et vous réveillez en pleine forme.",
+          "3": "Déjà fatigué par la route, vous avalez la décoction sans réfléchir. Votre corps la rejette aussitôt : vomissements et vertiges vous clouent au sol. Gruffo pose une couverture sur vos épaules et attend que vous repreniez vos esprits."
         }
       },
       "drinkRandom": {
         "text": "Boire une potion au hasard.",
         "outcomes": {
-          "0": "Pensant à la compensation, vous avalez d'un trait la fiole tannée. Une brûlure vous gagne la gorge, puis les mots se mélangent. Pris de nausées, vous tentez de frapper Gruffo, qui esquive sans peine. Au petit matin, il finit par vous payer, en pièces comptées.",
-          "1": "Vous acceptez sans hésiter, et refusez même la somme que Gruffo vous propose : participer à une découverte vous gonfle d'honneur. Une seule gorgée de la minuscule fiole cramoisie suffit, et une agréable chaleur se répand dans tout votre corps. Vous voilà en bien meilleure forme.",
-          "2": "Alléché par l'appât du gain, vous buvez le liquide écarlate d'un trait. Gruffo vous lance un regard dépité : son breuvage agit à l'instant, et il vous promet que vous ne serez pas malade. Il vous pousse dehors de sa tente, sans un sou, et vous restez assis un moment sur le sable.",
-          "3": "Avec méfiance, vous avalez le breuvage couleur saphir. Un froid glacial vous saisit tout entier, jusqu'aux os. Vous apostrophez Gruffo de charlatan racorni ; celui-ci vous installe dans un monceau de couvertures chaudes, sans répondre.",
-          "4": "La fiole vibre doucement entre vos doigts, signe d'une décoction bien dosée. Vous la videz sans crainte. Gruffo, impressionné, vous glisse un objet de sa réserve en guise de remerciement.",
-          "5": "Gruffo vous tend la fiole avec un sourire de connivence. Vous la buvez sans malaise, et il vous confie en plus un objet rare de sa réserve, sans rien vouloir en échange."
+          "0": "Pensant à la récompense, vous videz d'un trait une fiole brune. Votre gorge brûle, votre vue se trouble et vous bafouillez : vous êtes ivre. Vous tentez de frapper Gruffo, qui esquive sans peine. Pas rancunier, il vous installe sur sa paillasse et vous paie comme promis.",
+          "1": "Vous acceptez, mais refusez l'argent de Gruffo : aider à une découverte vous suffit. Il vous tend une minuscule fiole rouge sombre. Une seule gorgée la vide, et une douce chaleur se répand dans tout votre corps. Vous voilà en bien meilleure forme.",
+          "2": "Attiré par l'argent, vous buvez d'un trait un liquide rouge vif. Rien ne se passe. Gruffo soupire : sa potion devait agir tout de suite, l'essai est raté. Il vous assure que vous ne serez pas malade, puis vous met dehors sans un sou. Vous restez un moment assis sur le sable.",
+          "3": "Méfiant, vous avalez d'un trait un liquide bleu vif. Un froid glacial vous saisit jusqu'aux os et vous claquez des dents. Entre deux frissons, vous traitez Gruffo de vieux charlatan. Sans relever, il vous enroule dans une pile de couvertures.",
+          "4": "Avant de boire, vous sentez la fiole et reconnaissez chacun de ses ingrédients. Vous les citez à Gruffo, qui n'en revient pas. Vous la videz sans crainte, et il vous offre un objet de sa réserve en échange de vos conseils.",
+          "5": "Gruffo vous accueille comme un vieil ami. Il vous tend sa potion la plus sûre, que vous buvez sans le moindre malaise. Avant que vous repartiez, il insiste pour vous offrir un objet précieux de sa réserve."
         }
       },
       "refuse": {
         "text": "Refuser la proposition de Gruffo.",
         "outcomes": {
-          "0": "Vous refusez poliment l'offre et demandez où trouver un endroit sûr pour dormir. Voyant votre mine inquiète, Gruffo vous propose de rester sous sa tente jusqu'au lever du soleil. Vous acceptez de bon cœur et vous endormez, serein, pour vous réveiller reposé.",
-          "1": "Vous refusez de servir de cobaye, mais Gruffo vous propose de préparer votre propre potion. Vous dosez les ingrédients au hasard et buvez la décoction translucide d'un trait. Vertiges et hallucinations : vous croyez voir la princesse Mélisende, dont personne ne connaît le visage.",
-          "2": "Vous refusez l'offre et demandez à voir la potion. Vous reconnaissez les proportions d'une décoction bien dosée : la fiole vibre doucement entre vos doigts, signe que la Résonance tient ses promesses. Vous repartez plus vif.",
-          "3": "Vous refusez poliment, mais Gruffo vous jette un regard méfiant et ferme sa tente à double tour. Vous passez la nuit sur la dune, transi par le vent marin, sans la moindre couverture.",
-          "4": "Vous refusez l'offre, et Gruffo semble déçu. Vous discutez avec lui ; quand vous demandez d'où viennent ses connaissances, il lâche, avec amertume, le nom de son maître : Périssien, ménestrel connu dans tout le pays. Il ne dira rien de l'endroit où le trouver.",
-          "5": "Vous refusez de servir de cobaye, mais Gruffo vous propose de préparer votre propre potion. Vous dosez les ingrédients d'une main sûre et buvez la décoction translucide sans broncher. Un léger étourdissement vous force à vous asseoir un moment avant de reprendre la route."
+          "0": "Vous refusez poliment l'offre et demandez où trouver un endroit sûr pour dormir. Voyant votre mine inquiète, Gruffo vous propose de rester sous sa tente jusqu'au lever du soleil. Vous acceptez de bon cœur et vous endormez d'un sommeil réparateur.",
+          "1": "Vous refusez de servir de cobaye, alors Gruffo vous propose de préparer votre propre potion. Vous mélangez les ingrédients au petit bonheur et buvez le tout. La tête vous tourne et vous croyez voir la princesse Mélisende, dont personne ne connaît pourtant le visage.",
+          "2": "Vous refusez de servir de cobaye, mais vous demandez à voir ses fioles. L'une d'elles vibre doucement entre vos doigts : vous savez qu'elle est bien dosée. Impressionné, Gruffo vous l'offre. Vous la buvez, et une légère chaleur vous redonne des forces.",
+          "3": "Vous refusez son offre. Gruffo vous dévisage, méfiant : il a entendu parler de vous. Il vous demande de sortir et referme la toile de sa tente. Vous passez la nuit dehors sur la dune, à grelotter dans le vent de la mer.",
+          "4": "Vous refusez, et Gruffo semble déçu. Vous discutez un moment avec lui et lui demandez qui lui a appris l'alchimie. Avec un peu d'amertume, il nomme son maître : Périssien, un ménestrel connu dans tout le pays. Il refuse de dire où le trouver.",
+          "5": "Vous refusez de servir de cobaye, alors Gruffo vous propose de préparer votre propre potion. Vous dosez les ingrédients d'une main sûre et buvez le mélange sans broncher. Un léger étourdissement vous oblige à vous asseoir un moment avant de reprendre la route."
         }
       },
       "end": {
         "outcomes": {
-          "0": "Vous finissez par accepter l'offre alléchante de Gruffo. Il vous demande de patienter le temps de préparer la décoction. Alors que vous étudiez attentivement un alambic, un coup puissant s'abat sur votre joli crâne.",
-          "1": "Devant votre air inerte, Gruffo s'impatiente et vous jette hors de sa tente. Il vous facture le temps perdu, qu'il note dans un carnet, à côté de ses propres ingrédients impayés. Vous reprenez votre route sans tarder.",
+          "0": "Vous finissez par accepter l'offre de Gruffo. Il vous demande de patienter le temps de préparer la décoction. Alors que vous examinez un alambic, un coup puissant s'abat sur votre joli crâne. Vous mettez un bon moment à retrouver vos esprits.",
+          "1": "Devant votre air absent, Gruffo s'impatiente. Il vous fait payer le temps que vous lui avez fait perdre. Il note la somme dans un carnet, juste sous la liste de ses propres dettes, puis vous met dehors. Vous reprenez votre route sans traîner.",
           "2": "Devant votre incapacité à vous décider, Gruffo n'insiste pas et vous offre une tasse de thé noir. Vous discutez de longues minutes de tout, sauf d'alchimie. Vous reprenez votre chemin alors que la lune éclaire timidement la plage.",
-          "3": "Gruffo ne vous force pas la main. Il vous laisse dormir sous sa tente, une couverture sur les épaules, et vous réveille au lever du soleil, reposé, en vous souhaitant bonne route.",
-          "4": "Quelque chose remue derrière la toile. Vous vous retournez assez vite pour esquiver la matraque d'un voleur, qui file sur la plage sans rien emporter.",
-          "5": "Dès qu'il vous voit traîner près de sa tente, Gruffo éteint sa lampe sans un mot et ferme la toile. Vous passez la nuit sur la dune, transi, à écouter le ressac."
+          "3": "Gruffo vous fait confiance et ne vous force pas la main. Il vous prête un coin de sa tente et une couverture. Vous vous endormez vite, au son des vagues, et cette nuit de repos vous fait le plus grand bien.",
+          "4": "Pendant que Gruffo prépare sa décoction, vous examinez un alambic. Derrière vous, quelque chose remue. Vous vous retournez à temps pour esquiver le gourdin d'un voleur, qui s'enfuit sur la plage les mains vides.",
+          "5": "Comme vous ne répondez pas, Gruffo vous regarde de plus près et semble vous reconnaître. Il range ses fioles une à une sans vous quitter des yeux, puis vous montre la sortie. Vous passez la nuit dehors sur la dune, transi par le vent."
         }
       }
     }
@@ -2718,44 +2718,44 @@
     "text": "En arrivant à Claire de Ville, votre regard est attiré par un bâtiment dont l'entrée est encadrée par deux statues de hiboux en pierre. En vous en approchant, vous comprenez qu'il s'agit de la bibliothèque de la ville. Par la porte entrouverte, vous distinguez d'innombrables rayonnages chargés d'ouvrages et, accroché à un mur de l'entrée, un calendrier fait de larges feuilles reliées entre elles par une lanière de cuir."
   },
   "69": {
-    "text": "Dans la Forêt Du Vieillard, où tant de voyageurs s'égarent, une femme en robe argentée fend les sous-bois vers vous. Ses cheveux clairs et son bâton d'aubépine semblent sortir d'un conte. Elle se présente comme Donia, dit être une Fae et propose un geste de chance pour votre quête de la princesse.",
+    "text": "Dans la Forêt Du Vieillard, une femme en robe argentée accourt vers vous entre les arbres. Avec ses cheveux clairs et son bâton d'aubépine, on la croirait sortie d'un conte. Elle dit s'appeler Donia et être une fée, et propose de vous bénir pour vous porter chance dans votre quête de la princesse.",
     "possibilities": {
       "accept": {
-        "text": "Accepter son offre",
+        "text": "Accepter son offre.",
         "outcomes": {
-          "0": "Donia fait tournoyer son bâton d'aubépine près de vous, les yeux fermés, comme si elle attendait un signe. Vous restez immobile, mais rien ne change. Elle paraît satisfaite de son geste et s'éloigne sans vous retenir.",
-          "1": "Vous prenez d'abord la sensation pour une force réelle et partez chercher Donia pour lui demander comment la garder. Elle s'est déjà fondue entre les arbres. Vous revenez honteux, avec la certitude de ne pas croire aussi vite la prochaine fois.",
-          "2": "Votre écoute attentive semble la rassurer ; Donia baisse son bâton et vous remercie de ne pas tourner en dérision ses croyances. Vous lui répondez avec la même courtoisie, et elle reprend sa route d'un pas léger.",
-          "3": "Votre chat se hérisse au passage du bâton et vient se frotter à vos jambes. Donia retient son geste, amusée par cette méfiance, puis vous laisse reprendre la route sans poudre ni cérémonie.",
-          "4": "Les grains bleus vibrent dans votre paume et un réflexe de vos études magiques vous en révèle l'effet soporifique. Vous en acceptez une pincée, puis dormez sous un arbre. Un banquet royal vous mène en rêve auprès de la princesse voilée ; au réveil, vos douleurs sont apaisées."
+          "0": "Donia fait tourner son bâton autour de vous, les yeux fermés, en murmurant des mots que vous ne comprenez pas. Le rituel s'éternise. Quand elle repart enfin, l'air satisfait, vous ne vous sentez pas différent.",
+          "1": "Après le rituel, vous vous sentez invincible. Puis Donia disparaît entre les arbres, et la sensation part avec elle. Vous la cherchez longtemps pour qu'elle recommence, en vain. Vous repartez honteux, en vous promettant de ne plus vous laisser prendre.",
+          "2": "Donia semble avoir entendu parler de vous en bien. Elle vous bénit avec un soin particulier et vous remercie de ne pas vous moquer de ses croyances. Vous la saluez poliment, et elle repart d'un pas léger.",
+          "3": "Votre chat se hérisse quand le bâton passe près de lui, puis file dans les fougères. Donia éclate de rire et s'en va. Vous mettez un bon quart d'heure à retrouver votre chat, qui boude sous une souche.",
+          "4": "Donia sort de sa sacoche une poudre bleue. Vous la reconnaissez : elle fait dormir. Vous en respirez une pincée et vous endormez contre un arbre. Vous rêvez d'un banquet au château, où vous dansez avec la princesse au visage voilé. Vous vous réveillez reposé."
         }
       },
       "compromise": {
-        "text": "Trouver un compromis",
+        "text": "Trouver un compromis.",
         "outcomes": {
-          "0": "Vous demandez un endroit où souffler. Donia vous mène sous un abri de branches et partage un repas avec du vin. La fatigue vous endort ; dans un cauchemar, elle devient une vieille sorcière qui veut vous cuire. Vous vous réveillez seul, tandis qu'elle a déjà repris sa route.",
-          "1": "Déçue par votre demande, Donia cueille une rose rouge qu'elle destine à la princesse. Vous la remerciez, mais la laissez dans sa main pour ne pas transporter une fleur fragile ; elle sourit et vous indique un abri avant de repartir.",
-          "2": "Vous repérez rapidement un recoin sec sous les racines et vous y installez pour reprendre haleine. Donia vous laisse une portion de son repas ; cette halte calme vous occupe une demi-heure avant le départ.",
-          "3": "Votre armure vous isole de l'humidité du sol ; vous vous asseyez à l'écart et refusez le vin. Donia partage quelques provisions, puis reprend la route. Vous poursuivez aussitôt, sans vous assoupir ni vous attarder.",
-          "4": "L'allure peu commune de votre compagnon pique la curiosité de Donia. Elle range le vin et cueille une rose rouge pour la princesse ; vous déclinez le cadeau avec soin, et elle vous laisse reprendre la route sans insister."
+          "0": "Plutôt qu'une bénédiction, vous lui demandez où vous reposer. Donia vous mène à un abri de branches et partage avec vous un repas et du vin. Vous videz la bouteille et vous endormez. Dans votre cauchemar, elle devient une sorcière qui veut vous cuire.",
+          "1": "Un peu déçue, Donia cueille une rose rouge et vous la confie pour la princesse. Elle semble sûre que vous en prendrez soin. Vous la remerciez poliment et gardez la fleur pour lui faire plaisir, même si elle fanera bien avant la fin du voyage.",
+          "2": "Avant même que Donia ne propose son abri, vous avez repéré un coin sec sous les racines d'un chêne. Elle vous y laisse une part de son repas et repart. Vous mangez tranquillement et vous reposez une demi-heure avant de reprendre la route.",
+          "3": "Vous gardez votre armure et refusez le vin : on ne sait jamais, avec une inconnue. Donia hausse les épaules et partage quand même son pain et son fromage. Ce repas vous fait du bien, et vous repartez sans vous être assoupi.",
+          "4": "Votre familier fascine Donia, qui n'a jamais vu pareille bête. Elle en oublie sa bénédiction et passe un long moment à le caresser en lui parlant à voix basse. Vous attendez qu'elle ait fini. Elle repart enfin, ravie, en vous souhaitant bonne route."
         }
       },
       "deny": {
-        "text": "Refuser sa proposition",
+        "text": "Refuser sa proposition.",
         "outcomes": {
-          "0": "Vous balayez son offre d'un geste méprisant et traitez son histoire de fée comme une absurdité. Donia abat son bâton sur vos bras et vos épaules ; vous vous retrouvez au sol, meurtri, avec le temps de ravaler votre insolence.",
-          "1": "Vous expliquez sans la brusquer que vous n'y croyez pas. Donia répand une poudre rouge qui brouille votre vision : des guêpes vous semblent être de petites fées avant de vous piquer plusieurs fois. L'illusion se dissipe, mais le malaise vous gagne.",
-          "2": "Quand Donia lève son bâton, vous bloquez le mouvement avec votre avant-bras et reculez hors de portée. Elle paraît vexée, mais n'insiste pas ; votre refus reste ferme et vous repartez sans blessure ni perte.",
-          "3": "Vous repérez le nuage rouge avant qu'il n'atteigne votre visage. Une esquive vous évite de respirer la poudre ; des guêpes s'éparpillent dans les fougères et vous vous éloignez sans piqûre ni blessure.",
-          "4": "Votre chien se place devant vous dès que Donia ouvre sa sacoche ; son grognement la fait hésiter et le nuage rouge tombe au sol. Vous profitez de sa distraction pour partir, sans subir les piqûres qui vous attendaient."
+          "0": "D'un air méprisant, vous lui dites que les fées n'existent pas et qu'elle délire. Furieuse, Donia vous frappe à coups de bâton sur les bras et les épaules. Vous finissez au sol, couvert de bleus, sur un lit de feuilles mortes.",
+          "1": "Vous lui expliquez poliment que les fées n'existent que dans les contes. Pour vous prouver le contraire, Donia vous souffle une poudre rouge au visage. Tout se brouille. Elle vous mène à une clairière pleine de petites fées : des guêpes, qui vous piquent.",
+          "2": "Quand Donia lève son bâton sur vous, vous l'attrapez au vol et le lui arrachez des mains. Vous le lui rendez aussitôt, et elle s'en va, vexée. Le choc vous a juste un peu meurtri la paume.",
+          "3": "Donia plonge la main dans sa sacoche et vous lance une poudre rouge au visage. Vous faites un bond de côté et la poudre retombe dans les fougères. Vous filez entre les arbres et mettez un quart d'heure à retrouver le sentier.",
+          "4": "Quand Donia ouvre sa sacoche, votre chien se met à grogner. Elle sursaute et laisse tomber sa poignée de poudre rouge. Votre chien vient la renifler et éternue sans pouvoir s'arrêter. Vous attendez que la crise passe, puis vous repartez."
         }
       },
       "end": {
         "outcomes": {
-          "0": "Donia finit par détourner les yeux et disparaît entre les arbres, mais vous restez immobile, absorbé par le balancement des branches. Deux heures et quart s'écoulent avant que le bruit de la forêt vous ramène à vous et au chemin.",
-          "1": "Donia croise votre regard, puis recule comme si elle craignait votre réaction. Elle s'éloigne sans tenter de vous convaincre. Vous restez figé à la place qu'elle a quittée, perdu dans vos pensées plus de deux heures avant de repartir.",
-          "2": "Un craquement sec vous tire de votre fixité avant que Donia ait disparu de vue. Vous vous écartez de la piste, vérifiez les environs et reprenez votre route, sans rester plongé dans vos pensées.",
-          "3": "La présence remarquable de votre compagnon vous ramène à la forêt quand il s'agite à vos côtés. Donia a déjà disparu entre les arbres, mais vous n'avez perdu que quelques instants à la regarder."
+          "0": "Vous fixez Donia sans rien dire. Elle finit par se désintéresser de vous et s'en va. Vous, vous continuez de fixer le vide, l'esprit ailleurs. Plus de deux heures passent avant que vous repreniez vos esprits et votre route.",
+          "1": "Donia croise votre regard et recule d'un pas. On dirait qu'elle a entendu parler de vous, et pas en bien. Elle s'éloigne sans un mot. Vous restez planté là, perdu dans vos pensées, plus de deux heures avant de repartir.",
+          "2": "Donia s'éloigne sans un mot. Un craquement de branche vous fait sursauter, et vous vous retournez d'un bond, prêt à fuir. Ce n'était rien. Vous reprenez la route sans tarder, en n'ayant perdu que dix minutes.",
+          "3": "Donia s'éloigne sans un mot, et vous restez à fixer les arbres. Votre familier n'aime pas vous voir immobile : il vous mordille la main jusqu'à ce que vous réagissiez. Vous n'avez perdu que quelques minutes."
         }
       }
     }
@@ -2819,57 +2819,57 @@
     "text": "Alors que vous parcourez le désert de La Dune, l'air vous semble devenir de plus en plus sec. À mesure que vous avancez, les grains de sable virevoltent et vous obligent à plisser les yeux. Soudain, vous sentez le sol se raffermir sous vos pieds l'espace d'un pas. Surpris, vous poussez le sable et découvrez une trappe et l'ouvrez. Un gigantesque labyrinthe se révèle devant vos yeux ébahis."
   },
   "71": {
-    "text": "Entre les dunes de la Vallée des Rois, deux tombeaux à demi ensevelis dominent une oasis. Un rire vous fait sursauter quand vous vous penchez pour boire près de la rigole ensablée. Sous sa large capuche, un vieil homme barbu se présente : Xirtex. Il vous offre le gîte sous sa tente.",
+    "text": "Entre les dunes de la Vallée des Rois, deux tombeaux à demi ensevelis dominent une petite oasis. Vous vous penchez pour boire à une rigole à moitié ensablée quand un rire vous fait sursauter. Un vieil homme barbu, le visage sous une large capuche, se présente : Xirtex. Il vous propose de vous héberger sous sa tente.",
     "possibilities": {
       "accept": {
         "text": "Accepter son invitation",
         "outcomes": {
-          "0": "Sous la tente, vous goûtez la soupe de peyotl par politesse. Le sol semble osciller. Vous vous cognez l'épaule contre un montant en cherchant la sortie. Une fois dehors, la nausée vous cloue au sol et la migraine ne vous quitte pas.",
-          "1": "Xirtex a entendu du bien de vous. Au repas, il confie que Xetrix et lui sont les seuls de leur famille revenus du Célestrum. Il en tient son frère pour responsable. Le sommeil vous remet d'aplomb ; au réveil, vous secouez un scorpion hors de votre botte.",
-          "2": "Vous partagez la galette et le ragoût à l'entrée de la tente. Vous racontez vos voyages ; Xirtex ponctue chaque péripétie d'un rire, souvent avant la chute. Le repas vous rend assez de forces pour reprendre la marche.",
-          "3": "À l'odeur du bol, vous reconnaissez le peyotl et demandez plutôt ce qui mijote dans la petite marmite. Le ragoût vous rend des forces. Xirtex vous ressert, amusé de vous voir gratter le fond de l'écuelle avec un bout de galette.",
-          "4": "Votre scorpion se cale sous l'écuelle de Xirtex, qui n'ose plus y toucher. L'ermite rit de se faire chasser de table et ressort un bol pour chacun. La soupe claire et la galette chaude vous redonnent des forces.",
-          "5": "Après le repas, Xirtex vous indique une passe entre les dunes. Vous suivez les premières traces de pas sans vérifier où elles mènent. Elles se perdent au pied d'un tombeau ; en vous retournant, vous ne distinguez plus la tente."
+          "0": "Sous la tente, Xirtex vous sert une soupe de peyotl. Vous la buvez par politesse. Bientôt, le sol se met à tanguer. En cherchant la sortie, vous vous cognez l'épaule contre un piquet. Dehors, la nausée vous cloue au sol et une migraine tenace s'installe.",
+          "1": "Xirtex a entendu du bien de vous et se confie pendant le repas. Son frère Xetrix et lui sont les seuls de leur famille à être revenus du Célestrum. Il accuse Xetrix de ce désastre. Vous dormez bien et reprenez des forces. Au réveil, vous secouez un scorpion hors de votre botte.",
+          "2": "Vous partagez une galette et un ragoût avec Xirtex à l'entrée de sa tente. Vous lui racontez vos voyages. Il rit à chaque histoire, souvent avant la fin. Le repas vous rend des forces pour la suite de la traversée.",
+          "3": "À l'odeur, vous reconnaissez le peyotl dans le bol que Xirtex vous tend. Vous demandez plutôt ce qui mijote dans la petite marmite : un ragoût, qui vous rend des forces. Amusé de vous voir saucer avec un bout de galette, Xirtex vous ressert.",
+          "4": "Pendant le repas, votre scorpion se glisse sous le bol de Xirtex. L'ermite n'ose plus y toucher. Il éclate de rire et va chercher un autre bol. Vous partagez avec lui une soupe claire et une galette chaude qui vous redonnent des forces.",
+          "5": "Après le repas, Xirtex vous indique un passage entre les dunes. Vous suivez les premières traces de pas venues, sans vérifier où elles mènent. Elles s'arrêtent au pied d'un tombeau. Quand vous vous retournez, la tente a disparu derrière les dunes."
         }
       },
       "deny": {
         "text": "Décliner son invitation",
         "outcomes": {
-          "0": "Vous remerciez Xirtex et déclinez son offre. Il replie le pan de toile qu'il tenait levé pour vous et vous salue de la main. Sans vous retenir, il regagne sa tente pendant que vous reprenez votre traversée.",
-          "1": "Xirtex vous retient par la manche, déjà prêt à remplacer le repas par une tasse de thé. Vous buvez debout, le temps d'échanger deux mots sur le vent qui ensable les pistes, puis vous prenez congé.",
-          "2": "Le vieil homme a entendu dire que vous ne laissez pas les gens en difficulté au bord des pistes. Il n'insiste pas pour vous loger, mais va chercher un objet dans sa collection. Vous acceptez le présent et reprenez votre route.",
-          "3": "Vous déclinez, mais Xirtex vous rappelle pour vous apprendre à vous guider d'un tombeau à l'autre. Vous l'écoutez longuement, jusqu'à ce qu'il se contredise pour la troisième fois. Persuadé qu'il cherche surtout à vous retenir, vous filez.",
-          "4": "Vous prenez congé. Xirtex vous reconnaît au moment où vous tournez les talons et part examiner la corde de sa tente, persuadé que vous y avez touché. Il vous fait patienter pendant qu'il vérifie chaque nœud.",
-          "5": "Vous déclinez l'invitation, mais votre perroquet imite si bien le rire de Xirtex que l'ermite se tourne vers lui pour lui répondre. Vous repartez sans qu'il insiste, tandis que les deux rires se répondent."
+          "0": "Vous remerciez Xirtex et déclinez son offre. Il ne cherche pas à vous retenir. Il vous salue de la main et retourne vers sa tente, tandis que vous reprenez votre traversée de la Vallée.",
+          "1": "Vous hésitez. Xirtex vous retient par la manche et vous propose au moins une tasse de thé. Vous la buvez debout en parlant avec lui du vent qui ensable les pistes, puis vous reprenez la route.",
+          "2": "Xirtex a entendu dire que vous aidez les voyageurs en difficulté. Il n'insiste pas pour vous loger, mais va chercher dans sa tente un objet de sa collection et vous l'offre. Vous le remerciez et reprenez votre route.",
+          "3": "Vous déclinez, mais Xirtex vous rappelle. Il veut vous apprendre à vous repérer grâce aux tombeaux. Vous l'écoutez un bon moment, jusqu'à ce qu'il se contredise pour la troisième fois. Persuadé qu'il cherche à vous retenir, vous filez.",
+          "4": "Xirtex vous reconnaît au moment où vous déclinez. Il a entendu parler de vous et vous soupçonne d'avoir rôdé près de sa tente. Pour avoir la paix, vous le laissez fouiller votre sac. Il n'y trouve rien et vous laisse partir, sans vous quitter des yeux.",
+          "5": "Vous déclinez l'invitation. Votre perroquet se met alors à imiter le rire de Xirtex. L'ermite lui répond par un autre rire et oublie de vous retenir. Vous repartez, et les deux rires s'entendent encore longtemps derrière vous."
         }
       },
       "end": {
         "outcomes": {
-          "0": "Xirtex vous reconnaît et vous somme de vous écarter de l'eau. Quand il tend le bras, vous le repoussez. Il tombe dans l'oasis et vous détalez tandis qu'il se hisse sur la berge, sa capuche plaquée sur les yeux.",
-          "1": "Xirtex prend votre silence pour du mépris. Il vous lance une poignée de sable au visage, puis s'éloigne en maugréant. Vous vous rincez les yeux au bord de l'eau avant de repartir.",
-          "2": "Votre loutre glisse dans l'eau et refait surface au pied de Xirtex. Il rit de la voir plus à l'aise que vous et vous laisse une écuelle de bouillon. Vous buvez à petites gorgées et reprenez des forces.",
-          "3": "Une rafale emporte le linge que Xirtex a mis à sécher sur la berge. Vous le rattrapez du bout des doigts avant qu'il touche l'eau. L'ermite n'attend plus votre réponse ; il incline la tête quand vous lui rendez son linge.",
-          "4": "Xirtex, faute de réponse, se met à chercher votre familier dans son carnet de bêtes. Comme il ne l'y trouve pas, il en fait le portrait. Vous attendez qu'il termine ses croquis ; il vous glisse quelques pièces pour la pose."
+          "0": "Xirtex vous reconnaît et vous ordonne de vous écarter de son eau. Quand il tend le bras vers vous, vous le repoussez. Il tombe dans l'eau. Vous détalez pendant qu'il remonte sur la berge, sa capuche trempée sur les yeux.",
+          "1": "Xirtex prend votre silence pour du mépris. Il vous lance une poignée de sable au visage, puis s'éloigne en râlant. Vous vous rincez les yeux au bord de l'eau avant de reprendre votre chemin.",
+          "2": "Votre loutre plonge dans l'eau et ressort aux pieds de Xirtex. L'ermite éclate de rire et oublie qu'il attendait une réponse. Il va chercher un bol de bouillon dans sa tente et vous le tend. Vous le buvez et reprenez des forces.",
+          "3": "Une rafale emporte le linge que Xirtex a mis à sécher près de l'eau. Vous le rattrapez de justesse avant qu'il tombe dedans. Quand vous le lui rendez, l'ermite vous remercie d'un signe de tête et en oublie son invitation.",
+          "4": "Faute de réponse, Xirtex s'intéresse à votre familier. Il n'a jamais vu une bête pareille et veut la dessiner. Vous attendez qu'il ait fini ses croquis. Ravi, il vous donne quelques pièces pour le temps perdu."
         }
       },
       "steal": {
         "text": "Le suivre pour le voler",
         "outcomes": {
-          "0": "Xirtex vous surprend devant ses coffres. Sous votre coup, il recule jusqu'à sa natte et s'y affale, sonné. Il remue déjà quand vous quittez la tente avec une bourse bien pleine et un objet pris dans sa collection.",
-          "1": "Vous vous croyez hors de vue, mais votre ombre tombe en travers de la toile. Xirtex se retourne avant que vous le touchiez et sa dague vous ouvre le flanc. Vous fuyez, une main sur la plaie, tandis que son rire vous suit.",
-          "2": "Xirtex vous laisse près de ses coffres sur la foi des gens de passage. Vous le frappez, puis le remords vous arrête. Vous lui bandez la tête et veillez un moment à son chevet. Quand il se redresse, vous lui laissez des pièces en dédommagement.",
-          "3": "Au bruit de vos pas, Xirtex se retourne et vous surprend à lorgner ses coffres, une pierre à la main. Son poing vous fend la lèvre. Vous abandonnez la pierre et vous éloignez de la tente sans demander votre reste.",
-          "4": "Xirtex vous surprend en train de vider sa coupelle et vous chasse de la tente. Son bâton cogne contre votre brassard sans vous blesser. Vous lâchez la coupelle, mais gardez les pièces déjà glissées dans votre poche.",
-          "5": "Xirtex a entendu parler de vos manières. Il vous laisse partir sans un mot avec la bourse que vous lui avez prise. Il vous faut un bon moment pour trier son contenu : rien que des noyaux. Vous laissez la bourse aux abords de la tente."
+          "0": "Xirtex vous surprend devant ses coffres. D'un seul coup, vous l'envoyez s'écrouler sur sa natte, sonné. Vous prenez une bourse bien pleine et un objet de sa collection. Il commence à remuer quand vous quittez la tente.",
+          "1": "Vous levez une pierre dans son dos, mais votre ombre passe sur la toile. Xirtex se retourne, tire une dague de sa manche et vous entaille le flanc. Vous fuyez en pressant la plaie, poursuivi par son rire.",
+          "2": "Xirtex a entendu du bien de vous et ne se méfie pas. Vous le frappez, puis le remords vous saisit aussitôt. Vous lui bandez la tête et restez à son chevet. Quand il se réveille, vous lui donnez des pièces pour vous faire pardonner.",
+          "3": "Xirtex entend vos pas et se retourne. Il vous trouve devant ses coffres, une pierre à la main. Son poing vous fend la lèvre. Vous lâchez la pierre et quittez la tente sans demander votre reste.",
+          "4": "Xirtex vous surprend en train de vider une coupelle pleine de pièces. Il vous chasse à coups de bâton, mais votre brassard arrête chaque coup. Vous lâchez la coupelle en fuyant, avec les pièces déjà glissées dans votre poche.",
+          "5": "Xirtex a entendu parler de vous. Il fait semblant de ne rien voir quand vous prenez la bourse posée près de ses coffres. Plus loin, vous la videz sur le sable et fouillez longtemps le tas : rien que des noyaux de dattes. Son rire vous parvient depuis la tente."
         }
       },
       "clearChannel": {
         "text": "Aider à dégager la rigole",
         "outcomes": {
-          "0": "Vous proposez de vider la rigole qui alimente la vasque de Xirtex. L'ermite tient sa cruche pendant que vous retirez le sable tassé, poignée après poignée. Quand l'eau recommence à couler, vous avez déjà passé un bon moment au bord de la rigole.",
-          "1": "Une dalle tombée en travers retient le sable dans la rigole. Vous la soulevez sans attendre que Xirtex vienne vous prêter main-forte. L'eau emporte une partie du sable ; vous déblayez vite le reste. Xirtex vous paie quelques pièces pour le coup de main.",
-          "2": "Votre chien gratte le sable où l'eau stagne. Vous dégagez la rigole avec lui, jusqu'à ce que le courant lui mouille le museau. Le travail vous a retenu un moment ; Xirtex partage sa galette avec vous et vous recouvrez quelques forces.",
-          "3": "Sous vos doigts, la pierre au bord de la rigole vibre. Le sable se ride, sauf au-dessus d'une dalle enfouie. Vous la dégagez avec Xirtex et l'eau s'écoule de nouveau. Pour vous remercier, il vous offre un objet de sa collection."
+          "0": "Vous proposez à Xirtex de déboucher la rigole qui alimente son point d'eau. Vous retirez le sable tassé à pleines mains pendant qu'il attend avec sa cruche. Il vous faut un bon moment avant que l'eau coule de nouveau.",
+          "1": "Une dalle tombée en travers bloque la rigole. Vous la soulevez seul, avant même que Xirtex arrive pour vous aider. L'eau emporte une partie du sable et vous dégagez vite le reste. Xirtex vous donne quelques pièces pour le coup de main.",
+          "2": "Votre chien se met à creuser là où l'eau stagne. Vous dégagez la rigole avec lui, jusqu'à ce que l'eau lui arrive sur le museau. Pour vous remercier, Xirtex partage sa galette avec vous deux. Vous reprenez quelques forces avant de repartir.",
+          "3": "Quand vous posez la main sur la pierre de la rigole, vous la sentez vibrer. Partout, le sable frémit, sauf au-dessus d'une dalle enfouie. Vous la dégagez avec Xirtex et l'eau coule de nouveau. Pour vous remercier, il vous offre un objet de sa collection."
         }
       }
     }
@@ -3021,47 +3021,47 @@
     "text": "En arrivant à la plage sentinelle, vous apercevez, amarré, un bateau aux voiles noires et usées. Sur le pont, un homme portant un large tricorne, probablement le capitaine, vous fait signe de le rejoindre."
   },
   "76": {
-    "text": "Depuis des heures, vous suivez la rivière qui descend du mont à travers la Forêt Célestrum. Un cri sort d'une maison au toit crevé. Vous frappez ; un vieil homme entrouvre la porte. Il se présente comme Parziter, puis vous demande si le sol tremble aussi de votre côté.",
+    "text": "Depuis des heures, vous longez une rivière dans la Forêt Célestrum, au pied du mont. Un cri sort d'une maison en ruine. Vous frappez. Un vieil homme aux yeux hagards vous ouvre. Il s'appelle Parziter, parle trop vite et vous demande si vous aussi, vous sentez le sol trembler.",
     "possibilities": {
       "help": {
-        "text": "Proposer son aide.",
+        "text": "Proposer votre aide.",
         "outcomes": {
-          "0": "Les poules se tassent dans un coin de la cave. Vous soulevez d'une main le volet gonflé d'eau et laissez filer la drôle de bête qui les affole. Parziter vous donne une bourse de pièces et, après un coup de manche, un objet tiré de sa collection.",
-          "1": "Vous cherchez dans les tiroirs de quoi calmer Parziter sans songer à le prévenir. Au bruit du bois, il se recroqueville et lance son encrier. Vous sortez en pressant un mouchoir sur votre arcade ; bientôt, votre œil commence à enfler.",
-          "2": "Parziter voit des rues entières se fendre chaque fois qu'il prend en main une certaine pierre. Il en a posé un éclat sur le seuil, sans oser y toucher. À sa demande, vous l'enveloppez pour l'emporter. Il vibre jusque dans votre poche.",
-          "3": "Minou manque à l'appel. Le nez dans les feuilles, votre chien suit sa piste jusqu'à un arbre creux. Il vous faut une heure pour décider le chat à sortir : il attend que le chien tourne le dos. Parziter vous compte ses pièces, le chat sur les genoux.",
-          "4": "Parziter vous montre ses dessins que le vent emporte. Vous coupez par le talus, doublez les premiers feuillets et posez le pied sur le dernier juste avant la rivière. L'érudit secoue la terre du papier et vous tend quelques pièces.",
-          "5": "Les tuiles qui tombent dans la cour ont acculé Parziter sous un auvent. Elles se brisent sur votre bouclier sans vous faire plier le bras. Vous restez un quart d'heure à ses côtés avant qu'il ose franchir avec vous les trois pas jusqu'à sa porte."
+          "0": "Une bête inconnue s'est glissée dans la cave et affole les poules de Parziter. Vous soulevez seul le tonneau derrière lequel elle se cache et la chassez dehors. Soulagé, Parziter vous donne une bourse de pièces et un objet tiré de sa collection.",
+          "1": "Pour calmer Parziter, vous fouillez ses tiroirs à la recherche d'une tisane, sans lui demander la permission. Il prend peur et vous lance son encrier à la tête. Vous ressortez avec une entaille au front et un œil qui commence à enfler.",
+          "2": "Parziter a des visions depuis qu'il a trouvé une pierre étrange : chaque fois qu'il la touche, il voit une ville se fendre en deux. Il vous supplie de l'emporter. Vous l'enveloppez dans un linge. Même au fond de votre sac, la pierre vibre.",
+          "3": "Minou, le chat de Parziter, a disparu dans les bois. Votre chien suit sa piste jusqu'à un arbre creux. Le chat refuse de sortir tant que le chien est là : il vous faut une heure pour le décider. Parziter, Minou sur les genoux, vous donne quelques pièces.",
+          "4": "Un coup de vent emporte les dessins que Parziter faisait sécher devant sa porte. Vous courez après les feuilles et rattrapez la dernière juste avant qu'elle tombe dans la rivière. Parziter récupère ses dessins, un peu froissés, et vous donne quelques pièces.",
+          "5": "Des tuiles tombent du toit crevé à chaque coup de vent, et Parziter n'ose plus traverser sa cour pour aller au puits. Vous l'accompagnez, bouclier levé au-dessus de vos deux têtes. Les tuiles s'y brisent sans vous faire plier. L'aller-retour prend un quart d'heure."
         }
       },
       "explore": {
         "text": "Demander à visiter la maison.",
         "outcomes": {
-          "0": "Sur les rayons de la bibliothèque, un volume est rangé à l'envers. Vous le retournez pour en lire les signes. Parziter aimerait vous l'offrir, mais il surveille vos doigts avec une telle inquiétude que vous le remettez en place, dos au mur.",
-          "1": "Le tapis du couloir tient mieux que les planches qu'il recouvre. L'une d'elles cède ; votre pied passe au travers et la cheville tourne. Parziter pose un cataplasme frais sur l'enflure. Même ainsi bandée, elle vous fait boiter.",
-          "2": "Au grenier, votre rat se glisse entre le mur et un coffre. En lui ménageant une sortie, vous découvrez derrière le coffre un écrin que Parziter croyait vide. Amusé par le museau qui en sort, il vous en laisse le contenu : des pièces et un objet qui luit.",
-          "3": "Vous éprouvez les marches du talon avant de vous engager dans l'escalier. La troisième bascule sur une cache pleine de pièces. Vous appelez Parziter au lieu de vous servir ; il en prélève une poignée qu'il dépose dans votre paume.",
-          "4": "Parziter vous suit des yeux dans son cabinet. Il a entendu parler de vous et garde la clef de son secrétaire au poing. En lui tenant la porte avec un sourire, vous escamotez les quelques pièces qu'il a laissées sur l'appui de fenêtre.",
-          "5": "Vous montez voir la chambre en vous tenant à la rampe. Parziter remarque le sang sur votre manche et vous fait asseoir au bord du lit. Il passe un quart d'heure à panser vos plaies ; Minou, qui occupait déjà les deux oreillers, ne cède pas un pouce."
+          "0": "Dans la bibliothèque, un livre couvert de signes étranges attire votre regard. Parziter vous l'offre aussitôt : selon lui, il porte malheur. Vous le feuilletez, puis le remettez poliment sur son rayon. Votre sac est déjà assez lourd.",
+          "1": "Dans le couloir, une planche pourrie cède sous le tapis. Votre pied passe au travers et votre cheville se tord. Parziter, affolé, y applique un cataplasme d'herbes. La douleur se calme un peu, mais vous boitez en repartant.",
+          "2": "Au grenier, votre rat disparaît derrière un vieux coffre. Il en ressort en poussant un coffret oublié, qui contient quelques pièces et un petit objet brillant. Parziter rit de voir le rat si fier de lui et vous laisse le tout.",
+          "3": "Avant de monter l'escalier, vous testez chaque marche du talon. La troisième sonne creux : dessous, il y a une cache pleine de pièces. Plutôt que de vous servir, vous appelez Parziter. Il vous en donne une poignée.",
+          "4": "Parziter vous suit de pièce en pièce, la clé de son armoire serrée dans le poing. Il ne vous quitte pas des yeux, mais il oublie la fenêtre. Pendant qu'il surveille l'armoire, vous empochez les quelques pièces posées sur le rebord.",
+          "5": "Vous montez l'escalier en vous tenant à la rampe. Parziter remarque le sang sur votre manche et vous fait asseoir sur son lit. Il passe un quart d'heure à nettoyer et panser vos plaies. Minou, roulé en boule sur l'oreiller, refuse de vous faire de la place."
         }
       },
       "question": {
         "text": "Interroger Parziter.",
         "outcomes": {
-          "0": "Parziter connaît votre nom par les voyageurs que vous avez dépannés. Il vous confie qu'il enseignait avant de déterrer la pierre qu'il croit maudite. Il en a recueilli un éclat dans un linge ; vous acceptez de l'emporter pour lui.",
-          "1": "À votre première question, Parziter vous tend une ardoise. Vous passez une demi-heure à noter sous sa dictée les bruits qui montent de sa cave. Quand vous lui demandez de préciser la différence entre deux grincements, il vous claque la porte au nez.",
-          "2": "Parziter se souvient de la taille de sa cache, pas de son emplacement. Vous sondez du talon les dalles usées devant son lit. L'une d'elles sonne creux et bascule ; l'érudit y retrouve ses économies et partage les pièces avec vous.",
-          "3": "Parziter décrit des cris qui reprennent chaque fois qu'il touche son fragment de Pierre-Écho. Vous lui montrez comment en étouffer la vibration du bout des doigts. Il réussit à finir son récit sans sursauter et vous paie la leçon en pièces.",
-          "4": "Au lieu de vous répondre, Parziter vous interroge sur votre compagnon. Dans son bestiaire, une page entière lui est réservée, encore blanche. Vous consacrez vingt minutes à lui décrire ses habitudes pendant qu'il taille sa plume et prend des notes.",
-          "5": "Parziter vous demande si vous entendez aussi des pas. Vous posez l'oreille contre le mur sans remarquer l'éclat de pierre enchâssé dans le plâtre. Une rue s'ouvre sous vos yeux ; même en rouvrant la porte, vous cherchez la berge du mauvais côté."
+          "0": "Des voyageurs que vous avez aidés lui ont parlé de vous, et Parziter se confie sans méfiance. Il était un érudit respecté avant de déterrer une pierre qu'il croit maudite. Il vous supplie d'en emporter un éclat loin d'ici. Vous acceptez.",
+          "1": "Pour toute réponse, Parziter vous dicte la liste des bruits qu'il entend la nuit. Vous notez pendant une demi-heure. Quand vous osez lui demander la différence entre deux grincements, il se vexe et vous claque la porte au nez.",
+          "2": "Parziter a caché ses économies il y a des années et ne sait plus où. Vous lui demandez où il passait le plus de temps à l'époque : près du poêle. Derrière une brique descellée, vous trouvez une bourse. Il partage les pièces avec vous.",
+          "3": "Parziter entend des cris chaque fois qu'il touche son éclat de Pierre-Écho. Vous posez la main dessus et calmez sa vibration, puis vous lui montrez le geste. Il y arrive au troisième essai, tient la pierre sans trembler et vous paie la leçon de quelques pièces.",
+          "4": "Au lieu de répondre, Parziter fixe votre familier. Il n'en a jamais vu de pareil, et la page qui lui est réservée dans son bestiaire est encore blanche. Pendant vingt minutes, vous lui décrivez ses habitudes. Il note tout.",
+          "5": "Parziter vous demande si vous entendez aussi des pas. Vous collez l'oreille au mur, sans voir l'éclat de pierre pris dans le plâtre. Une vision vous traverse : une ville qui se fend. En ressortant, encore étourdi, vous ne savez plus de quel côté est la rivière."
         }
       },
       "end": {
         "outcomes": {
-          "0": "Vous saluez Parziter d'un signe de tête et vous reprenez le sentier de la berge. Derrière vous, sa voix descend d'un ton : à travers la fenêtre ouverte, vous l'entendez demander à Minou ce qu'il pense de la visite.",
-          "1": "Votre chat se frotte au chambranle sans entrer. De l'autre côté du seuil, Minou vient flairer la marque, puis y frotte sa joue exactement au même endroit. Parziter vous laisse repartir ; il n'a pas perdu un geste des deux chats.",
-          "2": "Parziter fronce les sourcils en reconnaissant le visage dont des voyageurs lui ont conseillé de se méfier. Il ne vous retient pas. À peine avez-vous tourné les talons que vous entendez le verrou, puis les pieds d'une chaise qu'on cale sous la poignée.",
-          "3": "Une tasse glisse des mains de Parziter. Vous la rattrapez avant qu'elle ne heurte la marche et la posez sur le seuil sans entrer. En reprenant le sentier, vous apercevez le vieil homme qui y trempe enfin les lèvres."
+          "0": "Sans vous en mêler davantage, vous saluez Parziter et reprenez le sentier le long de la rivière. Par la fenêtre ouverte, vous l'entendez demander à Minou ce qu'il a pensé de vous.",
+          "1": "Pendant que vous hésitez, votre chat frotte sa joue contre le cadre de la porte. Minou vient renifler l'endroit, puis s'y frotte à son tour. Parziter regarde les deux chats, se calme enfin et vous laisse repartir.",
+          "2": "Parziter vous dévisage, puis fronce les sourcils : des voyageurs lui ont décrit votre visage, et pas en bien. Il ne vous retient pas. Dès que vous tournez les talons, vous entendez le verrou, puis une chaise qu'on cale sous la poignée.",
+          "3": "Les mains de Parziter tremblent tant que sa tasse lui échappe. Vous la rattrapez au vol, sans renverser une goutte, et la lui rendez. Puis vous reprenez votre route. En vous retournant, vous le voyez enfin boire, assis sur son seuil."
         }
       }
     }
@@ -3571,58 +3571,58 @@
     "text": "Le sable brûlant s'enfonce sous vos pas tandis que vous progressez difficilement, le foulard serré sur le visage pour filtrer le vent chaud chargé de poussière. À l'horizon, rien d'autre que des dunes. Vous vous agenouillez un instant pour reprendre votre souffle, mais un mouvement attire votre regard : un scorpion noir, gros comme un poing, sort lentement de sous une pierre, sa queue arquée luisant à la lumière..."
   },
   "89": {
-    "text": "Dans la Cour du Château, les messagers croisent les passants sur l'esplanade pavée qui mène aux portes royales. Leurs sacoches frôlent les manteaux. Un chat miaule au loin ; soudain, un soldat ordonne à la foule de dégager la voie.",
+    "text": "Dans la Cour du Château, l'esplanade pavée qui mène aux portes royales est noire de monde. Des messagers se fraient un chemin entre les passants et un chat miaule au loin. Soudain, un soldat crie à la foule de dégager la voie : la Garde arrive.",
     "possibilities": {
       "stepAside": {
         "text": "S'écarter de la voie.",
         "outcomes": {
-          "0": "Vous vous rangez contre un mur, mais la foule reflue dans votre dos et vous comprime contre la pierre. Quand le dernier garde passe, vous reprenez enfin votre souffle, les côtes endolories et la tête encore confuse.",
-          "1": "Un passant vous reconnaît et protège aussitôt sa bourse. Profitant de la cohue, vous glissez la main dans celle de son voisin et y prenez 250 pièces avant de vous fondre parmi les spectateurs.",
-          "2": "Serré entre deux spectateurs, vous sentez une main frôler votre ceinture. Lorsque la colonne s'éloigne, votre bourse est ouverte et 180 pièces ont disparu avec le voleur.",
-          "3": "Un enfant trébuche au bord des pavés. Vous le tirez hors du passage avant que les bottes ne l'atteignent ; sa mère vous reconnaît et vous remercie avec quelques pièces.",
-          "4": "Une main plonge dans la poche d'une spectatrice. Vous rattrapez le voleur entre deux rangs et récupérez sa bourse ; soulagée, la propriétaire vous donne quelques pièces.",
-          "5": "Votre chien se faufile sous les manteaux puis aboie près d'un gamin coincé contre le mur. Vous dégagez le petit et l'aidez à retrouver sa famille avant le passage des gardes."
+          "0": "Vous vous rangez contre un mur, mais toute la foule recule avec vous et vous écrase contre la pierre. Quand le dernier garde passe, vous reprenez enfin votre souffle. Vos côtes vous font mal et la tête vous tourne.",
+          "1": "Un passant vous reconnaît et serre aussitôt sa bourse contre lui. Son voisin, lui, ne se méfie pas. Dans la bousculade, vous vous servez dans sa bourse, puis vous disparaissez parmi les spectateurs.",
+          "2": "Serré entre deux spectateurs, vous ne prêtez pas attention à la main qui frôle votre ceinture. Quand la colonne s'éloigne, votre bourse est ouverte : une partie de vos pièces est partie avec le voleur.",
+          "3": "Un enfant trébuche au milieu de la voie. Vous le tirez à l'écart juste avant l'arrivée des soldats. Sa mère vous reconnaît et vous remercie avec quelques pièces.",
+          "4": "Un voleur plonge la main dans la poche d'une spectatrice et s'enfuit. Vous le rattrapez en quelques pas et lui reprenez la bourse. Soulagée, sa propriétaire vous donne quelques pièces.",
+          "5": "Votre chien se faufile entre les passants et aboie près d'un petit garçon coincé contre un mur. Vous sortez l'enfant de la foule et l'aidez à retrouver ses parents avant le passage des gardes."
         }
       },
       "ignore": {
         "text": "Ignorer la sommation.",
         "outcomes": {
-          "0": "Vous continuez jusqu'à faire face à une trentaine de soldats. Leurs regards hostiles suffisent à vous faire reculer en bredouillant des excuses ; vos mains tremblent encore après leur passage.",
-          "1": "Vous heurtez un garde en poursuivant votre route. Il vous empoigne, vous frappe et vous jette sur le côté sous les rires de ses compagnons ; vos contusions restent douloureuses.",
-          "2": "Vous traversez la voie malgré la sommation et deux gardes vous arrêtent devant la colonne. Pour cet outrage, ils vous enferment en cellule pendant une journée entière.",
-          "3": "Un soldat lève le poing après votre collision ; vous lui saisissez le bras et le plaquez au sol. Amusé, le roi Aubéric vous fait remettre 2 000 pièces, puis vous ordonne de dégager la voie.",
-          "4": "Vous traversez devant les chevaux. Votre bouclier encaisse le coup d'une hampe, puis vous reculez entre les passants avant que les gardes ne vous saisissent ; votre bras reste meurtri.",
-          "5": "Un garde vous reconnaît à votre tenue de chevalier et vous barre la route de sa lance. Vous rangez votre arme, présentez vos excuses et attendez quelques minutes qu'il vous laisse passer."
+          "0": "Vous continuez d'avancer et vous retrouvez face à une trentaine de soldats. Leurs regards hostiles suffisent à vous faire reculer en bredouillant des excuses. Vos mains tremblent encore après leur passage.",
+          "1": "Vous poursuivez votre route et heurtez un garde. Il vous empoigne, vous frappe et vous jette sur le côté. Ses compagnons éclatent de rire. Vous repartez couvert de bleus.",
+          "2": "Vous traversez la voie sans vous arrêter. Deux gardes vous reconnaissent et ne cherchent pas à comprendre : ils vous arrêtent pour outrage à la Garde et vous jettent en cellule.",
+          "3": "Vous heurtez un soldat, qui lève le poing. Vous lui saisissez le bras et le plaquez au sol. Des rires parcourent la colonne. Amusé, le roi Aubéric vous fait remettre une belle somme, puis vous ordonne de dégager la voie.",
+          "4": "Vous traversez devant les chevaux. Un garde vous donne un coup de lance, mais votre bouclier arrête l'essentiel du choc. Vous filez parmi les passants avant qu'on vous attrape, le bras un peu douloureux.",
+          "5": "Un garde remarque votre armure de chevalier et vous salue. Il vous demande poliment d'attendre au bord de la voie. Vous n'insistez pas et patientez quelques minutes, le temps que la colonne passe."
         }
       },
       "bow": {
         "text": "S'incliner devant la Garde.",
         "outcomes": {
-          "0": "Vous vous inclinez tandis que le carrosse passe et apercevez une main que les passants prêtent à la princesse. Une spectatrice profite de l'arrêt pour soigner votre égratignure, qui cesse enfin de saigner.",
-          "1": "Vous vous rangez et vous inclinez devant la colonne. Plusieurs passants vous imitent ; les gardes bombent le torse, et vous restez dix minutes courbé avant que le dernier ne soit passé.",
-          "2": "Vous posez un genou à terre devant les soldats, seul à saluer une simple patrouille. L'un d'eux vous bouscule en riant ; vous vous relevez avec un bleu douloureux au bras.",
-          "3": "Un garde vous reconnaît et vous demande de laisser un peu plus de place. Vous reculez, puis saluez le passage sans toucher aux bourses que leurs propriétaires serrent contre eux.",
-          "4": "Votre chat se faufile entre les jambes des badauds pendant votre salut. Vous le récupérez sous le regard amusé des gardes et passez quelques minutes à le calmer avant de repartir.",
-          "5": "Vous saluez les gardes puis relevez une spectatrice déséquilibrée par la foule. Reconnaissante, elle vous aide à nettoyer une petite plaie pendant que le cortège poursuit sa marche."
+          "0": "Vous vous inclinez au passage du carrosse. En relevant un peu la tête, vous apercevez la main de la princesse Mélisende qui salue la foule. Ce bref instant vous redonne du courage, et vous vous sentez mieux.",
+          "1": "Vous vous rangez et vous inclinez devant la colonne. Des passants vous reconnaissent et vous imitent. Les gardes bombent le torse, et vous restez courbé un bon moment, jusqu'au passage du dernier soldat.",
+          "2": "Vous posez un genou à terre devant les soldats, avant de comprendre que vous êtes seul : ce n'est qu'une simple patrouille. L'un d'eux vous bouscule en riant, et vous tombez sur le bras.",
+          "3": "Un garde vous reconnaît et vous fait signe de reculer. Autour de vous, les passants serrent leur bourse contre eux. Vous saluez la colonne sans rien tenter, puis vous repartez une fois la voie libre.",
+          "4": "Pendant votre salut, votre chat se faufile entre les jambes des passants. Vous le récupérez sous le regard amusé des gardes, puis vous passez quelques minutes à le calmer avant de repartir.",
+          "5": "Pendant votre salut, une vieille femme bousculée par la foule perd l'équilibre. D'un geste vif, vous la rattrapez avant qu'elle tombe. Pour vous remercier, elle nettoie et bande une écorchure que vous avez au coude."
         }
       },
       "otherAlley": {
         "text": "Emprunter une autre ruelle.",
         "outcomes": {
-          "0": "Sur un toit, vous repérez un arbalétrier visant le carrosse. Votre avertissement permet à la Garde d'arrêter cet homme de la Main Grise ; un officier vous remet un équipement rare et un familier rare.",
-          "1": "Dans une ruelle, vous signalez à un garde un arbalétrier posté sur un toit. La Garde arrête ce membre de la Main Grise avant son tir ; l'officier vous remet un équipement et 1 200 pièces.",
-          "2": "Des hommes parlent d'attaquer le carrosse ; vous les affrontez dans la ruelle, mais ils vous rouent de coups. Grièvement blessé, vous voyez la Garde les arrêter avant qu'ils ne rejoignent le cortège.",
-          "3": "En contournant la procession, vous achetez un repas et une pièce d'équipement à un étal pour 113 pièces. Le repas vous remet un peu d'aplomb avant que vous repreniez votre chemin.",
-          "4": "Derrière une porte, vous surprenez des bribes sur des marchandises et un passage. Vous reconnaissez la voix du mercenaire Price parmi les interlocuteurs et poursuivez votre chemin sans intervenir.",
-          "5": "Votre chien s'arrête devant une porte entrouverte. Vous apercevez une arbalète et prévenez la Garde, qui interpelle son porteur ; un officier vous remercie avec quelques pièces."
+          "0": "Dans une ruelle, vous voyez un homme armé d'une arbalète se poster sur un toit, face au carrosse. Vous courez prévenir les gardes à temps. Ils arrêtent ce membre de la Main Grise, et un officier vous offre un bel équipement et un familier de valeur.",
+          "1": "Dans une ruelle, vous repérez un arbalétrier posté sur un toit. Vous connaissez les signaux de la Garde et alertez les soldats d'un geste discret. Ils arrêtent ce membre de la Main Grise avant son tir. Un officier vous remet un équipement et une bourse.",
+          "2": "Dans une ruelle déserte, des hommes parlent d'attaquer le carrosse. Vous leur foncez dessus seul, arme au poing. Ils sont trop nombreux et vous laissent à terre, gravement blessé. Alertée par le bruit, la Garde les arrête peu après.",
+          "3": "Vous contournez la procession par une rue voisine. À un étal que vous connaissez bien, vous achetez un repas chaud et une pièce d'équipement à bon prix. Le repas vous remet d'aplomb avant de reprendre votre chemin.",
+          "4": "Dans une ruelle calme, des voix passent sous une porte. Vous saisissez quelques mots : des marchandises, un passage. Parmi les voix, vous reconnaissez celle du mercenaire Price. Vous préférez ne pas vous en mêler et poursuivez votre chemin.",
+          "5": "Votre chien s'arrête net et grogne devant une porte entrouverte. À l'intérieur, un homme charge une arbalète. Vous prévenez la Garde, qui l'arrête aussitôt. Un officier vous remercie avec quelques pièces."
         }
       },
       "end": {
         "outcomes": {
-          "0": "Vous vous écartez du centre de la voie avec les autres passants. Les gardes défilent sur les pavés tandis que vous longez les murs, à l'écart de leurs bottes et des chevaux.",
-          "1": "La foule vous entraîne hors de la voie avant l'arrivée des soldats. Coincé derrière les spectateurs, vous attendez vingt minutes que la procession soit passée pour reprendre votre chemin.",
-          "2": "Votre chien tire sur sa laisse vers un espace libre entre deux groupes. Vous le suivez et trouvez de quoi vous tenir à l'écart sans gêner le passage des soldats.",
-          "3": "Un passant vous reconnaît et vous fait une place auprès de lui. Vous observez la colonne défiler entre les messagers, puis vous vous remettez en marche quand la voie se dégage."
+          "0": "Vous vous écartez du centre de la voie avec les autres passants. Pendant que les gardes défilent, vous poursuivez tranquillement votre chemin en longeant les murs.",
+          "1": "Vous restez planté au milieu de la voie, mais la foule finit par vous emporter sur le côté. Coincé derrière les spectateurs, vous devez attendre la fin du défilé pour reprendre votre chemin.",
+          "2": "Votre chien tire sur sa laisse vers un coin libre entre deux groupes de passants. Vous le suivez et regardez passer les soldats sans être bousculé, puis vous repartez.",
+          "3": "Un passant vous reconnaît et vous fait une place à côté de lui, au premier rang. Vous regardez la colonne défiler, puis vous reprenez votre chemin quand la voie se libère."
         }
       }
     }

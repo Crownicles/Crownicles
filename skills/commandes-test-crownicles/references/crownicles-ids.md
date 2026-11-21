@@ -883,7 +883,7 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 27 | En arrivant dans un petit village, vous remarquez un puits avec un petit objet brillant au fond. |
 | 28 | Pendant votre périple, un groupe d'hommes "prêchant la parole des dieux" vous invite à rejoindre leur cause. |
 | 29 | Les températures dépassant les 30°C depuis plusieurs jours vous accablent. Alors que vos forces commencent à faiblir, incapable de continuer |
-| 30 | Sur le Chemin aux Loups, à l'écart des berges glissantes de la Vacarme, un château pavoisé domine les bananeraies du Duc Benatis. Il y fête |
+| 30 | Sur le Chemin aux Loups, au-dessus des berges glissantes de la Vacarme, se dresse le château du Duc Benatis, entouré de ses plantations de b |
 | 31 | Vous entendez un bruit de galop au loin. Vous vous retournez et voyez un chevalier à l'armure noire et au blason inconnu. |
 | 32 | Vous continuez votre chemin tranquillement dans une forêt, lorsque vous entendez un cri. La voix semble être celle d'un homme. Vous décidez |
 | 33 | Vous arrivez dans une ferme où se déroule un grand festin. Les gens paraissent accueillants. |
@@ -892,14 +892,14 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 36 | Au cours de votre très long périple, vous arrivez à Boug-Coton, un petit village fort charmant. Sur la place, deux enseignes attirent votre |
 | 37 | Vous marchez tranquillement sur la route grimpante, le temps est clair et le chemin de pierre en bon état. Vous pensez aux différentes desti |
 | 38 | Faisant route, vous croisez un marchand itinérant, qui vous interpelle. Il dit avoir des objets qui pourraient vous intéresser, et ce à des |
-| 39 | À Mergagnan, entre les filets qui sèchent sur le port et la Plage Sentinelle toute proche, un mercenaire du nom de Price vous aborde. Épée a |
+| 39 | À Mergagnan, sur le port où sèchent les filets, à deux pas de la Plage Sentinelle, un mercenaire nommé Price vous aborde. L'épée au côté et |
 | 40 | Vous vous enfoncez dans une forêt sombre, et apercevez la silhouette d'un homme au loin. Vous décidez de vous approcher et comprenez que c'e |
 | 41 | Alors que vous continuez votre chemin, vous arrivez à une ville. Juste après, un groupe d'homme arrive vers vous et vous attrape, puis vous |
 | 42 | Au détour d'un chemin, une jeune femme apparaît. Vous ne saisissez d'abord pas très bien ce qu'elle dit mais finissez par comprendre qu'elle |
 | 43 | Vous marchez en pleine nuit sur le Grand Axe. Il fait sombre mais la lune est claire. Vous apercevez devant vous un être éclairé par la lumi |
 | 44 | Lors de votre long périple, vous vous retrouvez au bord d'une large rivière. Ne pouvant la traverser, vous décidez de la longer jusqu'à trou |
 | 45 | En arrivant aux abords d'un village animé, vous entendez un groupe de personnes parler d'un sanctuaire qui serait hanté. Curieux que vous êt |
-| 46 | À Boug-Coton, devant l'Auberge du Seigneur, le célèbre ménestrel Pérotin règle son ardoise en chansons. On dit qu'avec sa mandoline et ses p |
+| 46 | À Boug-Coton, devant l'Auberge du Seigneur, le célèbre ménestrel Pérotin paie sa note en chansons. On dit qu'avec sa mandoline et ses poudre |
 | 47 | Vous êtes tellement épuisé que vous avez du mal à marcher. C'est alors que vous apercevez les remparts effondrés de Ville Forte, vous êtes s |
 | 48 | Vous êtes à la recherche d'un artéfact. Vous le convoitez car celui-ci, d'après les légendes, offrirait richesse et pouvoir à son possesseur |
 | 49 | Après vous être baladé plusieurs minutes sur la plage vous croisez une étrange petite créature, c'est un bernard-l'hermite ! Il semble s'êtr |
@@ -909,7 +909,7 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 53 | Alors que vous passez au bord du lac Mirage, vous remarquez un homme vous faisant signe d'un peu plus loin. Intrigué, vous décidez de le rej |
 | 54 | Vous apercevez le village Boug-Coton et décidez de vous y rendre. À peine arrivé vous entendez parler d'un conflit entre le seigneur de ces |
 | 55 | Sans doute à cause de la rude tempête d'hier, un arbre est tombé sur le petit sentier de forêt où vous marchez. Son tronc faisant 3 bons mèt |
-| 56 | Sur la Plage Sentinelle, le sable fin refroidit et l'air iodé se charge de sel. Le soleil plonge derrière les dunes : il vous faut un abri. |
+| 56 | Le soleil se couche sur la Plage Sentinelle et le vent fraîchit sur le sable fin. Il vous faut un abri pour la nuit. En haut d'une dune, vou |
 | 57 | Vous marchez sous un ciel bleu azur. L'air est doux et vous continuez votre chemin en écoutant les oiseaux qui chantent, le craquement des a |
 | 58 | Après de longues heures de marche au travers de la route marécageuse, vous croisez une femme à un carrefour. Épuisé, vous l'ignorez mais ell |
 | 60 | Vous êtes amené dans la grande salle de réception du château où vous rencontrez rapidement le roi. On vous explique la nature du concours qu |
@@ -921,14 +921,14 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 66 | Après une brève traversée, le capitaine amarre son navire à ce qui semble être un ponton. Vous êtes bien trop absorbé dans votre contemplati |
 | 67 | Après un peu de marche, vous arrivez au niveau du bateau qui vous a emmené préalablement sur cette île peu hospitalière. Voyant votre fatigu |
 | 68 | En arrivant à Claire de Ville, votre regard est attiré par un bâtiment dont l'entrée est encadrée par deux statues de hiboux en pierre. En v |
-| 69 | Dans la Forêt Du Vieillard, où tant de voyageurs s'égarent, une femme en robe argentée fend les sous-bois vers vous. Ses cheveux clairs et s |
+| 69 | Dans la Forêt Du Vieillard, une femme en robe argentée accourt vers vous entre les arbres. Avec ses cheveux clairs et son bâton d'aubépine, |
 | 70 | Alors que vous parcourez le désert de La Dune, l'air vous semble devenir de plus en plus sec. À mesure que vous avancez, les grains de sable |
-| 71 | Entre les dunes de la Vallée des Rois, deux tombeaux à demi ensevelis dominent une oasis. Un rire vous fait sursauter quand vous vous penche |
+| 71 | Entre les dunes de la Vallée des Rois, deux tombeaux à demi ensevelis dominent une petite oasis. Vous vous penchez pour boire à une rigole à |
 | 72 | Alors que vous arrivez aux abords de Claire de Ville, vous découvrez que bon nombre de ses habitants se sont déplacés à l'extérieur des gran |
 | 73 | Cheminant avec nonchalance sur la Route des Merveilles, vous vous approchez d'un petit groupe de personnes en demi-cercle autour d'un homme |
 | 74 | Alors que vous déambulez sans but précis, vos narines sont soudainement assaillies par une intense odeur iodée. Une étrange femme vêtue d'un |
 | 75 | En arrivant à la plage sentinelle, vous apercevez, amarré, un bateau aux voiles noires et usées. Sur le pont, un homme portant un large tric |
-| 76 | Depuis des heures, vous suivez la rivière qui descend du mont à travers la Forêt Célestrum. Un cri sort d'une maison au toit crevé. Vous fra |
+| 76 | Depuis des heures, vous longez une rivière dans la Forêt Célestrum, au pied du mont. Un cri sort d'une maison en ruine. Vous frappez. Un vie |
 | 77 | En progressant dans un sentier sinueux de la Forêt Celestrum, vous entendez soudain des éclats de voix provenant d'une clairière proche. Int |
 | 78 | Vous progressez sur la route grimpante quand soudain un épais brouillard monte de la Rivière aux Crabes, dont vous apercevez encore vaguemen |
 | 79 | Sur la route grimpante, vous entendez un tintement de clochettes qui se rapproche. Bientôt apparaît un large troupeau de chèvres mené par un |
@@ -941,7 +941,7 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 86 | Après une longue marche éreintante, vous débouchez sur une clairière silencieuse où s'étend un vaste plan d'eau aux reflets changeants. Le L |
 | 87 | Le sentier serpente entre les rochers, rude et escarpé. Le souffle court, vous grimpez sous un ciel gris quand, au détour d'un virage, vous |
 | 88 | Le sable brûlant s'enfonce sous vos pas tandis que vous progressez difficilement, le foulard serré sur le visage pour filtrer le vent chaud |
-| 89 | Dans la Cour du Château, les messagers croisent les passants sur l'esplanade pavée qui mène aux portes royales. Leurs sacoches frôlent les m |
+| 89 | Dans la Cour du Château, l'esplanade pavée qui mène aux portes royales est noire de monde. Des messagers se fraient un chemin entre les pass |
 
 ## Mini-événements (/test smallEvent <nom>)
 
