@@ -126,6 +126,8 @@ export function fakeCommand(userName = "Player", lng: Language = "fr"): {
 		}) as Message);
 	};
 	interactionCount++;
+	// A translation missing in a previous test which failed before checking its display must not fail this one
+	missingTranslations.splice(0);
 	const interaction: FakeInteraction = {
 		id: `command-${interactionCount}`,
 		userLanguage: lng,
