@@ -36,9 +36,12 @@ function buildGuardPlayer(): Player {
 		class: 0,
 		petId: null,
 		getMaxCumulativeEnergy: vi.fn().mockReturnValue(800),
-		getCumulativeAttack: vi.fn().mockReturnValue(10),
-		getCumulativeDefense: vi.fn().mockReturnValue(10),
-		getCumulativeSpeed: vi.fn().mockReturnValue(10),
+		getCumulativeStats: vi.fn().mockReturnValue({
+			attack: 10, defense: 10, speed: 10
+		}),
+		getMainItemStatsContribution: vi.fn().mockReturnValue({
+			attack: 5, defense: 0, speed: 0
+		}),
 		getBaseBreath: vi.fn().mockReturnValue(2),
 		getMaxBreath: vi.fn().mockReturnValue(6),
 		getBreathRegen: vi.fn().mockReturnValue(2),
@@ -101,7 +104,10 @@ describe("KingGuardFighter", () => {
 
 		expect(guard.getEnergy()).toBe(800);
 		expect(guard.metallicItemCount).toBe(2);
-		expect(await guard.getMainActiveObjects()).toBe(activeObjects);
+		expect(guard.getEquippedMainItemStatsContribution("weapon")).toEqual({
+			attack: 5, defense: 0, speed: 0
+		});
+		expect(guard.player.getMainItemStatsContribution).toHaveBeenCalledWith(activeObjects, "weapon", expect.anything());
 		expect(InventorySlots.getPlayerActiveObjects).not.toHaveBeenCalled();
 		expect(InventorySlots.countObjectsOfPlayer).not.toHaveBeenCalled();
 	});

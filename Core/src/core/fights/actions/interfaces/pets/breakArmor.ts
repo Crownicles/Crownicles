@@ -8,14 +8,14 @@ import {
 	applyGearRemovalBuffs, getRemovableGearStats
 } from "../../GearStatRemoval";
 
-const use: PetAssistanceFunc = async (_fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
+const use: PetAssistanceFunc = (_fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
 	// Execute at the start of the fight
 	if (turn > 2) {
-		return null;
+		return Promise.resolve(null);
 	}
 
-	// The removed stats are the ones the armor adds to the fight, capped by the class
-	const armor = await getRemovableGearStats(opponent, "armor", "defense");
+	// The removed stats are the ones the armor adds to the fight, enchantments included
+	const armor = getRemovableGearStats(opponent, "armor", "defense");
 
 	// 15% chance to fail to break the armor
 	if (!armor || RandomUtils.crowniclesRandom.bool(0.15)) {

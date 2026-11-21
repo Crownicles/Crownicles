@@ -32,9 +32,9 @@ function buildPlayer(level = 20): Player {
 		setEnergyLost: vi.fn(),
 		getMaxCumulativeEnergy: vi.fn().mockReturnValue(500),
 		getCumulativeEnergy: vi.fn().mockReturnValue(120),
-		getCumulativeAttack: vi.fn().mockReturnValue(10),
-		getCumulativeDefense: vi.fn().mockReturnValue(10),
-		getCumulativeSpeed: vi.fn().mockReturnValue(10),
+		getCumulativeStats: vi.fn().mockReturnValue({
+			attack: 10, defense: 10, speed: 10
+		}),
 		getBaseBreath: vi.fn().mockReturnValue(2),
 		getMaxBreath: vi.fn().mockReturnValue(6),
 		getBreathRegen: vi.fn().mockReturnValue(2)
@@ -108,9 +108,9 @@ describe("PlayerFighter with a level cap", () => {
 
 		expect(fighter.level).toBe(levelCap);
 		expect(player.getMaxCumulativeEnergy).toHaveBeenCalledWith(activeObjects, levelCap);
-		expect(player.getCumulativeAttack).toHaveBeenCalledWith(activeObjects, false, levelCap);
-		expect(player.getCumulativeDefense).toHaveBeenCalledWith(activeObjects, false, levelCap);
-		expect(player.getCumulativeSpeed).toHaveBeenCalledWith(activeObjects, false, levelCap);
+		expect(player.getCumulativeStats).toHaveBeenCalledWith(activeObjects, {
+			includePotion: false, level: levelCap
+		});
 	});
 
 	it("keeps the player level when it is below the cap", async () => {
@@ -122,6 +122,8 @@ describe("PlayerFighter with a level cap", () => {
 		await fighter.loadStats();
 
 		expect(fighter.level).toBe(42);
-		expect(player.getCumulativeAttack).toHaveBeenCalledWith(activeObjects, false, 42);
+		expect(player.getCumulativeStats).toHaveBeenCalledWith(activeObjects, {
+			includePotion: false, level: 42
+		});
 	});
 });

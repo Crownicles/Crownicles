@@ -30,9 +30,7 @@ export async function getPlayerStats(player: Player): Promise<FightPlayerStats> 
 			value: player.getCumulativeEnergy(playerActiveObjects),
 			max: player.getMaxCumulativeEnergy(playerActiveObjects)
 		},
-		attack: player.getCumulativeAttack(playerActiveObjects),
-		defense: player.getCumulativeDefense(playerActiveObjects),
-		speed: player.getCumulativeSpeed(playerActiveObjects),
+		...player.getCumulativeStats(playerActiveObjects),
 		breath: {
 			base: player.getBaseBreath(playerActiveObjects),
 			max: player.getMaxBreath(playerActiveObjects),

@@ -9,7 +9,7 @@ import {
 	assertPlayerHasNoPendingChanges, LockedPlayerFollowUp, LockedPlayerMutation, MissionInformationsWithoutMutation, MissionsController, PLAYER_RESYNC_CALLERS
 } from "../../../missions/MissionsController";
 import {
-	EquippedMainItem, PlayerActiveObjects
+	EQUIPPED_MAIN_ITEM_SLOTS, EquippedMainItem, EquippedMainItemSlot, PlayerActiveObjects
 } from "./PlayerActiveObjects";
 import {
 	asMilliseconds,
@@ -65,7 +65,9 @@ import { GuildConstants } from "../../../../../../Lib/src/constants/GuildConstan
 import { MapConstants } from "../../../../../../Lib/src/constants/MapConstants";
 import { Effect } from "../../../../../../Lib/src/types/Effect";
 import { dispatchOrRescheduleArrivalNotification } from "../../../bot/ReportNotifications";
-import { StatValues } from "../../../../../../Lib/src/types/StatValues";
+import {
+	StatValues, ZERO_STATS
+} from "../../../../../../Lib/src/types/StatValues";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import { TokensConstants } from "../../../../../../Lib/src/constants/TokensConstants";
 import { MathUtils } from "../../../utils/MathUtils";
@@ -97,6 +99,19 @@ export type PlayerEditValueParameters = {
 	amount: number;
 	response: CrowniclesPacket[];
 	reason: NumberChangeReason;
+};
+
+/**
+ * Options of {@link Player.getCumulativeStats}
+ */
+export type CumulativeStatsOptions = {
+	includePotion?: boolean;
+
+	// The level at which the stats are computed, the player level by default
+	level?: number;
+
+	// A weapon or an armor left out of the stats, while its enchantment still applies to the remaining stats
+	withoutMainItem?: EquippedMainItemSlot;
 };
 
 type ressourcesLostOnPveFaint = {
@@ -1035,60 +1050,106 @@ export class Player extends Model {
 	}
 
 	/**
-	 * Calculate the cumulative attack of the player.
-	 * Attack enchantments are not applied here: they act as a multiplier on the effective damage dealt
-	 * in fights (see {@link EnchantmentUtils.getOutgoingDamageMultiplier}), not on the raw attack stat.
+	 * Sum, for each stat, the class stat and the stats of the equipped items (capped by the class), before rounding and enchantments
+	 * @param playerActiveObjects
+	 * @param options
+	 */
+	private getRawCumulativeStats(playerActiveObjects: PlayerActiveObjects, {
+		includePotion = true, level = this.level, withoutMainItem
+	}: CumulativeStatsOptions): StatValues {
+		const maxStats = this.getMaxStatsValue(level);
+		const potion = playerActiveObjects.potion.item;
+		const parts: StatValues[] = [
+			maxStats,
+			...EQUIPPED_MAIN_ITEM_SLOTS
+				.filter(slot => slot !== withoutMainItem)
+				.map(slot => Player.getCappedMainItemStats(playerActiveObjects[slot], maxStats)),
+			playerActiveObjects.object.item.getCappedStats(maxStats),
+			includePotion
+				? {
+					attack: potion.getAttack(), defense: potion.getDefense(), speed: potion.getSpeed()
+				}
+				: ZERO_STATS
+		];
+		return parts.reduce((total, part) => ({
+			attack: total.attack + part.attack,
+			defense: total.defense + part.defense,
+			speed: total.speed + part.speed
+		}), ZERO_STATS);
+	}
+
+	/**
+	 * Calculate the attack, defense and speed of the player: this is the single formula of the fight stats.
+	 * The speed enchantment of the armor multiplies the whole speed. Attack and defense enchantments are not applied here:
+	 * they act as multipliers on the damage dealt and received in fights
+	 * (see {@link EnchantmentUtils.getOutgoingDamageMultiplier} and {@link EnchantmentUtils.getIncomingDamageMultiplier})
+	 * @param playerActiveObjects
+	 * @param options
+	 */
+	public getCumulativeStats(playerActiveObjects: PlayerActiveObjects, options: CumulativeStatsOptions = {}): StatValues {
+		const raw = this.getRawCumulativeStats(playerActiveObjects, options);
+		const speedMultiplier = EnchantmentUtils.getEnchantmentMultiplier(playerActiveObjects, ItemEnchantmentKind.SPEED, EnchantmentConstants.SPEED_MULTIPLIER);
+		return {
+			attack: Math.max(0, Math.round(raw.attack)),
+			defense: Math.max(0, Math.round(raw.defense)),
+			speed: Math.max(0, Math.round(raw.speed * speedMultiplier))
+		};
+	}
+
+	/**
+	 * Get the share of the fight stats an equipped weapon or armor provides, enchantments and rounding included:
+	 * it is the difference between the stats with and without the item, its enchantment still applying to the remaining stats
+	 * @param playerActiveObjects
+	 * @param slot
+	 * @param options
+	 */
+	public getMainItemStatsContribution(playerActiveObjects: PlayerActiveObjects, slot: EquippedMainItemSlot, options: Omit<CumulativeStatsOptions, "withoutMainItem"> = {}): StatValues {
+		const withItem = this.getCumulativeStats(playerActiveObjects, options);
+		const withoutItem = this.getCumulativeStats(playerActiveObjects, {
+			...options,
+			withoutMainItem: slot
+		});
+		return {
+			attack: withItem.attack - withoutItem.attack,
+			defense: withItem.defense - withoutItem.defense,
+			speed: withItem.speed - withoutItem.speed
+		};
+	}
+
+	/**
+	 * Calculate the cumulative attack of the player, see {@link getCumulativeStats}
 	 * @param playerActiveObjects
 	 * @param includePotion
 	 * @param level The level at which the stat is computed, the player level by default
 	 */
 	public getCumulativeAttack(playerActiveObjects: PlayerActiveObjects, includePotion = true, level = this.level): number {
-		const maxStats = this.getMaxStatsValue(level);
-		const playerAttack = maxStats.attack;
-		const attack = playerAttack
-			+ Player.getCappedMainItemStats(playerActiveObjects.weapon, maxStats).attack
-			+ Player.getCappedMainItemStats(playerActiveObjects.armor, maxStats).attack
-			+ playerActiveObjects.object.item.getCappedStats(maxStats).attack
-			+ (includePotion ? playerActiveObjects.potion.item.getAttack() : 0);
-		return attack > 0 ? Math.round(attack) : 0;
+		return this.getCumulativeStats(playerActiveObjects, {
+			includePotion, level
+		}).attack;
 	}
 
 	/**
-	 * Calculate the cumulative defense of the player.
-	 * The defense enchantment is not applied here: it acts as a multiplier on the effective damage received
-	 * in fights (see {@link EnchantmentUtils.getIncomingDamageMultiplier}), not on the raw defense stat.
+	 * Calculate the cumulative defense of the player, see {@link getCumulativeStats}
 	 * @param playerActiveObjects
 	 * @param includePotion
 	 * @param level The level at which the stat is computed, the player level by default
 	 */
 	public getCumulativeDefense(playerActiveObjects: PlayerActiveObjects, includePotion = true, level = this.level): number {
-		const maxStats = this.getMaxStatsValue(level);
-		const playerDefense = maxStats.defense;
-		const defense = playerDefense
-			+ Player.getCappedMainItemStats(playerActiveObjects.weapon, maxStats).defense
-			+ Player.getCappedMainItemStats(playerActiveObjects.armor, maxStats).defense
-			+ playerActiveObjects.object.item.getCappedStats(maxStats).defense
-			+ (includePotion ? playerActiveObjects.potion.item.getDefense() : 0);
-		return defense > 0 ? Math.round(defense) : 0;
+		return this.getCumulativeStats(playerActiveObjects, {
+			includePotion, level
+		}).defense;
 	}
 
 	/**
-	 * Calculate the cumulative speed of the player
+	 * Calculate the cumulative speed of the player, see {@link getCumulativeStats}
 	 * @param playerActiveObjects
 	 * @param includePotion
 	 * @param level The level at which the stat is computed, the player level by default
 	 */
 	public getCumulativeSpeed(playerActiveObjects: PlayerActiveObjects, includePotion = true, level = this.level): number {
-		const maxStats = this.getMaxStatsValue(level);
-		const playerSpeed = maxStats.speed;
-		const speed = playerSpeed
-			+ Player.getCappedMainItemStats(playerActiveObjects.weapon, maxStats).speed
-			+ Player.getCappedMainItemStats(playerActiveObjects.armor, maxStats).speed
-			+ playerActiveObjects.object.item.getCappedStats(maxStats).speed
-			+ (includePotion ? playerActiveObjects.potion.item.getSpeed() : 0);
-		const multiplier = EnchantmentUtils.getEnchantmentMultiplier(playerActiveObjects, ItemEnchantmentKind.SPEED, EnchantmentConstants.SPEED_MULTIPLIER);
-		const enchantedSpeed = Math.round(speed * multiplier);
-		return enchantedSpeed > 0 ? enchantedSpeed : 0;
+		return this.getCumulativeStats(playerActiveObjects, {
+			includePotion, level
+		}).speed;
 	}
 
 	/**
