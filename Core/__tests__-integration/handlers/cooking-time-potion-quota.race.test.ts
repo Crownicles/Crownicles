@@ -3,7 +3,7 @@ import {
 } from "vitest";
 import type { ModelStatic } from "sequelize";
 import {
-	CoreTestEnvironment, loadProductionModule, setupCoreForTests
+	CoreTestEnvironment, loadProductionModule, pinInertDailyMission, setupCoreForTests
 } from "../_coreSetup";
 import type { Player as PlayerType } from "../../src/core/database/game/models/Player";
 import type { Home as HomeType } from "../../src/core/database/game/models/Home";
@@ -29,6 +29,7 @@ describe("weekly time potion limit under concurrent crafts", () => {
 	beforeAll(async () => {
 		env = await setupCoreForTests("timepotionrace");
 		Player = env.crownicles.gameDatabase.sequelize.models.Player as ModelStatic<PlayerType>;
+		await pinInertDailyMission(env);
 	});
 
 	afterAll(async () => {
