@@ -1,4 +1,4 @@
-/* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedPlayerAndMissions callback. */
+/* @lockInherited — executeSmallEvent runs under loadAndExecuteSmallEvents withLockedPlayerAndMissions callback; the collector end callback, run after it, takes its own locks. */
 import {
 	SmallEventDataController, SmallEventFuncs
 } from "../../data/SmallEvent";
@@ -42,7 +42,8 @@ import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventCon
 import { MapLocationType } from "../../../../Lib/src/constants/MapLocationConstants";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { PetUtils } from "../utils/PetUtils";
-import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { withLockedPlayerAndMissionsSafe } from "../utils/withLockedPlayerAndMissionsSafe";
 
 type ReactionHandler = (player: Player, properties: PetFoodProperties) => Promise<string>;
 
@@ -267,7 +268,17 @@ function handleContinueReaction(_player: Player, properties: PetFoodProperties):
 function getEndCallback(player: Player, foodType: string, properties: PetFoodProperties): EndCallback {
 	return async (collector, response) => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FOOD_SMALL_EVENT);
-		await withLockedPlayerSafe(player, "petFood endCallback", async lockedPlayer => {
+		if (!player.petId) {
+			return;
+		}
+		const petIdAtEvent = player.petId;
+
+		// The pet is locked with the player: the love points it gains are read and saved under its lock
+		await withLockedPlayerAndMissionsSafe(player, "petFood endCallback", async lockedPlayer => {
+			if (lockedPlayer.petId !== petIdAtEvent) {
+				CrowniclesLogger.warn(`petFood endCallback: the pet of player ${player.id} changed during the event — aborted`);
+				return;
+			}
 			const reactionType = collector.getFirstReaction()?.reaction.type;
 			const handler = reactionType ? REACTION_HANDLERS[reactionType] : undefined;
 			const outcome = handler
@@ -280,7 +291,7 @@ function getEndCallback(player: Player, foodType: string, properties: PetFoodPro
 			await applyOutcome(lockedPlayer, {
 				foodType, outcome, properties, wasInvestigating
 			}, response);
-		});
+		}, [PetEntity.lockKey(petIdAtEvent)]);
 	};
 }
 
