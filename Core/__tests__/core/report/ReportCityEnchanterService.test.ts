@@ -188,7 +188,6 @@ describe("handleEnchantReaction", () => {
 
 	it("spends no gem for an enchantment that costs none", async () => {
 		const free = ItemEnchantment.ALL_ATTACK_1;
-		vi.mocked(Settings.ENCHANTER_ENCHANTMENT_ID.getValue).mockResolvedValue(free.id);
 		const player = makeHandlerPlayer(free.getEnchantmentCost(false).money);
 		const missionsInfo = makeMissionsInfo(0);
 		const slot = weapon();
@@ -222,18 +221,21 @@ describe("handleEnchantReaction", () => {
 		expect(player.spendMoney).not.toHaveBeenCalled();
 	});
 
-	it("refuses an unlisted equipment without locking, and does nothing with an invalid enchantment of the day", async () => {
+	it("refuses an unlisted equipment without locking, and does nothing with an unknown displayed enchantment", async () => {
 		const player = makeHandlerPlayer(MONEY_PRICE);
 		const slot = weapon();
 		const data = await openEnchanter(player, [slot]);
 		const unlisted = await enchant(player, data, ItemCategory.ARMOR);
 		const noEnchanter = await enchant(player, {} as ReactionCollectorCityData);
-		vi.mocked(Settings.ENCHANTER_ENCHANTMENT_ID.getValue).mockResolvedValue("unknownEnchantment");
-		const invalidSetting = await enchant(player, data);
+		const invalidEnchantment = await enchant(player, {
+			enchanter: {
+				...data.enchanter, enchantmentId: "unknownEnchantment"
+			}
+		} as ReactionCollectorCityData);
 
 		expect(describePackets(unlisted)).toEqual([["CommandReportEquipmentChangedRes", {}]]);
 		expect(describePackets(noEnchanter)).toEqual([["CommandReportEquipmentChangedRes", {}]]);
-		expect(invalidSetting).toEqual([]);
+		expect(invalidEnchantment).toEqual([]);
 		expect(withLockedEntities).not.toHaveBeenCalled();
 	});
 
@@ -251,13 +253,18 @@ describe("handleEnchantReaction", () => {
 		expect(player.spendMoney).not.toHaveBeenCalled();
 	});
 
-	it("refuses an equipment that cannot receive the enchantment of the day", async () => {
+	it("refuses a listed equipment that cannot receive the displayed enchantment", async () => {
 		const player = makeHandlerPlayer(MONEY_PRICE);
 		const missionsInfo = makeMissionsInfo(GEMS_PRICE);
 		const armor = Object.assign(makeInventorySlot({
 			slot: 0, itemCategory: ItemCategory.ARMOR, itemId: COMMON_ARMOR_ID
 		}), { save: vi.fn() });
-		const data = await openEnchanter(player, [armor], ItemEnchantment.DEFENSE_1);
+		const armorMenu = await openEnchanter(player, [armor], ItemEnchantment.DEFENSE_1);
+		const data = {
+			enchanter: {
+				...armorMenu.enchanter, enchantmentId: ENCHANTMENT.id
+			}
+		} as ReactionCollectorCityData;
 		lockRows(player, missionsInfo, armor);
 
 		const response = await enchant(player, data, ItemCategory.ARMOR);
@@ -267,8 +274,7 @@ describe("handleEnchantReaction", () => {
 		expect(player.spendMoney).not.toHaveBeenCalled();
 	});
 
-	// Bug: handleEnchantReaction (ReportCityEnchanterService.ts) applies and charges the enchantment of the day read at confirmation time, not the one the menu showed: a menu opened before the daily rotation grants another enchantment at another price
-	it.fails("does not grant another enchantment than the one the menu showed", async () => {
+	it("grants the enchantment the menu showed at the price it showed, even if the enchantment of the day rotated meanwhile", async () => {
 		const player = makeHandlerPlayer(1_000_000);
 		const missionsInfo = makeMissionsInfo(1_000);
 		const slot = weapon();
@@ -276,10 +282,30 @@ describe("handleEnchantReaction", () => {
 		vi.mocked(Settings.ENCHANTER_ENCHANTMENT_ID.getValue).mockResolvedValue(ItemEnchantment.ALL_ATTACK_1.id);
 		lockRows(player, missionsInfo, slot);
 
+		const response = await enchant(player, data);
+
+		expect(slot.itemEnchantmentId).toBe(ENCHANTMENT.id);
+		expect(player.spendMoney).toHaveBeenCalledWith({
+			response, amount: MONEY_PRICE, reason: NumberChangeReason.ENCHANT_ITEM
+		});
+		expect(missionsInfo.spendGems).toHaveBeenCalledWith(GEMS_PRICE, response, NumberChangeReason.ENCHANT_ITEM);
+		expect(describePackets(response)).toEqual([["CommandReportItemEnchantedRes", {
+			enchantmentId: ENCHANTMENT.id, enchantmentType: ENCHANTMENT.kind.type.id
+		}]]);
+	});
+
+	it("charges the price the menu showed even if the class of the player changed meanwhile", async () => {
+		const player = makeHandlerPlayer(MONEY_PRICE);
+		const missionsInfo = makeMissionsInfo(GEMS_PRICE);
+		const slot = weapon();
+		const data = await openEnchanter(player, [slot]);
+		player.class = ClassConstants.CLASSES_ID.MYSTIC_MAGE;
+		lockRows(player, missionsInfo, slot);
+
 		await enchant(player, data);
 
-		expect(slot.itemEnchantmentId).not.toBe(ItemEnchantment.ALL_ATTACK_1.id);
-		expect(player.spendMoney).not.toHaveBeenCalledWith(expect.objectContaining({ amount: ItemEnchantment.ALL_ATTACK_1.getEnchantmentCost(false).money }));
+		expect([player.money, missionsInfo.gems]).toEqual([0, 0]);
+		expect(slot.itemEnchantmentId).toBe(ENCHANTMENT.id);
 	});
 
 	it("does not log an enchantment made outside of a city", async () => {
