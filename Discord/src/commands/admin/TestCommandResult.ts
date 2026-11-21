@@ -74,16 +74,19 @@ function buildPayloadWithAttachments(embed: CrowniclesEmbed, fileName?: string, 
 		: { embeds: [embed] };
 }
 
-async function sendResultWithoutInteraction(packet: CommandTestPacketRes, context: PacketContext): Promise<void> {
+/**
+ * Channel the command was used in, to deliver its result when the interaction is no longer cached
+ */
+async function fetchResultChannel(context: PacketContext): Promise<GuildTextBasedChannel | null> {
 	const channelId = context.discord?.channel;
 	if (!channelId) {
 		CrowniclesLogger.warn("Command test result without context channel");
-		return;
+		return null;
 	}
 
 	if (!crowniclesClient?.isReady()) {
 		CrowniclesLogger.warn("Discord client not ready to deliver command test result");
-		return;
+		return null;
 	}
 
 	const channel = await crowniclesClient.channels.fetch(channelId).catch(e => {
@@ -91,16 +94,22 @@ async function sendResultWithoutInteraction(packet: CommandTestPacketRes, contex
 		return null;
 	});
 
-	if (!channel || !channel.isTextBased()) {
+	if (!channel?.isTextBased()) {
 		CrowniclesLogger.warn(`Channel ${channelId} unavailable for test command result`);
+		return null;
+	}
+	return channel as GuildTextBasedChannel;
+}
+
+async function sendResultWithoutInteraction(packet: CommandTestPacketRes, context: PacketContext): Promise<void> {
+	const textChannel = await fetchResultChannel(context);
+	if (!textChannel) {
 		return;
 	}
 
-	const textChannel = channel as GuildTextBasedChannel;
-
 	const userId = context.discord?.user;
 	const user = userId
-		? await crowniclesClient.users.fetch(userId).catch(() => null)
+		? await crowniclesClient?.users.fetch(userId).catch(() => null)
 		: null;
 
 	await textChannel.send(buildTestResultPayload(packet, user?.displayAvatarURL())).catch((e: unknown) => {
