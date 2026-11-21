@@ -478,7 +478,7 @@
         "description": "Use this command to challenge other players.\nBattles take place on a turn-by-turn basis. Each turn, you can choose an action to perform.\n\nFor more information, please visit the guide page: https://guide.crownicles.com/notions-principale/combats"
       },
       "FIGHT_HISTORY": {
-        "description": "Affiche l'historique de vos derniers combats : l'adversaire affronté, le résultat ainsi que l'évolution de la gloire et de la ligue de chaque combattant. Si vous avez déjà affronté un garde du roi, le bouton **Gardes du roi** présente le meilleur garde que vous avez vaincu, votre classement et le tableau d'honneur du royaume."
+        "description": "Displays a history of your most recent battles: the opponent you faced, the result, and each fighter’s progress in glory and league rank. If you have already fought a King's Guard, the **King's Guards** button shows the best King's Guard you have defeated, your ranking, and the kingdom's Hall of Fame."
       },
       "FRIENDLY_FIGHT": {
         "description": "Allows you to face off against another player—chosen by naming them or based on their ranking—in a friendly battle. The opponent is controlled by AI. This battle has no consequences: no glory, no rewards, no energy lost, and no mission progress. The level of both combatants is capped at {{friendlyFightLevelCap}} : a player of a lower level retains their current level."
@@ -2328,8 +2328,8 @@
       "energy": "Regenerated energy",
       "dailyBonus": "Daily bonus",
       "petExpedition": "Pet expedition completed",
-      "gardenPlantReady": "Plante du jardin prête à être récoltée",
-      "gardenAllPlantsReady": "Toutes les plantes du jardin prêtes à être récoltées"
+      "gardenPlantReady": "Garden plant ready to be harvested",
+      "gardenAllPlantsReady": "All the plants in the garden that are ready to be harvested"
     },
     "enableDisable": "Enable/Disable",
     "sendLocationField": "Send location:",
@@ -2351,8 +2351,8 @@
   "missions": {
     "pages": {
       "missions": "Missions",
-      "kingChallenge": "Défi du roi",
-      "quests": "Quêtes"
+      "kingChallenge": "The King's Challenge",
+      "quests": "Quests"
     },
     "kingChallenge": {
       "title": "The King's Challenge {{pseudo}}",
@@ -2363,88 +2363,88 @@
       "tier": "{emote:kingChallenge.{{status}}} Level {{tier}}: {{threshold, number}} {emote:unitValues.score} ({{rewards}})"
     },
     "quests": {
-      "title": "Quêtes de {{pseudo}}",
-      "description": "Les quêtes retracent les grandes découvertes qui attendent les aventuriers du royaume. Elles ne rapportent rien par elles-mêmes : chacune de leurs étapes est déjà récompensée en chemin.",
+      "title": "Quests for {{pseudo}}",
+      "description": "Quests chronicle the great discoveries that await adventurers in the kingdom. They do not yield any rewards in and of themselves: each stage of the quest is rewarded along the way.",
       "questHeader": "{{icon}} **{{name}}**",
-      "progression_one": "{{progressionBar}} {{count}} étape accomplie sur {{max}}",
-      "progression_other": "{{progressionBar}} {{count}} étapes accomplies sur {{max}}",
-      "currentStep": "{emote:quests.stepCurrent} **Étape {{stepNumber}}** : {{label}}\n{{hint}}",
-      "noOngoingQuest": "Vous n'avez aucune quête en cours. De nouvelles quêtes se découvrent au fil de vos aventures dans le royaume.",
+      "progression_one": "{{progressionBar}} {{count}} milestone achieved on {{max}}",
+      "progression_other": "{{progressionBar}} {{count}} milestones achieved on {{max}}",
+      "currentStep": "{emote:quests.stepCurrent} **Step {{stepNumber}}**: {{label}}\n{{hint}}",
+      "noOngoingQuest": "You don't have any active quests. New quests will become available as you explore the kingdom.",
       "options": {
-        "quests": "Quêtes en cours ({{count}})",
-        "completedQuests": "Quêtes terminées ({{count}})"
+        "quests": "Current Quests ({{count}})",
+        "completedQuests": "Completed Quests ({{count}})"
       },
-      "completedTitle": "Quêtes terminées de {{pseudo}}",
-      "completedQuest": "{{icon}} **{{name}}** — {emote:quests.completed} {{max}}/{{max}} étapes",
-      "noCompletedQuest": "Aucune quête n'est encore terminée. Les quêtes accomplies sont conservées ici.",
+      "completedTitle": "Completed quests from {{pseudo}}",
+      "completedQuest": "{{icon}} **{{name}}** — {emote:quests.completed} {{max}}/{{max}} steps",
+      "noCompletedQuest": "No quests have been completed yet. Completed quests are saved here.",
       "list": {
         "expeditionTalismans": {
-          "name": "Les talismans d'expédition",
+          "name": "Expedition Talismans",
           "icon": "{emote:expedition.talisman}",
-          "description": "Les familiers les plus aguerris peuvent explorer seuls les contrées lointaines, à condition d'être liés à leur maître par des artefacts ancestraux. Velanna et Talvar finissent toujours par croiser la route des aventuriers qui sont prêts.",
+          "description": "Even the most seasoned familiars can explore distant lands on their own, provided they are bound to their master by ancestral artifacts. Velanna and Talvar always end up crossing paths with adventurers who are ready.",
           "steps": {
             "meetVelanna": {
               "label": "Meet Velanna",
-              "hint": "*Une guerrière balafrée arpente parfois les routes du continent et s'intéresse de près aux familiers de ceux qu'elle croise.*"
+              "hint": "*A scarred warrior sometimes roams the continent's roads and takes a keen interest in the familiars of those she encounters.*"
             },
             "anchorTalisman": {
-              "label": "Obtenir le $t(models:talisman.anchor)",
-              "hint": "Velanna le confie si vous réunissez :\n• Niveau {{level}} minimum\n• Membre d'une guilde\n• Un familier rassasié et docile\n• Un familier déjà présenté à Talvar"
+              "label": "Get the $t(models:talisman.anchor)",
+              "hint": "Velanna will entrust this to you if you meet the following requirements:\n• Minimum level: {{level}}\n• Guild member\n• A well-fed and docile pet\n• A pet that has already been introduced to Talvar"
             },
             "successfulExpedition": {
-              "label": "Réussir une expédition",
-              "hint": "*Le $t(models:talisman.anchor) permet d'envoyer son familier explorer des contrées lointaines depuis {command:pet}.*"
+              "label": "How to Have a Successful Expedition",
+              "hint": "*The $t(models:talisman.anchor) allows you to send your pet to explore distant lands using the {command:pet} command.*"
             },
             "cloneTalisman": {
-              "label": "Obtenir le $t(models:talisman.clone)",
-              "hint": "*Les rumeurs parlent d'un artefact légendaire enfoui dans certaines contrées, que seul un familier en expédition pourrait déterrer.*"
+              "label": "Get the $t(models:talisman.clone)",
+              "hint": "*Rumors speak of a legendary artifact buried in certain regions, which only a familiar on an expedition could unearth.*"
             }
           }
         },
         "seeds": {
-          "name": "Les graines du jardinier",
+          "name": "The Gardener's Seeds",
           "icon": "{emote:city.gardenStatus.seed}",
-          "description": "Un jardinier itinérant confie ses graines les plus rares aux aventuriers qui ont su faire pousser les précédentes. Il finit toujours par croiser, sur les chemins forestiers, la route de ceux qui sont prêts à recevoir la suivante.",
+          "description": "A wandering gardener entrusts his rarest seeds to the adventurers who have successfully grown the previous ones. He always ends up crossing paths—on forest trails—with those who are ready to receive the next batch.",
           "steps": {
             "commonHerb": {
-              "label": "Planter {emote:plants.1} $t(models:plants.1)",
-              "hint": "• Croiser Théobald, le jardinier, sur une route forestière\n• Niveau {{level}} minimum\n• Un jardin dans votre demeure pour la planter"
+              "label": "Plant {emote:plants.1} $t(models:plants.1)",
+              "hint": "• Run into Théobald, the gardener, on a forest road\n• Minimum level: {{level}}\n• A garden in your home where you can plant it"
             },
             "goldenClover": {
-              "label": "Planter {emote:plants.2} $t(models:plants.2)",
-              "hint": "• Niveau {{level}} minimum\n• Prix : {{price, number}} {emote:unitValues.money}"
+              "label": "Plant {emote:plants.2} $t(models:plants.2)",
+              "hint": "• Minimum level {{level}}\n• Price: {{price, number}} {emote:unitValues.money}"
             },
             "lunarMoss": {
-              "label": "Planter {emote:plants.3} $t(models:plants.3)",
-              "hint": "• Niveau {{level}} minimum\n• Au choix : un **familier volant**, une **nuit à l'auberge** de moins de {{innNightHours}} h, ou une **rencontre de nuit** ({{nightStart}} h – {{nightEnd}} h)"
+              "label": "Plant {emote:plants.3} $t(models:plants.3)",
+              "hint": "• Minimum level: {{level}}\n• Choose one: a **flying pet**, one **night at an inn** lasting less than {{innNightHours}} h, or a **nighttime encounter** ({{nightStart}} h – {{nightEnd}} h)"
             },
             "ironRoot": {
-              "label": "Planter {emote:plants.4} $t(models:plants.4)",
-              "hint": "• Niveau {{level}} minimum\n• Prix : {{price, number}} {emote:unitValues.money}"
+              "label": "Plant {emote:plants.4} $t(models:plants.4)",
+              "hint": "• Minimum level {{level}}\n• Price: {{price, number}} {emote:unitValues.money}"
             },
             "nightMushroom": {
-              "label": "Planter {emote:plants.5} $t(models:plants.5)",
-              "hint": "• Niveau {{level}} minimum\n• Au choix : un **familier nocturne**, une **nuit à l'auberge** de moins de {{innNightHours}} h, ou une **rencontre de nuit** ({{nightStart}} h – {{nightEnd}} h)"
+              "label": "Plant {emote:plants.5} $t(models:plants.5)",
+              "hint": "• Minimum level: {{level}}\n• Choose one: a **nighttime companion**, a **night at an inn** lasting less than {{innNightHours}} h, or a **nighttime encounter** ({{nightStart}} h – {{nightEnd}} h)"
             },
             "venomousLeaf": {
-              "label": "Planter {emote:plants.6} $t(models:plants.6)",
-              "hint": "• Niveau {{level}} minimum\n• Un **familier herbivore** dressé"
+              "label": "Plant {emote:plants.6} $t(models:plants.6)",
+              "hint": "• Minimum level: {{level}}\n• A trained **herbivorous pet**"
             },
             "fireBulb": {
-              "label": "Planter {emote:plants.7} $t(models:plants.7)",
-              "hint": "• Niveau {{level}} minimum\n• Au choix : être **mage**, un **familier de feu** ou un **équipement de feu** porté"
+              "label": "Plant {emote:plants.7} $t(models:plants.7)",
+              "hint": "• Minimum level: {{level}}\n• Choose one: be a **mage**, have a **fire familiar**, or be wearing **fire gear**"
             },
             "meatPlant": {
-              "label": "Planter {emote:plants.8} $t(models:plants.8)",
-              "hint": "• Niveau {{level}} minimum\n• Un **familier carnivore** de rareté $t(items:rarities.{{rarity}}) ou supérieure"
+              "label": "Plant {emote:plants.8} $t(models:plants.8)",
+              "hint": "• Minimum level: {{level}}\n• A **carnivorous pet** with a rarity of $t(items:rarities.{{rarity}}) or higher"
             },
             "crystalFlower": {
-              "label": "Planter {emote:plants.9} $t(models:plants.9)",
-              "hint": "• Niveau {{level}} minimum\n• Prix : {{price, number}} {emote:unitValues.money}"
+              "label": "Plant {emote:plants.9} $t(models:plants.9)",
+              "hint": "• Minimum level {{level}}\n• Price: {{price, number}} {emote:unitValues.money}"
             },
             "ancientTree": {
-              "label": "Planter {emote:plants.10} $t(models:plants.10)",
-              "hint": "• Niveau {{level}} minimum\n• Un **familier herbivore** dressé de rareté $t(items:rarities.{{rarity}}) ou supérieure"
+              "label": "Plant {emote:plants.10} $t(models:plants.10)",
+              "hint": "• Minimum level: {{level}}\n• A trained **herbivorous pet** with a rarity of $t(items:rarities.{{rarity}}) or higher"
             }
           }
         }
@@ -2781,14 +2781,14 @@
       ]
     },
     "kingGuard": {
-      "displayName": "Garde {{name}}",
-      "unnamed": "un garde du roi",
+      "displayName": "Guard {{name}}",
+      "unnamed": "a royal guard",
       "outcome": {
-        "win": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, et l'a vaincu. Aucune gloire n'était en jeu lors de ce combat.",
-        "win_female": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, et l'a vaincue. Aucune gloire n'était en jeu lors de ce combat.",
-        "draw": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, sans parvenir à le départager. Aucune gloire n'était en jeu lors de ce combat.",
-        "draw_female": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, sans parvenir à la départager. Aucune gloire n'était en jeu lors de ce combat.",
-        "loss": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, et a été vaincu. Aucune gloire n'était en jeu lors de ce combat."
+        "win": "No opponent was available: {{player}} faced off against {{guard}}, the king's guard, and defeated him. No glory was at stake in this fight.",
+        "win_female": "No opponent was available: {{player}} faced off against {{guard}}, the king's guard, and defeated her. No glory was at stake in this battle.",
+        "draw": "No opponent was available: {{player}} faced off against {{guard}}, the king's guard, but the match ended in a draw. No glory was at stake in this fight.",
+        "draw_female": "No opponent was available: {{player}} faced off against {{guard}}, the king's guard, but the match ended in a draw. No glory was at stake in this battle.",
+        "loss": "No opponent was available: {{player}} faced off against {{guard}}, the king's guard, and was defeated. No glory was at stake in this fight."
       }
     }
   },
@@ -3113,7 +3113,7 @@
     "noHistory": "You don't have any battles in your history yet.",
     "title": "{{pseudo}}, your fight history",
     "historyLine": "{{date}}\n{{attackSentence}}\n**Result :** {{resultSentence}}\n**Your glory:** {emote:unitValues.glory} {{meInitialGlory, number}} -> {{meFinalGlory, number}}{{meLeagueChange}}\n**Opposite glory :** {emote:unitValues.glory} {{opponentInitialGlory, number}} -> {{opponentFinalGlory, number}}",
-    "kingGuardFightLine": "{{date}}\n{emote:fightCommand.crossedSwords} Aucun adversaire n'était disponible : vous avez affronté **{{guard}}** de niveau {{guardLevel}} ({emote:classes.{{guardClassId}}} $t(models:classes.{{guardClassId}}))\n**Résultat :** {{resultSentence}}\n**Gloire :** {emote:unitValues.glory} aucune gloire n'était en jeu",
+    "kingGuardFightLine": "{{date}}\n{emote:fightCommand.crossedSwords} No opponents were available: you fought **{{guard}}** at level {{guardLevel}} ({emote:classes.{{guardClassId}}} $t(models:classes.{{guardClassId}}))\n**Result:** {{resultSentence}}\n**Glory:** {emote:unitValues.glory} No glory was at stake",
     "attackSentence": {
       "attacker": "{emote:fightCommand.crossedSwords} You attacked **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))",
       "defender": "{emote:fightCommand.shield} You were attacked by **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))"
@@ -3131,15 +3131,15 @@
       "openButton": "The King's Guards",
       "backButton": "History",
       "title": "{emote:fightCommand.crossedSwords} Facing the king's guards",
-      "bestDefeatedGuard": "**Meilleur garde vaincu :** {{guard}} ({emote:classes.{{classId}}} $t(models:classes.{{classId}}), niv. {{level}}){{aboveLevel}}",
-      "bestDefeatedGuardHint": "*Les gardes gagnent ou perdent en renommée au fil de leurs combats : votre meilleur garde vaincu est celui qui est aujourd'hui le plus redoutable parmi ceux que vous avez battus.*",
+      "bestDefeatedGuard": "**Best Defeated Guardian:** {{guard}} ({emote:classes.{{classId}}} $t(models:classes.{{classId}}), level {{level}}){{aboveLevel}}",
+      "bestDefeatedGuardHint": "*Guards gain or lose reputation as they fight: your best defeated guard is the one who is currently the most formidable among those you have defeated.*",
       "aboveLevel_one": ", {{count}} one level above yours",
       "aboveLevel_other": ", {{count}} levels above yours",
-      "noDefeatedGuard": "**Meilleur garde vaincu :** aucun garde vaincu pour l'instant",
-      "ranking": "**Classement :** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
+      "noDefeatedGuard": "**Best Guard Defeated:** No guards have been defeated so far",
+      "ranking": "**Rankings:** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
       "tally": "**Record:** {emote:fightHistory.won} Wins: {{won, number}} · {emote:fightHistory.lost} Losses: {{lost, number}} · {emote:fightHistory.draw} Draws: {{draw, number}}",
       "leaderboardTitle": "{emote:other.crown} **Guard Hall of Fame**",
-      "leaderboardEntry": "{{badge}} {{rank, number}}. **{{name}}** : {{guard}} {emote:classes.{{classId}}}, niv. {{level}}",
+      "leaderboardEntry": "{{badge}} {{rank, number}}. **{{name}}**: {{guard}} {emote:classes.{{classId}}}, level {{level}}",
       "you": "You"
     }
   },
