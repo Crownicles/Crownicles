@@ -197,6 +197,20 @@ describe("InventorySlot", () => {
 		});
 	});
 
+	it("should identify a slot by its player, position and category when saving it", () => {
+		expect(buildSlot({
+			playerId: 7, slot: 2, itemCategory: ItemCategory.ARMOR
+		}).where()).toEqual({
+			playerId: 7, slot: 2, itemCategory: ItemCategory.ARMOR
+		});
+	});
+
+	it("should accept an unenchanted slot without potion usages", async () => {
+		await expect(buildSlot({
+			itemEnchantmentId: null, remainingPotionUsages: null
+		}).validate()).resolves.toBeDefined();
+	});
+
 	it("should refresh the update date before every save", async () => {
 		vi.useFakeTimers({ now: new Date(2026, 2, 10, 12, 0, 0) });
 		const slot = buildSlot();

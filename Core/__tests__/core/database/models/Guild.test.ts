@@ -407,6 +407,10 @@ describe("Guild", () => {
 		});
 	});
 
+	it("should accept a guild without domain city", async () => {
+		await expect(buildGuild({ domainCityId: null }).validate()).resolves.toBeDefined();
+	});
+
 	describe("completelyDestroyAndDeleteFromTheDatabase", () => {
 		const fakeTransaction = { id: "tx" } as unknown as Transaction; // Only forwarded to the destroy calls
 		let shelteredPets: { petEntityId: number; destroy: ReturnType<typeof vi.fn> }[];
