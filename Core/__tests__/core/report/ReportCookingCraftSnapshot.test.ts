@@ -1,6 +1,10 @@
 import {
 	afterEach, beforeEach, describe, expect, it, vi
 } from "vitest";
+
+vi.mock("../../../src/core/utils/withLockedPlayerAndMissions", () => ({
+	withLockedPlayerAndMissions: (_playerId: number, body: (lockedPlayer: Player) => Promise<unknown>): Promise<unknown> => body(player)
+}));
 import { handleCookingCraft } from "../../../src/core/report/ReportCookingService";
 import {
 	CommandReportCookingCraftReq, CookingCraftErrors, CookingSlotData

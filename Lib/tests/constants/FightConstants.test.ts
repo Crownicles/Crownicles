@@ -5,6 +5,21 @@ import * as path from "node:path";
 import * as fs from "node:fs";
 import {CrowniclesIcons} from "../../src/CrowniclesIcons";
 
+/**
+ * Path of a French translation file, found by walking up the tree so it also resolves from the Stryker sandbox
+ */
+function frenchLangFile(fileName: string): string {
+	let directory = __dirname;
+	while (!fs.existsSync(path.join(directory, "Lang", "fr"))) {
+		const parent = path.dirname(directory);
+		if (parent === directory) {
+			throw new Error("Lang directory not found");
+		}
+		directory = parent;
+	}
+	return path.join(directory, "Lang", "fr", fileName);
+}
+
 describe("FightConstants PvP rewards", () => {
 	it("scales win rewards progressively from Wood to Royal league", () => {
 		const winRewards = LeagueInfoConstants.FIGHT_WIN_MONEY_REWARDS;
@@ -27,7 +42,7 @@ describe("FightConstants PvP rewards", () => {
 });
 
 describe("FightConstants fight_actions models.json validation", () => {
-	const modelsPath = path.join(__dirname, "../../../Lang/fr/models.json");
+	const modelsPath = frenchLangFile("models.json");
 	const models = JSON.parse(fs.readFileSync(modelsPath, "utf-8"));
 	const fightActions = models.fight_actions;
 
@@ -115,7 +130,7 @@ describe("FightConstants fight_actions models.json validation", () => {
 	});
 
 	describe("PLAYER and MONSTER actions have infoFight event entries", () => {
-		const smallEventsPath = path.join(__dirname, "../../../Lang/fr/smallEvents.json");
+		const smallEventsPath = frenchLangFile("smallEvents.json");
 		const smallEvents = JSON.parse(fs.readFileSync(smallEventsPath, "utf-8"));
 		const infoFightActions = smallEvents.infoFight.fightActions;
 

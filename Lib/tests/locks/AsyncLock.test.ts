@@ -10,6 +10,23 @@ describe("AsyncLock", () => {
 		release();
 	});
 
+	it("frees the lock when the last holder releases it with nobody waiting", async () => {
+		const lock = new AsyncLock();
+		(await lock.acquire())();
+
+		let reacquired = false;
+		const next = lock.acquire().then(release => {
+			reacquired = true;
+			return release;
+		});
+		for (let i = 0; i < 5; i++) {
+			await Promise.resolve();
+		}
+
+		expect(reacquired).toBe(true);
+		(await next)();
+	});
+
 	it("serialises concurrent acquirers in FIFO order", async () => {
 		const lock = new AsyncLock();
 		const order: number[] = [];

@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
 	ExpeditionConstants,
 	getPetExpeditionPreference,
+	getRiskCategoryLevel,
 	generateTerrainBasedRisk,
 	PET_PREFERENCE_REWARD_MULTIPLIERS,
 	DISLIKED_SHORT_EXPEDITION_FAILURE_BONUS,
@@ -366,3 +367,18 @@ describe("ExpeditionConstants", () => {
 		});
 	});
 });
+
+describe("getRiskCategoryLevel", () => {
+	it("numbers the risk categories in the order of the displayed ones, bounds included", () => {
+		const categories = Object.values(ExpeditionConstants.RISK_DISPLAY_CATEGORIES);
+
+		categories.forEach((category, level) => {
+			expect(getRiskCategoryLevel(category.MAX), category.NAME).toBe(level);
+			if (level + 1 < categories.length) {
+				expect(getRiskCategoryLevel(category.MAX + 1), category.NAME).toBe(level + 1);
+			}
+		});
+		expect(getRiskCategoryLevel(0)).toBe(0);
+	});
+});
+

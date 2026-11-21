@@ -375,6 +375,60 @@ export async function handleCommandFightActionChoose(context: PacketContext, pac
 }
 
 /**
+ * Title of the end of fight message, depending on whether the fight ended in a draw
+ */
+function buildEndOfFightTitle(packet: CommandFightEndOfFightPacket, lng: Language, winnerName: string, looserName: string): string {
+	return packet.draw
+		? i18n.t("commands:fight.end.draw", {
+			lng,
+			player1: winnerName,
+			player2: looserName
+		})
+		: i18n.t("commands:fight.end.win", {
+			lng,
+			winner: winnerName,
+			loser: looserName
+		});
+}
+
+/**
+ * Description of the end of fight message: game statistics, then the statistics of both fighters
+ */
+function buildEndOfFightDescription(params: {
+	packet: CommandFightEndOfFightPacket;
+	lng: Language;
+	winnerName: string;
+	looserName: string;
+	startTimestamp: number;
+}): string {
+	const {
+		packet, lng
+	} = params;
+	const gameStats = i18n.t(packet.turns > packet.maxTurns ? "commands:fight.end.gameStatsProlongation" : "commands:fight.end.gameStats", {
+		lng,
+		turn: packet.turns,
+		maxTurn: packet.maxTurns,
+		time: i18n.formatDuration(millisecondsToMinutes(msDiff(nowMs(), asMilliseconds(params.startTimestamp))), lng)
+	});
+	const fighterStats = [
+		{
+			name: params.winnerName,
+			stats: packet.winner
+		},
+		{
+			name: params.looserName,
+			stats: packet.looser
+		}
+	].map(fighter => i18n.t("commands:fight.end.fighterStats", {
+		lng,
+		pseudo: fighter.name,
+		energy: fighter.stats.finalEnergy,
+		maxEnergy: fighter.stats.maxEnergy
+	}));
+	return gameStats + fighterStats.join("");
+}
+
+/**
  * Handle the end of a fight
  * @param context
  * @param packet
@@ -406,47 +460,11 @@ export async function handleEndOfFight(context: PacketContext, packet: CommandFi
 	const winnerName = await getDisplayName(packet.winner.keycloakId, packet.winner.monsterId);
 	const looserName = await getDisplayName(packet.looser.keycloakId, packet.looser.monsterId);
 
-	// Create message description
-	let description = i18n.t("commands:fight.end.gameStats", {
-		lng,
-		turn: packet.turns,
-		maxTurn: packet.maxTurns,
-		time: i18n.formatDuration(millisecondsToMinutes(msDiff(nowMs(), asMilliseconds(interaction.createdTimestamp))), lng)
-	});
-
-	// Add fighter statistics for both fighters
-	[
-		{
-			name: winnerName,
-			stats: packet.winner
-		},
-		{
-			name: looserName,
-			stats: packet.looser
-		}
-	].forEach(fighter => {
-		description += i18n.t("commands:fight.end.fighterStats", {
-			lng,
-			pseudo: fighter.name,
-			energy: fighter.stats.finalEnergy,
-			maxEnergy: fighter.stats.maxEnergy
-		});
-	});
-
-	// Send embed with handshake reaction
 	const embed = new CrowniclesEmbed()
-		.setTitle(packet.draw
-			? i18n.t("commands:fight.end.draw", {
-				lng,
-				player1: winnerName,
-				player2: looserName
-			})
-			: i18n.t("commands:fight.end.win", {
-				lng,
-				winner: winnerName,
-				loser: looserName
-			}))
-		.setDescription(description);
+		.setTitle(buildEndOfFightTitle(packet, lng, winnerName, looserName))
+		.setDescription(buildEndOfFightDescription({
+			packet, lng, winnerName, looserName, startTimestamp: interaction.createdTimestamp
+		}));
 
 	const message = await interaction.channel?.send({ embeds: [embed] });
 	await message?.react(CrowniclesIcons.fightCommand.handshake);

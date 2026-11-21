@@ -3,6 +3,7 @@ import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import { Fighter } from "../fighter/Fighter";
 import { FightActionStatus } from "../../../../../Lib/src/types/FightActionStatus";
 import {
+	defaultFailFightActionResult,
 	defaultFightActionResult,
 	FightActionBuff,
 	FightActionResult, FightActionTypeResistance,
@@ -214,24 +215,25 @@ export abstract class FightActionController {
 	 * @param fight - the fight controller
 	 */
 	static useSecondAttack(sender: Fighter, receiver: Fighter, chosenAttack: FightAction, turn: number, fight: FightController): FightActionResult {
+		const result = defaultFightActionResult();
 		if (chosenAttack.breath > sender.getBreath()) {
+			// Out of breath is an alteration, not an attack: the second attack simply fails
 			if (Math.random() < FightConstants.OUT_OF_BREATH_FAILURE_PROBABILITY) {
-				chosenAttack = FightActionDataController.instance.getById("outOfBreath")!;
+				result.usedAction = {
+					id: FightConstants.FIGHT_ACTIONS.ALTERATION.OUT_OF_BREATH,
+					result: defaultFailFightActionResult()
+				};
+				return result;
 			}
-			else {
-				sender.setBreath(0);
-			}
+			sender.setBreath(0);
 		}
 		else {
 			sender.addBreath(-chosenAttack.breath);
 		}
 
-		// We now this will not be an alteration result
-		const resultLaunched = chosenAttack.use(sender, receiver, turn, fight) as FightActionResult;
-		const result = defaultFightActionResult();
 		result.usedAction = {
 			id: chosenAttack.id,
-			result: resultLaunched
+			result: chosenAttack.use(sender, receiver, turn, fight)
 		};
 		return result;
 	}

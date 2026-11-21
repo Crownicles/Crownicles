@@ -41,7 +41,8 @@ cd RestWs && pnpm start
 
 ### Testing & Code Quality
 - Tests: `pnpm test` (Vitest framework)
-- Coverage: `pnpm test:coverage`
+- Coverage: `pnpm test:coverage` (measures every file of `src/` and fails under the `thresholds` floors of `vitest.config.mts`: raise them when the coverage improves)
+- Mutation: `pnpm test:mutation` in Core and Lib (Stryker, only on the files listed in `mutate` of `stryker.config.mjs`; Core mutates the files in place and restores them at the end, so do not interrupt it with `kill -9`)
 - Linting: `pnpm eslint` / `pnpm eslintFix`
 - Build: `pnpm tsc` (outputs to `dist/`)
 

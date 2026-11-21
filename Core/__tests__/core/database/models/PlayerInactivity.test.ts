@@ -1,6 +1,9 @@
 import {
 	describe, expect, it, vi
 } from "vitest";
+import {
+	col, fn
+} from "sequelize";
 import Player from "../../../../src/core/database/game/models/Player";
 import { TopConstants } from "../../../../../Lib/src/constants/TopConstants";
 
@@ -47,6 +50,12 @@ describe("Player.isInactive", () => {
 		expect(createPlayer(startTravelDate, false).isInactive()).toBe(false);
 	});
 
+	it("keeps a player active up to exactly fifteen days", () => {
+		vi.spyOn(Date, "now").mockReturnValue(now);
+
+		expect(createPlayer(new Date(now - TopConstants.FIFTEEN_DAYS), false).isInactive()).toBe(false);
+	});
+
 	it("persists player activity without refreshing updatedAt", async () => {
 		vi.spyOn(Date, "now").mockReturnValue(now);
 		const update = vi.spyOn(Player, "update").mockResolvedValue([1]);
@@ -58,7 +67,8 @@ describe("Player.isInactive", () => {
 
 		await player.markActive();
 
-		expect(update).toHaveBeenCalledWith({ lastActivityAt: expect.anything() }, {
+		// The greatest of the stored and new dates: a concurrent later activity is never moved back
+		expect(update).toHaveBeenCalledWith({ lastActivityAt: fn("GREATEST", col("lastActivityAt"), new Date(now)) }, {
 			silent: true,
 			where: { id: 42 }
 		});

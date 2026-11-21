@@ -6,6 +6,9 @@
 */logs
 **/dist
 **/coverage
+**/reports/mutation
+**/reports/stryker-incremental.json
+**/.stryker-tmp
 **/config/config.toml
 **/test-results.xml
 **/test-integration-results.xml

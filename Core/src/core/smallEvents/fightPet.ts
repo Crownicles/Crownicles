@@ -35,7 +35,7 @@ function getRandomFightPetActions(player: Player): FightPetAction[] {
 	}
 
 	// Some classes get a bonus action
-	if (player.class in ClassInfoConstants.CLASSES_WITH_BONUS_ACTION) {
+	if (ClassInfoConstants.CLASSES_WITH_BONUS_ACTION.includes(player.class)) {
 		amountOfActions++;
 	}
 

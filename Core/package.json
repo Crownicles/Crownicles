@@ -21,7 +21,8 @@
     "eslintFix": "eslint src --fix",
     "tsc": "tsc",
     "dockerStart": "node --max-old-space-size=512 --heapsnapshot-signal=SIGUSR2 --diagnostic-dir=./logs dist/Core/src/main.js",
-    "start-profiler": "pnpm run tsc && node --prof dist/Core/src/main.js"
+    "start-profiler": "pnpm run tsc && node --prof dist/Core/src/main.js",
+    "test:mutation": "stryker run"
   },
   "dependencies": {
     "@types/cls-hooked": "4.3.9",
@@ -45,6 +46,8 @@
     "winston-loki": "6.1.7"
   },
   "devDependencies": {
+    "@stryker-mutator/core": "10.1.1",
+    "@stryker-mutator/vitest-runner": "10.1.1",
     "@stylistic/eslint-plugin": "5.10.0",
     "@types/triple-beam": "^1.3.5",
     "@typescript-eslint/eslint-plugin": "8.73.0",

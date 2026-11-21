@@ -51,6 +51,13 @@ function mockPet(pet: {
 	vi.spyOn(PetDataController.instance, "getById").mockReturnValue({} as never);
 }
 
+function isTalvarGuaranteed(talvarPlayer: never): Promise<boolean> {
+	if (!talvarFuncs.isGuaranteed) {
+		throw new Error("Talvar can be guaranteed");
+	}
+	return talvarFuncs.isGuaranteed(talvarPlayer);
+}
+
 describe("guaranteed small events", () => {
 	afterEach(() => {
 		vi.restoreAllMocks();
@@ -127,6 +134,27 @@ describe("guaranteed small events", () => {
 			vi.spyOn(DwarfPetsSeen, "isPetSeen").mockResolvedValue(false);
 			mockTalisman(true);
 			expect(await talvarFuncs.isGuaranteed!(player)).toBe(false);
+		});
+
+		it("is not guaranteed to a player without an available and calm pet", async () => {
+			vi.spyOn(DwarfPetsSeen, "isPetSeen").mockResolvedValue(false);
+			expect(await isTalvarGuaranteed({
+				...(player as object), petId: null
+			} as never)).toBe(false);
+
+			vi.spyOn(PetEntities, "getById").mockResolvedValue(null);
+			expect(await isTalvarGuaranteed(player)).toBe(false);
+
+			mockPet({
+				isFeisty: true, isHungry: true
+			});
+			expect(await isTalvarGuaranteed(player)).toBe(false);
+
+			mockPet({
+				isFeisty: false, isHungry: true
+			});
+			vi.spyOn(PetUtils, "isPetAvailable").mockResolvedValue(false);
+			expect(await isTalvarGuaranteed(player)).toBe(false);
 		});
 	});
 });

@@ -44,6 +44,15 @@ describe("pet food biome selection", () => {
 		expect(getFoodType(player)).toBe("vegetarian");
 	});
 
+	it("uses the departure biome when the draw equals the travel progress", () => {
+		vi.spyOn(TravelTime, "getTravelProgress").mockReturnValue(0.5);
+		vi.spyOn(RandomUtils.crowniclesRandom, "realZeroToOneInclusive")
+			.mockReturnValueOnce(0.5)
+			.mockReturnValueOnce(0.5);
+
+		expect(getFoodType(player)).toBe("vegetarian");
+	});
+
 	it("uses the destination biome near the end of the journey", () => {
 		vi.spyOn(TravelTime, "getTravelProgress").mockReturnValue(0.8);
 		vi.spyOn(RandomUtils.crowniclesRandom, "realZeroToOneInclusive")
