@@ -2,7 +2,7 @@ import {
 	describe, expect, it, vi
 } from "vitest";
 import {
-	withLockedEntities, LockKey
+	withLockedEntities, LockKey, LockedRowNotFoundError
 } from "../../src/locks/withLockedEntities";
 import { CLS_TRANSACTION_KEY, getCrowniclesNamespace } from "../../src/locks/CLSNamespace";
 
@@ -18,12 +18,25 @@ type FakeRow = { id: number; tag: string };
 
 interface FakeSequelize {
 	transaction: (fn: (t: { LOCK: { UPDATE: string } }) => Promise<unknown>) => Promise<unknown>;
+	config?: { database?: string };
 }
 
-function makeFakeSequelize(): FakeSequelize {
+function makeFakeSequelize(database?: string): FakeSequelize {
 	return {
-		transaction: fn => fn({ LOCK: { UPDATE: "FOR UPDATE" } })
+		transaction: fn => fn({ LOCK: { UPDATE: "FOR UPDATE" } }),
+		...(database ? { config: { database } } : {})
 	};
+}
+
+function runWithOuterTransaction<T>(outerSequelize: FakeSequelize, body: () => Promise<T>): Promise<T> {
+	const namespace = getCrowniclesNamespace();
+	return namespace.runPromise(async () => {
+		namespace.set(CLS_TRANSACTION_KEY, {
+			LOCK: { UPDATE: "FOR UPDATE" },
+			sequelize: outerSequelize
+		});
+		return await body();
+	});
 }
 
 function makeFakeModel(
@@ -178,10 +191,18 @@ describe("withLockedEntities (unit)", () => {
 		const seq = makeFakeSequelize();
 		const player = makeFakeModel("player", {}, seq); // empty rows
 
-		await expect(withLockedEntities(
+		const error = await withLockedEntities(
 			[{ model: player as never, id: 99 }],
 			async () => "never"
-		)).rejects.toThrow(/row not found/);
+		).catch((e: unknown) => e);
+
+		expect(error).toBeInstanceOf(LockedRowNotFoundError);
+		expect(error).toMatchObject({
+			name: "LockedRowNotFoundError",
+			tableName: "player",
+			id: 99,
+			message: "withLockedEntities: row not found for player#99"
+		});
 	});
 
 	it("propagates and surfaces errors thrown inside the callback", async () => {
@@ -256,5 +277,28 @@ describe("withLockedEntities (unit)", () => {
 				transaction: outerTransaction
 			});
 		}
+	});
+
+	it("refuses a nested call on a different sequelize and names both databases", async () => {
+		const outer = makeFakeSequelize("game");
+		const inner = makeFakeSequelize("logs");
+		const transactionSpy = vi.spyOn(inner, "transaction");
+		const row = makeFakeModel("player", { 1: { id: 1, tag: "p1" } }, inner);
+		const callback = vi.fn(async () => "never");
+
+		await expect(runWithOuterTransaction(outer, () => withLockedEntities([{ model: row as never, id: 1 }], callback)))
+			.rejects.toThrow("withLockedEntities: nested call on a different Sequelize instance is not supported (outer=game, inner=logs).");
+		expect(transactionSpy).not.toHaveBeenCalled();
+		expect(row.findByPk).not.toHaveBeenCalled();
+		expect(callback).not.toHaveBeenCalled();
+	});
+
+	it("names an unknown database with a question mark when the sequelize has no config", async () => {
+		const outer = makeFakeSequelize();
+		const inner = makeFakeSequelize();
+		const row = makeFakeModel("player", { 1: { id: 1, tag: "p1" } }, inner);
+
+		await expect(runWithOuterTransaction(outer, () => withLockedEntities([{ model: row as never, id: 1 }], async () => "never")))
+			.rejects.toThrow("(outer=?, inner=?).");
 	});
 });

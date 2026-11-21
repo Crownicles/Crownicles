@@ -1,8 +1,17 @@
 import {
-	describe, expect, it
+	afterEach, describe, expect, it, vi
 } from "vitest";
+import type { Namespace } from "cls-hooked";
 import {
-	CLS_TRANSACTION_KEY, getCrowniclesNamespace, runInChildContext
+	_resetUseCLSForTests,
+	assertUnderLock,
+	CLS_TRANSACTION_KEY,
+	CROWNICLES_CLS_NAMESPACE,
+	getCrowniclesNamespace,
+	getCurrentTransaction,
+	MissingLockContextError,
+	runInChildContext,
+	useCLSOnSequelize
 } from "../../src/locks/CLSNamespace";
 
 const PROBE_KEY = "runInChildContextProbe";
@@ -78,5 +87,95 @@ describe("runInChildContext", () => {
 
 		await expect(runInChildContext({ [PROBE_KEY]: "child" }, () => Promise.reject(error))).rejects.toBe(error);
 		expect(getCrowniclesNamespace().get(PROBE_KEY)).toBeUndefined();
+	});
+});
+
+function runWithTransaction<T>(transaction: unknown, body: () => T): T {
+	const namespace = getCrowniclesNamespace();
+	return namespace.runAndReturn(() => {
+		namespace.set(CLS_TRANSACTION_KEY, transaction);
+		return body();
+	});
+}
+
+describe("getCrowniclesNamespace", () => {
+	it("returns the namespace registered in cls-hooked under the Crownicles name", () => {
+		const namespace = getCrowniclesNamespace();
+
+		expect(namespace.name).toBe(CROWNICLES_CLS_NAMESPACE);
+		expect(getCrowniclesNamespace()).toBe(namespace);
+	});
+});
+
+describe("useCLSOnSequelize", () => {
+	afterEach(() => {
+		_resetUseCLSForTests();
+	});
+
+	function makeSequelizeCtor(): { useCLS: ReturnType<typeof vi.fn<(ns: Namespace) => unknown>> } {
+		return { useCLS: vi.fn<(ns: Namespace) => unknown>() };
+	}
+
+	it("wires the shared namespace into the constructor", () => {
+		const ctor = makeSequelizeCtor();
+
+		useCLSOnSequelize(ctor);
+
+		expect(ctor.useCLS).toHaveBeenCalledTimes(1);
+		expect(ctor.useCLS).toHaveBeenCalledWith(getCrowniclesNamespace());
+	});
+
+	it("wires each constructor copy only once", () => {
+		const first = makeSequelizeCtor();
+		const second = makeSequelizeCtor();
+
+		useCLSOnSequelize(first);
+		useCLSOnSequelize(first);
+		useCLSOnSequelize(second);
+
+		expect(first.useCLS).toHaveBeenCalledTimes(1);
+		expect(second.useCLS).toHaveBeenCalledTimes(1);
+	});
+
+	it("wires a constructor again after the test reset", () => {
+		const ctor = makeSequelizeCtor();
+
+		useCLSOnSequelize(ctor);
+		_resetUseCLSForTests();
+		useCLSOnSequelize(ctor);
+
+		expect(ctor.useCLS).toHaveBeenCalledTimes(2);
+	});
+});
+
+describe("assertUnderLock", () => {
+	it("throws a MissingLockContextError naming the helper outside any transaction", () => {
+		let error: unknown;
+		try {
+			assertUnderLock("applyRewardUnderLock");
+		}
+		catch (e) {
+			error = e;
+		}
+
+		expect(error).toBeInstanceOf(MissingLockContextError);
+		expect(error).toMatchObject({
+			name: "MissingLockContextError",
+			message: "applyRewardUnderLock: called outside any withLockedEntities / withLockedPlayerSafe / <Model>.withLocked critical section. "
+				+ "Helpers suffixed with 'UnderLock' assume their caller already holds a row-level lock; wrap the call site accordingly."
+		});
+	});
+
+	it("passes when a transaction is bound to the current context", () => {
+		expect(() => runWithTransaction({ id: "tx" }, () => assertUnderLock("applyRewardUnderLock"))).not.toThrow();
+	});
+});
+
+describe("getCurrentTransaction", () => {
+	it("returns the transaction of the current context, and nothing outside of it", () => {
+		const transaction = { id: "tx" };
+
+		expect(runWithTransaction(transaction, getCurrentTransaction)).toBe(transaction);
+		expect(getCurrentTransaction()).toBeUndefined();
 	});
 });
