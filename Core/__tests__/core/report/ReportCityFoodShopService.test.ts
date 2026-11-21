@@ -29,9 +29,8 @@ import {
 } from "../../../src/core/database/game/models/Guild";
 import { MissionsController } from "../../../src/core/missions/MissionsController";
 import { crowniclesInstance } from "../../../src/app";
-import {
-	PetConstants, PetFood
-} from "../../../../Lib/src/constants/PetConstants";
+import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import { CommandReportFoodShopBuyReq } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
 	GUILD_DOMAIN_ERROR, GuildDomainConstants
 } from "../../../../Lib/src/constants/GuildDomainConstants";
@@ -67,7 +66,7 @@ function setupGuild(treasury: number, food: Record<string, number> = {}): Handle
 async function buy(foodType: string, amount: number): Promise<CrowniclesPacket[]> {
 	const response: CrowniclesPacket[] = [];
 	await handleFoodShopBuy(KEYCLOAK_ID, {
-		foodType: foodType as PetFood, amount
+		foodType: foodType as CommandReportFoodShopBuyReq["foodType"], amount
 	}, response);
 	return response;
 }
