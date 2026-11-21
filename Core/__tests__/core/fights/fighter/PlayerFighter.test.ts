@@ -272,7 +272,7 @@ describe("PlayerFighter with consequences", () => {
 				missionId: "fightHealthPercent", params: { remainingPercent: 120 / 500 }
 			},
 			{
-				missionId: "finishWithAttack", params: { lastAttack: fighter.fightActionsHistory[2] }
+				missionId: "finishWithAttack", params: { lastAttack: fighter.fightActionsHistory[2].id }
 			},
 			{
 				missionId: "fightMinTurns", params: { turnCount: 12 }
@@ -280,8 +280,7 @@ describe("PlayerFighter with consequences", () => {
 		]);
 	});
 
-	// Bug: the fighter sends the last fight action itself while the finishWithAttack mission compares it to an action id
-	it.fails("lets the last attack of a won fight complete the matching finishWithAttack mission", async () => {
+	it("lets the last attack of a won fight complete the matching finishWithAttack mission", async () => {
 		const fighter = await foughtFighter();
 		fighter.fightActionsHistory = [action("heavyAttack")];
 		vi.spyOn(FightActionController, "variantToFightActionId").mockReturnValue("heavyAttack");

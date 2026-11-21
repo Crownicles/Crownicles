@@ -123,7 +123,7 @@ export class PlayerFighter extends PlayerBaseFighter {
 			await MissionsController.update(this.player, response, {
 				missionId: "finishWithAttack",
 				params: {
-					lastAttack: this.fightActionsHistory.at(-1)
+					lastAttack: this.fightActionsHistory.at(-1)?.id
 				}
 			});
 			await MissionsController.update(this.player, response, {
