@@ -171,8 +171,7 @@ describe("report answers", () => {
 		}
 	});
 
-	// Bug: the purchase of a guild domain never tells how much the treasury paid: Core sends the cost and the handler passes it as {{cost}}, but the French text has no {{cost}}, unlike the relocation
-	it.fails("tells how much the treasury paid for the guild domain", async () => {
+	it("tells how much the treasury paid for the guild domain", async () => {
 		const text = renderedText(await renderAnswer("CommandReportGuildDomainPurchaseRes", { cost: 6000 }));
 
 		expect(text).toContain("domaine installé");

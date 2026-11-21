@@ -407,7 +407,7 @@ export async function handleEndOfFight(context: PacketContext, packet: CommandFi
 	const looserName = await getDisplayName(packet.looser.keycloakId, packet.looser.monsterId);
 
 	// Create message description
-	let description = i18n.t("commands:fight.end.gameStats", {
+	let description = i18n.t(packet.turns > packet.maxTurns ? "commands:fight.end.gameStatsProlongation" : "commands:fight.end.gameStats", {
 		lng,
 		turn: packet.turns,
 		maxTurn: packet.maxTurns,

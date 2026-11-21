@@ -286,8 +286,7 @@ describe("pet expedition status", () => {
 		expect(embed.description?.split("\n\n")).toHaveLength(paragraphs);
 	});
 
-	// Bug: "noPet" is drawn among the sexed random texts (noPet_male / noPet_female) while its French texts have no sex variant: the display throws and the player sees nothing (ExpeditionEmbedBuilders.ts getCannotStartDescription)
-	it.fails("tells a player who lost his pet that he has none to send", async () => {
+	it("tells a player who lost his pet that he has none to send", async () => {
 		const {
 			interaction, context
 		} = fakeCommand();
@@ -375,6 +374,42 @@ describe("pet expedition answers", () => {
 		expect(embed.author?.name).toBe(title);
 		expect(embed.description).toContain("Kiki");
 		expect(embed.description).toContain(reaction);
+	});
+
+	it.each([
+		[makePacket(CommandPetExpeditionCancelPacketRes, {
+			loveLost: 3, isFreeCancellation: false, pet: PET_INFO
+		}), "**3** points d'amour"],
+		[makePacket(CommandPetExpeditionRecallPacketRes, {
+			loveLost: 5, pet: PET_INFO
+		}), "**5** points d'amour"]
+	])("tells how much love the pet lost at the end of its expedition (%o)", async (packet, expected) => {
+		const command = fakeCommand("Owner");
+		const {
+			click, context
+		} = answeredClick(command);
+
+		await dispatch(context, packet);
+
+		expect(embedsOf(singleMessage(click))[0].description).toContain(expected);
+	});
+
+	it.each([
+		makePacket(CommandPetExpeditionCancelPacketRes, {
+			loveLost: 0, isFreeCancellation: true, pet: PET_INFO
+		}),
+		makePacket(CommandPetExpeditionRecallPacketRes, {
+			loveLost: 0, pet: PET_INFO
+		})
+	])("does not announce a love loss when the pet lost none (%o)", async packet => {
+		const command = fakeCommand("Owner");
+		const {
+			click, context
+		} = answeredClick(command);
+
+		await dispatch(context, packet);
+
+		expect(embedsOf(singleMessage(click))[0].description).not.toContain("a perdu");
 	});
 
 	it("posts in the channel an answer to a click already replied", async () => {

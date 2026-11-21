@@ -157,6 +157,31 @@ describe("equip menu", () => {
 		expect(componentsOf(view)[0].disabled).toBeFalsy();
 	});
 
+	it.each([
+		[ItemConstants.EQUIP_ERRORS.INVALID, "équipement a changé"],
+		[ItemConstants.EQUIP_ERRORS.NO_ITEM, "rien à ranger"],
+		[ItemConstants.EQUIP_ERRORS.RESERVE_FULL, "réserve est pleine"],
+		[undefined, "équipement a changé"]
+	])("tells the player why Core refused the action (%s) and keeps the category displayed", async (error, expected) => {
+		const { interaction } = await openEquip();
+		await clickOn(interaction.collectors[0], fakeClick(interaction.user, "EQUIP_CAT_0"));
+		await clickOn(latestCollector(interaction), fakeClick(interaction.user, "EQUIP_ITEM_0_2"));
+		const displayedMessages = interaction.messages.length;
+
+		await dispatch(sentPackets(CommandEquipActionReq)[0].context, makePacket(CommandEquipActionRes, {
+			success: false,
+			...(error ? { error } : {}),
+			categories: []
+		}));
+
+		expect(interaction.messages).toHaveLength(displayedMessages + 1);
+		const refusal = lastMessage(interaction);
+		expect(refusal.method).toBe("followUp");
+		const [embed] = embedsOf(refusal);
+		expect(embed.color).toBe(ERROR_COLOR);
+		expect(embed.description).toContain(expected);
+	});
+
 	it("asks Core to deposit the equipped item", async () => {
 		const { interaction } = await openEquip(categories({ canDeposit: true }));
 		await clickOn(interaction.collectors[0], fakeClick(interaction.user, "EQUIP_CAT_0"));
