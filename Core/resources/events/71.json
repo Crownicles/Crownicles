@@ -172,8 +172,6 @@
               "max": -50
             }
           },
-          "effect": "occupied",
-          "lostTime": 15,
           "karma": -4
         },
         "6": {
