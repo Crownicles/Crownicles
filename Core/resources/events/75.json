@@ -3,7 +3,7 @@
     "accept": {
       "outcomes": {
         "0": {
-          "effect": "sick",
+          "effect": "drunk",
           "health": -5
         },
         "1": {
@@ -13,6 +13,42 @@
         "2": {
           "money": 100,
           "randomItem": {}
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "money": 150,
+          "karma": -2
+        },
+        "4": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "effect": "working"
+        },
+        "5": {
+          "requirements": {
+            "cookingLevel": {
+              "min": 70
+            }
+          },
+          "money": 120,
+          "health": 10,
+          "effect": "occupied",
+          "lostTime": 45
+        },
+        "6": {
+          "requirements": {
+            "attack": {
+              "min": 600
+            }
+          },
+          "money": 120
         }
       }
     },
@@ -20,10 +56,77 @@
       "outcomes": {
         "0": {},
         "1": {
-          "effect": "occupied",
-          "lostTime": 30,
-          "health": -20
+          "requirements": {
+            "speed": {
+              "max": 40
+            }
+          },
+          "health": -20,
+          "effect": "hurt"
+        },
+        "2": {
+          "requirements": {
+            "speed": {
+              "min": 41,
+              "max": 349
+            }
+          },
+          "health": -10,
+          "effect": "confounded"
+        },
+        "3": {
+          "requirements": {
+            "speed": {
+              "min": 350
+            }
+          }
+        },
+        "4": {
+          "requirements": {
+            "defense": {
+              "min": 740
+            }
+          },
+          "health": -8,
+          "effect": "confounded"
         }
+      }
+    },
+    "askAbout": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 60
+        },
+        "1": {
+          "requirements": {
+            "level": {
+              "min": 120
+            }
+          },
+          "randomItem": {},
+          "effect": "occupied",
+          "lostTime": 20
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "money": 120,
+          "karma": -5,
+          "effect": "working"
+        },
+        "3": {
+          "requirements": {
+            "petTags": [
+              "flying"
+            ]
+          },
+          "money": 50
+        },
+        "4": {}
       }
     },
     "end": {

@@ -3030,32 +3030,49 @@
     "text": "Alors que vous déambulez sans but précis, vos narines sont soudainement assaillies par une intense odeur iodée. Une étrange femme vêtue d'une robe aux motifs d'écailles de poisson, les cheveux emmêlés d'algues séchées, vous fait signe de la main. Elle est entourée de paniers débordant de fruits de mer aux couleurs vives et vous invite, avec un sourire édenté mais chaleureux, à goûter à sa spécialité culinaire : un plat mijoté avec amour à partir des plus beaux produits de l'océan."
   },
   "75": {
+    "text": "Sur la Plage Sentinelle, à l'écart du port de Mergagnan, un navire aux voiles noires et rapiécées est amarré près des rochers. On y chante à tue-tête. Sur le pont, un homme coiffé d'un large tricorne, sans doute le capitaine, vous fait de grands signes pour vous inviter à bord.",
     "possibilities": {
       "accept": {
-        "text": "Accepter l'invitation",
+        "text": "Accepter l'invitation.",
         "outcomes": {
-          "0": "Vous grimpez à bord du navire, attiré par les rires et la lumière vacillante des lanternes. La fête bat son plein, les flots de rhum circulent sans retenue, et bientôt, vos sens se brouillent dans une brume douce et traîtresse. Le réveil est brutal : dans l'obscurité de la cale, un mal de crâne sourd vous tient compagnie. L'air marin vous gifle le visage lorsque, chancelant, vous regagnez le quai, sans le moindre souvenir de la nuit passée.",
-          "1": "À peine votre pied posé sur le pont, une tension sourde vous étreint. Les visages de l'équipage sont crispés, les regards fuyants. Puis, comme un éclair, la fureur éclate : deux hommes s'empoignent, la querelle dégénère en une mêlée confuse. Ballotté entre les coups, vous échappez de peu à une blessure grave. C'est le cœur battant et les mains tremblantes que vous regagnez la terre ferme, l'esprit ébranlé par cette violence soudaine.",
-          "2": "Le capitaine, un sourire en coin, vous invite à prendre part à un jeu dont les règles semblent aussi floues que douteuses. Vous acceptez, le souffle suspendu, et vous laissez guider par le hasard. Contre toute attente, la chance vous sourit : une bourse d'or et un objet énigmatique, serti de symboles oubliés, vous sont remis à contrecœur par un capitaine visiblement contrarié par votre victoire."
+          "0": "Vous montez à bord, attiré par les chants et les lanternes. Le rhum coule sans retenue, et la soirée se brouille vite. Vous vous réveillez au fond de la cale, le crâne douloureux, et regagnez la plage en titubant, sans le moindre souvenir de la nuit.",
+          "1": "À peine sur le pont, vous sentez la tension. Deux marins s'empoignent, et la querelle tourne à la mêlée générale. Ballotté entre les coups, vous mettez un long moment à vous frayer un chemin jusqu'à la passerelle, le cœur battant.",
+          "2": "Le capitaine vous invite à une partie de dés aux règles douteuses. Contre toute attente, la chance vous sourit. Visiblement contrarié, il vous remet une bourse et un vieil objet gravé de symboles qu'il gardait dans sa cabine.",
+          "3": "Un vieux marin vous dévisage, puis éclate de rire : il vous a reconnu, et pour lui, vous êtes de la famille. On trinque à votre santé toute la soirée, et au moment de partir, le capitaine vous glisse une part du dernier butin.",
+          "4": "Le capitaine voit tout de suite que vous n'êtes pas un loup de mer. Pour rire, il vous colle un seau et une brosse dans les mains. Vous passez la soirée à briquer le pont sous les moqueries de l'équipage.",
+          "5": "En cuisine, le cuistot ronfle, ivre mort, et l'équipage gronde de faim. Vous prenez les fourneaux et servez une soupe de poisson qui fait taire tout le monde. Ravi, le capitaine vous paie comme un vrai cuisinier de bord.",
+          "6": "À peine sur le pont, une bagarre éclate entre deux marins. Vous les attrapez chacun par le col et les séparez sans ménagement. Le silence tombe. Impressionné, le capitaine vous offre une part de sa caisse pour avoir sauvé sa soirée."
         }
       },
       "refuse": {
-        "text": "Refuser l'invitation",
+        "text": "Refuser l'invitation.",
         "outcomes": {
-          "0": "Vous déclinez poliment, le regard posé sur les voiles noires qui battent au vent. Le capitaine vous observe un instant, puis hausse les épaules avec un sourire narquois. Sans un mot de plus, il fait signe à son équipage de lever l'ancre. Vous restez là, silencieux, tandis que le navire s'éloigne lentement, avalé par l'horizon brumeux. Vous reprenez alors votre route, le cœur serein, loin des aventures maritimes.",
-          "1": "Votre refus franchit vos lèvres avec fermeté. Mais le regard du capitaine se durcit, son sourire s'efface. D'un geste sec, il ordonne à ses hommes de viser. Le tonnerre d'un canon résonne, projetant sable et éclats tout autour de vous. Pris de panique, vous fuyez à travers la crique, le souffle court, poursuivi par l'écho grinçant d'un rire cruel."
+          "0": "Vous déclinez poliment. Le capitaine hausse les épaules avec un sourire narquois et fait signe à ses hommes de lever l'ancre. Vous regardez un instant le navire s'éloigner, puis reprenez votre route le long de la plage.",
+          "1": "Votre refus vexe le capitaine. Il aboie un ordre, et un canon tonne depuis le pont. Vous fuyez à travers le sable, mais trop lentement : le boulet s'écrase juste derrière vous et vous crible le dos d'éclats. Vous repartez en boitant.",
+          "2": "Votre refus vexe le capitaine. Il aboie un ordre, et un canon tonne depuis le pont. Le boulet s'écrase à quelques pas, et le souffle vous jette au sol. Étourdi, vous filez le long de la plage sous les rires de l'équipage.",
+          "3": "Votre refus vexe le capitaine. Il aboie un ordre, mais avant que le canon ne tonne, vous avez déjà plongé derrière une dune. Le boulet soulève une gerbe de sable loin derrière vous. Vous repartez sans une égratignure.",
+          "4": "Votre refus vexe le capitaine, qui fait tirer le canon. Vous voulez fuir, mais votre lourde armure s'enfonce dans le sable mou à chaque pas. Le souffle du boulet vous renverse. Étourdi, vous vous relevez couvert de sable."
+        }
+      },
+      "askAbout": {
+        "text": "Interroger le capitaine.",
+        "outcomes": {
+          "0": "Le capitaine ne se fait pas prier. Il vous parle de son grand-père, le capitaine Crow, de son naufrage et du trésor que personne n'a jamais retrouvé. L'histoire est longue, et le soleil a bien baissé quand vous parvenez à repartir.",
+          "1": "Le capitaine vous parle du naufrage de son grand-père, le capitaine Crow. Vous avez assez roulé votre bosse pour connaître les Récifs Mystérieux, au large de la plage, où dorment bien des épaves. Ravi du tuyau, il vous offre un objet tiré de sa cabine.",
+          "2": "Le capitaine baisse la voix : il vous a reconnu. Il cherche des bras pour décharger, à la nuit tombée, des caisses dont personne ne doit connaître l'origine. Vous acceptez sans poser de questions, et il vous paie bien pour votre discrétion.",
+          "3": "Pendant que vous parlez, votre familier s'envole et se pose sur la vergue, au-dessus du capitaine. Celui-ci y voit un bon présage : son grand-père se faisait appeler Crow, le corbeau. Il vous remercie de quelques pièces pour la chance.",
+          "4": "Vos questions sur sa cargaison semblent déplaire au capitaine. Il vous toise, crache par-dessus le bastingage et vous ordonne de déguerpir de sa plage. Vous n'insistez pas et reprenez votre route."
         }
       },
       "end": {
         "outcomes": {
-          "0": "Vous tournez le dos au capitaine et allez vous asseoir sur le sable, laissant votre regard suivre le vaisseau pirate qui, toutes voiles dehors, quitte lentement la baie. Le grondement sourd des flots accompagne son départ, jusqu'à ce qu'il ne soit plus qu'un point à l'horizon. Enfin, vous vous relevez, époussetez le sable de vos vêtements, et reprenez votre route, seul sur le sentier battu par les vents.",
-          "1": "Vous détournez votre regard du capitaine et laissez vos pensées voguer au rythme des flots. Là, sur le rivage balayé par les vents, votre œil est attiré par une antique bouteille, à demi enfouie dans le sable. Intrigué, vous la saisissez et y découvrez un vieux parchemin jauni par le temps. Les signes tracés d'une main tremblante y révèlent l'emplacement d'un lieu secret, dissimulé non loin. Guidé par ces énigmes, vous arpentez la lande durant longuement, jusqu'à ce que vos pas vous mènent à un coffre ancien, enfoui sous les ronces. En l'ouvrant, vous découvrez un objet aux allures mystérieuses...",
-          "2": "Vous tournez le dos au capitaine et laissez vos pas vous guider sur la plage battue par les vents. Une bouteille à demi enfouie dans le sable attire votre regard. Vous la déterrez avec précaution, espérant quelque secret oublié. À l'intérieur, un parchemin froissé, rongé par l'humidité et le sel. Vous le déroulez lentement, mais hélas… les lettres sont effacées, les mots n'étant plus que tâches informes et filigranes éteints. Aucun sens ne s'en dégage, si ce n'est un pressentiment : ce message a surement un jour été important, il est désormais perdu à jamais dans les replis du temps.",
-          "3": "Vous tournez le dos au capitaine sans un mot, ce qui semble attiser sa colère. D'un pas vif, il vous rejoint et, sans sommation, vous assène un violent coup sur l'arrière du crâne. Étourdi, vous vous affaissez sur le sable, les étoiles dansant devant vos yeux. Il repart aussitôt, regagne le pont en ricanant, puis ordonne de lever l'ancre."
+          "0": "Vous tournez le dos au capitaine et vous asseyez sur le sable. Vous regardez le navire lever l'ancre et quitter la baie, jusqu'à ce qu'il ne soit plus qu'un point à l'horizon. Puis vous reprenez votre route.",
+          "1": "En vous détournant du capitaine, vous apercevez une vieille bouteille à demi enfouie dans le sable. Elle contient une carte. Vous suivez ses indications à travers les dunes jusqu'à un petit coffre enterré, qui renferme un objet curieux.",
+          "2": "En vous détournant du capitaine, vous apercevez une bouteille à demi enfouie dans le sable. Le parchemin qu'elle contient est rongé par le sel, et les lettres se sont effacées. Vous le rendez aux vagues, un peu déçu, et reprenez votre route.",
+          "3": "Vous tournez le dos au capitaine sans un mot. Vexé, il descend de son navire, vous rattrape à grands pas et vous assène un coup sur l'arrière du crâne. Étourdi, vous vous affaissez dans le sable pendant qu'il regagne son bord en ricanant."
         }
       }
-    },
-    "text": "En arrivant à la plage sentinelle, vous apercevez, amarré, un bateau aux voiles noires et usées. Sur le pont, un homme portant un large tricorne, probablement le capitaine, vous fait signe de le rejoindre."
+    }
   },
   "76": {
     "text": "Après des heures de marche dans la Forêt Célestrum, vous trouvez une maison en ruine au bord d'une rivière. Un cri en sort. Vous frappez à la porte vermoulue, et un vieil homme vous ouvre, les yeux hagards et les cheveux en bataille. Il s'appelle Parziter. Il parle trop vite et mélange tout, mais vous comprenez qu'il a besoin d'aide, et il vous demande si vous aussi, vous sentez le sol trembler.",

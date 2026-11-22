@@ -1065,13 +1065,14 @@ export const CrowniclesIcons: {
 		},
 		75: {
 			accept: "⚓",
-			refuse: "⛔",
+			askAbout: "🗺️",
 			end: {
 				0: "🏝️",
 				1: "🏝️",
 				2: "🏝️",
 				3: "🏏"
-			}
+			},
+			refuse: "⛔"
 		},
 		76: {
 			end: {

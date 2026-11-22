@@ -927,7 +927,7 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 72 | Alors que vous arrivez aux abords de Claire de Ville, vous découvrez que bon nombre de ses habitants se sont déplacés à l'extérieur des gran |
 | 73 | Cheminant avec nonchalance sur la Route des Merveilles, vous vous approchez d'un petit groupe de personnes en demi-cercle autour d'un homme |
 | 74 | Alors que vous déambulez sans but précis, vos narines sont soudainement assaillies par une intense odeur iodée. Une étrange femme vêtue d'un |
-| 75 | En arrivant à la plage sentinelle, vous apercevez, amarré, un bateau aux voiles noires et usées. Sur le pont, un homme portant un large tric |
+| 75 | Sur la Plage Sentinelle, à l'écart du port de Mergagnan, un navire aux voiles noires et rapiécées est amarré près des rochers. On y chante à |
 | 76 | Après des heures de marche dans la Forêt Célestrum, vous trouvez une maison en ruine au bord d'une rivière. Un cri en sort. Vous frappez à l |
 | 77 | En progressant dans un sentier sinueux de la Forêt Celestrum, vous entendez soudain des éclats de voix provenant d'une clairière proche. Int |
 | 78 | Vous progressez sur la route grimpante quand soudain un épais brouillard monte de la Rivière aux Crabes, dont vous apercevez encore vaguemen |
