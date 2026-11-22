@@ -51,28 +51,45 @@ export function findPlaceholders(text) {
 	return [...new Set([...text.matchAll(PLACEHOLDER_PATTERN)].map(match => match[1] !== undefined ? `{{${match[1]}}}` : match[0]))].sort();
 }
 
+function keysMissingFrom(source, target) {
+	return [...source.keys()].filter(key => !target.has(key));
+}
+
 /**
  * @param locales locale -> flattened translations, the reference locale included
  */
 export function findParityErrors(locales) {
 	const reference = locales[REFERENCE_LOCALE];
-	const errors = [];
-	for (const [locale, translations] of Object.entries(locales)) {
-		if (locale === REFERENCE_LOCALE) {
-			continue;
-		}
-		for (const key of reference.keys()) {
-			if (!translations.has(key)) {
-				errors.push({ locale, key, message: `missing translation of "${key}"` });
-			}
-		}
-		for (const key of translations.keys()) {
-			if (!reference.has(key)) {
-				errors.push({ locale, key, message: `"${key}" does not exist in the ${REFERENCE_LOCALE} reference, remove it` });
-			}
-		}
+	return Object.entries(locales)
+		.filter(([locale]) => locale !== REFERENCE_LOCALE)
+		.flatMap(([locale, translations]) => [
+			...keysMissingFrom(reference, translations).map(key => ({ locale, key, message: `missing translation of "${key}"` })),
+			...keysMissingFrom(translations, reference).map(key => ({ locale, key, message: `"${key}" does not exist in the ${REFERENCE_LOCALE} reference, remove it` }))
+		]);
+}
+
+function isChanged(base, head, key) {
+	return !base.has(key) || base.get(key) !== head.get(key);
+}
+
+function findNotUpdatedErrors({ locale, reference, referenceBase, translations, translationsBase }, key) {
+	const referenceEdited = referenceBase.has(key) && isChanged(referenceBase, reference, key);
+	const translationKept = translationsBase.has(key) && !isChanged(translationsBase, translations, key);
+	return referenceEdited && translationKept
+		? [{ kind: SYNC_ERRORS.NOT_UPDATED, locale, key, message: `"${key}" was edited in ${REFERENCE_LOCALE} but not in ${locale}` }]
+		: [];
+}
+
+function findPlaceholderErrors({ locale, reference, referenceBase, translations, translationsBase }, key) {
+	const touched = isChanged(referenceBase, reference, key) || isChanged(translationsBase, translations, key);
+	if (!touched || !reference.has(key)) {
+		return [];
 	}
-	return errors;
+	const expected = findPlaceholders(reference.get(key)).join(" ");
+	const actual = findPlaceholders(translations.get(key)).join(" ");
+	return expected === actual
+		? []
+		: [{ kind: SYNC_ERRORS.PLACEHOLDERS, locale, key, message: `"${key}" uses placeholders [${actual}] but ${REFERENCE_LOCALE} uses [${expected}]` }];
 }
 
 /**
@@ -82,25 +99,12 @@ export function findParityErrors(locales) {
 export function findSyncErrors(base, head) {
 	const reference = head[REFERENCE_LOCALE];
 	const referenceBase = base[REFERENCE_LOCALE] ?? new Map();
-	const errors = [];
-	for (const [locale, translations] of Object.entries(head)) {
-		const translationsBase = base[locale] ?? new Map();
-		for (const [key, value] of translations) {
-			const referenceEdited = referenceBase.has(key) && referenceBase.get(key) !== reference.get(key);
-			if (locale !== REFERENCE_LOCALE && referenceEdited && translationsBase.has(key) && translationsBase.get(key) === value) {
-				errors.push({ kind: SYNC_ERRORS.NOT_UPDATED, locale, key, message: `"${key}" was edited in ${REFERENCE_LOCALE} but not in ${locale}` });
-			}
-			const touched = referenceEdited || !translationsBase.has(key) || translationsBase.get(key) !== value;
-			if (locale !== REFERENCE_LOCALE && touched && reference.has(key)) {
-				const expected = findPlaceholders(reference.get(key)).join(" ");
-				const actual = findPlaceholders(value).join(" ");
-				if (expected !== actual) {
-					errors.push({ kind: SYNC_ERRORS.PLACEHOLDERS, locale, key, message: `"${key}" uses placeholders [${actual}] but ${REFERENCE_LOCALE} uses [${expected}]` });
-				}
-			}
-		}
-	}
-	return errors;
+	return Object.entries(head)
+		.filter(([locale]) => locale !== REFERENCE_LOCALE)
+		.flatMap(([locale, translations]) => {
+			const context = { locale, reference, referenceBase, translations, translationsBase: base[locale] ?? new Map() };
+			return [...translations.keys()].flatMap(key => [...findNotUpdatedErrors(context, key), ...findPlaceholderErrors(context, key)]);
+		});
 }
 
 function loadLocales(listFiles, readFile) {
