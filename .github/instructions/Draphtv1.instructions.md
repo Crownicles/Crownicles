@@ -97,7 +97,7 @@ async topScoreRes(context: PacketContext, packet: CommandTopPacketResScore): Pro
 - Translation files in `Lang/{locale}/` (JSON format)
 - Discord service generates types: `pnpm interface` creates `src/@types/resources.d.ts`
 - Use `i18n.t("namespace:key", { lng })` pattern
-- NEVER edit something else than the french translations, other languages are synced from there in crowdin, so any change will be overwritten.
+- French (`Lang/fr/`) is the reference locale. Every key added, edited or removed in French must be added, updated or removed in the same change in every other locale (`de`, `en`, `es`, `it`, `pt`), keeping the same placeholders (`{{variable}}`, `{emote:...}`, `{command:...}`, `$t(...)`). The `Translations` CI workflow (`.github/scripts/check-translations.mjs`) enforces it; a French-only fix that does not affect the other languages (typo, wording) can skip the update with the `no-translation-sync` PR label.
 - **NEVER use direct speech** (dialogue with quotes like `<< >>` or `" "`) in translations. All text should be narrative/descriptive, not conversational.
 
 ### Docker Development

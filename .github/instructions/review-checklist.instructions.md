@@ -89,10 +89,10 @@ Apply this section when a change has a non-local blast radius: a shared abstract
 
 ## 6. Translations (i18n)
 
-- [ ] **Only modify French translations** (`Lang/fr/`) — other languages are synced via Crowdin
+- [ ] **Every locale is updated with French** — French (`Lang/fr/`) is the reference: a key added, edited or removed there is added, updated or removed in `de`, `en`, `es`, `it` and `pt` in the same PR, with the same placeholders. The `Translations` workflow fails otherwise; use the `no-translation-sync` label only for a French-only fix (typo, wording) that does not change the meaning
 - [ ] **No direct speech** — all text should be narrative/descriptive, never dialogue with quotes
 - [ ] **Entity IDs as i18n parameters** — pass entity IDs (plantId, materialId, etc.) as interpolation parameters to translation keys instead of concatenating strings or emoji names in code
-- [ ] **Never post-process the result of `i18n.t(...)`** — no `.replace()`, regex substitution or emoji swapping on an already-rendered translation to compensate for a wrong or outdated wording. Fix the French key and pass the variable part as an interpolation parameter; the other languages follow via Crowdin. Such patches are silently wrong (they rewrite the first match anywhere in the sentence) and hide the real problem
+- [ ] **Never post-process the result of `i18n.t(...)`** — no `.replace()`, regex substitution or emoji swapping on an already-rendered translation to compensate for a wrong or outdated wording. Fix the translation keys in every locale and pass the variable part as an interpolation parameter. Such patches are silently wrong (they rewrite the first match anywhere in the sentence) and hide the real problem
 - [ ] **No dead/unused translation keys** — remove keys that are no longer referenced in code
 - [ ] **No duplicate translation keys** — check if a similar key already exists before adding a new one
 - [ ] **No hardcoded Markdown formatting around translations** — Discord markdown tokens (`###`, `**`, `__`, `*`, backticks, etc.) used as **structural formatting** (headers, separators) must NOT be hardcoded in TS code around `i18n.t(...)` calls. Either include the formatting inside the translation value itself (so translators control it) or go through a typed helper (e.g. `formatHeader(title)`, `formatSeparator()`). Inline emphasis that is part of a sentence (e.g. wrapping a single dynamic value in `**...**` for visual highlight) is acceptable when consistent across the codebase.

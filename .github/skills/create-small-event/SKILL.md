@@ -152,7 +152,7 @@ async smallEvent{Name}(context: PacketContext, packet: SmallEvent{Name}Packet): 
 - `PetUtils.petToShortString(lng, nickname, typeId, sex)` — format pet name with emote
 - `DisplayUtils.getPetIcon(typeId, sex)` — get pet emoji
 
-### 6. French Translations
+### 6. Translations
 **Path:** `Lang/fr/smallEvents.json`
 
 Add a new entry at the end of the JSON (before the closing `}`):
@@ -172,7 +172,7 @@ Add a new entry at the end of the JSON (before the closing `}`):
 - Use `{{variable}}` for template variables (e.g., `{{pet}}`, `{{health, number}}`)
 - Use `{emote:path}` for emojis (e.g., `{emote:unitValues.token}`, `{emote:unitValues.health}`)
 - Bold important info with `**text**`
-- ONLY edit French translations — other languages are synced via Crowdin
+- Write French first, then add the same entry (same number of stories, same placeholders) in `Lang/{de,en,es,it,pt}/smallEvents.json` — the `Translations` CI workflow fails when a locale is missing a key
 - NEVER use direct speech (no dialogue with quotes)
 - Stories are appended to a random intro phrase, so start with lowercase
 
@@ -204,7 +204,8 @@ Add a new entry at the end of the JSON (before the closing `}`):
 - [ ] Core handler in `Core/src/core/smallEvents/` exporting `smallEventFuncs`
 - [ ] Icon added to `CrowniclesIcons.smallEvents` in `Lib/src/CrowniclesIcons.ts`
 - [ ] Discord handler method in `Discord/src/packetHandlers/handlers/SmallEventsHandler.ts`
-- [ ] French translations in `Lang/fr/smallEvents.json` with 3+ story variants
+- [ ] French translations in `Lang/fr/smallEvents.json` with 3+ story variants, translated in every other locale of `Lang/`
+- [ ] `node .github/scripts/check-translations.mjs parity Lang` passes
 - [ ] ESLint passes on all modified files
 - [ ] TypeScript compiles with `npx tsc --noEmit` in Core, Lib, and Discord
 - [ ] All tests pass with `pnpm test` in Core
