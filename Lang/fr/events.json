@@ -44,7 +44,8 @@
           "1": "Vous tirez de toutes vos forces et, ensemble, vous remontez une prise comme le vieux pêcheur n'en avait pas vu depuis longtemps. Ravi, il vous offre un objet qu'il gardait depuis des années comme porte-bonheur.",
           "2": "Grâce à vous, le pêcheur sort de l'eau un poisson de belle taille. Reconnaissant, il vous donne quelques pièces et vous indique les coins du lac où mordent les plus gros.",
           "3": "Le poisson tire plus fort que vous deux réunis. Vous glissez sur les planches mouillées et tombez à l'eau en heurtant le ponton. Le pêcheur vous aide à remonter, trempé et endolori.",
-          "4": "En unissant vos forces, vous réussissez à sortir de l'eau une vieille botte remplie de vase. Le pêcheur éclate de rire devant cette drôle de prise et vous laisse repartir en vous remerciant de vos efforts."
+          "4": "En unissant vos forces, vous réussissez à sortir de l'eau une vieille botte remplie de vase. Le pêcheur éclate de rire devant cette drôle de prise et vous laisse repartir en vous remerciant de vos efforts.",
+          "5": "Le poisson tire fort et vous entraîne vers le bord du ponton. Vous dérapez sur les planches mouillées et vous rattrapez de justesse à un poteau, les genoux écorchés. Le temps de vous relever, la ligne a cassé."
         },
         "text": "Prêter main-forte au pêcheur en difficulté."
       },
@@ -684,11 +685,12 @@
       "skip": {
         "outcomes": {
           "0": "Vous enjambez les poutres effondrées et traversez les ruines de l'auberge avant que le chien n'ait fait trois pas. Il vous regarde filer, puis renonce à vous suivre.",
-          "1": "Vous passez sans un regard, et le chien se jette sur vous. Votre armure encaisse presque tous ses coups de crocs. Vous le repoussez et repartez avec de simples égratignures.",
+          "1": "Vous passez sans un regard, et le chien se jette sur vous. Ses crocs glissent sur votre armure sans trouver de prise. Vous le repoussez d'un revers, et il file vers les ruines de l'auberge.",
           "2": "Vous pressez le pas, et vos pieds se prennent dans les gravats de l'ancienne salle commune. Vous roulez sur les pavés de la cour effondrée et vous relevez couvert de contusions.",
           "3": "Le chien vous observe un instant près des vestiges de l'auberge, puis semble comprendre que vous n'êtes pas celui qu'il cherchait. Il s'éloigne de lui-même et disparaît dans l'ancienne écurie.",
           "4": "D'un battement d'ailes, votre compagnon survole les ruines et entraîne le chien à sa suite. Vous en profitez pour poursuivre votre chemin le long de la Grande Rue, fier de votre familier.",
-          "5": "Vous passez sans un regard, et le chien se jette sur vous. Il vous mord au bras et ne lâche prise que lorsque vous parvenez à le repousser. Il file alors vers les ruines de l'auberge, et vous repartez en serrant votre bras blessé."
+          "5": "Vous passez sans un regard, et le chien se jette sur vous. Il vous mord au bras et ne lâche prise que lorsque vous parvenez à le repousser. Il file alors vers les ruines de l'auberge, et vous repartez en serrant votre bras blessé.",
+          "6": "Vous passez sans un regard, et le chien se jette sur vous. Rien ne protège vos jambes : il vous mord au mollet, encore et encore, avant que vous ne parveniez à le chasser. Vous repartez en boitant, la jambe en sang."
         },
         "text": "Continuer votre route en ignorant le chien."
       },
@@ -895,7 +897,8 @@
           "2": "Un objet attire votre regard. Le marchand en annonce un prix exagéré, mais vous avez fréquenté assez de marchés pour ne pas vous laisser faire. Après une longue discussion, il vous le cède à un prix honnête.",
           "3": "Le marchand vous dévisage, puis son visage se ferme : il sait ce qu'on raconte de vous. Il tire un couteau de sa ceinture et se jette sur vous. Vous n'avez que le temps de lever le bras, et la lame s'y enfonce. Vous fuyez en serrant votre blessure.",
           "4": "Le marchand vous dévisage, puis son visage se ferme : il sait ce qu'on raconte de vous. Il tire un couteau et se jette sur vous. Vous esquivez d'un bond, et la lame ne fait que vous effleurer le bras. Vous filez entre les stands avant qu'il ne revienne à la charge.",
-          "5": "Pendant que vous examinez l'étal, votre Paon fait la roue devant le stand. Les passants s'attroupent pour l'admirer, et le marchand vend plus en un instant qu'en toute une matinée. Ravi, il vous offre l'objet que vous regardiez."
+          "5": "Pendant que vous examinez l'étal, votre Paon fait la roue devant le stand. Les passants s'attroupent pour l'admirer, et le marchand vend plus en un instant qu'en toute une matinée. Ravi, il vous offre l'objet que vous regardiez.",
+          "6": "Le marchand vous dévisage, puis son visage se ferme : il sait ce qu'on raconte de vous. Il tire un couteau et se jette sur vous. Vous reculez trop tard, et la lame vous entaille l'épaule. Vous fuyez entre les stands en comprimant la plaie."
         }
       }
     }
@@ -917,12 +920,13 @@
         "text": "Proposer son aide.",
         "outcomes": {
           "0": "Vous proposez votre aide aux soldats, qui acceptent volontiers. Vous passez un long moment à retourner les corps et à porter deux blessés jusqu'à leur chariot. Avant de vous laisser partir, leur sergent vous glisse une poignée de pièces.",
-          "1": "En fouillant le terrain, vous surprenez un pilleur penché sur un blessé. Il se jette sur vous et vous frappe au visage. Encore sonné, vous le maîtrisez en quelques coups et le remettez aux soldats, qui pansent votre blessure.",
+          "1": "En fouillant le terrain, vous surprenez un pilleur penché sur un blessé. Il se jette sur vous, couteau en main. Vous le désarmez d'un coup sec, le maîtrisez et le remettez aux soldats, qui vous remercient.",
           "2": "En fouillant le terrain, vous surprenez un pilleur penché sur un blessé. Il se jette sur vous, couteau en main. Vous vous débattez, mais il est plus fort : il vous entaille le bras, vous arrache quelques pièces et s'enfuit.",
           "3": "Les soldats vous regardent de travers, mais vous laissent faire. Vous avez vu assez de champs de bataille pour distinguer d'un coup d'œil un mort d'un blessé. Vous en tirez trois de sous les corps, et les soldats finissent par vous remercier.",
           "4": "Les soldats vous reconnaissent avant même que vous ayez parlé. Ils refusent votre aide et pointent leurs épées vers vous : ils ne laisseront pas un pilleur approcher de leurs morts. Vous reculez lentement, puis vous vous éloignez.",
           "5": "Votre familier renifle l'air, puis file entre les corps. Il s'arrête chaque fois près d'un soldat encore vivant. Grâce à lui, vous en sauvez près d'une dizaine. Les soldats font une collecte et vous remettent une bourse bien remplie.",
-          "6": "Pendant vos recherches, votre familier s'éloigne et s'immobilise près d'un soldat couché dans l'herbe. L'homme gémit encore. Vous surmontez votre dégoût devant sa plaie et lui donnez les premiers soins. Les soldats partagent ensuite leur repas avec vous."
+          "6": "Pendant vos recherches, votre familier s'éloigne et s'immobilise près d'un soldat couché dans l'herbe. L'homme gémit encore. Vous surmontez votre dégoût devant sa plaie et lui donnez les premiers soins. Les soldats partagent ensuite leur repas avec vous.",
+          "7": "En fouillant le terrain, vous surprenez un pilleur penché sur un blessé. Il se jette sur vous et vous frappe au visage. Encore sonné, vous le repoussez, et il s'enfuit à travers champs avant que les soldats n'arrivent."
         }
       },
       "steal": {
@@ -967,7 +971,8 @@
           "2": "Cet homme vous a hébergé, mais ses affaires ne vous regardent pas. Vous traversez la place sans un regard pour l'estrade. Un garde, lui, ne vous quitte pas des yeux, et vous préférez ne pas vous attarder.",
           "3": "Vous n'aviez jamais vu pendre un homme. Au bruit de la trappe, votre estomac se retourne. Vous courez jusqu'à une ruelle voisine pour y vomir, et la nausée ne vous quitte plus de la journée.",
           "4": "En partant, vous surprenez un rôdeur qui sort d'une maison vide, les bras chargés : tout le village est à la pendaison. Vous le rattrapez en quelques enjambées et le plaquez au sol. Les propriétaires de la maison vous offrent un objet pour vous remercier.",
-          "5": "En partant, vous surprenez un rôdeur qui sort d'une maison vide, les bras chargés. Vous lui courez après, mais il se retourne avant que vous l'ayez rejoint. Sa lame vous entaille le bras, et il disparaît entre les ruines."
+          "5": "En partant, vous surprenez un rôdeur qui sort d'une maison vide, les bras chargés. Vous lui courez après, mais il se retourne avant que vous l'ayez rejoint. Sa lame vous entaille le bras, et il disparaît entre les ruines.",
+          "6": "En partant, vous surprenez un rôdeur qui sort d'une maison vide, les bras chargés. Vous lui courez après, mais il connaît les ruines mieux que vous et disparaît dans les galeries sous les remparts."
         }
       },
       "steal": {
@@ -978,7 +983,8 @@
           "2": "Un paysan sent votre main dans sa poche et vous saisit au col. D'une seule poussée, vous l'envoyez rouler dans la poussière. Vous filez les mains vides et attendez derrière un mur que les gardes cessent de vous chercher.",
           "3": "Un paysan surprend votre geste et vous menace de ses poings. Vous reculez en levant les mains, l'air penaud. Pendant ce temps, votre Singe a grimpé sur son épaule, et il en redescend avec sa bourse sans que l'homme s'en aperçoive.",
           "4": "Un paysan vous surprend et crie au voleur. Vous prenez votre air le plus innocent et parlez d'une méprise. Les villageois se souviennent de vous comme d'un voyageur honnête et haussent les épaules. Vous repartez les mains vides.",
-          "5": "Un paysan vous surprend et crie au voleur. Les villageois reconnaissent votre visage, qu'on décrit dans toutes les auberges du pays. Ils vous rouent de coups jusqu'à ce que les gardes vous arrachent à eux et vous chassent de la place."
+          "5": "Un paysan vous surprend et crie au voleur. Les villageois reconnaissent votre visage, qu'on décrit dans toutes les auberges du pays. Ils vous rouent de coups jusqu'à ce que les gardes vous arrachent à eux et vous chassent de la place.",
+          "6": "Un paysan sent votre main dans sa poche et vous saisit au col. Vous vous dégagez après une courte lutte, la lèvre fendue, et disparaissez derrière les maisons, les mains vides."
         }
       },
       "trySave": {
@@ -1000,7 +1006,8 @@
           "1": "Vous désignez les complices aux gardes. La panique gagne aussitôt la place, et les accusés s'enfuient vers les galeries sous les remparts. Dans la bousculade, votre tête heurte un mur, et vous restez un moment hébété.",
           "2": "Les gardes vous prennent au mot et arrêtent sans discuter les hommes que vous désignez. Le sergent vous remet un objet au nom du seigneur. En partant, vous croisez le regard de ceux que vous avez livrés, et vous ne l'oublierez pas de sitôt.",
           "3": "Vous dénoncez les complices, qui vous accusent aussitôt d'être des leurs. Des villageois confirment vous avoir vu dormir chez le condamné. Les gardes vous trouvent une mine de brigand et n'ont aucun mal à les croire : ils vous rouent de coups avec les autres.",
-          "4": "Vous grimpez sur un tonneau pour désigner les complices. Au premier geste, vous perdez l'équilibre et tombez dans la boue. Les villageois éclatent de rire et vous chassent de la place sans vous laisser dire un mot."
+          "4": "Vous grimpez sur un tonneau pour désigner les complices. Au premier geste, vous perdez l'équilibre et tombez dans la boue. Les villageois éclatent de rire et vous chassent de la place sans vous laisser dire un mot.",
+          "5": "Vous désignez les complices aux gardes. La panique gagne la place, et les accusés s'enfuient vers les galeries. Dans la bousculade, on vous marche sur les pieds et vous recevez quelques coups de coude."
         }
       }
     }

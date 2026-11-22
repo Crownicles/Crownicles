@@ -192,7 +192,7 @@
               "max": -50
             },
             "speed": {
-              "max": 349
+              "max": 40
             }
           },
           "effect": "hurt",
@@ -218,6 +218,18 @@
           "effect": "occupied",
           "lostTime": 20,
           "randomItem": {}
+        },
+        "6": {
+          "requirements": {
+            "karma": {
+              "max": -50
+            },
+            "speed": {
+              "min": 41,
+              "max": 349
+            }
+          },
+          "health": -25
         }
       }
     }

@@ -105,6 +105,14 @@ On n'édite que `Lang/fr` : les autres langues viennent de Crowdin.
 
 ## Issues conditionnelles
 
+### Un choix doit être prévisible
+
+L'un des buts de la réécriture : quand le joueur clique sur un bouton, il sait à peu près ce qui va se passer, compte tenu de ce qu'il choisit et de sa situation.
+
+- Le libellé annonce l'action, et les issues du choix en sont des variantes : aider le pêcheur donne une prise, petite ou grosse, ou un échec quand on est faible ; pas un trésor caché ni une chute sans rapport.
+- Les conditions rendent le résultat plus prévisible, pas moins : un joueur fort s'attend à s'en sortir, un joueur mal famé à être reconnu. Ce que le texte raconte découle du profil, et le profil se lit dans le texte.
+- Les surprises restent possibles, mais minoritaires : une issue inattendue par choix au plus, et elle doit rester liée à la situation de l'event.
+
 ### Combien et lesquelles
 
 - **Par possibilité :** 3 à 6 issues, dont au moins une sans condition.
@@ -145,6 +153,21 @@ L'échelle est calée sur les 130 joueurs réguliers en production, c'est-à-dir
 | un joueur exceptionnel | `min` 140 | `min` 780 | `min` 860 | `min` 560 | 5 % |
 
 - **« Fort » veut dire vraiment fort**, le premier dixième. Être dans le premier quart, c'est juste « correct ».
+- **Des paliers plutôt qu'un seuil binaire.** Entre une défense de 519 et de 520, le joueur ne doit pas passer de « se faire déchiqueter » à « s'en sortir indemne ». Quand une stat fait varier un malus ou un bonus, on le gradue en trois paliers :
+
+  | | Faible | Moyen | Fort |
+  |---|---|---|---|
+  | `attack` | `max` 230 | `min` 231, `max` 599 | `min` 600 |
+  | `defense` | `max` 180 | `min` 181, `max` 519 | `min` 520 |
+  | `speed` | `max` 40 | `min` 41, `max` 349 | `min` 350 |
+  | `level` | `max` 55 | `min` 56, `max` 119 | `min` 120 |
+  | Malus | lourd | léger | rien |
+  | Bonus | rien | un petit quelque chose | tout |
+
+  - Exemple, event 10 (aider le pêcheur) : attaque faible, vous tombez à l'eau et vous blessez ; moyenne, vous dérapez sur les planches et vous écorchez les genoux ; forte, vous remontez une prise rare.
+  - Exemple, event 2 (ignorer le chien) : défense faible -25 PV, moyenne -12, forte -3.
+  - Un malus réservé aux plus faibles, sans palier moyen, reste possible si le cas général est traité par ailleurs (event 10 : seul un joueur faible peut tomber à l'eau).
+- **De la variété dans les seuils.** Les joueurs réguliers sont nombreux tout en haut, avec un creux autour du niveau 80 : ne mets pas tous les seuils tout en haut. Quelques issues vraiment réservées aux meilleurs, qu'on découvre tard, c'est voulu ; mais chaque event a aussi des issues pour les joueurs faibles et moyens.
 - **Un niveau 60 est encore le début du jeu.**
 - **Classes et familiers.** Une condition sur une seule classe ou un seul type de familier peut ne toucher que 1 à 2 % des joueurs : c'est voulu. Des issues rares, avec une part de joueurs concernés très variable, rendent l'event plus riche.
 - **Cuisine, matériaux, enchantements et amélioration de l'équipement.** Des conditions existent aussi sur le niveau de cuisine (`cookingLevel`), les matériaux du sac (`materials`), l'enchantement de l'arme ou de l'armure équipée (`enchantment`) et leur amélioration chez le forgeron (`weaponLevel`, `armorLevel`). Une issue peut aussi consommer (`consumeMaterials`) ou donner (`giveMaterials`) des matériaux. Formats et repères en production : `reference.md` de l'atelier, section « Cuisine, matériaux et équipement ».
@@ -200,4 +223,5 @@ Les 21 events déjà réécrits (1, 2, 10 à 20, 30, 39, 46, 56, 69, 71, 76, 89)
 - **Trous de couverture (events 2, 11, 13, 15, 16, 17, 20)** : des plages qui ne se touchent pas laissaient des joueurs sans issue ; le test de couverture vérifie maintenant toutes les conditions. Voir « Combien et lesquelles ».
 - **Relecture de GabrieLre (events 1, 2, 10)** : cas général d'abord, enchaînements logiques, sentiments à la mesure du résultat, animal interprété, event à garder à sa place, choix différents d'un event voisin, demi-tour par un voisin. Voir « Style », « Structure d'un event », « Canon des lieux » et « Combien et lesquelles ».
 - **Brouillon de Gabriel (events 24, 25, 26)** : son brouillon est commité sous son nom, puis repris selon le skill dans un second commit. Voir « Brouillon d'un contributeur ».
+- **Prévisibilité et paliers (le propriétaire et GabrieLre)** : le joueur doit à peu près savoir ce qui va se passer quand il clique ; un malus ou un bonus lié à une stat se gradue en trois paliers au lieu d'un seuil binaire, et les seuils ne sont pas tous tout en haut. Voir « Un choix doit être prévisible » et « L'échelle des seuils ». Appliqué aux events 2, 10, 24, 25 et 26.
 - **Cuisine, matériaux, équipement** : des issues doivent dépendre du niveau de cuisine, des matériaux et des enchantements ou améliorations de l'équipement, et certaines peuvent consommer des matériaux. Voir « L'échelle des seuils ».

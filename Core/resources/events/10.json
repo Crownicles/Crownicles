@@ -30,6 +30,15 @@
         },
         "4": {
           "karma": 3
+        },
+        "5": {
+          "requirements": {
+            "attack": {
+              "min": 231,
+              "max": 599
+            }
+          },
+          "health": -5
         }
       }
     },

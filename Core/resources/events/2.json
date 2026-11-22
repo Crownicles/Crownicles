@@ -154,7 +154,7 @@
               "min": 520
             }
           },
-          "health": -8
+          "health": -3
         },
         "2": {
           "requirements": {
@@ -186,10 +186,20 @@
         "5": {
           "requirements": {
             "defense": {
+              "min": 181,
               "max": 519
             }
           },
-          "health": -20
+          "health": -12
+        },
+        "6": {
+          "requirements": {
+            "defense": {
+              "max": 180
+            }
+          },
+          "health": -25,
+          "effect": "hurt"
         }
       }
     },

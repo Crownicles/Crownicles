@@ -66,11 +66,21 @@
         "5": {
           "requirements": {
             "speed": {
-              "max": 349
+              "max": 40
             }
           },
           "effect": "hurt",
           "health": -15
+        },
+        "6": {
+          "requirements": {
+            "speed": {
+              "min": 41,
+              "max": 349
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 10
         }
       }
     },
@@ -85,11 +95,11 @@
         "1": {
           "requirements": {
             "attack": {
-              "max": 699
+              "max": 230
             }
           },
           "effect": "occupied",
-          "health": -15,
+          "health": -20,
           "lostTime": 25,
           "karma": -2
         },
@@ -129,6 +139,18 @@
           "effect": "hurt",
           "health": -30,
           "karma": -3
+        },
+        "6": {
+          "requirements": {
+            "attack": {
+              "min": 231,
+              "max": 699
+            }
+          },
+          "effect": "occupied",
+          "health": -8,
+          "lostTime": 20,
+          "karma": -2
         }
       }
     },
@@ -154,7 +176,7 @@
         "2": {
           "requirements": {
             "speed": {
-              "max": 349
+              "max": 40
             }
           },
           "effect": "occupied",
@@ -223,7 +245,7 @@
         "1": {
           "requirements": {
             "defense": {
-              "max": 519
+              "max": 180
             }
           },
           "effect": "confounded",
@@ -258,6 +280,16 @@
           "effect": "confounded",
           "health": -10,
           "karma": -2
+        },
+        "5": {
+          "requirements": {
+            "defense": {
+              "min": 181,
+              "max": 519
+            }
+          },
+          "health": -5,
+          "karma": -5
         }
       }
     }

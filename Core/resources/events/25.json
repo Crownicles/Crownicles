@@ -54,14 +54,12 @@
               "min": 600
             }
           },
-          "karma": 4,
-          "effect": "confounded",
-          "health": -10
+          "karma": 4
         },
         "2": {
           "requirements": {
             "attack": {
-              "max": 599
+              "max": 230
             }
           },
           "effect": "hurt",
@@ -120,6 +118,17 @@
           "karma": 8,
           "effect": "occupied",
           "lostTime": 20
+        },
+        "7": {
+          "requirements": {
+            "attack": {
+              "min": 231,
+              "max": 599
+            }
+          },
+          "karma": 2,
+          "effect": "confounded",
+          "health": -10
         }
       }
     },
