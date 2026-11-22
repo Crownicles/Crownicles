@@ -120,8 +120,8 @@
         },
         "4": {
           "requirements": {
-            "validPetTypeIds": [
-              1
+            "petTags": [
+              "keenNose"
             ]
           },
           "effect": "occupied",

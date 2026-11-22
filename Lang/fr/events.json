@@ -393,7 +393,7 @@
           "1": "Le tour des murs ne vous apprend pas grand-chose sur le château. En revanche, de petites pièces d'or brillent un peu partout dans l'herbe, au pied des remparts. Vous passez un long moment à les ramasser une à une.",
           "2": "Le long du mur nord, l'herbe haute cache un trou. Vous marchez droit dedans et tombez lourdement au fond. Vous en sortez à grand-peine, la jambe en sang. Il faudra la soigner avant d'aller plus loin.",
           "3": "Le long du mur nord, l'herbe haute cache un trou. Votre pied s'y enfonce d'un coup. Vous vous rattrapez de justesse, mais votre cheville se tord, et vous finissez le tour en boitant.",
-          "4": "Près des remparts, votre chien se met à gratter la terre avec ardeur. Vous l'aidez à creuser et dégagez un petit coffret enterré, rongé par la rouille. À l'intérieur, quelques pièces d'or attendaient depuis longtemps.",
+          "4": "Près des remparts, votre familier flaire quelque chose et se met à gratter la terre avec ardeur. Vous l'aidez à creuser et dégagez un petit coffret enterré, rongé par la rouille. À l'intérieur, quelques pièces d'or attendaient depuis longtemps.",
           "5": "Dans les douves asséchées gisent les restes du pont-levis. Sous une grosse poutre, vous apercevez un coffre écrasé. Vous soulevez la poutre à bout de bras, le temps d'en tirer un objet resté intact."
         }
       },
@@ -1090,10 +1090,10 @@
           "0": "Vous fouillez le sable autour du coffret pendant un long moment. La clef était enterrée juste à côté. Elle tourne sans peine dans le cadenas, et vous trouvez quelques pièces à l'intérieur.",
           "1": "Vous retournez le sable, soulevez les pierres et fouillez les ruines voisines. Rien. Quand vous abandonnez enfin, le soleil a bien tourné, et le coffret est toujours aussi fermé.",
           "2": "Vous fouillez le sable autour du coffret et finissez par déterrer la clef, rongée par la rouille. Elle entre dans le cadenas, mais se brise net au premier tour. Agacé, vous laissez le coffret derrière vous.",
-          "3": "Vous connaissez les habitudes des voyageurs : une pierre plate posée près du coffret marque la cachette. La clef est dessous. Le cadenas s'ouvre sur un coffret plein de pièces.",
+          "3": "Vous connaissez les habitudes des voyageurs : une pierre plate posée près du coffret marque la cachette. La clef est dessous, et le cadenas s'ouvre sur un coffret plein de pièces.",
           "4": "Vous creusez un peu partout au hasard, sans méthode. Au bout d'un moment, les ongles pleins de sable et le dos courbaturé, vous abandonnez et laissez le coffret où il est.",
-          "5": "Votre chien renifle le sable autour du coffret, puis se met à gratter avec ardeur. Il semble avoir trouvé quelque chose : la clef apparaît sous ses pattes. Le coffret contient une jolie somme.",
-          "6": "Vous ratissez les alentours en un rien de temps et repérez un éclat de métal dans le sable. C'est la clef. Elle tourne sans peine, et le coffret contient quelques pièces."
+          "5": "Votre familier renifle le sable autour du coffret, puis se met à fouiller avec ardeur au pied d'une pierre. Il semble avoir trouvé quelque chose : la clef apparaît. Le coffret contient une jolie somme.",
+          "6": "Vous ratissez les alentours en un rien de temps et repérez un éclat de métal dans le sable : c'est la clef. Elle tourne sans peine, et le coffret contient quelques pièces."
         }
       },
       "pickLock": {
@@ -2785,7 +2785,7 @@
           "1": "Vous lui expliquez poliment que les fées n'existent que dans les contes. Pour vous prouver le contraire, Donia vous souffle une poudre rouge au visage. Tout se brouille. Elle vous mène à une clairière pleine de petites fées : des guêpes, qui vous piquent.",
           "2": "Quand Donia lève son bâton sur vous, vous l'attrapez au vol et le lui arrachez des mains. Vous le lui rendez aussitôt, et elle s'en va, vexée. Le choc vous a juste un peu meurtri la paume.",
           "3": "Donia plonge la main dans sa sacoche et vous lance une poudre rouge au visage. Vous faites un bond de côté et la poudre retombe dans les fougères. Vous filez entre les arbres et mettez un quart d'heure à retrouver le sentier.",
-          "4": "Quand Donia ouvre sa sacoche, votre chien se met à grogner. Elle sursaute et laisse tomber sa poignée de poudre rouge. Votre chien vient la renifler et éternue sans pouvoir s'arrêter. Vous attendez que la crise passe, puis vous repartez."
+          "4": "Quand Donia ouvre sa sacoche, votre familier se met à gronder. Elle sursaute et laisse tomber sa poignée de poudre rouge. Votre compagnon vient la renifler et éternue sans pouvoir s'arrêter. Vous attendez que la crise passe, puis vous repartez."
         }
       },
       "end": {
@@ -2908,7 +2908,7 @@
         "outcomes": {
           "0": "Vous proposez à Xirtex de déboucher la rigole qui alimente son point d'eau. Vous retirez le sable tassé à pleines mains pendant qu'il attend avec sa cruche. Il vous faut un bon moment avant que l'eau coule de nouveau.",
           "1": "Une dalle tombée en travers bloque la rigole. Vous la soulevez seul, avant même que Xirtex arrive pour vous aider. L'eau emporte une partie du sable et vous dégagez vite le reste. Xirtex vous donne quelques pièces pour le coup de main.",
-          "2": "Votre chien se met à creuser là où l'eau stagne. Vous dégagez la rigole avec lui, jusqu'à ce que l'eau lui arrive sur le museau. Pour vous remercier, Xirtex partage sa galette avec vous deux. Vous reprenez quelques forces avant de repartir.",
+          "2": "Votre familier flaire l'eau qui stagne et se met à creuser. Vous dégagez la rigole avec lui, jusqu'à ce que l'eau lui arrive sur le museau. Pour vous remercier, Xirtex partage sa galette avec vous deux. Vous reprenez quelques forces avant de repartir.",
           "3": "Quand vous posez la main sur la pierre de la rigole, vous la sentez vibrer. Partout, le sable frémit, sauf au-dessus d'une dalle enfouie. Vous la dégagez avec Xirtex et l'eau coule de nouveau. Pour vous remercier, il vous offre un objet de sa collection."
         }
       }
@@ -3085,7 +3085,7 @@
           "0": "Une bête inconnue s'est glissée dans la cave et affole les poules de Parziter. Vous soulevez seul le tonneau derrière lequel elle se cache et la chassez dehors. Soulagé, Parziter vous donne une bourse de pièces et un objet tiré de sa collection.",
           "1": "Pour calmer Parziter, vous fouillez ses tiroirs à la recherche d'une tisane, sans lui demander la permission. Il prend peur et vous lance son encrier à la tête. Vous ressortez avec une entaille au front et un œil qui commence à enfler.",
           "2": "Parziter a des visions depuis qu'il a trouvé une pierre étrange : chaque fois qu'il la touche, il voit une ville se fendre en deux. Il vous supplie de l'emporter. Vous l'enveloppez dans un linge. Même au fond de votre sac, la pierre vibre.",
-          "3": "Minou, le chat de Parziter, a disparu dans les bois. Votre chien suit sa piste jusqu'à un arbre creux. Le chat refuse de sortir tant que le chien est là : il vous faut une heure pour le décider. Parziter, Minou sur les genoux, vous donne quelques pièces.",
+          "3": "Minou, le chat de Parziter, a disparu dans les bois. Votre familier suit sa piste jusqu'à un arbre creux. Le chat refuse de sortir tant que votre compagnon est là : il vous faut une heure pour le décider. Parziter, Minou sur les genoux, vous donne quelques pièces.",
           "4": "Un coup de vent emporte les dessins que Parziter faisait sécher devant sa porte. Vous courez après les feuilles et rattrapez la dernière juste avant qu'elle tombe dans la rivière. Parziter récupère ses dessins, un peu froissés, et vous donne quelques pièces.",
           "5": "Des tuiles tombent du toit crevé à chaque coup de vent, et Parziter n'ose plus traverser sa cour pour aller au puits. Vous l'accompagnez, bouclier levé au-dessus de vos deux têtes. Les tuiles s'y brisent sans vous faire plier. L'aller-retour prend un quart d'heure."
         }

@@ -110,6 +110,10 @@ function checkOutcomeConsistency(report, path, [text, x], pets) {
 	for (const rule of OUTCOME_RULES.filter(outcomeRule => outcomeRule.test(text, x))) {
 		report.warnings.push(`${path}: ${rule.message}`);
 	}
+	const petIds = get(getOrEmpty(x, "requirements"), "validPetTypeIds", []);
+	if (petIds.length > 0 && petIds.every(petId => DOG_IDS.includes(petId))) {
+		report.warnings.push(`${path}: an outcome for dogs only: keep it for dog behaviour (barking, leash, howling), otherwise use petTags (keenNose, intimidating)`);
+	}
 	const tag = sharedTag(get(getOrEmpty(x, "requirements"), "validPetTypeIds", []), pets);
 	if (tag) {
 		report.warnings.push(`${path}: every listed pet has the tag ${tag}: use "petTags": ["${tag}"]`);

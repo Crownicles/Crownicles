@@ -215,10 +215,8 @@
         },
         "2": {
           "requirements": {
-            "validPetTypeIds": [
-              1,
-              2,
-              28
+            "petTags": [
+              "intimidating"
             ]
           },
           "effect": "occupied",
@@ -236,10 +234,8 @@
         },
         "2": {
           "requirements": {
-            "validPetTypeIds": [
-              1,
-              2,
-              28
+            "petTags": [
+              "intimidating"
             ]
           }
         }
