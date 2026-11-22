@@ -207,7 +207,8 @@
             ]
           },
           "effect": "occupied",
-          "lostTime": 20
+          "lostTime": 20,
+          "money": 60
         }
       }
     },
