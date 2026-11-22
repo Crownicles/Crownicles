@@ -358,7 +358,9 @@
           "0": "Vous saluez les hommes d'un signe de tête et ressortez aussitôt. Personne ne cherche à vous retenir, et vous retrouvez le calme des ruelles de Claire de Ville.",
           "1": "Au coin de la ruelle, un homme pressé vous percute de plein fouet et s'enfuit sans un mot. Vous tombez lourdement sur les pavés et restez un long moment étourdi.",
           "2": "Au coin de la ruelle, un homme pressé vous bouscule en passant et s'enfuit sans s'excuser. Votre épaule heurte un mur, et vous restez un instant sonné.",
-          "3": "Au coin de la ruelle, un homme pressé fonce droit sur vous. Vous l'évitez d'un pas de côté, et il disparaît dans la foule. Vous poursuivez votre chemin sans vous retourner."
+          "3": "Au coin de la ruelle, un homme pressé fonce droit sur vous. Vous l'évitez d'un pas de côté, et il disparaît dans la foule. Vous poursuivez votre chemin sans vous retourner.",
+          "4": "Vous ressortez sans un mot. Dehors, un marchand ambulant vante ses beignets au coin de la rue. Vous passez votre chemin et vous perdez un peu dans le calme des ruelles de Claire de Ville avant de retrouver la grande rue.",
+          "5": "Vous refermez la porte derrière vous. Ces hommes ne vous disaient rien qui vaille, et vous ne tenez pas à savoir d'où viennent leurs bijoux. Vous reprenez votre route d'un bon pas."
         }
       },
       "end": {
