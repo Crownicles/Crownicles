@@ -53,6 +53,17 @@
           "tags": [
             "moneyUsage"
           ]
+        },
+        "7": {
+          "requirements": {
+            "validPetTypeIds": [
+              73,
+              74,
+              75
+            ]
+          },
+          "money": 80,
+          "karma": 2
         }
       }
     },
