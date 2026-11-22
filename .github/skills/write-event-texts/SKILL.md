@@ -11,12 +11,16 @@ Le français (`Lang/fr`) est la référence. Depuis l'abandon de Crowdin (#5181)
 
 ## Sources à lire avant d'écrire
 
-- **La bible du lore** : dépôt `Crownicles/Tools`, `documents/crownicles-lore-proposition.md`.
+- **La bible du lore** : dépôt `Crownicles/Tools`, `documents/crownicles-lore-proposition.md` (https://github.com/Crownicles/Tools/blob/master/documents/crownicles-lore-proposition.md).
   - Sections 0 à 7 : les règles du présent permanent (R1 à R8), les personnages et la géographie.
   - Section 13.5 : les contradictions déjà relevées.
   - Section 14 : le guide de style.
   - Annexe A, le canon des lieux : tout ce que le jeu dit de chaque lieu, les voisins et le menu des villes.
-- **L'atelier de réécriture** : `Crownicles/Tools`, `generators/event-rewrites/src/` (`brief.md`, `reference.md`, `validate.py`, `apply.py`).
+- **Les consignes de l'atelier**, dans `references/` à côté de ce fichier :
+  - `brief.md` : la consigne complète donnée à un rédacteur (format de sortie, exemples, retours de relecture) ;
+  - `reference.md` : les champs d'une issue, les altérations, toutes les conditions et leurs repères en production ;
+  - `repasse.md` : reprendre un event déjà réécrit avant les règles actuelles ;
+  - `draft-rework.md` : reprendre le brouillon d'un contributeur.
 
 ## Style
 
@@ -180,24 +184,26 @@ L'échelle est calée sur les 130 joueurs réguliers en production, c'est-à-dir
   - Les seuils sont `min` 0, 50, 80 ou 100, et `max` -30 ou -50.
   - Une issue le change de ±1 à ±5 pour un petit geste, de -10 à -20 pour un acte grave, et de +8 à +15 pour un acte vraiment généreux.
 
-## Workflow avec l'atelier (dépôt Tools)
+## Workflow avec l'atelier
 
-1. **Préparer l'entrée.** `python3 prepare.py <dossier Crownicles> <id> [--draft-ref <commit>]` écrit `generators/event-rewrites/src/input/<id>.json` : les textes et la mécanique de `develop`, le canon du lieu et, avec `--draft-ref`, le brouillon d'un contributeur (champ `draft`).
-2. **Écrire la sortie.** `out/<id>.json` contient `text`, `possibilities`, `data` (le contenu complet de `Core/resources/events/<id>.json`), `icons` et `notes`.
-3. **Valider.** Lance `python3 validate.py <id>` depuis `src/`. Il vérifie le style, les longueurs, la parité entre textes et données, les destinations et la couverture de tous les profils.
-4. **Appliquer.** Lance `python3 apply.py <dossier Crownicles> [ids]`. Il écrit `Lang/fr/events.json`, `Core/resources/events/<id>.json` et les emojis des nouvelles issues dans `Lib/src/CrowniclesIcons.ts`. Il n'écrit que le français : les autres langues sont à traduire ensuite (`node .github/scripts/check-translations.mjs parity Lang` liste les clés manquantes).
-5. **Relire sur le site.** Une fois la branche poussée, le site de comparaison (`https://crownicles.github.io/Tools/generators/event-rewrites/index.html?base=develop&head=<branche>`) montre l'avant / après de chaque event modifié.
-6. **Tester dans Crownicles :**
+Les scripts sont dans `scripts/` à côté de ce fichier, et se lancent depuis la racine du dépôt. Ils travaillent dans `.event-rewrites/` (ignoré par git) : `input/<id>.json` pour l'entrée, `out/<id>.json` pour la réécriture.
+
+1. **Préparer l'entrée.** `node .github/skills/write-event-texts/scripts/prepare.mjs <id> [--draft-ref <commit>]` écrit `input/<id>.json` : les textes et la mécanique de `develop`, le canon du lieu (lu dans la bible) et, avec `--draft-ref`, une version à reprendre (champ `draft`) : le brouillon d'un contributeur, ou `HEAD` pour repasser un event déjà réécrit.
+2. **Écrire la sortie.** Le rédacteur (souvent un agent, à qui l'on donne `references/brief.md` et, selon le cas, `repasse.md` ou `draft-rework.md`) écrit `out/<id>.json` : `text`, `possibilities`, `data` (le contenu complet de `Core/resources/events/<id>.json`), `icons` et `notes`.
+3. **Valider.** `node .github/skills/write-event-texts/scripts/validate.mjs <id>` vérifie le style, les longueurs, la parité entre textes et données, les destinations et la couverture de tous les profils.
+4. **Appliquer.** `node .github/skills/write-event-texts/scripts/apply.mjs [ids]` écrit `Lang/fr/events.json`, `Core/resources/events/<id>.json` et les emojis dans `Lib/src/CrowniclesIcons.ts` (il retire ceux des issues supprimées). Il n'écrit que le français : les autres langues sont à traduire ensuite (`node .github/scripts/check-translations.mjs parity Lang` liste les clés manquantes).
+5. **Tester :**
    - `cd Core && npx vitest run __tests__/data/events __tests__/core/eventsRequirements.test.ts` ;
    - `cd Lib && npx eslint src/CrowniclesIcons.ts` ;
    - `node .github/scripts/generate-test-commands-skill.mjs` (la CI vérifie que ce skill est à jour).
+6. **Relire sur le site.** Une fois la branche poussée, le site de comparaison (`https://crownicles.github.io/Tools/generators/event-rewrites/index.html?base=develop&head=<branche>`) montre l'avant / après de chaque event modifié.
 
 ## Brouillon d'un contributeur
 
 Quand un contributeur envoie sa version d'un event :
 
 1. **Commit de son brouillon, dont il est l'auteur** (`git commit --author="Nom <id+login@users.noreply.github.com>"`). On n'y corrige que ce qui empêche de le lire (JSON cassé, clés mal orthographiées) et on ajoute les emojis des nouvelles issues pour que le jeu puisse les afficher.
-2. **Reprise selon ce skill, dans un second commit.** On garde ses idées et ses possibilités, on applique les règles. La consigne de l'atelier pour cette reprise est `draft-rework.md`.
+2. **Reprise selon ce skill, dans un second commit.** On garde ses idées et ses possibilités, on applique les règles. La consigne de l'atelier pour cette reprise est `references/draft-rework.md`.
 
 Le contributeur n'est pas forcément rédacteur : ses brouillons ont souvent des textes trop longs, des seuils de l'ancien barème, de la religion, du discours direct ou des fautes. C'est le travail de la reprise, pas une raison d'écarter ses idées.
 

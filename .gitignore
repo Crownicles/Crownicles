@@ -20,3 +20,6 @@ bdd
 # Test command export files
 players-export-*.json
 ai_tournament_matchups_*.csv
+
+# Event rewrite workshop (.github/skills/write-event-texts/scripts): local working copies
+.event-rewrites/
