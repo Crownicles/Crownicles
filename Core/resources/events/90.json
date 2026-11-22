@@ -225,6 +225,7 @@
   "triggers": [
     {
       "mapId": 3,
+      "level": 49,
       "date": {
         "month": {
           "from": 11,
