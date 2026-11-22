@@ -382,7 +382,8 @@ const FINAL_BOSS_IDS = [
 	FightConstants.FINAL_BOSS_MONSTER_IDS.MALE_ICE_DRAGON,
 	FightConstants.FINAL_BOSS_MONSTER_IDS.FEMALE_ICE_DRAGON,
 	FightConstants.FINAL_BOSS_MONSTER_IDS.KRAKEN,
-	FightConstants.FINAL_BOSS_MONSTER_IDS.LEVIATHAN
+	FightConstants.FINAL_BOSS_MONSTER_IDS.LEVIATHAN,
+	FightConstants.FINAL_BOSS_MONSTER_IDS.MOTHER_TREE
 ] as const;
 
 const BOSS_INTERACTION_MAP: Record<string, InteractOtherPlayerInteraction> = {
@@ -390,7 +391,8 @@ const BOSS_INTERACTION_MAP: Record<string, InteractOtherPlayerInteraction> = {
 	[FightConstants.FINAL_BOSS_MONSTER_IDS.MALE_ICE_DRAGON]: InteractOtherPlayerInteraction.BEATEN_MALE_ICE_DRAGON,
 	[FightConstants.FINAL_BOSS_MONSTER_IDS.FEMALE_ICE_DRAGON]: InteractOtherPlayerInteraction.BEATEN_FEMALE_ICE_DRAGON,
 	[FightConstants.FINAL_BOSS_MONSTER_IDS.KRAKEN]: InteractOtherPlayerInteraction.BEATEN_KRAKEN,
-	[FightConstants.FINAL_BOSS_MONSTER_IDS.LEVIATHAN]: InteractOtherPlayerInteraction.BEATEN_LEVIATHAN
+	[FightConstants.FINAL_BOSS_MONSTER_IDS.LEVIATHAN]: InteractOtherPlayerInteraction.BEATEN_LEVIATHAN,
+	[FightConstants.FINAL_BOSS_MONSTER_IDS.MOTHER_TREE]: InteractOtherPlayerInteraction.BEATEN_MOTHER_TREE
 };
 
 /**

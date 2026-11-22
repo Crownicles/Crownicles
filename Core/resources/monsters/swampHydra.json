@@ -1,0 +1,45 @@
+{
+  "baseEnergyValue": 320,
+  "attackRatio": 95,
+  "defenseRatio": 80,
+  "speedRatio": 45,
+  "breath": 10,
+  "maxBreath": 30,
+  "breathRegen": 6,
+  "rewardFactor": 0.6,
+  "materialLoot": [
+    55,
+    17,
+    66,
+    38,
+    78,
+    45,
+    27,
+    36
+  ],
+  "attacks": [
+    {
+      "id": "multiHeadBite",
+      "minLevel": 0,
+      "weight": 5
+    },
+    {
+      "id": "regrowth",
+      "minLevel": 0,
+      "weight": 3
+    },
+    {
+      "id": "tailWhipAttack",
+      "minLevel": 0,
+      "weight": 2
+    },
+    {
+      "id": "hardBiteAttack",
+      "minLevel": 50,
+      "weight": 2
+    }
+  ],
+  "maps": [
+    1302
+  ]
+}
