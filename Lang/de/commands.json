@@ -196,6 +196,7 @@
     "recalledTitle": "{{pseudo}}, umgangssprachlich erinnert",
     "recalled_male": "Als {{petDisplay}} Ihren Ruf hört, bricht er seine Suche ab und kehrt mit gesenktem Schwanz und vorwurfsvollem Blick zu Ihnen zurück. Er bringt nichts von seiner abgebrochenen Reise mit. Die Enttäuschung ist in seinen Augen zu sehen - er wird Ihnen noch eine Weile böse sein.",
     "recalled_female": "Als {{petDisplay}} Ihren Ruf hört, bricht sie ihre Suche ab und kehrt mit gesenktem Schwanz und vorwurfsvollem Blick zu Ihnen zurück. Sie bringt nichts von ihrer abgebrochenen Reise mit. Die Enttäuschung ist in ihren Augen zu sehen - sie wird Ihnen noch eine Weile böse sein.",
+    "loveLost": "\n\n{emote:expedition.love} Ihr Haustier hat **{{loveLost}}** Liebespunkte verloren.",
     "finishedTitle": "{{pseudo}}, Versand beendet!",
     "finishedDescription": {
       "talisman": {
@@ -903,6 +904,7 @@
       "shopEmptyDescription": "Derzeit werden keine Dienstleistungen angeboten.",
       "equipmentChangedTitle": "{{pseudo}}, die Ausrüstung hat sich geändert!",
       "equipmentChangedDescription": "Die ausgewählte Ausrüstung ist an dieser Stelle im Inventar nicht mehr dieselbe: Sie wurde seit dem Öffnen des Menüs verschoben. Es wurden keine Gegenstände ausgegeben, und das Menü wurde mit deinem aktuellen Inventar aktualisiert.",
+      "offerChanged": "Dieses Angebot ist nicht mehr gültig: Die Lage hat sich seit dem Öffnen des Menüs geändert. Es wurde nichts ausgegeben.",
       "exitInn": "Aus der Herberge herauskommen",
       "reactions": {
         "exit": {
@@ -2811,7 +2813,12 @@
     "swapSection": "{emote:equipCommand.swap} **Tauschen :**",
     "noItems": "Sie müssen sich um keine Ausrüstung kümmern!",
     "closeTitle": "{{pseudo}}Schließen der Ausrüstung",
-    "closeDescription": "Sie haben das Ausstattungsmenü geschlossen."
+    "closeDescription": "Sie haben das Ausstattungsmenü geschlossen.",
+    "errors": {
+      "invalid": "Diese Aktion ist nicht mehr möglich: Ihre Ausrüstung hat sich in der Zwischenzeit geändert.",
+      "noItem": "In dieser Kategorie ist kein Gegenstand ausgerüstet, es gibt nichts zu verstauen.",
+      "reserveFull": "Ihre Reserve ist voll: Schaffen Sie Platz, bevor Sie diesen Gegenstand dort verstauen."
+    }
   },
   "drink": {
     "errors": {
