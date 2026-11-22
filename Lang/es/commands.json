@@ -196,6 +196,7 @@
     "recalledTitle": "{{pseudo}}un recordatorio familiar",
     "recalled_male": "Al oír tu llamada, {{petDisplay}} abandona su búsqueda y vuelve hacia ti, con la cola baja y los ojos llenos de reproche. No trae nada de su viaje interrumpido. Puedes ver la decepción en sus ojos: estará resentido contigo durante un tiempo.",
     "recalled_female": "Al oír tu llamada, {{petDisplay}} abandona su búsqueda y vuelve hacia ti, con la cola baja y los ojos llenos de reproche. No trae nada de su viaje interrumpido. Puedes ver la decepción en sus ojos: estará resentida contigo durante un tiempo.",
+    "loveLost": "\n\n{emote:expedition.love} Tu mascota ha perdido **{{loveLost}}** puntos de amor.",
     "finishedTitle": "{{pseudo}}¡La expedición ha terminado!",
     "finishedDescription": {
       "talisman": {
@@ -903,6 +904,7 @@
       "shopEmptyDescription": "No hay servicios que ofrecer por el momento.",
       "equipmentChangedTitle": "{{pseudo}}, ¡el equipamiento ha cambiado!",
       "equipmentChangedDescription": "El equipo seleccionado ya no es el mismo en esa posición del inventario: se ha desplazado desde que se abrió el menú. No se ha gastado nada y el menú se ha actualizado con tu inventario actual.",
+      "offerChanged": "Esta oferta ya no es válida: la situación ha cambiado desde que se abrió el menú. No se ha gastado nada.",
       "exitInn": "Fuera de peligro",
       "reactions": {
         "exit": {
@@ -2811,7 +2813,12 @@
     "swapSection": "{emote:equipCommand.swap} **swap:**",
     "noItems": "¡No tienes que manejar ningún equipo!",
     "closeTitle": "{{pseudo}}cierre del equipo",
-    "closeDescription": "Ha cerrado el menú de equipamiento."
+    "closeDescription": "Ha cerrado el menú de equipamiento.",
+    "errors": {
+      "invalid": "Esta acción ya no es posible: tu equipo ha cambiado mientras tanto.",
+      "noItem": "No hay ningún objeto equipado en esta categoría, no hay nada que guardar.",
+      "reserveFull": "Tu reserva está llena: libera espacio antes de guardar este objeto."
+    }
   },
   "drink": {
     "errors": {
