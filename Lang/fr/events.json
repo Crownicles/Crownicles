@@ -176,7 +176,8 @@
           "2": "Vous descendez la berge à vive allure et repérez vite un gué, à l'endroit où la rivière s'étale sur les galets. Vous traversez sans vous mouiller plus haut que les chevilles.",
           "3": "En remontant vers l'amont, vous suivez un sentier que personne ne semble avoir emprunté depuis longtemps. Il s'éloigne de la rivière, et vous finissez par reconnaître les abords du Village Coco.",
           "4": "En descendant vers l'aval, vous suivez un passage rocheux qui s'écarte peu à peu de la rivière. Le vent se lève et le sable remplace les cailloux : le chemin débouche sur la plage de La Dune.",
-          "5": "En longeant la berge, votre familier s'arrête net, renifle le sol et gratte sous une souche. Il en sort un vieux sac oublié par un voyageur, qui contient encore un objet utile. Un peu plus loin, un gué vous permet de traverser."
+          "5": "En longeant la berge, votre familier s'arrête net, renifle le sol et gratte sous une souche. Il en sort un vieux sac oublié par un voyageur, qui contient encore un objet utile. Un peu plus loin, un gué vous permet de traverser.",
+          "6": "Votre familier, rompu aux longues expéditions, longe la berge le nez au vent, puis s'engage sans hésiter dans l'eau là où elle s'étale sur les galets. Vous le suivez : le gué est sûr, et vous traversez en un rien de temps."
         }
       },
       "craftBoat": {
@@ -240,7 +241,8 @@
           "2": "Vous vous attardez devant un étal, la bourse bien en vue. Vous ne voyez pas venir le coup : on vous frappe derrière la tête, et vous vous effondrez. Des passants vous relèvent, le crâne en sang. Il faudra vous soigner.",
           "3": "Une main se glisse vers votre bourse. Vous attrapez le poignet du voleur avant qu'il ne l'atteigne. La garde l'emmène, et une marchande qu'il venait de dépouiller vous remercie d'une poignée de pièces.",
           "4": "Les marchands vous reconnaissent et échangent des regards. Les prix grimpent dès que vous approchez d'un étal. Vous finissez par acheter un objet qui vous plaît, en le payant bien plus cher qu'il ne vaut.",
-          "5": "Une vieille marchande vous reconnaît et vous demande de garder son étal le temps d'une course. À son retour, rien ne manque. Pour vous remercier, elle vous laisse choisir un objet parmi sa marchandise."
+          "5": "Une vieille marchande vous reconnaît et vous demande de garder son étal le temps d'une course. À son retour, rien ne manque. Pour vous remercier, elle vous laisse choisir un objet parmi sa marchandise.",
+          "6": "Votre bourse rebondie n'échappe pas à un courtier de la Bourse, qui flaire le bon client. Il vous guide vers les meilleurs étals et marchande à votre place. Vous repartez avec un objet de belle facture, payé un prix raisonnable."
         }
       },
       "seekInformation": {
@@ -306,7 +308,8 @@
           "2": "En voyant les lames, vous pensez au fer et à l'acier qui alourdissent votre sac. Le forgeron soupèse ce que vous lui montrez et hoche la tête. Il vous l'échange volontiers contre l'une de ses pièces.",
           "3": "Dans un coin attendent des pointes de flèche, des billes de fronde et quelques boulets. Vous les examinez en connaisseur, et le forgeron le remarque vite. Il vous demande votre avis sur leur poids et leur forme, et vous paie pour ces conseils.",
           "4": "Affolée par les étincelles et le bruit du marteau, votre Chauve-souris s'envole dans l'atelier et renverse les outils. Le temps de la rattraper, tout est sens dessus dessous. Le forgeron ne rit pas, et il vous demande de partir.",
-          "5": "Le forgeron remarque votre arme, reprise plusieurs fois chez un forgeron de ville, et la regarde longuement. Content de parler métier avec quelqu'un qui connaît le travail bien fait, il vous offre l'une de ses meilleures pièces."
+          "5": "Le forgeron remarque votre arme, reprise plusieurs fois chez un forgeron de ville, et la regarde longuement. Content de parler métier avec quelqu'un qui connaît le travail bien fait, il vous offre l'une de ses meilleures pièces.",
+          "6": "Le forgeron vous dévisage, puis éclate de rire : c'est donc vous, le voyageur qui a fait reforger une simple babiole jusqu'au sommet par le forgeron royal. L'histoire est arrivée jusqu'à L'Étendue. Amusé, il vous offre une petite pièce de son cru, pour votre collection."
         }
       },
       "goAway": {
@@ -852,7 +855,8 @@
           "3": "Le marchand vous dévisage, puis son visage se ferme : il sait ce qu'on raconte de vous. Il tire un couteau de sa ceinture et se jette sur vous. Vous n'avez que le temps de lever le bras, et la lame s'y enfonce. Vous fuyez en serrant votre blessure.",
           "4": "Le marchand vous dévisage, puis son visage se ferme : il sait ce qu'on raconte de vous. Il tire un couteau et se jette sur vous. Vous esquivez d'un bond, et la lame ne fait que vous effleurer le bras. Vous filez entre les stands avant qu'il ne revienne à la charge.",
           "5": "Pendant que vous examinez l'étal, votre Paon fait la roue devant le stand. Les passants s'attroupent pour l'admirer, et le marchand vend plus en un instant qu'en toute une matinée. Ravi, il vous offre l'objet que vous regardiez.",
-          "6": "Le marchand vous dévisage, puis son visage se ferme : il sait ce qu'on raconte de vous. Il tire un couteau et se jette sur vous. Vous reculez trop tard, et la lame vous entaille l'épaule. Vous fuyez entre les stands en comprimant la plaie."
+          "6": "Le marchand vous dévisage, puis son visage se ferme : il sait ce qu'on raconte de vous. Il tire un couteau et se jette sur vous. Vous reculez trop tard, et la lame vous entaille l'épaule. Vous fuyez entre les stands en comprimant la plaie.",
+          "7": "Le marchand jauge votre bourse rebondie, et ses prix doublent sous vos yeux. Vous voulez l'objet, alors vous le payez quand même, en sachant très bien qu'il vous a vu venir."
         }
       }
     }
@@ -879,7 +883,8 @@
           "3": "Les soldats vous regardent de travers, mais vous laissent faire. Vous avez vu assez de champs de bataille pour distinguer d'un coup d'œil un mort d'un blessé. Vous en tirez trois de sous les corps, et les soldats finissent par vous remercier.",
           "4": "Les soldats vous reconnaissent avant même que vous ayez parlé. Ils refusent votre aide et pointent leurs épées vers vous : ils ne laisseront pas un pilleur approcher de leurs morts. Vous reculez lentement, puis vous vous éloignez.",
           "5": "Votre familier renifle l'air, puis file entre les corps. Il s'arrête chaque fois près d'un soldat encore vivant. Grâce à lui, vous en sauvez près d'une dizaine. Les soldats font une collecte et vous remettent une bourse bien remplie.",
-          "6": "En fouillant le terrain, vous surprenez un pilleur penché sur un blessé. Il se jette sur vous et vous frappe au visage. Encore sonné, vous le repoussez, et il s'enfuit à travers champs avant que les soldats n'arrivent."
+          "6": "En fouillant le terrain, vous surprenez un pilleur penché sur un blessé. Il se jette sur vous et vous frappe au visage. Encore sonné, vous le repoussez, et il s'enfuit à travers champs avant que les soldats n'arrivent.",
+          "7": "Le sergent vous reconnaît : votre guilde a bonne réputation dans la compagnie du Fer-Rouge. Il vous traite en allié. Vous l'aidez un moment à porter les blessés jusqu'au chariot, puis il vous paie comme l'un de ses hommes."
         }
       },
       "steal": {
@@ -1136,7 +1141,8 @@
           "3": "Le duc vous reconnaît avant que vous ayez ouvert votre sac : on lui a raconté comment vous aidez les voyageurs. Il refuse tout cadeau. Il s'absente un instant et revient avec un objet de sa collection, qu'il tient à vous offrir.",
           "4": "L'intendant du duc vous barre la route. Il a entendu parler de vous et vous regarde avec méfiance. Il exige que vous payiez votre part des frais de la fête et compte lui-même vos pièces. Puis il vous fait raccompagner. Vous n'aurez pas vu le duc.",
           "5": "Votre familier vous arrache le paquet des mains, file entre les tables et le dépose sur les genoux du duc. Toute la salle éclate de rire. Amusé, le duc vous fait remettre quelques pièces pour le spectacle.",
-          "6": "Vous n'avez pas grand-chose à offrir, alors vous cueillez un bouquet de fleurs sauvages au bord du chemin. Le duc est touché par ce cadeau tout simple. Il vous fait asseoir près de lui, et on vous sert à manger."
+          "6": "Vous n'avez pas grand-chose à offrir, alors vous cueillez un bouquet de fleurs sauvages au bord du chemin. Le duc est touché par ce cadeau tout simple. Il vous fait asseoir près de lui, et on vous sert à manger.",
+          "7": "En voyant votre bourse rebondie, le duc devient soudain très aimable. Il vous fait asseoir à sa table, vous présente à ses amis et vous parle longuement d'un placement très sûr dans ses plantations. Vous ne signez rien, mais le vin et les cadeaux d'usage vous ont coûté quelques pièces."
         }
       },
       "party": {
@@ -1487,7 +1493,8 @@
           "3": "Price accepte, mais il a entendu parler de vous : un client comme vous n'ira pas se plaindre à la garde. Le soir, au campement, un bruit de pièces vous réveille. Price vide votre bourse. Vous vous jetez sur lui, il vous sonne d'un coup de poing à la tempe et s'enfuit avec votre argent.",
           "4": "Sur la route, un marchand vous reconnaît, vous salue chaleureusement et tient à vous offrir quelques pièces pour un service passé. Impressionné, Price refuse d'être payé pour l'escorte : il préfère rester dans les bonnes grâces d'un client comme vous.",
           "5": "Contre quelques pièces, Price vous escorte. Trois brigands vous barrent la route. Vous en mettez deux à terre avant que Price ait dégainé, et le troisième s'enfuit. Price fouille leurs poches et vous laisse la plus grosse part, bien plus que son salaire.",
-          "6": "Contre quelques pièces, Price vous escorte. Trois brigands vous barrent la route. Vous en tenez un en respect pendant que Price met les deux autres en fuite. Impressionné, il ne vous réclame qu'une partie de son salaire."
+          "6": "Contre quelques pièces, Price vous escorte. Trois brigands vous barrent la route. Vous en tenez un en respect pendant que Price met les deux autres en fuite. Impressionné, il ne vous réclame qu'une partie de son salaire.",
+          "7": "Contre quelques pièces, Price vous escorte. Il sait que votre guilde ne laisse jamais impuni un tort fait à l'un des siens, et il se tient à carreau : pas un mot de travers, pas une main près de votre bourse. Il vous fait même un prix."
         }
       },
       "meal": {
@@ -1838,7 +1845,8 @@
           "3": "La chanson vous fait descendre dans les caves sous l'auberge. Vous passez les pièges sans ralentir. Quand Pérotin file avec le butin, vous le rattrapez dans l'escalier. Beau joueur, il vous rend la moitié de l'or et un objet, et jure que c'était prévu.",
           "4": "Vous lui racontez vos années de route et les embuscades déjouées. Pérotin n'a rien à inventer : sa chanson fait revivre vos aventures à toute la foule. Les nobles sortis de l'auberge en redemandent. Le chapeau se remplit, et il vous en laisse la moitié.",
           "5": "Vous lui racontez vos premières aventures : quelques combats gagnés, une ou deux belles frayeurs. Sa chanson les fait revivre à la foule, sans plus. On écoute avec plaisir et on lance quelques pièces dans le chapeau. Pérotin vous en laisse une part.",
-          "6": "Pérotin a à peine commencé que les villageois ajoutent leurs couplets : chacun connaît un service que vous avez rendu. La chanson devient la leur. À la fin, une vieille femme vous met un objet dans les mains et refuse de le reprendre."
+          "6": "Pérotin a à peine commencé que les villageois ajoutent leurs couplets : chacun connaît un service que vous avez rendu. La chanson devient la leur. À la fin, une vieille femme vous met un objet dans les mains et refuse de le reprendre.",
+          "7": "Pérotin n'a pas besoin de vos explications : votre nom circule déjà dans les auberges, et l'on y raconte vos exploits. Sa chanson fait revivre les plus célèbres, et la foule reprend les refrains en chœur. Le chapeau déborde, et il vous en laisse une bonne part."
         }
       },
       "singLove": {
@@ -2765,7 +2773,8 @@
           "1": "Après le rituel, vous vous sentez invincible. Puis Donia disparaît entre les arbres, et la sensation part avec elle. Vous la cherchez longtemps pour qu'elle recommence, en vain. Vous repartez honteux, en vous promettant de ne plus vous laisser prendre.",
           "2": "Donia semble avoir entendu parler de vous en bien. Elle vous bénit avec un soin particulier et vous remercie de ne pas vous moquer de ses croyances. Vous la saluez poliment, et elle repart d'un pas léger.",
           "3": "Votre chat se hérisse quand le bâton passe près de lui, puis file dans les fougères. Donia éclate de rire et s'en va. Vous mettez un bon quart d'heure à retrouver votre chat, qui boude sous une souche.",
-          "4": "Donia sort de sa sacoche une poudre bleue. Vous la reconnaissez : elle fait dormir. Vous en respirez une pincée et vous endormez contre un arbre. Vous rêvez d'un banquet au château, où vous dansez avec la princesse au visage voilé. Vous vous réveillez reposé."
+          "4": "Donia sort de sa sacoche une poudre bleue. Vous la reconnaissez : elle fait dormir. Vous en respirez une pincée et vous endormez contre un arbre. Vous rêvez d'un banquet au château, où vous dansez avec la princesse au visage voilé. Vous vous réveillez reposé.",
+          "5": "Donia a entendu parler de vos dons aux bénédictions de l'Oracle. Piquée au vif, elle met tout son art dans la sienne : son bâton tourne longtemps autour de vous, et ses murmures se font graves. Quand elle repart, fière d'elle, vous vous sentez étrangement reposé."
         }
       },
       "compromise": {
@@ -3677,7 +3686,8 @@
           "2": "Vous posez un genou à terre devant les soldats, avant de comprendre que vous êtes seul : ce n'est qu'une simple patrouille. L'un d'eux vous bouscule en riant, et vous tombez sur le bras.",
           "3": "Un garde vous reconnaît et vous fait signe de reculer. Autour de vous, les passants serrent leur bourse contre eux. Vous saluez la colonne sans rien tenter, puis vous repartez une fois la voie libre.",
           "4": "Pendant votre salut, votre chat se faufile entre les jambes des passants. Vous le récupérez sous le regard amusé des gardes, puis vous passez quelques minutes à le calmer avant de repartir.",
-          "5": "Pendant votre salut, une vieille femme bousculée par la foule perd l'équilibre. D'un geste vif, vous la rattrapez avant qu'elle tombe. Pour vous remercier, elle nettoie et bande une écorchure que vous avez au coude."
+          "5": "Pendant votre salut, une vieille femme bousculée par la foule perd l'équilibre. D'un geste vif, vous la rattrapez avant qu'elle tombe. Pour vous remercier, elle nettoie et bande une écorchure que vous avez au coude.",
+          "6": "Vous vous inclinez au passage de la colonne. Un officier vous reconnaît : il vous a vu recevoir au Marché royal le titre de maître des quêtes. Il vous rend votre salut et fait ouvrir un passage dans la foule, et vous traversez l'esplanade sans attendre la fin du cortège."
         }
       },
       "otherAlley": {

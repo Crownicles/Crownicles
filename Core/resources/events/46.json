@@ -124,6 +124,15 @@
             }
           },
           "randomItem": {}
+        },
+        "7": {
+          "requirements": {
+            "badges": [
+              "top_glory",
+              "legendary_pet"
+            ]
+          },
+          "money": 300
         }
       }
     },

@@ -39,6 +39,16 @@
           },
           "effect": "sleeping",
           "health": 25
+        },
+        "5": {
+          "requirements": {
+            "badges": [
+              "oracle_patron"
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 15,
+          "health": 20
         }
       }
     },

@@ -165,6 +165,14 @@
               "min": 3
             }
           }
+        },
+        "6": {
+          "requirements": {
+            "badges": [
+              "sentimental_crafter"
+            ]
+          },
+          "randomItem": {}
         }
       }
     },

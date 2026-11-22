@@ -141,6 +141,19 @@
           "tags": [
             "bigFeast"
           ]
+        },
+        "7": {
+          "requirements": {
+            "money": {
+              "min": 100000
+            }
+          },
+          "money": -150,
+          "health": 10,
+          "tags": [
+            "bigFeast",
+            "moneyUsage"
+          ]
         }
       }
     },

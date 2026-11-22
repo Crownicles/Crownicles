@@ -111,6 +111,17 @@
           "karma": 2,
           "effect": "confounded",
           "health": -10
+        },
+        "7": {
+          "requirements": {
+            "badges": [
+              "very_powerful_guild"
+            ]
+          },
+          "money": 200,
+          "karma": 10,
+          "effect": "occupied",
+          "lostTime": 30
         }
       }
     },

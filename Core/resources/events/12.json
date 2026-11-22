@@ -166,6 +166,18 @@
           "randomItem": {},
           "effect": "occupied",
           "lostTime": 60
+        },
+        "6": {
+          "requirements": {
+            "badges": [
+              "expert_expediteur"
+            ],
+            "petRarity": {
+              "min": 1
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 15
         }
       }
     },

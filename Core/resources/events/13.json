@@ -211,6 +211,25 @@
           "effect": "occupied",
           "lostTime": 20,
           "randomItem": {}
+        },
+        "6": {
+          "requirements": {
+            "money": {
+              "min": 100000
+            }
+          },
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 30,
+          "money": -300,
+          "randomItem": {
+            "rarity": {
+              "min": 3
+            }
+          },
+          "tags": [
+            "moneyUsage"
+          ]
         }
       }
     },

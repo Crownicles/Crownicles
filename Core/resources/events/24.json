@@ -223,6 +223,18 @@
             }
           },
           "health": -25
+        },
+        "7": {
+          "requirements": {
+            "money": {
+              "min": 100000
+            }
+          },
+          "money": -400,
+          "randomItem": {},
+          "tags": [
+            "moneyUsage"
+          ]
         }
       }
     }

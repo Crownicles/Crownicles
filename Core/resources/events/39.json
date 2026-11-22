@@ -81,6 +81,20 @@
           "mapTypesDestination": [
             "ro"
           ]
+        },
+        "7": {
+          "requirements": {
+            "badges": [
+              "powerful_guild"
+            ]
+          },
+          "money": -80,
+          "tags": [
+            "moneyUsage"
+          ],
+          "mapTypesDestination": [
+            "ro"
+          ]
         }
       }
     },
