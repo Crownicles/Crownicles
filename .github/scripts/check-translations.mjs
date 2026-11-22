@@ -11,8 +11,8 @@
  */
 import { execFileSync } from "node:child_process";
 import { readdirSync, readFileSync } from "node:fs";
-import { join } from "node:path";
-import { pathToFileURL } from "node:url";
+import { dirname, join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 export const REFERENCE_LOCALE = "fr";
 
@@ -27,7 +27,7 @@ export const SYNC_ERRORS = {
  * Interpolations that the code fills or resolves: {{variable}}, {emote:path}, {command:name} and $t(nested:key).
  * Formatting options are ignored so that "{{count, number}}" and "{{count}}" are the same placeholder.
  */
-const PLACEHOLDER_PATTERN = /\{\{\s*([^,}\s]+)[^}]*\}\}|\{(?:emote|command):[^}]*\}|\$t\([^)]*\)/g;
+const PLACEHOLDER_PATTERN = /\{\{\s*([^,}\s]+)[^}]*\}\}|\{(?:emote|command):(?:\{\{[^}]*\}\}|[^{}])*\}|\$t\([^)]*\)/g;
 
 /**
  * Flatten a translation file into "file:path.to.key" -> leaf value, arrays included (indexes become path segments)
@@ -143,6 +143,25 @@ function loadRevision(directory, ref, localeFiles) {
 	});
 }
 
+const LANGUAGE_FILE = join(dirname(fileURLToPath(import.meta.url)), "../../Lib/src/Language.ts");
+
+/**
+ * Locales supported by the bot, read from the Language union type of Lib/src/Language.ts
+ */
+export function parseSupportedLocales(languageSource) {
+	const union = languageSource.match(/export type Language\s*=([^;]+);/);
+	if (!union) {
+		throw new Error("Cannot find the Language union type");
+	}
+	return [...union[1].matchAll(/"([^"]+)"/g)].map(match => match[1]);
+}
+
+export function findMissingLocales(supportedLocales, localeFiles) {
+	return supportedLocales
+		.filter(locale => !localeFiles[locale])
+		.map(locale => ({ locale, key: "", message: "is a supported language but its directory is missing" }));
+}
+
 function findFileErrors(localeFiles) {
 	const referenceFiles = localeFiles[REFERENCE_LOCALE].join(" ");
 	return Object.entries(localeFiles)
@@ -168,7 +187,12 @@ function checkParity(directory) {
 		console.log(`No ${REFERENCE_LOCALE} reference locale in ${directory}`);
 		return 2;
 	}
-	const errors = [...findFileErrors(localeFiles), ...findParityErrors(loadWorkingTree(directory))];
+	const supportedLocales = parseSupportedLocales(readFileSync(LANGUAGE_FILE, "utf8"));
+	const errors = [
+		...findMissingLocales(supportedLocales, localeFiles),
+		...findFileErrors(localeFiles),
+		...findParityErrors(loadWorkingTree(directory))
+	];
 	if (errors.length === 0) {
 		console.log(`All ${Object.keys(localeFiles).length} locales have the same keys as ${REFERENCE_LOCALE}.`);
 	}

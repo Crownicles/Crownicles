@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
-	findParityErrors, findPlaceholders, findSyncErrors, flattenTranslations, SYNC_ERRORS
+	findMissingLocales, findParityErrors, findPlaceholders, parseSupportedLocales, findSyncErrors, flattenTranslations, SYNC_ERRORS
 } from "./check-translations.mjs";
 
 const locale = entries => new Map(Object.entries(entries));
@@ -62,4 +62,15 @@ test("a French-only edit that changes the placeholders is reported even when edi
 	const base = { fr: locale({ "bot.a": "Bonjour" }), en: locale({ "bot.a": "Hello" }) };
 	const head = { fr: locale({ "bot.a": "Bonjour {{pseudo}}" }), en: locale({ "bot.a": "Hello" }) };
 	assert.deepEqual(findSyncErrors(base, head).map(({ kind }) => kind), [SYNC_ERRORS.NOT_UPDATED, SYNC_ERRORS.PLACEHOLDERS]);
+});
+
+test("an emote path with an interpolation is one placeholder, and a missing closing brace changes it", () => {
+	assert.deepEqual(findPlaceholders("{emote:classes.{{id}}} ok"), ["{emote:classes.{{id}}}"]);
+	assert.notDeepEqual(findPlaceholders("{emote:classes.{{id}} ok"), findPlaceholders("{emote:classes.{{id}}} ok"));
+});
+
+test("a supported language without a directory is reported", () => {
+	const supported = parseSupportedLocales("export type Language = \"fr\" | \"en\" | \"de\";");
+	assert.deepEqual(supported, ["fr", "en", "de"]);
+	assert.deepEqual(findMissingLocales(supported, { fr: [], en: [] }).map(({ locale }) => locale), ["de"]);
 });
