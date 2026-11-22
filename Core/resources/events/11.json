@@ -20,7 +20,7 @@
               "max": 599
             }
           },
-          "effect": "hurt",
+          "effect": "confounded",
           "health": -15,
           "money": -100
         },
@@ -30,7 +30,7 @@
               "min": 600
             }
           },
-          "money": 50
+          "money": 120
         },
         "4": {
           "requirements": {
@@ -48,6 +48,29 @@
           },
           "effect": "occupied",
           "lostTime": 40
+        },
+        "6": {
+          "requirements": {
+            "level": {
+              "min": 120
+            }
+          },
+          "karma": 1
+        },
+        "7": {
+          "requirements": {
+            "level": {
+              "min": 120
+            },
+            "attack": {
+              "min": 600
+            }
+          },
+          "money": 250,
+          "karma": 3,
+          "mapTypesDestination": [
+            "ci"
+          ]
         }
       }
     },
@@ -108,7 +131,7 @@
             }
           },
           "effect": "hurt",
-          "health": -25
+          "health": -40
         },
         "3": {
           "requirements": {
@@ -117,7 +140,6 @@
               "max": 119
             }
           },
-          "effect": "hurt",
           "health": -10
         },
         "4": {
@@ -173,8 +195,21 @@
         "4": {
           "requirements": {
             "validPetTypeIds": [
+              11,
+              12,
+              26,
+              27,
+              33,
+              34,
+              54,
               58,
-              95
+              62,
+              64,
+              68,
+              83,
+              94,
+              95,
+              97
             ]
           },
           "effect": "occupied",

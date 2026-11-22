@@ -41,6 +41,18 @@
           },
           "health": -5,
           "karma": 2
+        },
+        "6": {
+          "requirements": {
+            "attack": {
+              "min": 780
+            }
+          },
+          "money": -50,
+          "karma": 1,
+          "tags": [
+            "moneyUsage"
+          ]
         }
       }
     },
@@ -92,7 +104,7 @@
           "money": -200,
           "health": -15,
           "karma": -10,
-          "effect": "hurt",
+          "effect": "confounded",
           "tags": [
             "moneyUsage"
           ]
@@ -100,7 +112,7 @@
         "2": {
           "health": -20,
           "karma": -10,
-          "effect": "hurt"
+          "effect": "confounded"
         },
         "3": {
           "requirements": {
@@ -121,7 +133,7 @@
             }
           },
           "health": -10,
-          "karma": -10,
+          "karma": -12,
           "effect": "freezing"
         }
       }

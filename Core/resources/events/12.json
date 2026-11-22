@@ -49,6 +49,19 @@
           },
           "effect": "occupied",
           "lostTime": 60
+        },
+        "5": {
+          "effect": "occupied",
+          "lostTime": 20
+        },
+        "6": {
+          "requirements": {
+            "defense": {
+              "min": 740
+            }
+          },
+          "health": -10,
+          "effect": "confounded"
         }
       }
     },
@@ -92,9 +105,29 @@
         "4": {
           "requirements": {
             "validPetTypeIds": [
-              13
+              13,
+              47,
+              49,
+              50,
+              63,
+              87,
+              88,
+              96,
+              98
             ]
           }
+        },
+        "5": {
+          "effect": "freezing"
+        },
+        "6": {
+          "requirements": {
+            "defense": {
+              "min": 740
+            }
+          },
+          "health": -10,
+          "effect": "confounded"
         }
       }
     },
@@ -142,7 +175,17 @@
           "requirements": {
             "validPetTypeIds": [
               1,
-              2
+              2,
+              3,
+              4,
+              9,
+              20,
+              21,
+              28,
+              29,
+              56,
+              57,
+              60
             ]
           },
           "randomItem": {},

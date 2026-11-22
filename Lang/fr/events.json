@@ -1,9 +1,9 @@
 {
   "1": {
-    "text": "Dans la pénombre de la Forêt Du Vieillard, un chêne déraciné barre le sentier. Son tronc fait bien deux mètres de diamètre, ses branches emmêlées forment un mur, et la terre encore fraîche sur ses racines dit que sa chute est récente.",
+    "text": "Dans la pénombre de la Forêt Du Vieillard, un chêne déraciné barre le sentier. Son tronc fait bien deux mètres de diamètre, ses branches emmêlées forment un mur, et la terre encore fraîche sur ses racines montre que sa chute est récente.",
     "possibilities": {
       "cutTree": {
-        "text": "Couper l'arbre pour dégager le passage.",
+        "text": "Couper l'arbre.",
         "outcomes": {
           "0": "Faute de mieux, vous vous attaquez aux branches qui bloquent le sentier, puis au tronc lui-même. Après de longs efforts, vous ouvrez enfin un passage et reprenez votre route, les bras couverts d'éclats de bois.",
           "1": "En taillant dans le tronc, vous découvrez qu'il est creux. Sous les feuilles mortes, un vieux paquet attend là depuis longtemps, et personne n'est venu le reprendre. Vous le glissez dans votre sac et finissez de dégager le passage.",
@@ -21,7 +21,7 @@
         }
       },
       "otherWay": {
-        "text": "Chercher un chemin pour contourner l'obstacle.",
+        "text": "Contourner l'obstacle.",
         "outcomes": {
           "0": "Habitué des longues marches en forêt, vous repérez vite un ancien sentier de bûcherons à demi effacé. Il contourne le chêne par les fourrés et vous ramène sur le chemin, un peu plus loin.",
           "1": "Vous longez le tronc jusqu'aux racines arrachées. Entre la motte de terre et les fourrés, il reste un passage étroit : vous vous y faufilez de côté et retrouvez le sentier un peu plus loin.",
@@ -40,14 +40,15 @@
     "text": "Au bord du Lac Mirage, des familles pique-niquent près des roseaux. Au bout d'un vieux ponton, un pêcheur se bat avec sa canne : un poisson énorme a mordu, et la ligne tire si fort qu'il manque de tomber à l'eau.",
     "possibilities": {
       "help": {
-        "text": "Prêter main-forte au pêcheur en difficulté.",
+        "text": "Aider le pêcheur.",
         "outcomes": {
           "0": "Malgré vos efforts, le poisson casse la ligne et disparaît dans les roseaux. Le pêcheur hausse les épaules, vous remercie quand même et vous glisse quelques pièces pour votre peine.",
           "1": "Vous tirez de toutes vos forces et, ensemble, vous remontez une prise comme le vieux pêcheur n'en avait pas vu depuis longtemps. Ravi, il vous offre un objet qu'il gardait depuis des années comme porte-bonheur.",
           "2": "Grâce à vous, le pêcheur sort de l'eau un poisson de belle taille. Reconnaissant, il vous donne quelques pièces et vous indique les coins du lac où mordent les plus gros.",
           "3": "Le poisson tire plus fort que vous deux réunis. Vous glissez sur les planches mouillées et tombez à l'eau en heurtant le ponton. Le pêcheur vous aide à remonter, trempé et endolori.",
           "4": "En unissant vos forces, vous réussissez à sortir de l'eau une vieille botte remplie de vase. Le pêcheur éclate de rire devant cette drôle de prise et vous laisse repartir en vous remerciant de vos efforts.",
-          "5": "Le poisson tire fort et vous entraîne vers le bord du ponton. Vous dérapez sur les planches mouillées et vous rattrapez de justesse à un poteau, les genoux écorchés. Le temps de vous relever, la ligne a cassé."
+          "5": "Le poisson tire fort et vous entraîne vers le bord du ponton. Vous dérapez sur les planches mouillées et vous rattrapez de justesse à un poteau, les genoux écorchés. Le temps de vous relever, la ligne a cassé.",
+          "6": "Vous empoignez la canne et tirez d'un coup sec, de toutes vos forces. La canne se brise net entre vos mains, et le poisson file avec la ligne. Le pêcheur contemple les morceaux, puis vous les tend sans un mot. Vous lui laissez quelques pièces pour la remplacer."
         }
       },
       "advice": {
@@ -62,10 +63,10 @@
       "push": {
         "text": "Pousser le pêcheur dans l'eau.",
         "outcomes": {
-          "0": "Vous poussez le pêcheur dans le lac. Mais pourquoi avoir fait cela ? {emote:other.why} Pris de remords, vous plongez et le ramenez jusqu'au ponton en vous écorchant aux planches. Trempé, le vieil homme accepte vos excuses et quelques pièces de dédommagement.",
+          "0": "Mais pourquoi avoir fait cela ? {emote:other.why} Pris de remords, vous plongez et ramenez le pêcheur jusqu'au ponton en vous écorchant aux planches. Trempé, le vieil homme accepte vos excuses et quelques pièces de dédommagement.",
           "1": "Le pêcheur bascule dans les roseaux. Vous sautez pour l'aider, et vous vous retrouvez tous les deux pris dans la vase, trempés et couverts d'écorchures. Furieux, il exige une forte compensation pour cette mauvaise plaisanterie.",
           "2": "Le pêcheur perd l'équilibre et s'agrippe à vous. Vous tombez ensemble dans le lac et regagnez le ponton à grand-peine, couverts de vase et d'écorchures.",
-          "3": "Le pêcheur remonte seul sur le ponton, furieux. Il vous a reconnu. Devant les familles accourues, il exige une lourde compensation, et vous payez sans discuter pour éviter que l'affaire tourne mal.",
+          "3": "Le pêcheur remonte seul sur le ponton, furieux. Il vous a reconnu. Devant les familles venues voir l'incident, il exige une lourde compensation, et vous payez sans discuter pour éviter que l'affaire tourne mal.",
           "4": "Le pêcheur s'écarte au dernier moment, et c'est vous que votre élan envoie dans l'eau froide du lac. Le vieil homme vous tend sa canne pour vous aider à remonter, trempé, frigorifié et humilié."
         }
       },
@@ -90,12 +91,14 @@
       "followHint": {
         "text": "Suivre les conseils de l'inconnue.",
         "outcomes": {
-          "0": "L'inconnue disait vrai. Le chemin de l'ouest longe les collines à l'écart des grottes, et vous traversez le Bois Hurlant sans croiser personne. Pour une fois, le raccourci en était bien un.",
+          "0": "L'inconnue disait vrai. Le chemin de l'ouest longe les collines à l'écart des grottes, et vous traversez le Bois Hurlant sans croiser personne.",
           "1": "C'était un piège. Au premier virage, des brigands surgissent des fourrés. Vous vous défendez à peine. Ils vous rouent de coups, vident votre bourse et vous laissent évanoui au pied d'un arbre.",
           "2": "C'était un piège. Des brigands surgissent des fourrés. Vous en repoussez deux, mais les autres vous entourent et une lame vous entaille le bras. Vous leur jetez votre bourse et filez sans demander votre reste.",
-          "3": "C'était un piège. Des brigands surgissent des fourrés et le regrettent vite. Après quelques coups bien placés, toute la bande détale vers les grottes. L'un d'eux a perdu sa bourse dans sa fuite.",
+          "3": "C'était un piège. Des brigands surgissent des fourrés, mais ils le regrettent vite. Après quelques coups bien placés, toute la bande détale vers les grottes. L'un d'eux a perdu sa bourse dans sa fuite.",
           "4": "Des brigands surgissent des fourrés, l'arme au poing. Leur chef vous dévisage, puis leur fait signe de ranger leurs lames : il vous a reconnu. Entre gens du métier, on ne se dépouille pas. Ils vous laissent passer.",
-          "5": "À mi-chemin, votre familier s'arrête net et grogne vers les fourrés. Une lame brille entre les feuilles. Vous quittez le chemin de l'ouest et faites un long détour par les sous-bois pour éviter le guet-apens."
+          "5": "À mi-chemin, votre familier s'arrête net et grogne vers les fourrés. Une lame brille entre les feuilles. Vous quittez le chemin de l'ouest et faites un long détour par les sous-bois pour éviter le guet-apens.",
+          "6": "L'inconnue disait vrai. Le chemin de l'ouest longe les collines à l'écart des grottes, et vous traversez le Bois Hurlant sans croiser personne. Pour une fois, le raccourci en était bien un.",
+          "7": "Au premier virage, vous repérez des silhouettes tapies dans les fourrés. Vous les prenez à revers et en capturez un avant que les autres ne s'enfuient. Vous le livrez aux soldats de Claire de Ville, qui vous versent la prime promise pour sa capture."
         }
       },
       "questionStranger": {
@@ -103,13 +106,13 @@
         "outcomes": {
           "0": "Il vous faut un bon moment pour la faire se contredire : le chemin de l'ouest devient un sentier, puis une piste, puis plus rien. Elle rabat les voyageurs vers un guet-apens. Vous la laissez plantée là et reprenez votre route.",
           "1": "L'inconnue baisse son capuchon : on dit du bien de vous à Claire de Ville. Gênée, elle avoue qu'on la paie pour envoyer les voyageurs vers l'ouest. Elle vous guide par un sentier sûr et partage son pain avec vous.",
-          "2": "L'inconnue vous dévisage, puis se détend : elle vous a reconnu. Elle avoue qu'elle rabat les voyageurs vers une bande du bois. Pour que vous ne chassiez pas sur ses terres, elle vous glisse une part de la dernière prise.",
+          "2": "L'inconnue vous dévisage, puis se détend : elle vous a reconnu, vous êtes de la même espèce. Elle avoue qu'elle rabat les voyageurs vers une bande de brigands du bois. Pour que vous ne chassiez pas sur ses terres, elle vous glisse une part de la dernière prise.",
           "3": "Vos questions sont précises : quel gué, quelle grotte, quel signal. Elle finit par avouer qu'elle renseigne à la fois la garde de Claire de Ville et les brigands, selon qui paie. Pour acheter votre silence, elle vous remet un objet.",
           "4": "Vos questions la font sourire. Elle répond à tout avec aplomb, et vous voilà rassuré. Sur le chemin de l'ouest, deux brigands vous attendent. Ils vous prennent votre bourse sans même sortir leurs lames, puis disparaissent."
         }
       },
       "forest": {
-        "text": "Traverser quand même par le sentier principal.",
+        "text": "Rester sur le sentier principal.",
         "outcomes": {
           "0": "Vous ignorez le conseil et prenez le sentier principal. Il se divise sans cesse entre les collines, et vous tournez en rond pendant des heures avant de retrouver la lisière, épuisé mais sans une égratignure.",
           "1": "La traversée est longue : vous avancez avec prudence et faites plusieurs détours pour éviter les grottes. Près de la lisière, dans les cendres d'un vieux camp, vous ramassez un objet oublié par ses occupants.",
@@ -122,16 +125,16 @@
       "oppositeSide": {
         "text": "Contourner le bois par l'est.",
         "outcomes": {
-          "0": "Par méfiance, vous contournez le Bois Hurlant par l'est. Le détour s'allonge de colline en colline, les sentiers se ressemblent tous, et vous finissez par ne plus savoir où vous êtes. Au moins, personne ne vous a attaqué.",
-          "1": "En longeant le bois par l'est, vous croisez une patrouille de gardes de Claire de Ville. Leur sergent vous reconnaît et vous salue. Ses hommes vous font un bout de chemin et partagent leurs rations avec vous.",
-          "2": "En longeant le bois par l'est, vous croisez une patrouille de gardes de Claire de Ville. Leur sergent vous reconnaît et fronce les sourcils. Ses hommes fouillent votre sac de fond en comble avant de vous laisser repartir.",
-          "3": "Le détour est long. Vous avez vu assez de ruines pour reconnaître, sous les ronces, un ancien poste de garde. Sous une dalle descellée, une cache a tenu bon. Vous en sortez un objet encore utilisable.",
+          "0": "Par méfiance, vous partez dans la direction opposée et contournez le Bois Hurlant par l'est. Le détour s'allonge de colline en colline, les sentiers se ressemblent tous, et vous finissez par ne plus savoir où vous êtes. Au moins, personne ne vous a attaqué.",
+          "1": "En longeant le bois par l'est, vous croisez une patrouille de gardes de Claire de Ville. Leur sergent vous reconnaît et vous salue. Ses hommes font avec vous un bout de chemin et partagent leurs rations avec vous.",
+          "2": "En longeant le bois par l'est, vous croisez une patrouille de gardes de Claire de Ville. Leur sergent vous reconnaît et fronce les sourcils. Méfiants, ses hommes fouillent votre sac de fond en comble avant de vous laisser repartir.",
+          "3": "Vous avez vu assez de ruines pour reconnaître, sous les ronces, un ancien poste de garde. Sous une dalle descellée, une cache a tenu bon et vous en sortez un objet encore utilisable. Ce détour en valait la peine !",
           "4": "Votre familier prend son envol et tourne au-dessus des collines. Il se pose un peu plus loin, puis encore plus loin, comme pour vous montrer la route. Le détour reste long, mais en le suivant, vous ne vous perdez pas."
         }
       },
       "end": {
         "outcomes": {
-          "0": "Vous ne répondez rien, et l'inconnue en profite pour parler. Elle vous raconte d'où le Bois Hurlant tient son nom, puis d'autres histoires, puis d'autres encore. Quand vous parvenez à repartir, le soleil a bien baissé.",
+          "0": "Vous ne répondez rien, et l'inconnue en profite pour parler. Elle vous raconte d'où le Bois Hurlant tient son nom, puis encore d'autres histoires. Quand vous parvenez à repartir, le soleil a bien baissé.",
           "1": "Votre silence semble la vexer. Elle insiste, détaille chaque chemin, chaque grotte et chaque bande qui y vit, et se fâche dès que vous faites mine de partir. Vous ne parvenez à vous libérer qu'à la tombée de la nuit.",
           "2": "L'inconnue aperçoit votre chat noir et recule d'un pas. Elle fait un geste pour conjurer le mauvais sort, marmonne qu'elle s'est trompée de voyageur et s'éloigne en hâte. Vous restez un instant seul à l'orée du bois."
         }
@@ -147,8 +150,10 @@
           "0": "Vous avancez lentement sur le pont, qui ploie à chaque pas. Au milieu, une planche pourrie cède sous votre pied. Vous tombez jusqu'à la taille et vous cognez la tête contre une poutre avant de vous hisser de l'autre côté, sonné.",
           "1": "Vous traversez d'un bon pas en évitant les trous. Près de la rive, une planche craque et votre jambe passe au travers. Vous vous dégagez avec une belle écorchure au mollet et finissez la traversée avec plus de prudence.",
           "2": "Vous traversez au pas de course, sans laisser aux planches le temps de céder. Derrière vous, l'une d'elles tombe dans l'écume. Vous atteignez l'autre rive sans une égratignure.",
-          "3": "Vous testez chaque planche avant d'y poser le pied, comme la route vous l'a appris. L'une d'elles sonne creux : dessous, un voyageur a caché un petit paquet. Vous l'emportez et gagnez l'autre rive sans encombre.",
-          "4": "Votre imposant compagnon pose une patte sur le pont, qui craque aussitôt. Il recule et refuse d'aller plus loin. Vous longez la berge avec lui jusqu'à un gué, et la traversée vous prend bien plus longtemps que prévu."
+          "3": "Vous testez chaque planche avant d'y poser le pied, comme la route vous l'a appris, et traversez sans encombre. Sur l'autre rive, votre œil exercé repère un objet abandonné dans les roseaux. Vous l'emportez.",
+          "4": "Votre imposant compagnon pose une patte sur le pont, qui craque aussitôt. Il recule et refuse d'aller plus loin. Vous longez la berge avec lui jusqu'à un gué, et la traversée vous prend plus longtemps que prévu.",
+          "5": "Vous avancez sur le pont en vous tenant à la corde qui sert de rambarde. Au milieu, une rafale le fait tanguer, et vous restez figé un long moment avant d'oser repartir. Vous atteignez l'autre rive le cœur battant.",
+          "6": "Vous posez le pied sur le pont, et les planches gémissent sous le poids de votre lourde armure. Au troisième pas, l'une d'elles cède. Vous vous rattrapez à une poutre, la jambe écorchée, et finissez la traversée à quatre pattes."
         }
       },
       "swim": {
@@ -158,18 +163,20 @@
           "1": "Vous luttez contre le courant à chaque brasse. Il vous emporte plus loin que prévu, et vous vous écorchez les genoux sur les galets en reprenant pied. Vous atteignez l'autre rive trempé et grelottant.",
           "2": "Quelques brasses puissantes suffisent à traverser la Rivière Vacarme. Sur l'autre rive, des pêcheurs qui vous ont vu faire vous installent près de leur feu et partagent leur repas avec vous.",
           "3": "Vous peinez contre le courant quand votre familier plonge à vos côtés. Vous vous agrippez à son aileron, et il vous tire à travers les remous jusqu'à l'autre rive en quelques battements de queue.",
-          "4": "Votre étalon entre dans l'eau avec vous sans hésiter. Vous vous tenez à sa crinière pendant qu'il nage contre le courant, et vous prenez pied ensemble sur l'autre rive, trempés mais entiers."
+          "4": "Votre familier entre dans l'eau avec vous sans hésiter. Vous vous stabilisez sur son dos pendant qu'il nage contre le courant, et vous prenez pied ensemble sur l'autre rive, trempés mais entiers.",
+          "5": "Le courant vous emporte vers un banc de sable au milieu de la rivière. Vous y reprenez votre souffle un long moment avant de vous jeter de nouveau à l'eau. Vous atteignez l'autre rive trempé et grelottant.",
+          "6": "Vous entrez dans l'eau sans retirer votre lourde armure. Elle se gorge d'eau et vous tire vers le fond. Vous regagnez la berge de justesse, toussant et étourdi, et finissez par traverser au gué, bien plus loin."
         }
       },
       "otherWay": {
         "text": "Chercher un autre passage.",
         "outcomes": {
-          "0": "Vous longez la berge pendant des heures sans trouver de passage sûr. Le soleil a bien tourné quand vous découvrez enfin un gué, où l'eau ne vous monte qu'aux genoux. Vous traversez, les jambes lourdes.",
-          "1": "Vous remontez la rivière d'un bon pas. Après un long moment, elle s'élargit et se calme : un gué de galets permet de traverser à pied. Vous passez de l'autre côté sans risque, mais avec du retard.",
+          "0": "Vous longez la berge pendant des heures sans trouver de passage sûr. Le soleil a bien tourné quand vous découvrez enfin un gué, où l'eau ne vous monte qu'aux genoux. Vous traversez lentement, les jambes lourdes.",
+          "1": "Vous remontez la rivière d'un bon pas. Après un long moment, elle s'élargit et se calme : un gué de galets permet de traverser à pied. Vous passez de l'autre côté sans risque.",
           "2": "Vous descendez la berge à vive allure et repérez vite un gué, à l'endroit où la rivière s'étale sur les galets. Vous traversez sans vous mouiller plus haut que les chevilles.",
           "3": "En remontant vers l'amont, vous suivez un sentier que personne ne semble avoir emprunté depuis longtemps. Il s'éloigne de la rivière, et vous finissez par reconnaître les abords du Village Coco.",
           "4": "En descendant vers l'aval, vous suivez un passage rocheux qui s'écarte peu à peu de la rivière. Le vent se lève et le sable remplace les cailloux : le chemin débouche sur la plage de La Dune.",
-          "5": "En longeant la berge, votre chien s'arrête net et gratte sous une souche. Il en sort un vieux sac oublié par un voyageur, qui contient encore un objet utile. Un peu plus loin, un gué vous permet de traverser."
+          "5": "En longeant la berge, votre familier s'arrête net, renifle le sol et gratte sous une souche. Il en sort un vieux sac oublié par un voyageur, qui contient encore un objet utile. Un peu plus loin, un gué vous permet de traverser."
         }
       },
       "craftBoat": {
@@ -177,8 +184,8 @@
         "outcomes": {
           "0": "Vous rassemblez quelques troncs flottés et sacrifiez une corde de votre sac pour les lier solidement. Le radeau tient bon dans les remous. En chemin, vous repêchez même un objet coincé dans des branches.",
           "1": "Le travail vous prend des heures. Votre radeau de branches et de roseaux prend l'eau et tangue dangereusement, mais il vous porte jusqu'à l'autre rive.",
-          "2": "Votre radeau de branches vous semble solide. À mi-parcours, le courant le disloque d'un coup. Vous regagnez la berge à la nage, gelé, les bras écorchés par le bois.",
-          "3": "Vous tentez de hisser un tronc trop lourd pour vous. Il vous échappe et vous écrase la main. Après un long moment d'efforts maladroits, vous abandonnez la construction et repartez à pied.",
+          "2": "Votre radeau de branches vous semble solide. Mais à mi-parcours, le courant le disloque d'un coup. Vous regagnez la berge à la nage, gelé, les bras écorchés par le bois.",
+          "3": "Vous tentez de porter un tronc trop lourd pour vous. Il vous échappe et vous écrase la main. Après un long moment d'efforts maladroits, vous abandonnez la construction et repartez à pied.",
           "4": "Votre orang-outan semble comprendre ce que vous faites. Il vous apporte des branches et tient les troncs pendant que vous les attachez. Le radeau est solide, et vous traversez ensemble sans encombre.",
           "5": "Au moment de mettre votre radeau à l'eau, vous remarquez un voyageur qui hésite sur la berge. Vous lui proposez de monter avec vous. À deux, vous gardez le cap dans les remous et atteignez l'autre rive."
         }
@@ -614,26 +621,27 @@
       "followDog": {
         "text": "Suivre le chien.",
         "outcomes": {
-          "0": "Vous vous élancez derrière le chien, mais il file trop vite pour vous. Après quelques minutes de course dans les vestiges de l'auberge, vous perdez sa trace entre les poutres effondrées. Essoufflé, vous ne savez plus par où vous êtes entré.",
+          "0": "Vous vous élancez derrière le chien, mais il file trop vite pour vous. Après quelques minutes de course dans les vestiges de l'auberge, vous perdez sa trace entre les poutres effondrées. Essoufflé, vous mettez longtemps à ressortir de l'auberge en ruine.",
           "1": "Vous suivez le chien de poutre en poutre jusqu'aux caves effondrées de l'auberge. Entre les dalles brillent quelques vieilles pièces. L'animal vous regarde les ramasser, puis disparaît dans les décombres.",
           "2": "Vous avez assez couru les routes pour comprendre ce chien : il connaît ces ruines par cœur. Vous le suivez sans hésiter jusqu'à l'ancienne réserve, où un coffre dort sous les gravats, avec quelques pièces et un objet de valeur.",
-          "3": "Le chien tacheté et votre compagnon se flairent, puis filent ensemble dans un concert d'aboiements. Ils s'arrêtent sous la salle commune et grattent le sol jusqu'à dégager un magot dissimulé sous les fondations."
+          "3": "Le chien tacheté et votre compagnon se flairent, puis filent ensemble dans un concert d'aboiements. Ils s'arrêtent sous la salle commune et grattent le sol jusqu'à dégager un magot dissimulé sous les fondations.",
+          "4": "Vous filez si vite derrière le chien que vous le dépassez presque. Dans votre élan, vous ne voyez pas la marche effondrée de la cave et vous y tombez tête la première. Étourdi, vous ramassez quelques pièces qui brillaient entre les dalles."
         }
       },
       "intimidateDog": {
-        "text": "Essayer de faire fuir le chien.",
+        "text": "Faire fuir le chien.",
         "outcomes": {
-          "0": "Vous gesticulez et criez, ce qui amuse beaucoup le chien : il vous tourne autour en aboyant joyeusement. Au bout de quelques minutes, lassé du jeu, il s'éloigne vers la salle commune, et vous reprenez votre route.",
-          "1": "Vous criez et agitez les bras, sans grand effet. Le chien vous mord la jambe, puis s'enfuit en aboyant vers les chambres écroulées. La blessure est douloureuse, et votre fierté n'en sort pas indemne.",
+          "0": "Vous gesticulez et criez, ce qui amuse beaucoup le chien : il vous tourne autour en aboyant joyeusement. Au bout de quelques minutes, il s'éloigne vers les ruines, lassé du jeu, et vous reprenez votre route.",
+          "1": "Vous criez et agitez les bras, sans grand effet. Agacé, le chien vous mord la jambe, puis s'enfuit en aboyant vers les chambres écroulées. La blessure est douloureuse, et votre fierté n'en sort pas indemne.",
           "2": "Vous dégainez votre arme et faites un pas vers lui. Le chien recule, oreilles basses et queue entre les pattes, puis disparaît entre les poutres de la salle commune. Plus rien ne vous retient ici.",
           "3": "Le chien détale sous vos cris, et un mendiant sort des décombres où il s'abritait. Il vous reconnaît, blêmit et vous jette les quelques pièces de sa bourse avant de s'enfuir. Vous les ramassez et reprenez votre route.",
-          "4": "Sur le seuil brisé de l'auberge, votre familier vient se placer à vos côtés. Le chien le regarde, comprend qu'il vaut mieux ne pas insister, et s'éloigne sans hâte vers les vestiges de l'écurie."
+          "4": "Sur le seuil brisé de l'auberge, votre familier vient se placer à vos côtés. Le chien le regarde, comprend qu'il vaut mieux ne pas insister, et s'éloigne en hâte vers les vestiges de l'écurie."
         }
       },
       "skip": {
-        "text": "Continuer votre route en ignorant le chien.",
+        "text": "Ignorer le chien.",
         "outcomes": {
-          "0": "Vous passez sans un regard, et le chien se jette sur vous. Rien ne protège vos jambes : il vous mord au mollet, encore et encore, avant que vous ne parveniez à le chasser. Vous repartez en boitant, la jambe en sang.",
+          "0": "Vous passez sans un regard, et le chien se jette sur vous. Rien ne protège vos jambes : il vous mord au mollet avant que vous ne parveniez à le chasser. Vous repartez en boitant, la jambe en sang.",
           "1": "Vous passez sans un regard, et le chien se jette sur vous. Il vous mord au bras et ne lâche prise que lorsque vous parvenez à le repousser. Il file alors vers les ruines de l'auberge, et vous repartez en serrant votre bras blessé.",
           "2": "Vous passez sans un regard, et le chien se jette sur vous. Ses crocs glissent sur votre armure sans trouver de prise. Vous le repoussez d'un revers, et il file vers les ruines de l'auberge.",
           "3": "Vous enjambez les poutres effondrées et traversez les ruines de l'auberge avant que le chien n'ait fait trois pas. Il vous regarde filer, puis renonce à vous suivre.",
@@ -643,8 +651,8 @@
       },
       "end": {
         "outcomes": {
-          "0": "Vous restez planté là, et le chien s'impatiente. Il finit par vous mordre les mollets, de plus en plus fort. Vous le repoussez avec peine avant qu'il ne vous blesse davantage.",
-          "1": "Vous ne bougez pas, et le chien finit par perdre patience. Sans armure pour vous protéger, vous ne pouvez rien contre ses crocs : il vous mord profondément au bras, puis s'enfuit et vous laisse ensanglanté sur les pavés.",
+          "0": "Vous restez planté là, et le chien s'impatiente. Il finit par vous mordre les mollets. Vous le repoussez avec peine avant qu'il ne vous blesse davantage.",
+          "1": "Vous ne bougez pas, et le chien finit par perdre patience. Sans bonne armure pour vous protéger, vous ne pouvez rien contre ses crocs : il vous mord profondément au bras, puis s'enfuit et vous laisse ensanglanté sur les pavés.",
           "2": "Gêné, votre chien regarde l'autre s'agiter, puis file le rejoindre. Vous les écoutez jouer d'une oreille, jusqu'à ce qu'un concert d'aboiements vous tire de vos pensées : en grattant l'herbe, ils ont déterré un vieil objet."
         }
       }

@@ -5,10 +5,11 @@
         "0": {
           "requirements": {
             "speed": {
-              "max": 40
+              "max": 100
             }
           },
-          "effect": "lost"
+          "effect": "occupied",
+          "lostTime": 45
         },
         "1": {
           "money": 120
@@ -40,6 +41,16 @@
             }
           },
           "money": 300
+        },
+        "4": {
+          "requirements": {
+            "speed": {
+              "min": 500
+            }
+          },
+          "health": -5,
+          "effect": "confounded",
+          "money": 60
         }
       }
     },
@@ -141,8 +152,21 @@
         "5": {
           "requirements": {
             "validPetTypeIds": [
+              11,
+              12,
+              26,
+              27,
+              33,
+              34,
+              54,
               58,
-              95
+              62,
+              64,
+              68,
+              83,
+              94,
+              95,
+              97
             ]
           }
         }
