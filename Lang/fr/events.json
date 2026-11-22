@@ -857,64 +857,118 @@
       "end": {
         "outcomes": {
           "0": "Aucun des stands ne vous intéresse et vous sortez rapidement de la ville après quelques coups d'œil.",
-          "1": "Vous décidez de ne rien acheter mais vous flânez tout de même un long moment entre les stands."
+          "1": "Vous décidez de ne rien acheter mais vous flânez tout de même un long moment entre les stands.",
+          "2": "Vous décidez de ne rien acheter mais vous flânez tout de même un long moment entre les stands. A votre passage, de nombreux passants vous saluent avec un grand sourire au visage, reconnaissant en vous un aventurier valeureux et bienveillant. Cet accueil chaleureux vous emplit d'apaisement.",
+          "3": "Vous décidez de ne rien acheter mais vous flânez tout de même un long moment entre les stands. Cependant, les passants s'écartent à votre approche et vous sentez leurs regards méfiants dans votre dos. Vous pressez le pas et quittez les lieux.",
+          "4": "Vous flâniez entre les stands quand un jeune homme vient soudainement vous serrer la main. Il ne tarit pas d'éloges à votre sujet, vous ayant vu par le passé combattre avec bravoure des bandits, et décide de vous offrir un peu d'argent.",
+          "5": "Vous flâniez entre les stands quand un jeune homme vient soudainement vous serrer la main, en dépit des regards méfiants des passants. Il ne tarit pas d'éloges à votre sujet, faisant fi de votre mauvaise réputation, impressionné par votre force lorsque vous avez par le passé combattu des brigands et l'avez sauvé. C'est pourquoi il vous offre sa bourse en remerciement.",
+          "6": "Vous vous baladez entre les stands, mais vous remarquez que les habitants craignent votre familier. Vous décidez de montrer que, malgré son apparente férocité, il n’est pas hostile. Fascinés par cette majestueuse bête, ceux-ci tentent de le toucher, et, au grand ravissement de tout le monde, votre familier se laisse faire. Vous finissez par quitter Mergagnan, le sourire aux lèvres, fier de votre compagnon.",
+          "7": "Vous flânez entre les stands mais voyez que la présence de votre majestueux familier terrorise les habitants. Dans votre sadisme, vous décidez de tirer avantage de la situation et annoncez donc d’une voix forte que si personne ne vient vous apporter un objet de valeur, vous demanderez à votre redoutable compagnon de saccager le festival ! Une courageuse jeune femme s’approche de vous, tremblante, vous tendant un objet. D’un air suffisant, vous vous emparez de la chose et partez sans un mot.",
+          "8": "Vous vous apprêtiez à vous remettre en route lorsqu'un habitant, remarquant votre funeste familier, se met à hurler : des dizaines de villageois se précipite vers vous pour capturer le sorcier que vous êtes, mais vous ne vous laissez pas faire. S'en suit une gigantesque bagarre où vous commencez à perdre... C'est alors que vous menacez de maudire tous ceux qui vous toucheront ! Grâce à leur superstition, vous parvenez à vous enfuir."
         }
       },
       "foodStand": {
+        "text": "Aller à un stand de nourriture.",
         "outcomes": {
-          "0": "Cette nourriture est incroyable ! De votre vie, jamais vous n'avez mangé quelque chose d'aussi bon. Vous vous sentez revigoré et apaisé.",
-          "1": "Cette nourriture est étrange. Dès que vous l'avalez, vous avez des maux de tête, des hallucinations et des nausées. On vous a empoisonné ! À en voir le sourire de votre cuisinier, il n'y a pas de doute possible. Vous vomissez ce poison sur la table mais vous n'êtes pas sûr d'avoir tout éliminé.",
-          "2": "Cette nourriture est assez classique. Vous ne ressentez rien en la mangeant ni après avoir fini, puis en oubliez vite le goût."
-        },
-        "text": "Aller à un stand de nourriture."
+          "0": "Cette nourriture est incroyable ! De votre vie, jamais vous n'avez mangé quelque chose d'aussi bon, et le service est impeccable ! Vous vous sentez revigoré et apaisé, autant par ce délicieux dindon rôti que par la chaleur des sourires sur les visages des convives.",
+          "1": "Bien que réticent à vous servir, votre bourse a finalement raison de la méfiance du cuisinier. Vous dévorez évidemment ce repas qui, contrairement à vos craintes, se révèle délicieux ! Reconnaissant, vous donnez un généreux pourboire devant le regard étonné du cuisinier.",
+          "2": "Cette nourriture est étrange. Dès que vous l'avalez, vous avez des maux de tête, des hallucinations et des nausées. On vous a empoisonné ! À en voir le sourire de votre cuisinier, il n'y a pas de doute possible. Vous vomissez ce poison sur la table et tous les autres convives se précipitent à votre secours. Grâce à leur aide, vous parvenez à purger votre corps de ce poison, mais vous vous sentez terriblement mal.",
+          "3": "Cette nourriture est assez classique. Vous ne ressentez rien en la mangeant ni après avoir fini, puis en oubliez vite le goût.",
+          "4": "Vous commandez humblement votre repas et le serveur vous le sert d’un air sombre. Cela ne vous inquiète guère au vu de votre réputation, mais vous regrettez vite votre insouciance vu que le plat était empoisonné.",
+          "5": "Vous alliez entamer votre repas que votre Licorne se met à s’agiter. Vous vous tournez vers votre familier, étonné et celui-ci en profite pour renverser votre assiette avec sa corne. Vous êtes sur le point de vous énerver lorsque vous voyez votre voisin se tordre de douleur… la nourriture était avariée ! Confus, le cuisinier vous dédommage.",
+          "6": "Vous alliez entamer votre repas lorsque votre Chien se met à s’agiter et à aboyer de plus en plus fort. Comprenant qu’il a faim, vous lui commandez un plat. Votre bourse en prend un coup mais votre compagnon à quatre pattes attire la sympathie des autres clients.",
+          "7": "Vous commandez un plat mais cette nourriture vous paraît fade comparée aux milles et une délices que votre main experte est capable de cuisiner. Outré, vous imposez, prenez la place du cuisinier et votre talent permet de tripler la clientèle de ce stand ! Vous restez occupé toute la soirée aux fourneaux, et le gérant vous paye gracieusement.",
+          "8": "Vous commandez un plat mais cette nourriture vous paraît fade comparée aux milles et une délices que votre main experte est capable de cuisiner. Outré, vous faîtes un scandale, injuriez le cuisinier et partez sans payer.",
+          "9": "Vous décidez de manger un morceau et vous installez à une table. Très vite, de jeunes gens vous rejoignent et vous discutez aimablement autour un bon plat. Subjugués par les incroyables aventures que vous leur contez, ceux-ci payent votre repas et repartent avec des étoiles dans les yeux.",
+          "10": "Vous décidez de manger un morceau et vous installez à une table. Mais le cuisinier, reconnaissant en vous un brigand, vous somme de laisser votre place à d'autres convives plus amicaux."
+        }
       },
       "gameStand": {
+        "text": "Aller à un stand de jeu.",
         "outcomes": {
-          "0": "Vous jouez à ce jeu plusieurs fois mais jamais vous ne réussissez à récupérer votre lot. Déçu de votre performance, vous payez le gérant et vous vous en allez.",
-          "1": "Vous jouez et réessayez ce jeu un long moment mais vous n'avez pas de chance. Cependant, le gérant s'étant lié d'amitié avec vous, il vous rembourse vos parties. Vous partez en le remerciant chaleureusement.",
-          "2": "Vous avez réussi à gagner le gros lot ! Heureux et sautant d'excitation, vous le récupérez et sortez de la ville."
-        },
-        "text": "Aller à un stand de jeu."
+          "0": "Vous jouez à ce jeu plusieurs fois mais jamais vous ne réussissez à récupérer votre lot. Déçu de votre performance pitoyable, vous payez le gérant et vous vous en allez, vous promettant de vous entraîner encore plus dur pour franchir cet immense obstacle qui s'est dressé sur votre route.",
+          "1": "Vous vous essayez à ce jeu et le gérant, remarquant votre inexpérience, vous offre des essais gratuits comme soutien pour votre premier festival. Il fut cependant tout aussi surpris que vous de vous voir réussir tous vos lancers et remporter le gros lot !",
+          "2": "Vous jouez et réessayez ce jeu un long moment mais vous n'avez pas de chance. Cependant, le gérant s'étant lié d'amitié avec vous, il vous rembourse vos parties. Vous partez en le remerciant chaleureusement.",
+          "3": "Vous jouez et réessayez ce jeu un long moment mais vous n'avez pas de chance. Vous tentez de négocier un prix avec le gérant mais celui-ci refuse net.",
+          "4": "Grâce à votre entraînement, vous êtes bien plus adroit que la moyenne et parvenez à gagner le gros lot ! Heureux et sautant d'excitation, vous le récupérez et sortez de la ville.",
+          "5": "Imbu de vous-même et sûr de votre talent, vous vous précipitez et perdez. Agacé et voulant récupérer votre argent, vous achetez un nouvel essai, mais votre impatience vous perd et vous ratez à nouveau. Vous quittez le festival frustré et allégé de quelques pièces.",
+          "6": "Vous vous approchez des jeux, impatient de vous amuser, mais tous les gérants refusent votre participation, à cause de votre mauvaise réputation. Vous repartez déçu.",
+          "7": "Vous vous présentez devant un stand de lancer de couteaux. Impatient de vous essayer à cette discipline et négligeant la prudence, vous prenez une arme et la lancez contre la cible... mais celle-ci rebondit et vous entaille la joue !",
+          "8": "Vous découvrez un stand de jeu de cartes, dont le gérant imbu de lui-même vous prend de haut. Vous décidez de lui donner une bonne leçon, et grâce à l’excellente mémoire de votre Éléphant, vous le battez à plate couture et repartez en sifflotant.",
+          "9": "Dû à votre mauvaise réputation, le gérant refuse de vous laisser approcher de son stand et commence à vous menacer : votre Kangourou se met alors en colère et commence à le boxer. Vous vous empresser d’essayer de le calmer, tout en prenant quelques beignes au passage, puis quittez le village sous le regard désapprobateur des habitants sans demander votre reste.",
+          "10": "Vexé par l’attitude pédante et arrogante de votre familier ainsi que de la votre, le gérant décide de vous faire payer plus cher pour un service des plus médiocres. Vous quittez l’endroit moins fier et moins riche qu’à votre arrivée.",
+          "11": "Vous vous approchez du stand, quand une voix s'élève et insulte violemment le gérant. Celui-ci, outré, vous demande de vous expliquer, mais vous clamez votre innocence. Il retourne alors à ces activités lorsque cette mystérieuse voix l'injure à nouveau ! Trop c’est trop, le gérant vous chasse de son stand. Vous n’insistez pas et repartez dans l’incompréhension la plus totale. Ce n’est qu’à une certaine distance de Mergagnan que votre Perroquet vient se poser sur votre épaule..."
+        }
       },
       "itemStand": {
+        "text": "Aller à un stand de vente d'objets.",
         "outcomes": {
-          "0": "Vous recherchez pendant des heures cet objet que vous vouliez mais personne ne l'a. Pour ne rien acheter d'inutile, vous décidez finalement de ne rien acheter du tout.",
-          "1": "Le voici ! Vous recherchiez cet objet depuis des jours et vous l'avez finalement trouvé ! Vous l'achetez rapidement sans faire attention au prix puis partez."
-        },
-        "text": "Aller à un stand de vente d'objets."
+          "0": "Vous recherchez pendant des heures, passez au crible tous les étals de ce festival, allant même jusqu'à vous introduire dans les réserves des marchands, en vain : cet objet tant désiré est introuvable. Pour ne rien acheter d'inutile, vous décidez finalement de ne rien acheter du tout.",
+          "1": "Vous vous approchez du stand et repérez très vite un objet intéressant. Maniant la langue et la réthorique comme personne grâce à votre grande expérience dans le domaine, vous parvenez aisément à convaincre le gérant du stand de vous l'offrir à un prix fort convenable. Vous repartez heureux de votre affaire.",
+          "2": "Vous vous approchez du stand et repérez très vite un objet intéressant, ce qui n'échappe pas au regard attentif du vendeur, voyant en vous un jeunot sans expérience et facile à berner. Celui-ci loue la magnificence et la subtile technologie dont ce produit est doté, vous subjuguant avec un discours tel que des étoiles apparaissent dans vos yeux... si bien que vous ne regardez pas trop le prix au moment de passer à la caisse !",
+          "3": "Vous vous approchez du stand et remarquez très vite que le marchand vous regarde intensément. Vous comprenez immédiatement qu'il a une dent contre vous lorsqu'il sort un couteau de sa ceinture et se jette sur vous ! Vous l'esquivez comme vous pouvez  et fuyez, ne subissant qu'une égratignure.",
+          "4": "Vous vous approchez du stand et remarquez très vite que le marchand vous regarde intensément. Vous comprenez immédiatement qu'il a une dent contre vous lorsqu'il sort un couteau de sa ceinture et se jette sur vous ! Vous n'avez pas le temps de réagir et vous protégez avec votre bras, dans lequel se plante la lame. Vous prenez la fuite, meurtri.",
+          "5": "Vous approchez du stand et êtes accueilli avec joie par le marchand. Vous discutez avec lui pendant un long moment et se forge ainsi entre vous une profonde sympathie. Aucune de ses marchandises ne vous intéresse, mais vous repartez confiant.",
+          "6": "Vous trouver très vite un objet intéressant, et tentez de négocier un prix fort avantageux, accusant la piètre qualité du matériel. Mais votre combine ne fonctionne pas : vous attirez vite les regards méprisant des autres clients et le marchand vous expulse de son stand.",
+          "7": "Vous regardiez pensivement les différents objets proposés lorsque votre Canard écarlate fait tomber un artefact. Le vendeur exige que vous l’achetiez quelque soit son état, mais vous parvenez à négocier une réduction. Cependant, l’objet semble fonctionner correctement et vous avez fait une bonne affaire !",
+          "8": "Le gérant, émerveillé par la majestuosité de votre familier, décide de vous offrir gratuitement un objet de son stand, en guise de cadeau de bienvenue, sous le regard approbateur de la foule admirative. Heureux de ce cadeau, vous laissez votre familier pavaner quelques minutes pour le plus grand bonheur des habitants.",
+          "9": "Dû à votre mauvaise réputation, le gérant refuse de vous laisser approcher de son stand et commence à vous menacer : votre Gorille se met alors en colère et commence à le boxer. Vous vous empresser d’essayer de le calmer, tout en prenant quelques beignes au passage, puis quittez le village sous le regard désapprobateur des habitants sans demander votre reste.",
+          "10": "En arrivant devant le stand, vous demandez au gérant si vous pouvez laisser votre compagnon ailé voleter librement, en promettant qu’il ne causera aucun tort. Il accepte, mais votre Perroquet décide de le remercier à sa manière, en faisant quelques tours que vous lui avez appris tout en complimentant. Surpris et impressionné, le gérant vous dit qu’une telle performance mérite récompense : ayant vu votre intérêt pour un de ces objets, il décide de vous l'offrir. Vous repartez très fier de votre affaire et de votre fidèle compagnon."
+        }
       }
     },
-    "text": "Vous montez sur une colline. Alors que vous regardez autour de vous, vous voyez des lumières au loin. Au fur et à mesure que vous vous approchez, vous entendez également de la musique. C'est un festival ! Excité de faire la fête, vous courez vers la ville."
+    "text": "Vous montez sur une colline. Alors que vous regardez autour de vous, vous voyez des lumières au loin. Au fur et à mesure que vous vous approchez, vous entendez également de la musique. C'est un festival ! Excité de faire la fête, vous vous précipitez vers la ville. Une fois arrivé, vous stoppez votre course, émerveillé par l'entraînante animation de cette bourgade."
   },
   "25": {
     "possibilities": {
       "dontHelp": {
+        "text": "Ne pas les aider.",
         "outcomes": {
           "0": "Vous ne prêtez pas attention au massacre qui a eu lieu, et allez vous reposer un peu plus loin.",
           "1": "Pas de temps à perdre ! Vous continuez votre route.",
-          "2": "Pressé de continuer votre route, vous trébuchez sur un corps sans vie, et vous vous blessez."
-        },
-        "text": "Ne pas les aider."
+          "2": "Pressé de continuer votre route et maladroit comme vous l'êtes, vous trébuchez sur un corps sans vie, et vous vous blessez.",
+          "3": "Vous passez sans porter un seul regard de pitié envers ces pauvres soldats tombés au combat, mais vous croisez des pilleurs de cadavre. Ceux-ci reconnaissent en vous un des leurs et vous offrent même un objet trouvé sur un soldat.",
+          "4": "Vous tentez de reprendre votre route mais votre familier, complètement terrorisé par cette horrible scène, s'accroche à votre jambe en tremblant. Ému de compassion, vous réconfortez votre stupide et faible compagnon comme vous pouvez avant de reprendre votre route."
+        }
+      },
+      "help": {
+        "text": "Proposer son aide.",
+        "outcomes": {
+          "0": "Vous décidez d'aller voir les soldats et leur proposez votre aide pour chercher des survivants. Après 45 minutes d'aide, un soldat vous offre un peu d'argent pour vous remercier de votre aide si précieuse.",
+          "1": "En allant chercher des survivants, vous vous faites attaquer par une personne étant en train de piller des corps ! Après vous être débattu, vous parvenez à le vaincre et vous le livrez aux soldats, qui vous aident à panser vos blessures.",
+          "2": "En allant chercher des survivants, vous vous faites attaquer par une personne étant en train de piller des corps ! Vous vous débattez du mieux que vous pouvez mais votre adversaire est trop fort pour vous.",
+          "3": "Vous proposez votre aide aux soldats, mais ceux-ci semblent méfiants à votre égard. Cependant, votre expertise des lieux mal famés et des scènes de crime vous permet de différencier au premier coup d'oeil les blessés et les morts. Vous parvenez ainsi à sauver plusieurs soldats qui vous remercient chaleureusement.",
+          "4": "Vous proposez votre aide aux soldats, mais ceux-ci semblent méfiants à votre égard. Vous participez activement à la recherche de survivants mais vous ne repérez que des corps sans vie. Vous finissez par abandonner et reprenez votre route.",
+          "5": "Vous proposez votre aide aux soldats, qui la refusent. Connaissant votre réputation, ils vous menacent de leurs épées pour que vous quittiez les lieux, afin de protéger l'honneur de ces soldats morts au combat : ils ne méritent pas d'être pillés.",
+          "6": "Vous arpentez le champ de bataille à la recherche de survivants, votre Colombe sur l'épaule. Soudain, celle-ci s'envole et se pose sur un soldat. Celui-ci gémissait et sa plaie à l'abdomen vous donne la nausée, mais vous prenez sur vous et parvenez à lui donner les premiers soins. Les soldats vous offrent votre dîner pour vous remercier de votre aide.",
+          "7": "A l'aide de son flair, votre familier vous guide entre les cadavres vers les soldats encore en vie. Vous parvenez ainsi à en secourir près d'une dizaine, qui vous remercient chaleureusement. Vous reprenez votre route le sourire aux lèvres... et les poches pleines de cadeaux !",
+          "8": "Vous arpentez le champ de bataille à la recherche de survivants, suivi par votre Licorne. Celle-ci, à l'aide de ses immenses pouvoirs, parvient à soulager la douleur des blessés, ce qui vous vaut les plus amples remerciements. Les soldats vous offrent votre dîner pour vous remercier de votre aide.",
+          "9": "Vous décidez d'aller voir les soldats, leur proposez votre aide pour chercher des survivants et ceux-ci vous font immédiatement confiance, connaissant votre réputation. Cependant, vous apercevez vous la veste d'un soldat une bourse qui semble bien remplie. Ayant le sens des priorités, vous vous empressez de la récupérer et continuez votre route."
+        }
+      },
+      "steal": {
+        "text": "Piller les corps.",
+        "outcomes": {
+          "0": "Vous décidez de contourner les soldats et allez piller les corps des pauvres défunts pour tenter de vous enrichir un petit peu.",
+          "1": "En pillant les corps, vous vous faites attraper brusquement par un soldat. Celui-ci profite de votre situation pour vous détrousser avant de vous sommer de continuer votre route rapidement.",
+          "2": "En pillant les corps, vous vous faites attraper brusquement par un soldat. Celui-ci, voyant votre Chat Noir, vous prend pour un sorcier cherchant à faire des cadavres vos marionnettes afin de semer le chaos. Son sens du devoir le conduit à vous exécuter sur-le-champ avant que vous ne puissiez vous justifier.",
+          "3": "En pillant les corps, vous vous faites attraper brusquement par un soldat. Celui-ci tente de vous détrousser mais vous décidez de l'attaquer pour défendre ce qui compte le plus à vos yeux : l'argent ! Vous parvenez à désarmer votre adversaire et exigez le prix de sa vie.",
+          "4": "En pillant les corps, vous vous faites attraper brusquement par un soldat. Celui-ci tente de vous détrousser mais vous décidez de défendre ce qui compte le plus à vos yeux : l'argent ! Vous êtes cependant incapable de protéger à la fois votre bourse et votre corps. Votre adversaire parvient alors à vous blesser gravement et vous laisse à demi mort.",
+          "5": "Vous décidez de contourner les soldats et allez piller les corps des pauvres défunts pour tenter de vous enrichir un peu. C'est alors que, à cause de votre manque d'expérience, vous retournez un soldat qui s'avère être encore en vie. Confus, vous bredouillez une excuse et décidez de l'aider.",
+          "6": "Vous pilliez discrètement les corps lorsqu'un soldat vous interpelle. Maître de vous grâce à votre expérience, vous restez naturel et le laissez s'approcher, pensant le duper aisément. Mais c'est sans compter sur votre fidèle Singe qui ressort de sous un cadavre avec un étincelant bijou : le soldat comprend alors vos réelles intentions et vous devez prendre la fuite.",
+          "7": "Vous arpentez le champ de bataille à la recherche d'objets de valeurs, sans succès. Heureusement que votre Singe est là pour compenser votre incompétence !",
+          "8": "Vous pilliez discrètement les corps lorsqu'un soldat vous interpelle. Maître de vous grâce à votre expérience, vous restez naturel et le laissez s'approcher, pensant le duper aisément. Mais c'est sans compter sur votre fidèle Raton-laveur qui ressort de sous un cadavre avec un étincelant bijou : le soldat comprend alors vos réelles intentions et vous devez prendre la fuite.",
+          "9": "Vous arpentez le champs de bataille à la recherche d'objets de valeurs, sans succès. Heureusement que votre Raton-laveur est là pour compenser votre incompétence !"
+        }
       },
       "end": {
         "outcomes": {
           "0": "Ayant jeté un rapide coup d'œil aux soldats occupés par leurs fouilles, vous décidez de reprendre votre route.",
-          "1": "Fatigué, vous tombez raide et vous endormez au sol."
+          "1": "Les soldats vous aperçoivent au loin et reconnaissent en vous un aventurier fiable et serviable. Ils vous interpellent mais vous ne réagissez pas, encore sous le choc.",
+          "2": "Vous restez stupéfait devant cette effroyable vision. Vous voyez alors les soldats s'assembler en cercle et décidez d'aller voir ce qu'il se passe : ils se tiennent autour d'un soldat au bord de la mort. C'est alors que votre Chat se précipite sur le soldat, ronronnant à tel point que le pauvre homme s'éteint le sourire aux lèvres.",
+          "3": "Vous restez stupéfait devant cette effroyable vision, alors que votre Alien commence à disséquer le cadavre le plus proche afin d'étudier l'espèce humaine. Horrifié, vous vous empressez de l'arrêter et reprenez votre route.",
+          "4": "Vous observez le champ de bataille sans qu'une once de pitié n'apparaisse dans vos yeux. Les soldats vous surveillent, connaissant votre réputation, mais vous laissent en paix. Vous reprenez votre route, sans que l'ombre d'une émotion ne soit apparue dans votre esprit, et récupérez un objet sur un cadavre pour rendre hommage à votre image."
         }
-      },
-      "help": {
-        "outcomes": {
-          "0": "Vous décidez d'aller voir les soldats et leur proposez votre aide pour chercher des survivants. Après 45 minutes d'aide, un soldat vous offre un peu d'argent pour vous remercier de votre aide si précieuse.",
-          "1": "En allant chercher des survivants, vous vous faites attaquer par une personne étant en train de piller des corps ! Après vous être débattu, vous fuyez et continuez votre route."
-        },
-        "text": "Proposer son aide."
-      },
-      "steal": {
-        "outcomes": {
-          "0": "Vous décidez de contourner les soldats et allez piller les corps des pauvres défunts pour tenter de vous enrichir un petit peu.",
-          "1": "En pillant les corps, vous vous faites attraper brusquement par un soldat. Celui-ci profite de votre situation pour vous détrousser avant de vous sommer de continuer votre route rapidement."
-        },
-        "text": "Piller les corps."
       }
     },
     "text": "Après plusieurs jours de voyage sans encombre, vous finissez par arriver sur les lieux d'une petite escarmouche entre deux groupes armés. Les esprits semblent cependant s'être calmés et vous remarquez plusieurs soldats affairés à rechercher des éventuels survivants."
@@ -923,34 +977,73 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Après avoir passé 15 minutes à observer cette scène, vous vous éloignez de la place, encore bouleversé par ce que vous venez de voir."
+          "0": "Après avoir passé 15 minutes à observer cette scène, vous repartez, choqué, mais continuez votre aventure.",
+          "1": "Alors que vous restez tétanisé devant cette exécution, votre Colombe s'envole et se pose sur la tête du condamné. Le bourreau, cachant un grand coeur derrière ses muscles d'acier et ému par l'oiseau de paix, décide d'épargner l'homme.",
+          "2": "Vous observez longuement la scène. Vous ne portez pas un seul regard à la banalité de cette exécution mais jugez plutôt la quantité de gardes, la qualités de leur armes et l'affinage de leur carrure. Vous en concluez rapidement qu'il ne faudrait pas rester dans cette ville plus longtemps si vous voulez pas subir le même sort que ce condamné.",
+          "3": "Devant cet acte d'une telle barbarie, vos doux coeur se fend de compassion et votre s'esprit s'emplit d'une tristesse infinie. Votre pas devient lourd, le remord de ne pouvoir aider ce malheureux vous agite de toute part, et vous finissez par vous évanouir."
         }
       },
       "goAway": {
+        "text": "S'éloigner du massacre.",
         "outcomes": {
-          "0": "Horrifié par cet acte de barbarie, vous vous éloignez rapidement de la place, le cœur encore serré.",
-          "1": "En vous écartant de la foule, vous apercevez un coffret abandonné dans une ruelle. Intrigué, vous l'atteignez, l'ouvrez et découvrez un sac rempli d'argent."
-        },
-        "text": "S'éloigner de l'exécution."
+          "0": "Horrifié par cet acte de barbarie, vous continuez rapidement votre route, remettant l'âme de ce pauvre homme entre les mains du Minotaure Iatneh.",
+          "1": "En vous éloignant, vous apercevez au sol une petite bourse dans une ruelle déserte. Vous prenez bien le temps de savourer cette chance, la ramassez, et repartez en sifflotant.",
+          "2": "Sans un regard pour cette scène devenue habituelle au vu de vos antécédents, vous vous empressez de quitter les lieux, ne voulant pas subir le même sort si l'on venait à vous reconnaître.",
+          "3": "Horrifié par la cruauté de ce monde que vous commencez à peine à parcourir, vous fuyez ce massacre, et vomissez dans une ruelle voisine.",
+          "4": "Alors que vous partiez, vous remarquer qu'un homme armé observe la scène depuis une ruelle. Comprenant immédiatement ses intentions grâce à votre instinct aiguisé par les épreuves, vous l'attaquez par surprise, le neutralisez et le livrez aux soldats, qui vous offrent un objet en récompense.",
+          "5": "Alors que vous partiez, vous remarquer qu'un homme armé observe la scène depuis une ruelle. Comprenant immédiatement ses intentions grâce à votre instinct aiguisé par les épreuves, vous l'attaquez par surprise ! Mais vous n'êtes pas assez rapide et celui-ci vous remarque, sort son arme et vous entaille le bras avant de s'enfuir.",
+          "6": "Le sort de cet homme ne vous concerne pas. Il a peut-être été votre hôte un temps, mais s'il s'avère être coupable, il ne reçoit que ce qu'il mérite. Vous reprenez votre route."
+        }
       },
       "steal": {
+        "text": "Voler des passants assistant au massacre.",
         "outcomes": {
-          "0": "Après avoir dépouillé quelques personnes, vous vous éclipsez discrètement avec un objet qui semble fort intéressant ! À l'écart de la foule, vous regardez enfin ce que c'est.",
-          "1": "Vous tentez de dépouiller un habitant quand ce dernier se retourne soudainement et vous attrape fermement avant de vous rouer de coups. Après vous être débattu, vous parvenez à vous esquiver dans la cohue."
-        },
-        "text": "Voler des passants assistant à l'exécution."
+          "0": "Votre habileté sans égale et vos mains expérimentés vous permettent aisément de récupérer un objet dans le sac d'un habitant.",
+          "1": "Vous débutez dans cette entreprise, mais la patiente est votre force. Vous observez longuement la foule afin de trouver la victime idéale : faible, à l'écart de la foule, distraite. Bingo ! Vous remarquez un vieil homme et le dépouillez en toute discrétion comme si vous aviez fait ça toute votre vie.",
+          "2": "Vous tentez de dépouiller un habitant quand ce dernier se retourne soudainement et vous attrape fermement avant de vous rouer de coups. Après vous être débattu, vous fuyez.",
+          "3": "Vous tentez de dépouiller un habitant quand ce dernier se retourne soudainement et vous attrape fermement avant de vous rouer de coups. Vous parvenez à vous défaire de son emprise et commencez à l'attaquer en retour et une bagarre éclate ! Les soldats parviennent à calmer la foule et vous ordonne de quitter les lieux. Vous fuyez, blessé.",
+          "4": "Vous tentez de dépouiller un habitant, mais avant que vous n'ayez pu commettre quelque larcin, celui-ci se retourne et vous menace de ses poings. Vous battez en retraite avec sourire en coin, puisque votre Singe a pu discrètement récupérer sa bourse...",
+          "5": "Sournois comme vous l'êtes, vous envoyez votre Serpent effrayer les jeunes demoiselles alors que vous en profitez pour dérober leurs biens.",
+          "6": "Vous tentiez de dépouiller un passant lorsque celui-ci vous remarque et hurle au voleur. Vous tentez de bredouiller une excuse mais les soldats vous forcent à payer un dédommagement et à quitter les lieux.",
+          "7": "Vous tentiez de dépouiller un passant lorsque celui-ci vous remarque et hurle au voleur. Vous prenez alors votre air le plus innocent et proclamez qu'il s'agit d'une méprise. Connaissant votre bonne réputation, la foule d'abord houleuse se calme et vous oublie. Vous quittez les lieux.",
+          "8": "Vous tentiez de dépouiller un passant lorsque celui-ci vous remarque et hurle au voleur. Vous tentez de bredouiller une excuse mais la foule reconnait en vous un voyou et se met à vous rouer de coups. Vous êtes sauvé par les gardes qui vous ordonnent de quitter la ville. Vous fuyez, blessé.",
+          "9": "Vous tentiez de dépouiller un passant lorsque celui-ci vous remarque et hurle au voleur. Vous tentez de bredouiller une excuse mais la foule reconnait en vous un brigand réputé se met à vous rouer de coups. Vous êtes sauvé par les gardes qui vous sortent de ce pétrin... avant de remarquer que ceux-ci vous entraînent vers la potence. Vous êtes pendu haut et court à côté du blasphémateur.",
+          "10": "Vous tentiez de dépouiller un passant lorsque celui-ci vous remarque et hurle au voleur. Vous prenez alors votre air le plus innocent et proclamez qu'il s'agit d'une méprise. Interprétant la Colombe qui vous suit comme un sceau divin, la foule d'abord houleuse se calme et vous oublie. Vous quittez les lieux.",
+          "11": "Vous tentiez de dépouiller un passant lorsque celui-ci vous remarque et hurle au voleur. Vous prenez alors votre air le plus innocent et proclamez qu'il s'agit d'une méprise. Interprétant la Licorne qui vous suit comme un sceau divin, la foule d'abord houleuse se calme et vous oublie. Vous quittez les lieux."
+        }
       },
       "trySave": {
+        "text": "S'interposer et empêcher cet homme de mourir.",
         "outcomes": {
-          "0": "Après vous être débattu pour traverser la foule, vous intervenez au plus vite et réussissez à extirper cet homme de là. Une fois à l'abri des regards, cet homme, très reconnaissant, vous offre un objet qui vous servira pour la suite de votre aventure.",
+          "0": "Vous vous débattez pour traverser la foule, intervenez au plus vite et réussissez à extirper cet homme de là. Après avoir couru à travers la ville, cet homme, très reconnaissant, vous offre un objet qui vous servira pour la suite de votre aventure.",
           "1": "Durant votre traversée de la foule pour tenter d'aller empêcher ce meurtre, vous vous faites fortement bousculer et tombez au sol.",
           "2": "Après avoir réussi à partir d'ici avec l'homme, vous vous faites rattraper et frapper par un groupe de personnes. Une fois relevé, vous remarquez que ces individus vous ont volé.",
-          "3": "Après avoir violemment tenté de vous interposer, le bourreau vous attrape de force. Vous vous débattez, mais rien n'y fait. Vous êtes à votre tour condamné à la peine capitale."
-        },
-        "text": "S'interposer et empêcher cet homme de mourir."
+          "3": "Après avoir violemment tenté de vous interposer, le bourreau vous attrape de force. Vous vous débattez, mais rien n'y fait. Vous êtes à votre tour condamné à la peine capitale.",
+          "4": "Après avoir violemment tenté de vous interposer, le bourreau vous attrape de force. Vous vous débattez et parvenez à échapper à son empire mais les gardes viennent en renfort pour vous maitriser. Vous êtes à votre tour condamné à la peine capitale.",
+          "5": "Vous passez entre les gardes, montez sur la potence et tentez de libérer le condamné tout en proclamant l'injustice de cette sentence et l'importance du pardon. Ému par tant de bravoure et de valeurs émanant d'une personne aussi bienveillante que vous, le prêtre retire sa condamnation, et vous amenez votre ancien hôte dans sa maison sous les acclamations de la foule. Celui-ci vous offre le gîte et le couvert pour vous remercier, ainsi qu'un de ses plus précieux objets.",
+          "6": "Vous passez entre les gardes, montez sur la potence et tentez de libérer le condamné tout en proclamant l'injustice de cette sentence. Mais votre action n'a pas l'effet escompté au vu des regards de méfiance que la foule vous lance. Les soldats reconnaissent en vous un malfrat réputé, vous attrapent et vous pendent aux côtés du blasphémateur pour vos crimes passés.",
+          "7": "Vous passez entre les gardes, montez sur la potence et tentez de libérer le condamné tout en proclamant l'injustice de cette sentence. Mais votre action n'a pas l'effet escompté au vu des regards de méfiance que la foule vous lance. Les soldats reconnaissent en vous un malfrat réputé, tentent de vous attraper mais vous parvenez à vous enfuir de justesse. Votre compagnon d'infortune n'a cependant pas eu cette chance...",
+          "8": "Vous dressez le torse, réajustez la moustache, sortez votre arme et courez vers le condamné, esquivant nobles, gueux, marchands, gardes, coups de poings et lames aiguisées. Votre dextérité sans pareille et votre style de combat éblouissant vous permettent de vous frayer un chemin vers la potence, et vous parvenez à trancher la corde à l'instant où la trappe s'ouvre. Dans un rire tonitruant, vous attrapez le condamné et fuyez cette ville. Pour votre plus grand bonheur, celui-ci vous offre le plus précieux objet en sa possession, mais votre joie est de courte durée puisque vous remarquez avoir perdu votre bourse dans toute cette cohue.",
+          "9": "Après avoir violemment tenté de vous interposer, le bourreau vous attrape de force. Vous vous débattez, mais rien n'y fait. Vous êtes à votre tour condamné à la peine capitale. Cependant, après que la foule soit partie, votre fidèle Phénix s'approche de votre corps sans vie, vous prend dans ses serres, vous entoure de ses ailes et grâce à son pouvoir de renaissance, vous vous réveillez d'entre les morts. Remerciant chaleureusement votre compagnon, vous reprenez votre route, vous jurant de vous consacrer plus de temps à votre avenir spirituel de fidèle du Kyutisme.",
+          "10": "Vous sautez sur votre fidèle destrier, galopez vers la potence, parvenez à trancher la corde, hisser le condamné sur votre monture et fuir vers la campagne. Celui-ci vous remercie chaleureusement, vous et votre compagnon.",
+          "11": "Après vous être débattu pour traverser la foule, vous intervenez au plus vite et réussissez à extirper cet homme de là, alors que la machine de guerre qui vous sert de compagnon retient les gardes. Grâce à son aide, vous parvenez à vous enfuir sans encombre et l'homme, très reconnaissant, vous offre un objet qui vous servira pour la suite de votre aventure.",
+          "12": "Après vous être débattu pour traverser la foule, vous intervenez au plus vite et réussissez à extirper cet homme de là. Vous tentez de vous enfuir mais en vous retournant, vous voyez les gardes avec une épée pointée vers la gorge de votre Paresseux, qui n'a été capable de vous suivre : vous devez vous rendre. Le condamné est alors exécuté et vous devez payer une sévère amende."
+        }
+      },
+      "tell": {
+        "text": "Dénoncer les complices du condamné",
+        "outcomes": {
+          "0": "Vous montez sur un tonneau et clamez haut et fort que le condamné a des complices qui s'apprêtent à le libérer afin de semer le chaos et la division parmi les fidèles du Kyutisme, tout en les dénonçant un à un. Horrifiés à l'idée que l'on puisse agir en masse contre les prescriptions du Kyuran, le prêtre s'évanouit, les gardes se ruent sur les complices afin de les exécuter sans jugement et la foule se disperse en hurlant. Surpris d'un tel chaos, vous décampez sans demander votre reste.",
+          "1": "Vous montez sur un tonneau et clamez haut et fort que le condamné a des complices qui s'apprêtent à le libérer afin de semer le chaos et la division parmi les fidèles du Kyutisme, tout en les dénonçant un à un. La présence d'autres blasphémateurs dans la foule provoque un mouvement de panique parmi les habitants ! Ne pouvant résister à ce chaos, vous êtes balloté et votre tête finit par heurter un mur.",
+          "2": "Vous montez sur un tonneau et clamez haut et fort que le condamné a des complices qui s'apprêtent à le libérer afin de semer le chaos et la division parmi les fidèles du Kyutisme, tout en les dénonçant un à un. La présence d'autres blasphémateurs dans la foule provoque un mouvement de panique parmi les habitants ! Vous résistez tant bien que mal et finissez par vous retrouver seul face aux gardes. Vous juger donc à raison que quelques pièces seraient la meilleure des explications.",
+          "3": "Vous montez sur un tonneau et clamez haut et fort que le condamné a des complices qui s'apprêtent à le libérer afin de semer le chaos et la division parmi les fidèles du Kyutisme, tout en les dénonçant un à un. En rage devant cet acte perfide digne de votre réputation, les hommes que vous avez dénoncé avoue que vous faites partie des leurs, témoignage appuyé par la foule vous ayant vu entrer chez le condamné. Les gardes vous saisissent tous et vous passent toute envie de rébellion à coup de verge.",
+          "4": "Vous montez sur un tonneau et clamez haut et fort que le condamné a des complices qui s'apprêtent à le libérer afin de semer le chaos et la division parmi les fidèles du Kyutisme, tout en les dénonçant un à un. Les gardes vous reconnaissent comme un aventurier valeureux et arrêtent les complices. Ils vous remercient pour votre aide mais vous ne pouvez oublier le regard de haine de ces hommes que vous avez trahis.",
+          "5": "Vous vous mettez debout sur le dos de votre Licorne et clamez haut et fort que le condamné a des complices qui s'apprêtent à le libérer afin de semer le chaos et la division parmi les fidèles du Kyutisme, tout en les dénonçant un à un. Pensant à un envoyé divin à cause de votre fabuleux animal, la foule se prosterne et les gardes arrêtent les complices. Devant une telle réaction, votre ego fait un bon dans votre poitrine et d'un geste magnanime, vous ordonnez que ces criminels soient graciés, car tout être mérite pardon. Émue, la foule se pressent pour vous offrir diverses cadeaux, et vous quittez la ville les poches pleines\".",
+          "6": "Vous montez sur un tonneau et commenciez à peine votre réquisitoire que vous perdez maladroitement l'équilibre en faisant un geste un peu trop brusque et choyez au sol, sous les rires de la foule qui vous chasse tel le gueux que vous êtes."
+        }
       }
     },
-    "text": "En arrivant dans un village, vous remarquez un regroupement de personnes. Vous constatez très vite en vous approchant qu'une pendaison est en cours. Après quelques renseignements, vous savez que cette personne est condamnée à mort pour \"propos contraires aux valeurs de l'Église\"."
+    "text": "En vous promenant dans la Ville Forte, vous remarquez un regroupement de personnes. Vous constatez en vous approchant qu'une pendaison est en cours sur la place du marché, et vous reconnaissez avec stupeur le condamné car il vous a déjà hébergé chez lui. Vous parvenez aussi à repérer certains de ses proches dans la foule, la mine sombre et décidée, complotant sûrement de le sauver malgré les gardes positionnés autour de la potence. Le bourreau est un immense soldat impassible et massif qui vous paraît être constitué de métal, et à ses côtés se tient un prêtre Kyustiste clamant la sentence du pauvre homme pour \"propos contraires aux valeurs de l'église\"."
   },
   "27": {
     "possibilities": {

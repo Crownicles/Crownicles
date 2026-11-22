@@ -535,7 +535,14 @@ export const CrowniclesIcons: {
 		24: {
 			end: {
 				0: "🚶",
-				1: "🚶"
+				1: "🚶",
+				2: "😊",
+				3: "😒",
+				4: "🤝",
+				5: "🤝",
+				6: "🐾",
+				7: "😈",
+				8: "🧙"
 			},
 			foodStand: "🍢",
 			gameStand: "🎯",
@@ -545,15 +552,24 @@ export const CrowniclesIcons: {
 			dontHelp: "🚶",
 			end: {
 				0: "👀",
-				1: "👀"
+				1: "👀",
+				2: "🐈",
+				3: "👽",
+				4: "💀"
 			},
 			help: "🤝",
 			steal: "🕵️"
 		},
 		26: {
-			end: { 0: "👀" },
+			end: {
+				0: "👀",
+				1: "🕊️",
+				2: "👀",
+				3: "😢"
+			},
 			goAway: "🚶",
 			steal: "💸",
+			tell: "🗣️",
 			trySave: "👊"
 		},
 		27: {

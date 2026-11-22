@@ -879,7 +879,7 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 23 | Vous vous baladez en forêt, quand soudain, vous apercevez un chariot qui semble cassé. Autour, le groupe de personnes semble mal en point. |
 | 24 | Vous montez sur une colline. Alors que vous regardez autour de vous, vous voyez des lumières au loin. Au fur et à mesure que vous vous appro |
 | 25 | Après plusieurs jours de voyage sans encombre, vous finissez par arriver sur les lieux d'une petite escarmouche entre deux groupes armés. Le |
-| 26 | En arrivant dans un village, vous remarquez un regroupement de personnes. Vous constatez très vite en vous approchant qu'une pendaison est e |
+| 26 | En vous promenant dans la Ville Forte, vous remarquez un regroupement de personnes. Vous constatez en vous approchant qu'une pendaison est e |
 | 27 | En arrivant dans un petit village, vous remarquez un puits avec un petit objet brillant au fond. |
 | 28 | Pendant votre périple, un groupe d'hommes "prêchant la parole des dieux" vous invite à rejoindre leur cause. |
 | 29 | Les températures dépassant les 30°C depuis plusieurs jours vous accablent. Alors que vos forces commencent à faiblir, incapable de continuer |
