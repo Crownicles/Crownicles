@@ -85,6 +85,7 @@ Le français (`Lang/fr`) est la référence. Depuis l'abandon de Crowdin (#5181)
   - Couper ces éléments pour gagner de la place appauvrit l'event. C'est arrivé avec Donia (event 69), dont on avait perdu le doute du joueur, et avec Parziter (event 76), qui avait perdu son *a besoin d'aide*.
   - Pas de « Vous voyez » en ouverture.
 - **Issue : une petite scène qui se tient**, avec ce que fait le joueur, ce qui se passe et la conséquence. Le décor se limite à ce qui sert l'action, avec un détail concret au plus.
+- **Chaque issue se lit seule.** Le joueur ne voit qu'une issue, jamais les autres : chacune repart de l'intro et du choix, et pose elle-même ce qu'elle utilise. Écrites à la suite, les issues ont tendance à s'appuyer les unes sur les autres et à s'expliquer de moins en moins. Event 3, *Forcer le cadenas* : l'issue 0 trouve une pierre, l'issue 2 commençait par *La pierre ripe* (quelle pierre ?), et l'issue 4 par *Le vacarme attire les marchands* (quel vacarme ?), sans dire que le joueur frappe. Relis chaque issue juste après l'intro et le libellé, comme si c'était la seule.
 - **La longueur d'une issue suit ce qu'elle a à raconter.** Beaucoup d'issues font entre 150 et 280 caractères, mais c'est un constat, pas une cible.
   - Une issue sans histoire peut tenir en une ou deux phrases (80 à 150 caractères) : passer son chemin, un refus accepté, une chute comique qui fait mouche.
   - Une issue qui enchaîne une cause, un retournement et une conséquence, ou qui fait vivre un personnage nommé, peut aller jusqu'à 400 caractères.
@@ -294,6 +295,7 @@ Avant de rendre un texte, vérifie chaque point :
 7. Chaque personnage qui s'en prend au joueur a une raison montrée dans le texte, à la mesure de ce que le joueur a fait, et un choix prudent reste prudent.
 8. Le joueur ne fait que ce que son choix annonce, et rien quand il ne répond pas.
 9. Chaque issue reste vraie avec ce que l'intro dit des choses, des lieux et des personnages.
+10. Chaque issue se comprend lue seule, juste après l'intro et le libellé du choix.
 
 ## Journal des retours du propriétaire
 
@@ -308,6 +310,7 @@ Les 21 events déjà réécrits (1, 2, 10 à 20, 30, 39, 46, 56, 69, 71, 76, 89)
 - **Brouillon de Gabriel (events 24, 25, 26)** : son brouillon est commité sous son nom, puis repris selon le skill dans un second commit. Voir « Brouillon d'un contributeur ».
 - **Prévisibilité et paliers (le propriétaire et GabrieLre)** : le joueur doit à peu près savoir ce qui va se passer quand il clique ; un malus ou un bonus lié à une stat se gradue en trois paliers au lieu d'un seuil binaire, et les seuils ne sont pas tous tout en haut. Voir « Un choix doit être prévisible » et « L'échelle des seuils ». Appliqué aux events 2, 10, 24, 25 et 26.
 - **Équipement réellement porté (le propriétaire, event 3)** : pas de pioche ni d'armure supposées ; condition `weaponTags` et tag d'arme `blunt`. Le validateur avertit d'une arme ou d'une armure nommée sans condition qui la garantit. Voir « Texte et mécanique ».
+- **Event 3, issues enchaînées (Gabriel)** : les issues d'un même choix s'appuyaient les unes sur les autres (*La pierre ripe*, *Le vacarme*), alors que le joueur n'en lit qu'une. Voir « Chaque issue se lit seule ».
 - **Event 3 (le propriétaire)** : une issue contredisait l'état posé par l'intro (un coffret enfoui depuis longtemps, mais tombé d'une charrette le matin même). Voir « L'intro fixe l'état des choses ».
 - **Event 71 (le propriétaire)** : détail parasite (le scorpion dans la botte), geste de familier impossible à se représenter, libellé raccourci qui cachait une agression, joueur qui agit alors qu'il n'a pas répondu, libellés sans point final. Voir « Style », « Structure d'un event » et « Une réaction à la mesure de ce que fait le joueur ».
 - **Réaction disproportionnée (le propriétaire, event 75)** : un pirate inconnu tirait au canon sur un joueur qui déclinait poliment, et les paliers en faisaient la norme. Voir « Une réaction à la mesure de ce que fait le joueur ».
