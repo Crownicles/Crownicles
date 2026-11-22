@@ -1,5 +1,6 @@
 import { describe, expect, it, beforeEach, vi } from "vitest";
-import { getValidOutcomesForPlayer, pickMaterialsToConsume, PossibilityOutcome } from "../../../src/data/events/PossibilityOutcome";
+import { getValidOutcomesForPlayer, PossibilityOutcome } from "../../../src/data/events/PossibilityOutcome";
+import { pickMaterialsToConsume } from "../../../src/data/events/OutcomeMaterials";
 import Player from "../../../src/core/database/game/models/Player";
 import { PlayerMissionsInfos } from "../../../src/core/database/game/models/PlayerMissionsInfo";
 import { PetEntities } from "../../../src/core/database/game/models/PetEntity";

@@ -106,36 +106,61 @@ function parseIcons(block) {
  */
 function updateIcons(path, eventId, newIcons, possibilities) {
 	const lines = readFileSync(path, "utf8").split("\n");
+	const { head, tail } = findEventIconsBlock(lines, path, eventId);
+	const icons = dropRemovedIcons(mergeIcons(parseIcons(lines.slice(head, tail + 1)), newIcons), possibilities);
+	const block = iconsBlock(eventId, icons);
+	block[block.length - 1] += lines[tail].endsWith(",") ? "," : "";
+	lines.splice(head, tail + 1 - head, ...block);
+	writeFileSync(path, lines.join("\n"));
+}
 
+/**
+ * Lines of the emoji block of a big event in CrowniclesIcons.ts
+ * @param {string[]} lines
+ * @param {string} path
+ * @param {string} eventId
+ * @returns {{head: number, tail: number}} first and last line of the block
+ */
+function findEventIconsBlock(lines, path, eventId) {
 	// The second "events: {" block holds the big events (the first one is the type declaration)
 	const start = lines.flatMap((line, i) => (line === "\tevents: {" ? [i] : []))[1];
 	const head = lines.findIndex((line, i) => i >= start && line === `\t\t${eventId}: {`);
 	if (start === undefined || head === -1) {
 		throw new Error(`event ${eventId} not found in the big events of ${path}`);
 	}
-	const tail = lines.findIndex((line, i) => i >= head && /^\t\t\},?$/u.test(line));
-	let icons = parseIcons(lines.slice(head, tail + 1));
-	for (const [name, value] of entriesOf(newIcons)) {
-		if (isObject(value)) {
-			if (!Object.hasOwn(icons, name)) {
-				icons[name] = {};
-			}
-			Object.assign(icons[name], Object.fromEntries(entriesOf(value)));
-		}
-		else {
-			icons[name] = value;
-		}
-	}
+	return {
+		head,
+		tail: lines.findIndex((line, i) => i >= head && /^\t\t\},?$/u.test(line))
+	};
+}
 
-	// Drop the emoji of possibilities and "end" outcomes the event no longer has
-	icons = Object.fromEntries(Object.entries(icons).filter(([name]) => Object.hasOwn(possibilities, name)));
-	if (isObject(icons.end)) {
-		icons.end = Object.fromEntries(Object.entries(icons.end).filter(([outcome]) => Object.hasOwn(possibilities.end.outcomes, outcome)));
+/**
+ * Add the new emoji to the existing ones: a nested block (the "end" outcomes) is merged, a single emoji is replaced
+ * @param {object} icons
+ * @param {object} newIcons
+ * @returns {object}
+ */
+function mergeIcons(icons, newIcons) {
+	for (const [name, value] of entriesOf(newIcons)) {
+		icons[name] = isObject(value)
+			? Object.assign(icons[name] ?? {}, Object.fromEntries(entriesOf(value)))
+			: value;
 	}
-	const block = iconsBlock(eventId, icons);
-	block[block.length - 1] += lines[tail].endsWith(",") ? "," : "";
-	lines.splice(head, tail + 1 - head, ...block);
-	writeFileSync(path, lines.join("\n"));
+	return icons;
+}
+
+/**
+ * Drop the emoji of possibilities and "end" outcomes the event no longer has
+ * @param {object} icons
+ * @param {object} possibilities
+ * @returns {object}
+ */
+function dropRemovedIcons(icons, possibilities) {
+	const kept = Object.fromEntries(Object.entries(icons).filter(([name]) => Object.hasOwn(possibilities, name)));
+	if (isObject(kept.end)) {
+		kept.end = Object.fromEntries(Object.entries(kept.end).filter(([outcome]) => Object.hasOwn(possibilities.end.outcomes, outcome)));
+	}
+	return kept;
 }
 
 /**

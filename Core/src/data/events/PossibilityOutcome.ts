@@ -20,20 +20,19 @@ import { TravelTime } from "../../core/maps/TravelTime";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { PossibilityOutcomeCondition } from "./PossibilityOutcomeCondition";
 import { BigEventConstants } from "../../../../Lib/src/constants/BigEventConstants";
-import {
-	EquippedMainItem, PlayerActiveObjects
-} from "../../core/database/game/models/PlayerActiveObjects";
+import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { BlessingManager } from "../../core/blessings/BlessingManager";
 import {
 	asMinutes, minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
-import { PetDataController } from "../Pet";
-import { Materials } from "../../core/database/game/models/Material";
-import { MaterialDataController } from "../Material";
-import { updateCollectMaterialsMission } from "../../core/utils/MaterialLootUtils";
-import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
+import {
+	applyOutcomeMaterials, OutcomeMaterialQuantity
+} from "./OutcomeMaterials";
+import {
+	isOutcomeValidForPlayer, OutcomeRequirements
+} from "./OutcomeRequirements";
 
 async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	const scoreChange = TravelTime.timeTravelledToScore(minutesToMilliseconds(asMinutes(time)))
@@ -200,39 +199,6 @@ async function applyOutcomeRandomItem(outcome: PossibilityOutcome, player: Playe
 	});
 }
 
-async function applyOutcomeMaterials(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<OutcomeMaterialChange[]> {
-	const changes: OutcomeMaterialChange[] = [];
-	if (outcome.consumeMaterials) {
-		const owned = (await Materials.getPlayerMaterials(player.id)).map(m => ({
-			materialId: m.materialId,
-			quantity: m.quantity
-		}));
-		const toConsume = pickMaterialsToConsume(owned, outcome.consumeMaterials, outcome.consumeMaterials.quantity);
-		if (toConsume.length > 0 && await Materials.consumeMaterials(player.id, toConsume)) {
-			changes.push(...toConsume.map(m => ({
-				materialId: m.materialId,
-				quantity: -m.quantity
-			})));
-		}
-	}
-	if (outcome.giveMaterials) {
-		const filter = outcome.giveMaterials;
-		const candidates = MaterialDataController.instance.getAllMaterials()
-			.filter(material => isMaterialMatching(parseInt(material.id, 10), filter));
-		if (candidates.length > 0) {
-			const materialId = parseInt(RandomUtils.crowniclesRandom.pick(candidates).id, 10);
-			const given = {
-				materialId,
-				quantity: filter.quantity
-			};
-			await Materials.giveMaterial(player.id, materialId, filter.quantity);
-			await updateCollectMaterialsMission(player, response, [given]);
-			changes.push(given);
-		}
-	}
-	return changes;
-}
-
 async function applyOutcomeRandomPet(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<void> {
 	if (outcome.randomPet) {
 		const minRarity = outcome.randomPet.rarity?.min ?? PetConstants.PET_RARITY_RANGE.MIN;
@@ -354,7 +320,10 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 	const effect = await applyOutcomeEffect(possibilityOutcome.outcome[1], player);
 
 	// Materials
-	const materials = await applyOutcomeMaterials(possibilityOutcome.outcome[1], player, response);
+	const materials = await applyOutcomeMaterials({
+		consume: possibilityOutcome.outcome[1].consumeMaterials,
+		give: possibilityOutcome.outcome[1].giveMaterials
+	}, player, response);
 
 	const packet = makePacket(CommandReportBigEventResultRes, {
 		eventId: possibilityOutcome.eventId,
@@ -393,111 +362,11 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 	return getNextMapLink(possibilityOutcome.outcome[1], player);
 }
 
-/**
- * Filters selecting materials: every filter set must match
- */
-export type OutcomeMaterialFilter = {
-	type?: string;
-	rarity?: {
-		min?: number;
-		max?: number;
-	};
-	ids?: number[];
-};
-
-/**
- * A material quantity won (positive) or consumed (negative) by an outcome
- */
-export type OutcomeMaterialChange = {
-	materialId: number;
-	quantity: number;
-};
-
 export interface PossibilityOutcome {
 
 	condition?: PossibilityOutcomeCondition;
 
-	requirements?: {
-		level?: {
-			min?: number;
-			max?: number;
-		};
-		karma?: {
-			min?: number;
-			max?: number;
-		};
-		health?: {
-			min?: number;
-			max?: number;
-		};
-		defense?: {
-			min?: number;
-			max?: number;
-		};
-		attack?: {
-			min?: number;
-			max?: number;
-		};
-		speed?: {
-			min?: number;
-			max?: number;
-		};
-		campaignCurrentMissionId?: number;
-		validPetTypeIds?: number[];
-		petRarity?: {
-			min?: number;
-			max?: number;
-		};
-		validClassIds?: number[];
-
-		/**
-		 * Cooking level of the player
-		 */
-		cookingLevel?: {
-			min?: number;
-			max?: number;
-		};
-
-		/**
-		 * Total quantity of the player's materials matching the filters (all materials when no filter is set).
-		 * The quantity range defaults to at least 1. Materials are only checked, never consumed.
-		 */
-		materials?: OutcomeMaterialFilter & {
-			quantity?: {
-				min?: number;
-				max?: number;
-			};
-		};
-
-		/**
-		 * At least one equipped weapon or armor (or the given slot only) carries an enchantment matching every filter
-		 */
-		enchantment?: {
-			slot?: "weapon" | "armor";
-			types?: string[];
-			kinds?: string[];
-			level?: {
-				min?: number;
-				max?: number;
-			};
-		};
-
-		/**
-		 * Upgrade level of the equipped weapon
-		 */
-		weaponLevel?: {
-			min?: number;
-			max?: number;
-		};
-
-		/**
-		 * Upgrade level of the equipped armor
-		 */
-		armorLevel?: {
-			min?: number;
-			max?: number;
-		};
-	};
+	requirements?: OutcomeRequirements;
 
 	/**
 	 * Time lost for the lost time effect
@@ -576,12 +445,12 @@ export interface PossibilityOutcome {
 	 * Consume this quantity of the player's materials matching the filters, taken from the most plentiful first.
 	 * The outcome is only possible when the player owns enough of them.
 	 */
-	consumeMaterials?: OutcomeMaterialFilter & { quantity: number };
+	consumeMaterials?: OutcomeMaterialQuantity;
 
 	/**
 	 * Give this quantity of one random material matching the filters
 	 */
-	giveMaterials?: OutcomeMaterialFilter & { quantity: number };
+	giveMaterials?: OutcomeMaterialQuantity;
 
 	/**
 	 * One shot the player
@@ -647,241 +516,4 @@ export async function getValidOutcomesForPlayer(
 	}
 
 	return validOutcomes;
-}
-
-/**
- * Check if a specific outcome is valid for the given player
- * @param outcome - The outcome to check
- * @param player - The player to check the outcome against
- * @param playerActiveObjects - The player's active objects, used to calculate stats
- */
-async function isOutcomeValidForPlayer(
-	outcome: PossibilityOutcome,
-	player: Player,
-	playerActiveObjects: PlayerActiveObjects
-): Promise<boolean> {
-	if (outcome.consumeMaterials && !await areMaterialsValid({
-		...outcome.consumeMaterials,
-		quantity: { min: outcome.consumeMaterials.quantity }
-	}, player)) {
-		return false;
-	}
-
-	const req = outcome.requirements;
-	if (!req) {
-		return true;
-	}
-
-	return areStatRequirementsValid(req, player, playerActiveObjects)
-		&& await areProgressionRequirementsValid(req, player);
-}
-
-/**
- * Check the requirements read from the player's own numbers: level, health, karma, fight stats and class
- */
-function areStatRequirementsValid(
-	req: OutcomeRequirements,
-	player: Player,
-	playerActiveObjects: PlayerActiveObjects
-): boolean {
-	const rangeChecks: [OutcomeRange | undefined, number][] = [
-		[req.level, player.level],
-		[req.health, player.getHealth()],
-		[req.karma, player.karma],
-		[req.defense, player.getCumulativeDefense(playerActiveObjects)],
-		[req.attack, player.getCumulativeAttack(playerActiveObjects)],
-		[req.speed, player.getCumulativeSpeed(playerActiveObjects)],
-		[req.cookingLevel, player.cookingLevel ?? 0],
-		[req.weaponLevel, playerActiveObjects.weapon?.itemLevel ?? 0],
-		[req.armorLevel, playerActiveObjects.armor?.itemLevel ?? 0]
-	];
-	return rangeChecks.every(([range, value]) => isRangeValid(range, value))
-		&& isClassValid(req.validClassIds, player.class)
-		&& isEnchantmentValid(req.enchantment, playerActiveObjects);
-}
-
-/**
- * Check the requirements that need a database read: campaign progression and pet
- */
-async function areProgressionRequirementsValid(req: OutcomeRequirements, player: Player): Promise<boolean> {
-	return await isCampaignMissionValid(req.campaignCurrentMissionId, player)
-		&& await isPetTypeValid(req.validPetTypeIds, player)
-		&& await isPetRarityValid(req.petRarity, player)
-		&& await areMaterialsValid(req.materials, player);
-}
-
-type OutcomeRequirements = NonNullable<PossibilityOutcome["requirements"]>;
-
-type OutcomeRange = {
-	min?: number;
-	max?: number;
-};
-
-/**
- * Check if a value falls within the specified range requirements
- */
-function isRangeValid(range: OutcomeRange | undefined, value: number): boolean {
-	if (!range) {
-		return true;
-	}
-
-	if (range.min !== undefined && value < range.min) {
-		return false;
-	}
-
-	return !(range.max !== undefined && value > range.max);
-}
-
-/**
- * Check if the player's class is valid, according to the requirements
- * @param validClassIds - The list of valid class IDs
- * @param playerClass - The player's class ID
- */
-function isClassValid(validClassIds: number[] | undefined, playerClass: number): boolean {
-	if (!validClassIds) {
-		return true;
-	}
-	return validClassIds.includes(playerClass);
-}
-
-/**
- * Check if the player's current campaign mission matches the requirement
- * @param requiredCampaignMissionId - The required campaign mission ID
- * @param player - The player to check
- */
-async function isCampaignMissionValid(requiredCampaignMissionId: number | undefined, player: Player): Promise<boolean> {
-	if (requiredCampaignMissionId === undefined) {
-		return true;
-	}
-
-	// Get the player's mission info to check their current campaign progression
-	const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
-	return missionInfo.campaignProgression === requiredCampaignMissionId;
-}
-
-/**
- * Check if the player's pet type matches the requirement
- * @param validPetTypeIds - The list of valid pet type IDs
- * @param player - The player to check
- */
-async function isPetTypeValid(validPetTypeIds: number[] | undefined, player: Player): Promise<boolean> {
-	if (!validPetTypeIds) {
-		return true;
-	}
-
-	// Check if player has a pet
-	if (!player.petId) {
-		return false;
-	}
-
-	// Get the player's pet and check if its type is in the valid list
-	const petEntity = await PetEntities.getById(player.petId);
-	return petEntity !== null && validPetTypeIds.includes(petEntity.typeId);
-}
-
-/**
- * Check if the player's pet rarity matches the requirement
- * @param petRarityRange - The required pet rarity range
- * @param player - The player to check
- */
-async function isPetRarityValid(
-	petRarityRange: {
-		min?: number; max?: number;
-	} | undefined,
-	player: Player
-): Promise<boolean> {
-	if (!petRarityRange) {
-		return true;
-	}
-
-	// Check if player has a pet
-	if (!player.petId) {
-		return false;
-	}
-
-	// Get the player's pet and its rarity from the pet data
-	const petEntity = await PetEntities.getById(player.petId);
-	if (!petEntity) {
-		return false;
-	}
-	const petData = PetDataController.instance.getById(petEntity.typeId);
-	return petData !== undefined && isRangeValid(petRarityRange, petData.rarity);
-}
-
-
-/**
- * Check if one of the player's equipped weapon and armor carries an enchantment matching the requirement
- * @param requirement - The required slot, enchantment types, kinds and level
- * @param playerActiveObjects - The player's active objects
- */
-function isEnchantmentValid(requirement: OutcomeRequirements["enchantment"], playerActiveObjects: PlayerActiveObjects): boolean {
-	if (!requirement) {
-		return true;
-	}
-
-	const equipped: (EquippedMainItem | undefined)[] = requirement.slot
-		? [playerActiveObjects[requirement.slot]]
-		: [playerActiveObjects.weapon, playerActiveObjects.armor];
-	return equipped.some(item => {
-		const enchantment = item?.itemEnchantmentId ? ItemEnchantment.getById(item.itemEnchantmentId) : null;
-		return enchantment !== null
-			&& (!requirement.types || requirement.types.includes(enchantment.kind.type.id))
-			&& (!requirement.kinds || requirement.kinds.includes(enchantment.kind.id))
-			&& isRangeValid(requirement.level, enchantment.level);
-	});
-}
-
-/**
- * Check if the quantity of the player's materials matching the filters is within the required range
- * @param requirement - The material filters and the required quantity (at least 1 by default)
- * @param player - The player to check
- */
-async function areMaterialsValid(requirement: OutcomeRequirements["materials"], player: Player): Promise<boolean> {
-	if (!requirement) {
-		return true;
-	}
-
-	const quantity = (await Materials.getPlayerMaterials(player.id))
-		.filter(owned => isMaterialMatching(owned.materialId, requirement))
-		.reduce((total, owned) => total + owned.quantity, 0);
-	return isRangeValid(requirement.quantity ?? { min: 1 }, quantity);
-}
-
-/**
- * Check if a material matches every filter set
- * @param materialId - The material to check
- * @param filter - The material filters
- */
-function isMaterialMatching(materialId: number, filter: OutcomeMaterialFilter): boolean {
-	const material = MaterialDataController.instance.getById(String(materialId));
-	return material !== undefined
-		&& (!filter.ids || filter.ids.includes(materialId))
-		&& (!filter.type || material.type === filter.type)
-		&& isRangeValid(filter.rarity, material.rarity);
-}
-
-/**
- * Choose which of the owned materials to consume: the matching ones, the most plentiful first
- * @param owned - The materials owned by the player
- * @param filter - The material filters
- * @param quantity - The quantity to consume
- * @returns the materials to consume, or an empty list when the player does not own enough of them
- */
-export function pickMaterialsToConsume(owned: OutcomeMaterialChange[], filter: OutcomeMaterialFilter, quantity: number): OutcomeMaterialChange[] {
-	const picked: OutcomeMaterialChange[] = [];
-	let remaining = quantity;
-	for (const material of owned
-		.filter(m => m.quantity > 0 && isMaterialMatching(m.materialId, filter))
-		.sort((a, b) => b.quantity - a.quantity || a.materialId - b.materialId)) {
-		if (remaining <= 0) {
-			break;
-		}
-		const taken = Math.min(remaining, material.quantity);
-		picked.push({
-			materialId: material.materialId,
-			quantity: taken
-		});
-		remaining -= taken;
-	}
-	return remaining > 0 ? [] : picked;
 }
