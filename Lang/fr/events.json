@@ -2860,50 +2860,51 @@
     "text": "Entre les dunes de la Vallée des Rois, deux tombeaux à demi ensevelis dominent une petite oasis. Assoiffé, vous vous penchez pour boire à une rigole à moitié ensablée quand un rire vous fait sursauter. Un vieil homme barbu, le visage sous une large capuche, se présente : Xirtex. Il vous propose de vous héberger sous sa tente, le temps de vous remettre et de lui raconter vos voyages.",
     "possibilities": {
       "accept": {
-        "text": "Accepter son invitation",
+        "text": "Accepter son invitation.",
         "outcomes": {
           "0": "Sous la tente, Xirtex vous sert une soupe de peyotl. Vous la buvez par politesse. Bientôt, le sol se met à tanguer. En cherchant la sortie, vous vous cognez l'épaule contre un piquet. Dehors, la nausée vous cloue au sol et une migraine tenace s'installe.",
-          "1": "Xirtex a entendu du bien de vous et se confie pendant le repas. Son frère Xetrix et lui sont les seuls de leur famille à être revenus du Célestrum. Il accuse Xetrix de ce désastre. Vous dormez bien et reprenez des forces. Au réveil, vous secouez un scorpion hors de votre botte.",
+          "1": "Xirtex a entendu du bien de vous et se confie pendant le repas. Son frère Xetrix et lui sont les seuls de leur famille à être revenus du Célestrum, et il accuse Xetrix de ce désastre. Vous dormez bien sous sa tente et repartez au matin, reposé.",
           "2": "Vous partagez une galette et un ragoût avec Xirtex à l'entrée de sa tente. Vous lui racontez vos voyages. Il rit à chaque histoire, souvent avant la fin. Le repas vous rend des forces pour la suite de la traversée.",
           "3": "Vous avez beaucoup voyagé. À l'odeur, vous reconnaissez le peyotl dans le bol que Xirtex vous tend. Vous demandez plutôt ce qui mijote dans la petite marmite : un ragoût, qui vous rend des forces. Amusé de vous voir saucer avec un bout de galette, Xirtex vous ressert.",
-          "4": "Pendant le repas, votre scorpion se glisse sous le bol de Xirtex. L'ermite n'ose plus y toucher. Il éclate de rire et va chercher un autre bol. Vous partagez avec lui une soupe claire et une galette chaude qui vous redonnent des forces.",
+          "4": "Pendant le repas, votre scorpion grimpe sur la natte et s'approche du plat. Xirtex sursaute, puis éclate de rire et lui tend une miette de galette, comme à un vieux voisin du désert. Il vous ressert de la soupe claire, et vous reprenez des forces.",
           "5": "Après le repas, Xirtex vous indique un passage entre les dunes. Vous suivez les premières traces de pas venues, sans vérifier où elles mènent. Elles s'arrêtent au pied d'un tombeau. Quand vous vous retournez, la tente a disparu derrière les dunes."
         }
       },
       "deny": {
-        "text": "Décliner son invitation",
+        "text": "Décliner son invitation.",
         "outcomes": {
           "0": "Vous remerciez Xirtex et déclinez son offre. Il ne cherche pas à vous retenir. Il vous salue de la main et retourne vers sa tente, tandis que vous reprenez votre traversée de la Vallée.",
           "1": "Vous hésitez. Xirtex vous retient par la manche et vous propose au moins une tasse de thé. Vous la buvez debout en parlant avec lui du vent qui ensable les pistes, puis vous reprenez la route.",
           "2": "Xirtex a entendu dire que vous aidez les voyageurs en difficulté. Il n'insiste pas pour vous loger, mais va chercher dans sa tente un objet de sa collection et vous l'offre. Vous le remerciez et reprenez votre route.",
-          "3": "Vous déclinez, mais Xirtex vous rappelle. Il veut vous apprendre à vous repérer grâce aux tombeaux. Vous l'écoutez un bon moment, jusqu'à ce qu'il se contredise pour la troisième fois. Persuadé qu'il cherche à vous retenir, vous filez.",
+          "3": "Vous déclinez, mais Xirtex vous rappelle. Il veut vous apprendre à vous repérer grâce aux tombeaux. Vous l'écoutez un moment, jusqu'à ce qu'il se contredise pour la troisième fois. Persuadé qu'il cherche à vous retenir, vous filez.",
           "4": "Xirtex vous reconnaît au moment où vous déclinez. Il a entendu parler de vous et vous soupçonne d'avoir rôdé près de sa tente. Pour avoir la paix, vous le laissez fouiller votre sac. Il n'y trouve rien et vous laisse partir, sans vous quitter des yeux.",
           "5": "Vous déclinez l'invitation. Votre perroquet se met alors à imiter le rire de Xirtex. L'ermite lui répond par un autre rire et oublie de vous retenir. Vous repartez, et les deux rires s'entendent encore longtemps derrière vous."
         }
       },
       "end": {
         "outcomes": {
-          "0": "Xirtex vous reconnaît et vous ordonne de vous écarter de son eau. Quand il tend le bras vers vous, vous le repoussez. Il tombe dans l'eau. Vous détalez pendant qu'il remonte sur la berge, sa capuche trempée sur les yeux.",
+          "0": "Xirtex vous reconnaît et vous ordonne de vous écarter de son point d'eau. Il vous chasse à grands gestes en vous traitant de pilleur de tombeaux. Vous n'insistez pas et reprenez votre route, la gorge sèche.",
           "1": "Xirtex prend votre silence pour du mépris. Il vous lance une poignée de sable au visage, puis s'éloigne en râlant. Vous vous rincez les yeux au bord de l'eau avant de reprendre votre chemin.",
           "2": "Votre loutre plonge dans l'eau et ressort aux pieds de Xirtex. L'ermite éclate de rire et oublie qu'il attendait une réponse. Il va chercher un bol de bouillon dans sa tente et vous le tend. Vous le buvez et reprenez des forces.",
           "3": "Une rafale emporte le linge que Xirtex a mis à sécher près de l'eau. Vous le rattrapez de justesse avant qu'il tombe dedans. Quand vous le lui rendez, l'ermite vous remercie d'un signe de tête et en oublie son invitation.",
-          "4": "Faute de réponse, Xirtex s'intéresse à votre familier. Il n'a jamais vu une bête pareille et veut la dessiner. Vous attendez qu'il ait fini ses croquis. Ravi, il vous donne quelques pièces pour le temps perdu."
+          "4": "Faute de réponse, Xirtex s'intéresse à votre familier. Il n'a jamais vu une bête pareille et veut la dessiner. Vous attendez qu'il ait fini ses croquis. Ravi, il vous donne quelques pièces pour le temps perdu.",
+          "5": "Vous restez muet. Xirtex hausse les épaules, vous laisse boire à la rigole et retourne sous sa tente en marmonnant. Vous remplissez votre gourde et reprenez la traversée."
         }
       },
       "steal": {
-        "text": "Le suivre pour le voler",
+        "text": "Le voler pendant la nuit.",
         "outcomes": {
-          "0": "Xirtex vous surprend devant ses coffres. D'un seul coup, vous l'envoyez s'écrouler sur sa natte, sonné. Vous prenez une bourse bien pleine et un objet de sa collection. Il commence à remuer quand vous quittez la tente.",
-          "1": "Vous levez une pierre dans son dos, mais votre ombre passe sur la toile. Xirtex se retourne, tire une dague de sa manche et vous entaille le flanc. Vous fuyez en pressant la plaie, poursuivi par son rire.",
-          "2": "Xirtex a entendu du bien de vous et ne se méfie pas. Vous le frappez, puis le remords vous saisit aussitôt. Vous lui bandez la tête et restez à son chevet. Quand il se réveille, vous lui donnez des pièces pour vous faire pardonner.",
-          "3": "Xirtex entend vos pas et se retourne. Il vous trouve devant ses coffres, une pierre à la main. Son poing vous fend la lèvre. Vous lâchez la pierre et quittez la tente sans demander votre reste.",
-          "4": "Xirtex vous surprend en train de vider une coupelle pleine de pièces. Il vous chasse à coups de bâton, mais votre brassard arrête chaque coup. Vous lâchez la coupelle en fuyant, avec les pièces déjà glissées dans votre poche.",
-          "5": "Xirtex a entendu parler de vous. Il fait semblant de ne rien voir quand vous prenez la bourse posée près de ses coffres. Plus loin, vous la videz sur le sable et fouillez longtemps le tas : rien que des noyaux de dattes. Son rire vous parvient depuis la tente.",
-          "6": "Vous frappez Xirtex par-derrière, mais le coup ne fait que l'étourdir. Il titube en se tenant la tête. Vous attrapez la première bourse à portée de main et quittez la tente en courant, avant qu'il reprenne ses esprits."
+          "0": "Vous acceptez l'hospitalité de Xirtex et attendez qu'il ronfle. Vous vous glissez jusqu'à ses coffres, prenez une bourse et filez dans la nuit. Au lever du jour, la tente n'est plus qu'un point derrière les dunes.",
+          "1": "Au milieu de la nuit, vous soulevez le couvercle d'un coffre. Il grince, et Xirtex se redresse sur sa natte. Il vous chasse de la tente à coups de bâton, et vous fuyez dans le désert, les mains vides et le dos meurtri.",
+          "2": "Dans le noir, vous renversez une marmite en cherchant les coffres. Xirtex bondit de sa natte, tire une dague de sa manche et vous entaille le bras. Vous fuyez en pressant la plaie, poursuivi par son rire.",
+          "3": "Xirtex se réveille au moment où vous ouvrez un coffre. Avant qu'il puisse crier, vous le plaquez sur sa natte et l'y maintenez jusqu'à ce qu'il se calme. Puis vous partez avec une bourse bien pleine et un objet de sa collection, sous son regard furieux.",
+          "4": "Xirtex vous a accueilli sans la moindre méfiance. Devant ses coffres ouverts, le remords vous saisit. Vous le réveillez pour tout lui avouer. L'ermite éclate de rire, puis vous fait payer le dérangement.",
+          "5": "Xirtex a entendu parler de vous. Il fait semblant de dormir quand vous prenez la bourse posée bien en évidence près de ses coffres. Plus loin, vous la videz sur le sable : rien que des noyaux de dattes. Son rire vous parvient depuis la tente.",
+          "6": "Xirtex se réveille et vous frappe à coups de bâton, mais votre armure arrête chaque coup. Vous fuyez sans demander votre reste, avec les pièces déjà glissées dans votre poche."
         }
       },
       "clearChannel": {
-        "text": "Aider à dégager la rigole",
+        "text": "Aider à dégager la rigole.",
         "outcomes": {
           "0": "Vous proposez à Xirtex de déboucher la rigole qui alimente son point d'eau. Vous retirez le sable tassé à pleines mains pendant qu'il attend avec sa cruche. Il vous faut un bon moment avant que l'eau coule de nouveau.",
           "1": "Une dalle tombée en travers bloque la rigole. Vous la soulevez seul, avant même que Xirtex arrive pour vous aider. L'eau emporte une partie du sable et vous dégagez vite le reste. Xirtex vous donne quelques pièces pour le coup de main.",

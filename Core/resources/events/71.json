@@ -89,8 +89,7 @@
             "karma": {
               "max": -30
             }
-          },
-          "karma": -3
+          }
         },
         "1": {},
         "2": {
@@ -118,12 +117,34 @@
           "effect": "occupied",
           "lostTime": 20,
           "money": 90
+        },
+        "5": {
+          "health": 5
         }
       }
     },
     "steal": {
       "outcomes": {
         "0": {
+          "money": 150,
+          "karma": -10
+        },
+        "1": {
+          "health": -10,
+          "effect": "confounded",
+          "karma": -5
+        },
+        "2": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "health": -30,
+          "effect": "hurt",
+          "karma": -5
+        },
+        "3": {
           "requirements": {
             "attack": {
               "min": 700
@@ -131,41 +152,19 @@
           },
           "money": 525,
           "randomItem": {},
-          "karma": -16
+          "karma": -12
         },
-        "1": {
-          "requirements": {
-            "level": {
-              "max": 30
-            }
-          },
-          "effect": "hurt",
-          "health": -60,
-          "karma": -5
-        },
-        "2": {
+        "4": {
           "requirements": {
             "karma": {
               "min": 50
             }
           },
-          "effect": "occupied",
-          "lostTime": 40,
-          "money": -250,
-          "karma": -10
-        },
-        "3": {
-          "health": -15,
-          "karma": -4
-        },
-        "4": {
-          "requirements": {
-            "defense": {
-              "min": 520
-            }
-          },
-          "money": 180,
-          "karma": -5
+          "money": -100,
+          "karma": -2,
+          "tags": [
+            "moneyUsage"
+          ]
         },
         "5": {
           "requirements": {
@@ -179,13 +178,12 @@
         },
         "6": {
           "requirements": {
-            "attack": {
-              "min": 231,
-              "max": 699
+            "defense": {
+              "min": 520
             }
           },
-          "money": 220,
-          "karma": -16
+          "money": 180,
+          "karma": -5
         }
       }
     },
