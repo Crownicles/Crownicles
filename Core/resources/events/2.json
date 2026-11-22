@@ -48,7 +48,7 @@
               "min": 500
             }
           },
-          "health": -5,
+          "health": -8,
           "effect": "confounded",
           "money": 60
         }
@@ -155,7 +155,7 @@
       "outcomes": {
         "0": {
           "health": -15,
-          "effect": "hurt"
+          "effect": "confounded"
         },
         "1": {
           "requirements": {

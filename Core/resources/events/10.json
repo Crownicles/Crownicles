@@ -26,7 +26,7 @@
             }
           },
           "health": -15,
-          "effect": "hurt",
+          "effect": "confounded",
           "karma": 2
         },
         "4": {

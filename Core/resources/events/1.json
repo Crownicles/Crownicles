@@ -36,7 +36,8 @@
           "mapTypesDestination": [
             "ro",
             "pl"
-          ]
+          ],
+          "goBackToPreviousMap": true
         },
         "1": {
           "requirements": {
@@ -49,7 +50,8 @@
           "mapTypesDestination": [
             "ro",
             "pl"
-          ]
+          ],
+          "goBackToPreviousMap": true
         },
         "2": {
           "requirements": {
@@ -60,7 +62,8 @@
           "mapTypesDestination": [
             "ro",
             "pl"
-          ]
+          ],
+          "goBackToPreviousMap": true
         },
         "3": {
           "requirements": {
@@ -71,7 +74,8 @@
           "mapTypesDestination": [
             "ro",
             "pl"
-          ]
+          ],
+          "goBackToPreviousMap": true
         }
       }
     },

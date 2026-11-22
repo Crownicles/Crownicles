@@ -9,6 +9,7 @@ import { resolve } from "path";
 const RESOURCES_DIRECTORY = resolve(__dirname, "../../../resources");
 
 type Outcome = {
+	goBackToPreviousMap?: boolean;
 	mapTypesDestination?: string[];
 	mapTypesExcludeDestination?: string[];
 };
@@ -54,5 +55,15 @@ describe("Big event destinations", () => {
 		}
 
 		expect(unreachable).toEqual([]);
+	});
+
+	// The U-turn is impossible towards a city or through a one way link: the outcome then needs a destination, or the choice would vanish (#4844)
+	it("should give every go back outcome a destination to use when the U-turn is impossible", () => {
+		const withoutFallback = [...readJsonFiles<BigEvent>("events")].flatMap(([eventId, event]) => Object.entries(event.possibilities)
+			.flatMap(([possibilityName, possibility]) => Object.entries(possibility.outcomes)
+				.filter(([, outcome]) => outcome.goBackToPreviousMap && !outcome.mapTypesDestination)
+				.map(([outcomeId]) => `${eventId}.${possibilityName}.${outcomeId}`)));
+
+		expect(withoutFallback).toEqual([]);
 	});
 });

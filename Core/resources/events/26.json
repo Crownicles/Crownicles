@@ -69,7 +69,7 @@
               "max": 40
             }
           },
-          "effect": "hurt",
+          "effect": "confounded",
           "health": -15
         },
         "6": {

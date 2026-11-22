@@ -47,13 +47,8 @@
         },
         "3": {
           "requirements": {
-            "validPetTypeIds": [
-              11,
-              62,
-              94,
-              54,
-              26,
-              95
+            "petTags": [
+              "flying"
             ]
           },
           "money": 150

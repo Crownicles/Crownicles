@@ -14,10 +14,10 @@
       "turnBack": {
         "text": "Rebrousser chemin.",
         "outcomes": {
-          "0": "Inutile de vous acharner sur ce chêne. Vous faites demi-tour, mais le sentier serpente plus que dans votre souvenir et il vous faut un moment pour retrouver la lisière. Vous repartez par la première route venue.",
-          "1": "Vous faites demi-tour d'un pas lourd. Entre les racines et les ornières, chaque pas vous coûte, et quand vous atteignez enfin la lisière, la journée est bien avancée. Vous repartez par la première route venue.",
-          "2": "Inutile de vous acharner sur ce chêne. D'un pas vif, vous refaites le chemin en sens inverse et ressortez de la Forêt Du Vieillard en un rien de temps. Vous repartez par la première route venue.",
-          "3": "Vous faites demi-tour. Le nez au sol, votre compagnon retrouve sans hésiter vos propres traces et vous ramène tout droit à la lisière de la forêt. Vous repartez par la première route venue."
+          "0": "Inutile de vous acharner sur ce chêne. Vous faites demi-tour, mais le sentier serpente plus que dans votre souvenir et il vous faut un moment pour retrouver la lisière. Vous repartez par où vous êtes venu.",
+          "1": "Vous faites demi-tour d'un pas lourd. Entre les racines et les ornières, chaque pas vous coûte, et quand vous atteignez enfin la lisière, la journée est bien avancée. Vous repartez par où vous êtes venu.",
+          "2": "Inutile de vous acharner sur ce chêne. D'un pas vif, vous refaites le chemin en sens inverse et ressortez de la Forêt Du Vieillard en un rien de temps, par où vous étiez entré.",
+          "3": "Vous faites demi-tour. Le nez au sol, votre compagnon retrouve sans hésiter vos propres traces et vous ramène tout droit à la lisière, par où vous étiez entré dans la forêt."
         }
       },
       "otherWay": {
@@ -71,7 +71,7 @@
         }
       },
       "skip": {
-        "text": "Poursuivre votre route sans vous arrêter.",
+        "text": "Poursuivre votre route.",
         "outcomes": {
           "0": "Vous passez votre chemin sans vous attarder. Derrière vous, le pêcheur se débat toujours avec sa ligne, et personne au bord du lac ne semble pressé de lui venir en aide.",
           "1": "Vous ne vous mêlez pas des affaires du pêcheur et poursuivez votre route le long de la rive. Derrière vous, les rires des familles couvrent bientôt ses jurons.",
@@ -310,7 +310,7 @@
         }
       },
       "goAway": {
-        "text": "Continuer votre chemin sans vous arrêter.",
+        "text": "Continuer votre chemin.",
         "outcomes": {
           "0": "Vous saluez le forgeron d'un signe de la main et passez votre chemin. Il vous répond d'un hochement de tête sans lâcher son marteau. Bientôt, le bruit de l'enclume se perd dans le vent de la plaine.",
           "1": "Pour ne pas déranger le forgeron, vous faites un large détour autour de la prairie. Le sol y est plus mou que prévu, et vous perdez un moment à chercher un passage sec avant de retrouver la route.",
@@ -330,7 +330,7 @@
     "text": "Dans une ruelle de Claire de Ville, vous poussez la porte d'une petite boutique. Quelques hommes y discutent tranquillement entre des étals d'armes d'occasion et de bijoux clinquants. Sur le comptoir, la caisse est restée entrouverte. À votre entrée, ils se taisent et vous jaugent du regard.",
     "possibilities": {
       "trade": {
-        "text": "Tenter de commercer avec eux.",
+        "text": "Commercer avec eux.",
         "outcomes": {
           "0": "Les marchands vous font bon accueil. Après une longue discussion, ils vous cèdent un objet à un prix honnête. Vous ressortez satisfait de votre achat, et ils vous saluent jusqu'à la porte.",
           "1": "Les marchands échangent un regard, puis baissent la voix. L'un d'eux sort de sous le comptoir un objet tombé d'on ne sait quel chariot, cédé à bas prix. Vous payez sans poser de questions.",
@@ -353,7 +353,7 @@
         }
       },
       "skip": {
-        "text": "Continuer votre route sans vous attarder.",
+        "text": "Continuer votre route.",
         "outcomes": {
           "0": "Vous saluez les hommes d'un signe de tête et ressortez aussitôt. Personne ne cherche à vous retenir, et vous retrouvez le calme des ruelles de Claire de Ville.",
           "1": "Au coin de la ruelle, un homme pressé vous percute de plein fouet et s'enfuit sans un mot. Vous tombez lourdement sur les pavés et restez un long moment étourdi.",
@@ -385,7 +385,7 @@
         }
       },
       "walkAround": {
-        "text": "Faire le tour du château par l'extérieur.",
+        "text": "Faire le tour du château.",
         "outcomes": {
           "0": "Vous faites lentement le tour des remparts. Brèches colmatées, pierres noircies, fossé comblé : le château a connu un siège, il y a bien longtemps. Vous ne trouvez rien d'autre, et ce tour vous a pris un bon moment.",
           "1": "Le tour des murs ne vous apprend pas grand-chose sur le château. En revanche, de petites pièces d'or brillent un peu partout dans l'herbe, au pied des remparts. Vous passez un long moment à les ramasser une à une.",
@@ -449,7 +449,7 @@
         }
       },
       "mushrooms": {
-        "text": "Cueillir les champignons au pied de l'arbre.",
+        "text": "Cueillir les champignons.",
         "outcomes": {
           "0": "Vous vous penchez pour ramasser une poignée de champignons. Entre deux racines, quelque chose brille dans la terre. Vous grattez un peu et dégagez un objet, sans doute perdu par un voyageur. Vous le glissez dans votre sac.",
           "1": "Vous remplissez vos mains de champignons, puis restez perplexe : lesquels se mangent, et comment les préparer ? Vous passez un long moment à les trier sans parvenir à vous décider. Par prudence, vous finissez par tout jeter.",
@@ -471,7 +471,7 @@
         }
       },
       "scavenge": {
-        "text": "Fouiller les restes d'anciens campements.",
+        "text": "Fouiller les vieux campements.",
         "outcomes": {
           "0": "Vous fouillez les foyers éteints et les abris de branchages. Sous une bâche, vous trouvez du pain sec et un morceau de lard encore bons. Vous mangez à votre faim, et vous emportez au passage un bout de corde abandonné.",
           "1": "Dans un coin du campement, vous déterrez une caisse de provisions. La viande sent un peu fort, mais la faim l'emporte. Peu après, votre ventre se révolte, et vous devez vous arrêter pour vous soigner.",
@@ -529,7 +529,7 @@
         "outcomes": {
           "0": "Vous feuilletez les registres restés sur une table. Comptes, salaires, livraisons de pierre : tout s'arrête net à la mort du baron Almerac. Sur les dernières pages, il n'est plus question que d'intérêts impayés à un prêteur dont le nom a été gratté.",
           "1": "Vous passez un long moment sur les registres, mais l'humidité a effacé la moitié des pages. Les chiffres qui restent se contredisent. Vous refermez le dernier cahier sans en savoir plus sur l'abandon du chantier.",
-          "2": "Une vieille femme vous regarde lire les registres. Elle vous reconnaît et vient vous parler : son fils était maçon ici, et le baron payait en retard, puis plus du tout. Elle vous donne un outil qu'il a laissé sur place.",
+          "2": "Une vieille femme vous regarde lire les registres. Elle vous reconnaît et vient vous parler : son fils était maçon ici, et le baron payait mal, puis plus du tout. Elle vous donne un outil qu'il a laissé sur place.",
           "3": "Un voisin vous surprend penché sur les registres. Il vous reconnaît, vous prend pour un envoyé des créanciers et appelle toute la rue. Vous perdez un moment à vous expliquer avant qu'on vous laisse partir."
         }
       },
@@ -833,7 +833,7 @@
       "gameStand": {
         "text": "Aller à un stand de jeu.",
         "outcomes": {
-          "0": "Au stand des anneaux, il faut en lancer trois autour du goulot d'une bouteille. Vous rejouez encore et encore, sans jamais y arriver. Dépité, vous réglez toutes vos parties au gérant et vous éloignez.",
+          "0": "Au stand des anneaux, il faut en lancer trois autour du goulot d'une bouteille. Vous rejouez partie après partie, sans jamais y arriver. Dépité, vous réglez toutes vos parties au gérant et vous éloignez.",
           "1": "Vous enchaînez les parties de lancer d'anneaux sans la moindre chance. Entre deux lancers, vous sympathisez avec le gérant. Au moment de payer, il refuse vos pièces, et vous partez en le remerciant chaleureusement.",
           "2": "Trois anneaux, trois lancers, et tous tombent autour du goulot de la bouteille. Le gérant n'en revient pas. Il vous remet le gros lot, une bourse bien garnie, et vous repartez à travers la foule le sourire aux lèvres.",
           "3": "Le gérant remarque votre air de débutant et vous offre quelques lancers pour vous encourager. À sa grande surprise, et à la vôtre, chaque anneau tombe autour du goulot. Beau joueur, il vous remet le gros lot.",
@@ -939,7 +939,7 @@
         }
       },
       "trySave": {
-        "text": "S'interposer et empêcher cet homme de mourir.",
+        "text": "S'interposer pour le sauver.",
         "outcomes": {
           "0": "Vous jouez des coudes jusqu'à l'estrade et tranchez la corde avant que les gardes réagissent. Vous entraînez le condamné dans les galeries sous les remparts. À l'abri, il vous remercie, vous offre un objet et disparaît dans le noir.",
           "1": "Vous foncez vers l'estrade, mais un garde vous barre le passage d'un coup d'épaule. Vous tombez lourdement sur les pavés. Quand vous vous relevez, la trappe s'est déjà ouverte.",
@@ -1061,7 +1061,7 @@
     "text": "Sur la Route des Merveilles, entre les étals des marchands ambulants et les échoppes en ruine, votre pied heurte un petit coffret à demi enfoui dans le sable. Ses ferrures sont rouillées, et un lourd cadenas le garde fermé.",
     "possibilities": {
       "abandon": {
-        "text": "Laisser le coffret là où vous l'avez trouvé.",
+        "text": "Laisser le coffret.",
         "outcomes": {
           "0": "Ce coffret n'est pas à vous, et son propriétaire le cherche peut-être. Vous le reposez dans le sable, là où vous l'avez trouvé, et reprenez votre route entre les étals, la conscience tranquille.",
           "1": "Un vieux coffret rouillé ne vaut sûrement pas qu'on perde du temps à l'ouvrir. Vous le laissez dans le sable et reprenez votre route sans un regard pour les échoppes en ruine.",
@@ -1094,7 +1094,7 @@
         }
       },
       "pickLock": {
-        "text": "Crocheter le cadenas avec un bout de métal.",
+        "text": "Crocheter le cadenas.",
         "outcomes": {
           "0": "Vous tordez un bout de métal de votre sac en forme de crochet. Après quelques essais, le cadenas cède avec un déclic. Le crochet reste coincé dedans, mais le coffret contient quelques pièces.",
           "1": "Vous essayez de crocheter le cadenas, mais votre outil de fortune glisse sans cesse. Après un long moment, vous renoncez et laissez le coffret derrière vous, un peu vexé.",
@@ -1476,7 +1476,7 @@
     "text": "À Mergagnan, sur le port où sèchent les filets, à deux pas de la Plage Sentinelle, un mercenaire nommé Price vous aborde. L'épée au côté et le sourire charmeur, il cherche du travail et vous observe avec un peu trop d'attention.",
     "possibilities": {
       "convoy": {
-        "text": "Le payer pour vous escorter jusqu'à votre prochaine destination.",
+        "text": "Le payer pour qu'il vous escorte.",
         "outcomes": {
           "0": "Contre quelques pièces, Price accepte de vous accompagner. En chemin, vous trouvez une épée brillante plantée dans un rocher. Vous tirez de toutes vos forces, sans succès. Price essaie à son tour et la dégage. Sans vous, il ne serait jamais passé par là : il vous donne bien plus que son salaire.",
           "1": "Contre quelques pièces, Price vous escorte. En chemin, votre familier s'arrête net et fixe un fourré. Prévenu, Price contourne l'embuscade et surprend les brigands, qui s'enfuient en laissant leur sac. Vous en partagez le contenu : une bonne somme et un objet.",
@@ -1488,7 +1488,7 @@
         }
       },
       "meal": {
-        "text": "Faire connaissance autour d'un bon repas.",
+        "text": "Partager un repas avec lui.",
         "outcomes": {
           "0": "Vous proposez un repas à Price, qui accepte. Au Coin du Feu, entre poisson grillé et crevettes frites, vous parlez, riez et échangez des astuces. Au bout de quelques heures, un contrat l'appelle ailleurs, et il vous quitte à regret.",
           "1": "Vous proposez à Price de faire plus ample connaissance autour d'un repas. Il refuse poliment : un contrat l'attend sur le port. Il s'éloigne d'un pas pressé et vous laisse seul devant l'auberge.",
@@ -1498,7 +1498,7 @@
         }
       },
       "steal": {
-        "text": "Tenter de lui voler de l'argent.",
+        "text": "Lui voler de l'argent.",
         "outcomes": {
           "0": "Vous vous glissez derrière Price pour lui prendre sa bourse, mais il vous repère avant même que vous la touchiez. Un coup de poing à la mâchoire vous envoie au sol, et vous mettez un bon moment à retrouver vos esprits.",
           "1": "Vous approchez la main de sa ceinture. Price le remarque aussitôt, mais votre maladresse lui montre que vous débutez : il se contente d'un regard plein de mépris. Vous partez sans demander votre reste, les mains vides.",
@@ -1821,13 +1821,13 @@
           "0": "Dès le premier accord, vous voilà dans un lit, auprès de votre bien-aimée. Puis vous sentez une sangle autour de votre taille. Vous n'avez plus ni bras ni jambes. Pérotin voit votre panique et conclut que tout n'était qu'un rêve. Vos membres reviennent, mais vous restez secoué.",
           "1": "La chanson vous emmène en mer avec un seul matelot : votre amour. Sur une île déserte, une croix marque un trésor. Par cupidité, vous repartez avec le coffre et sans le matelot. Au réveil, Pérotin a gardé l'or pour sa chanson, mais vous tenez un objet bien réel.",
           "2": "Pérotin a entendu parler de vous au Concours, mais la princesse refuse tous les champions : pas de noces à chanter. Il chante plutôt la Vieille et le Faux Monstre, où vous jouez le monstre. Sa poudre est trop légère et vous connaissez la fin : vingt minutes perdues.",
-          "3": "Votre familier se pose sur le manche de la mandoline. Ravi, Pérotin l'ajoute à sa chanson, qui tourne à la noce de village : on danse, on pleure, on trinque. Quand la vision se dissipe, la foule émue a rempli le chapeau, et Pérotin partage avec vous.",
+          "3": "Votre familier vient se poser tout près de Pérotin. Ravi, Pérotin l'ajoute à sa chanson, qui tourne à la noce de village : on danse, on pleure, on trinque. Quand la vision se dissipe, la foule émue a rempli le chapeau, et Pérotin partage avec vous.",
           "4": "Pérotin vous dévisage, sourit, et chante votre amour pour une voleuse de grand chemin qui vous ressemble trait pour trait. Vous filez le parfait amour. Au réveil, la belle a disparu et votre bourse est plus légère. Pérotin jure n'y être pour rien.",
           "5": "Pérotin remarque vos bandages et change de couplet : dans sa chanson, votre amante passe la nuit à soigner vos plaies. Au réveil, vos pansements ont bel et bien été refaits. Pérotin sifflote en refermant un pot d'onguent."
         }
       },
       "singHero": {
-        "text": "Chanter votre vie et vos exploits d'aventurier.",
+        "text": "Chanter vos exploits.",
         "outcomes": {
           "0": "Pérotin ne connaît le métier d'aventurier que par les récits d'auberge, et vos rares exploits ne l'aident guère. Sa chanson vous promène dans une forêt banale, jusqu'à une clairière vide. Vous en sortez cinq minutes plus tard, déçu.",
           "1": "Pérotin vous ramène deux minutes en arrière, juste avant votre demande. Sa poudre est si fidèle que vous refaites la même demande, et lui la même chanson. Cela tourne en boucle toute la journée. Le soir, il a pitié de vous et vous fait respirer un antidote.",
@@ -1850,7 +1850,7 @@
         }
       },
       "singRoyalty": {
-        "text": "Chanter la royauté et le pouvoir en place.",
+        "text": "Chanter la royauté.",
         "outcomes": {
           "0": "Pérotin a des dettes, alors il flatte : il chante les louanges des ducs, des comtes et de leurs ancêtres. Un seigneur descendu à l'auberge s'arrête pour écouter, la main sur le cœur. À la dernière note, il donne une grosse bourse au ménestrel, et une autre à vous.",
           "1": "Pérotin n'aime pas le pouvoir en place. Il vous souffle sa poudre, et vous voilà à la tête du peuple, en marche vers le palais. Une corde casse. Vous êtes debout sur une table de l'auberge, une fourche à la main, devant des nobles muets. La Garde vous enferme pour folie.",
@@ -1864,7 +1864,7 @@
       "singWork": {
         "text": "Chanter le métier de ménestrel.",
         "outcomes": {
-          "0": "Attristé par la demande, Pérotin vous donne son rôle. Vous vous voyez arriver et vous réclamer cette chanson, puis vous vous la chantez, encore et encore. Il finit par vous faire boire un antidote. Affolé, vous demandez à un passant quel jour on est : le même, mais déjà le soir.",
+          "0": "Attristé par la demande, Pérotin vous donne son rôle. Vous vous voyez arriver et vous réclamer cette chanson, puis vous vous la chantez en boucle. Il finit par vous faire boire un antidote. Affolé, vous demandez à un passant quel jour on est : le même, mais déjà le soir.",
           "1": "Nostalgique, Pérotin chante ses débuts. Vous voilà l'élève de maître Périssien, bercé par ses leçons et ses potions. À la dernière leçon, le vieux maître doit vous offrir sa mandoline. Pérotin y tient trop : il change la fin, et vous repartez avec un autre objet, bien réel.",
           "2": "Pérotin chante son rêve : vous jouez de la guitare, seul dans une ruelle, quand un grand seigneur vous demande une chanson sur son amour. Vous l'improvisez. Le seigneur était bien réel, et son or aussi. Vous en donnez une part à Pérotin.",
           "3": "Pérotin chante la misère du métier, et votre familier comprend avant vous : il prend le chapeau et fait le tour de la foule, en insistant auprès des nobles. Personne n'ose refuser. Pérotin vous laisse une bonne part de la quête.",
@@ -1874,7 +1874,7 @@
         }
       },
       "singSober": {
-        "text": "Demander une chanson sans poudre ni fiole.",
+        "text": "Demander une chanson sans poudre.",
         "outcomes": {
           "0": "Vexé, Pérotin range ses fioles et joue sans rien. La chanson est jolie, juste, et parfaitement ordinaire : rien ne s'anime, et deux badauds bâillent. Il termine sans vous regarder. Vous avez écouté dix minutes de mandoline, rien de plus.",
           "1": "Sans ses poudres, Pérotin serre les dents et joue. Pendant trois mesures, la mandoline chante toute seule : la place tangue, les pavés fredonnent, un noble se prend pour une cruche. Puis Pérotin perd la note et tout s'arrête. Vous restez un moment à chercher où est le haut.",
@@ -2283,7 +2283,7 @@
     "text": "Le soleil se couche sur la Plage Sentinelle et le vent fraîchit sur le sable fin. Il vous faut un abri pour la nuit. En haut d'une dune, vous entrez dans une tente : Gruffo, un alchimiste des marais, cherche quelqu'un pour goûter ses nouvelles potions et promet de bien payer.",
     "possibilities": {
       "beach": {
-        "text": "Ignorer l'alchimiste et aller profiter de la plage.",
+        "text": "Aller profiter de la plage.",
         "outcomes": {
           "0": "Vous laissez vos affaires sur le sable et partez nager dans la mer sombre. En revenant, vous voyez une silhouette s'éloigner de votre sac en courant. Vous la poursuivez, mais elle disparaît entre les dunes. Dans votre sac, une partie de vos pièces manque.",
           "1": "En marchant dans les rochers, vous tombez sur des dizaines de petits crabes qui courent en tous sens : cette plage en est pleine. Vous les regardez filer sous les pierres à votre approche, puis vous reprenez le chemin du retour.",
@@ -3651,7 +3651,7 @@
           "2": "Dans une ruelle déserte, des hommes parlent d'attaquer le carrosse. Vous leur foncez dessus seul, arme au poing. Ils sont trop nombreux et vous laissent à terre, gravement blessé. Alertée par le bruit, la Garde les arrête peu après.",
           "3": "Vous contournez la procession par une rue voisine. À un étal que vous connaissez bien, vous achetez un repas chaud et une pièce d'équipement à bon prix. Le repas vous remet d'aplomb avant de reprendre votre chemin.",
           "4": "Dans une ruelle calme, des voix passent sous une porte. Vous saisissez quelques mots : des marchandises, un passage. Parmi les voix, vous reconnaissez celle du mercenaire Price. Vous préférez ne pas vous en mêler et poursuivez votre chemin.",
-          "5": "Votre chien s'arrête net et grogne devant une porte entrouverte. À l'intérieur, un homme charge une arbalète. Vous prévenez la Garde, qui l'arrête aussitôt. Un officier vous remercie avec quelques pièces.",
+          "5": "Votre familier s'arrête net, renifle et grogne devant une porte entrouverte. À l'intérieur, un homme charge une arbalète. Vous prévenez la Garde, qui l'arrête aussitôt. Un officier vous remercie avec quelques pièces.",
           "6": "Dans une ruelle déserte, des hommes parlent d'attaquer le carrosse. Vous leur barrez la route, arme au poing. Vous en mettez un à terre, mais les autres vous rouent de coups. Le bruit attire la Garde, qui les arrête."
         }
       },

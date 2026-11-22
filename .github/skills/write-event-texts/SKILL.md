@@ -47,6 +47,13 @@ Le français (`Lang/fr`) est la référence. Depuis l'abandon de Crowdin (#5181)
   - Faux : *Malgré vos efforts conjugués, le courant emporte la ligne. Le pêcheur vous remercie chaleureusement pour votre tentative et partage quelques pièces.* Le gain tombe comme un cheveu sur la soupe.
   - Juste : *Le poisson casse la ligne. Le pêcheur hausse les épaules, vous remercie quand même et vous glisse quelques pièces pour votre peine.*
 - **Des sentiments à la mesure du résultat.** Si le joueur n'a servi à rien, il n'est pas *heureux d'avoir tenté d'aider* : *Vous repartez avec un léger sourire.* suffit.
+- **Le verbe décrit ce qu'on voit.** Pas de personnification gratuite : la terre fraîche *montre* que l'arbre est tombé récemment, elle ne le *dit* pas.
+- **Une réaction a sa raison.** Un mot avant l'action suffit à la motiver : *Agacé, le chien vous mord* ; *Méfiants, ses hommes fouillent votre sac*.
+- **Un mot de contraste quand l'issue bascule** : *Votre radeau vous semble solide. Mais à mi-parcours, le courant le disloque.* ; *Des brigands surgissent, mais ils le regrettent vite.*
+- **La réaction suit la condition.** Un chien intimidé par votre familier s'éloigne *en hâte*, pas *sans hâte*.
+- **Pas de répétition en cascade.** *Puis d'autres histoires, puis d'autres encore* : une de trop. Deux *puis* au plus par phrase.
+- **L'humour de l'original se garde**, et une chute qui brise le quatrième mur est bienvenue : l'issue qui s'ouvre sur *Mais pourquoi avoir fait cela ?* après avoir poussé le pêcheur.
+- **Une tournure naturelle.** *Les familles accourues* sonne bizarre ; *les familles venues voir l'incident* se lit sans buter.
 - **On ne lit pas dans la tête d'un animal.** Le narrateur interprète ce qu'il voit : *Il semble vouloir que vous le suiviez*, pas *Il veut que vous le suiviez*.
 - **Pas de montant dans le texte.** Le jeu affiche les pièces, les points de vie et le temps perdu : *une bourse*, *une poignée de pièces*.
 - **Typographie.**
@@ -75,6 +82,7 @@ Le français (`Lang/fr`) est la référence. Depuis l'abandon de Crowdin (#5181)
   - Couper ces éléments pour gagner de la place appauvrit l'event. C'est arrivé avec Donia (event 69), dont on avait perdu le doute du joueur, et avec Parziter (event 76), qui avait perdu son *a besoin d'aide*.
   - Pas de « Vous voyez » en ouverture.
 - **Issue : 150 à 280 caractères.** C'est une petite scène qui se tient : ce que fait le joueur, ce qui se passe, et la conséquence. Le décor se limite à ce qui sert l'action, avec un détail concret au plus.
+- **L'issue rend le choix lisible.** Le libellé est court, donc la première phrase de l'issue rappelle ce que fait le joueur quand ce n'est pas évident : *Par méfiance, vous partez dans la direction opposée et contournez le Bois Hurlant par l'est.* Une chute comique peut tenir lieu de rappel.
 - **Choix : un libellé court**, avec un verbe à l'infinitif.
   - Il dit l'action, sans détail : les détails vont dans l'issue. *Prêter main-forte au pêcheur en difficulté* devient *Aider le pêcheur* ; *Chercher un chemin pour contourner l'obstacle* devient *Contourner l'obstacle*.
   - Il annonce la réussite visée, pas une tentative : *Faire fuir le chien*, pas *Essayer de faire fuir le chien*. C'est l'issue qui dit si ça marche.
@@ -103,12 +111,13 @@ Le français (`Lang/fr`) est la référence. Depuis l'abandon de Crowdin (#5181)
 - **Les voisins de la carte sont les seuls lieux qu'on peut supposer proches.**
   - Ne suppose jamais la destination suivante du joueur.
   - `mapTypesDestination` doit viser un type présent chez un voisin, sinon l'event plante. C'est arrivé avec le type `mo` près de Claire de Ville.
+- **Le décor suit l'état du lieu.** Dans des ruines, pas de *salle commune* ni de *comptoir* en activité : *vers les ruines*, *les vestiges de l'écurie*.
 - **Villes : ne contredis pas le menu affiché juste après l'event.**
   - L'auberge porte son nom du jeu (Halte des Braves, Auberge du Seigneur…).
   - Pas de forgeron ni de boutique que la ville n'a pas.
   - Mernil est itinérante.
 - **`forceStayInCity`** : seulement dans une ville, et quand rester est naturel. Pas après une fuite.
-- **Rebrousser chemin.** Le demi-tour forcé n'existe plus (retiré par #4844). Une issue « rebrousser chemin » envoie vers un voisin avec `mapTypesDestination` listant les types des voisins, et le texte ne dit pas lequel (*vous repartez par la première route venue*).
+- **Rebrousser chemin.** Une issue « rebrousser chemin » renvoie le joueur d'où il vient avec `"goBackToPreviousMap": true`, et le texte le dit (*vous repartez par où vous êtes venu*). Le demi-tour est impossible vers une ville ou par un lien à sens unique : l'issue doit donc aussi déclarer `mapTypesDestination` (les types des voisins), utilisé à sa place. Le choix n'est ainsi jamais masqué, contrairement au demi-tour retiré par #4844. Réserve ce texte aux lieux dont aucun voisin n'est une ville ; sinon, écris *vous repartez par la première route venue* et n'utilise que `mapTypesDestination`.
 
 ## Issues conditionnelles
 
@@ -132,6 +141,7 @@ L'un des buts de la réécriture : quand le joueur clique sur un bouton, il sait
   - Faux (event 2, ignorer le chien) : seule une défense ≥ 400 donnait une issue où le chien attaque. Les autres joueurs n'étaient jamais attaqués : avoir une grosse défense ajoutait un risque.
   - Juste : le chien attaque tout le monde (défense `max` 519, -20 PV) ; une bonne armure réduit les dégâts (défense `min` 520, -8 PV).
   - Juste aussi, sans complémentaire (event 10, aider le pêcheur) : une attaque faible ajoute un risque de chute, mais le cas général, tirer la ligne avec lui, est déjà traité sans condition.
+- **Une vraie conséquence pour les meilleurs.** Une issue réservée à un joueur fort ne se contente pas d'être « la même, sans dégâts » : il prend l'initiative et ça change la suite. Event 11 : il repère le guet-apens, capture un brigand, le livre à la garde contre une prime et repart vers Claire de Ville (`mapTypesDestination`). Les destinations et `forceStayInCity` font de bonnes conséquences.
 - **Le revers d'une force.** Toutes les stats ne doivent pas jouer dans le même sens : quand c'est la force elle-même qui cause le problème, une issue où un joueur fort s'en sort moins bien est bienvenue. Elle s'ajoute aux issues habituelles de ce joueur, sans les remplacer.
   - Le pont pourri cède sous le poids d'une lourde armure (event 12, défense `min` 740) ; une armure gorgée d'eau tire le nageur vers le fond.
   - Une attaque trop forte casse la canne du pêcheur (event 10, attaque `min` 780) ou défigure le marchand qu'on voulait juste bousculer.
@@ -153,6 +163,10 @@ L'un des buts de la réécriture : quand le joueur clique sur un bouton, il sait
   - `effect` doit être plausible : `sleeping` quand le joueur dort, `drunk` quand il a bu.
   - `confounded` veut dire **étourdi** (pas « confus ») : c'est l'altération d'une petite blessure, d'un coup ou d'une chute légère (event 10, tomber dans le lac avec le pêcheur ; event 11, une entaille au bras). Garde `hurt` pour une vraie blessure, et ne mets aucune altération pour une égratignure.
 - **La gravité du texte suit la perte de vie.** Un chien qui mord *encore et encore* ne colle pas à -25 PV ; une mâchoire de piège qui s'enfonce dans la cheville vaut -40 PV. Ajuste le texte ou le chiffre.
+- **Le texte décrit la stat, pas l'équipement.** Une défense faible, c'est *sans bonne armure* : le joueur en porte une. *Sans armure* fait croire à un inventaire vide. De même, une attaque faible n'est pas *sans arme*.
+- **Le temps suit la durée.** Le joueur n'a pas d'horaire : jamais *en retard*, *avec du retard*. Le mot dépend des minutes perdues (`lostTime`, ou la durée de l'altération) : *un moment* sous 30 minutes, *plus longtemps que prévu* vers une heure, *des heures* à partir de 90 minutes.
+- **La récompense suit l'exploit raconté.** Un combat glorieux rapporte plus qu'une bourse ramassée ; une humiliation coûte plus de karma qu'une maladresse (event 10, -12 au lieu de -10).
+- **Une trouvaille a une raison d'être là.** Un objet caché sous une planche du pont, sans explication, ne tient pas ; un objet abandonné dans les roseaux de la rive, repéré par un œil exercé, si.
 - **Une perte de temps plutôt qu'une altération lourde** quand la situation est bénigne : se perdre dans une auberge en ruine, c'est fort ; mettre longtemps à en ressortir (`occupied`), c'est juste.
 - **Le mot du texte suit le seuil**, et inversement.
 
@@ -245,5 +259,6 @@ Les 21 events déjà réécrits (1, 2, 10 à 20, 30, 39, 46, 56, 69, 71, 76, 89)
 - **Relecture de GabrieLre (events 1, 2, 10)** : cas général d'abord, enchaînements logiques, sentiments à la mesure du résultat, animal interprété, event à garder à sa place, choix différents d'un event voisin, demi-tour par un voisin. Voir « Style », « Structure d'un event », « Canon des lieux » et « Combien et lesquelles ».
 - **Brouillon de Gabriel (events 24, 25, 26)** : son brouillon est commité sous son nom, puis repris selon le skill dans un second commit. Voir « Brouillon d'un contributeur ».
 - **Prévisibilité et paliers (le propriétaire et GabrieLre)** : le joueur doit à peu près savoir ce qui va se passer quand il clique ; un malus ou un bonus lié à une stat se gradue en trois paliers au lieu d'un seuil binaire, et les seuils ne sont pas tous tout en haut. Voir « Un choix doit être prévisible » et « L'échelle des seuils ». Appliqué aux events 2, 10, 24, 25 et 26.
-- **Relecture de Gabriel (events 1, 2, 10, 11, 12)** : libellés de choix courts qui visent la réussite, `confounded` (étourdi) pour les petites blessures, gravité du texte à la mesure de la perte de vie, revers d'une force, familles de familiers entières (condition `petTags`), quelques issues sans condition en plus pour varier. Voir « Structure d'un event », « Texte et mécanique », « Le revers d'une force » et « Classes et familiers ».
+- **Relecture de Gabriel (events 1, 2, 10, 11, 12)**, deuxième passe : verbe juste, réaction motivée, contraste, décor des ruines, stat plutôt qu'équipement, temps à la mesure de la durée, trouvaille plausible, issue qui rappelle le choix, conséquence pour les meilleurs, demi-tour réel (`goBackToPreviousMap`). Le validateur avertit maintenant des libellés trop longs ou en « Essayer de », de `hurt` pour une petite blessure, de *sans armure* sur une condition de défense, des durées incohérentes, de *retard*, des listes d'ids qui partagent un tag et des events qui misent tout sur le chien.
+- **Relecture de Gabriel (events 1, 2, 10, 11, 12)**, première passe : libellés de choix courts qui visent la réussite, `confounded` (étourdi) pour les petites blessures, gravité du texte à la mesure de la perte de vie, revers d'une force, familles de familiers entières (condition `petTags`), quelques issues sans condition en plus pour varier. Voir « Structure d'un event », « Texte et mécanique », « Le revers d'une force » et « Classes et familiers ».
 - **Cuisine, matériaux, équipement** : des issues doivent dépendre du niveau de cuisine, des matériaux et des enchantements ou améliorations de l'équipement, et certaines peuvent consommer des matériaux. Voir « L'échelle des seuils ».

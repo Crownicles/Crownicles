@@ -29,6 +29,7 @@ const NAMED_CONDITION = new RegExp(
 const MISSING_SPACE = new RegExp(`[^${SPACE}][!?;:]`, "u");
 const TRAILING_SPACES = new RegExp(`[${SPACE}]+$`, "u");
 const BLANK = new RegExp(`^[${SPACE}]*$`, "u");
+const CHOICE_SHORT_LENGTH = 40;
 
 /**
  * Collected problems of an event: errors block the rewrite, warnings are advice
@@ -63,6 +64,24 @@ const TEXT_RULES = [
 	},
 	{
 		level: "errors", test: (text, kind) => kind === "intro" && /(?:\.\.\.|…)$/u.test(text.replace(TRAILING_SPACES, "")), message: "intro ends with ellipsis"
+	},
+	{
+		level: "warnings", test: (text, kind) => kind === "choice" && /^(?:Essayer|Tenter) d/u.test(text), message: "the choice aims at success, not an attempt (Faire fuir, not Essayer de faire fuir)"
+	},
+	{
+		level: "warnings", test: (text, kind) => kind === "choice" && /quand même/u.test(text), message: "the choice judges itself (quand même): say the action only"
+	},
+	{
+		level: "warnings", test: (text, kind) => kind === "choice" && [...text].length > CHOICE_SHORT_LENGTH, message: `choice longer than ${CHOICE_SHORT_LENGTH} chars: keep the details for the outcome`
+	},
+	{
+		level: "warnings", test: text => /(?<!\p{L})retard(?!\p{L})/u.test(text), message: "\"retard\": the player has no schedule"
+	},
+	{
+		level: "warnings", test: text => /encore et encore|de plus en plus fort/u.test(text), message: "escalation (encore et encore, de plus en plus fort): the player reacts at once"
+	},
+	{
+		level: "warnings", test: text => text.split(/[.!?]/u).some(sentence => (sentence.match(/(?<!\p{L})puis(?!\p{L})/gu) ?? []).length >= 3), message: "three puis in one sentence: two at most"
 	}
 ];
 

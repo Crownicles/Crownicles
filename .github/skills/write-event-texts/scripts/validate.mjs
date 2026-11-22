@@ -18,13 +18,14 @@ import {
 } from "./python.mjs";
 import { checkCoverage } from "./coverage.mjs";
 import { checkTexts } from "./texts.mjs";
+import { checkConsistency } from "./consistency.mjs";
 
 /** @typedef {import("./texts.mjs").Report} Report */
 
 const OUTCOME_KEYS = new Set([
 	"condition", "requirements", "lostTime", "health", "karma", "effect", "money", "energy", "gems", "tokens", "bonusExperience",
 	"bonusPoints", "randomItem", "randomPet", "givePet", "oneshot", "nextEvent", "mapTypesDestination", "mapTypesExcludeDestination",
-	"mapLink", "forceStayInCity", "forceLeaveCity", "tags", "consumeMaterials", "giveMaterials"
+	"mapLink", "goBackToPreviousMap", "forceStayInCity", "forceLeaveCity", "tags", "consumeMaterials", "giveMaterials"
 ]);
 const REQ_RANGES = ["level", "karma", "health", "attack", "defense", "speed", "petRarity", "cookingLevel", "weaponLevel", "armorLevel"];
 const REQ_LISTS = ["validClassIds", "validPetTypeIds", "petTags"];
@@ -433,6 +434,7 @@ function validate(inp, out, pets, materials) {
 	const report = { errors: [], warnings: [] };
 	checkTexts(report, out, orig);
 	const counts = checkData(report, inp, out, { pets, materials });
+	checkConsistency(report, out, pets);
 	checkOutcomeCounts(report, counts, origPossibilities);
 	const icons = getOrEmpty(out, "icons");
 	const tp = get(out, "possibilities", {});

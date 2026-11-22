@@ -224,8 +224,8 @@
         "4": {},
         "5": {
           "requirements": {
-            "validPetTypeIds": [
-              1
+            "petTags": [
+              "keenNose"
             ]
           },
           "money": 100,

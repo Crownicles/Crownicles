@@ -259,6 +259,13 @@ function getNextMapLink(outcome: PossibilityOutcome, player: Player): MapLink | 
 		return MapLinkDataController.instance.getById(outcome.mapLink) ?? null;
 	}
 
+	if (outcome.goBackToPreviousMap) {
+		const goBackLink = Maps.getGoBackMapLink(player);
+		if (goBackLink) {
+			return goBackLink;
+		}
+	}
+
 	if (outcome.mapTypesDestination || outcome.mapTypesExcludeDestination) {
 		return getMapTypesDestinationLink(outcome, player);
 	}
@@ -474,6 +481,13 @@ export interface PossibilityOutcome {
 	 * Forced map link
 	 */
 	mapLink?: number;
+
+	/**
+	 * Send the player back to the map they are coming from. When the U-turn is impossible
+	 * (towards a city, through a one way link), `mapTypesDestination` is used instead, so the
+	 * outcome must always declare it: the choice is never hidden (#4844).
+	 */
+	goBackToPreviousMap?: boolean;
 
 	/**
 	 * Force the player to stay in the city after the outcome: the destination

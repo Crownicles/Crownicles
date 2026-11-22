@@ -132,3 +132,13 @@ Le relecteur a lu l'event 30 réécrit. Voici ce qui ne va pas, et la règle gé
 | Un aigle et un corbeau seulement ; un chien seulement | Liste arbitraire, trop de chiens | **Toute la famille**, avec la condition `petTags` (`flying`, `keenNose`, `mount`, `heavy`, `intimidating`…) plutôt qu'une liste d'ids : tags dans `reference.md`. Le texte dit *votre familier*. |
 | Trois paliers de vitesse complémentaires et rien d'autre | Chaque joueur voit toujours la même issue | **Une ou deux issues sans condition en plus**, pour la variété. |
 | *Pour une fois, le raccourci en était bien un.* sans condition | Le commentaire suppose un joueur expérimenté | **Un commentaire qui suppose un profil va dans une issue conditionnée par ce profil** (ici `level` `min` 120). |
+| *La terre dit que sa chute est récente* | Personnification gratuite | **Le verbe décrit ce qu'on voit** (*montre*). |
+| *Le chien vous mord la jambe* ; *Ses hommes fouillent votre sac* | Réaction sans raison | **Un mot pour la motiver** : *Agacé, le chien…* ; *Méfiants, ses hommes…* |
+| *Votre radeau vous semble solide. À mi-parcours, le courant le disloque.* | Le basculement tombe à plat | **Un mot de contraste** : *Mais à mi-parcours…* |
+| *Il s'éloigne vers la salle commune* (dans des ruines) | Décor d'un lieu en activité | **Le décor suit l'état du lieu** : *vers les ruines*. |
+| *Sans armure pour vous protéger* avec `defense` `max` 180 | Le joueur a une armure, juste mauvaise | **Le texte décrit la stat** : *sans bonne armure*. |
+| *mais avec du retard* ; *bien plus longtemps que prévu* pour une heure | Le joueur n'a pas d'horaire ; mot trop fort pour la durée | **Le temps suit la durée** : *un moment*, *plus longtemps que prévu*, *des heures* (90 min et plus). |
+| Un objet caché sous une planche du pont | Trouvaille sans raison | **Une trouvaille a une raison d'être là** : un objet abandonné sur la rive. |
+| *Par méfiance, vous contournez le bois par l'est.* | Le choix « opposé aux conseils » ne se lit plus | **L'issue rappelle le choix** quand le libellé court ne suffit pas. |
+| Joueur fort : même issue sans dégâts | Pas de récompense à la hauteur | **Une vraie conséquence pour les meilleurs** : initiative, prime, destination. |
+| Rebrousser chemin vers un voisin au hasard | Ce n'est pas un demi-tour | **`goBackToPreviousMap`** avec `mapTypesDestination` en secours. |

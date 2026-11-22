@@ -207,7 +207,7 @@
               91
             ]
           },
-          "effect": "hurt",
+          "effect": "confounded",
           "health": -12
         }
       }

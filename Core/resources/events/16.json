@@ -27,7 +27,7 @@
               "max": 519
             }
           },
-          "effect": "hurt",
+          "effect": "confounded",
           "health": -15
         },
         "4": {
