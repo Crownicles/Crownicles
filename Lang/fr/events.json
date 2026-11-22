@@ -916,24 +916,24 @@
     }
   },
   "26": {
-    "text": "À Ville Forte, au pied des remparts effondrés, une potence a été dressée. Un noble de passage, escorté de ses gardes, y fait pendre un paysan : celui-ci a osé défendre devant lui la Charte, qui donne la couronne au plus méritant et non au mieux né. Les villageois regardent en silence. Près de vous, quelques-uns échangent des regards inquiets : ils pensaient comme lui.",
+    "text": "À Ville Forte, au pied des remparts effondrés, un noble de passage fait pendre un paysan qui a défendu devant lui la Charte, celle qui donne la couronne au plus méritant et non au mieux né. Ce n'est pas la première fois : la Charte est née ici, et ceux qui la combattent aiment y faire des exemples. Près de vous, quelques villageois échangent des regards inquiets : ils pensaient comme lui.",
     "possibilities": {
       "end": {
         "outcomes": {
           "0": "Vous restez figé au bord de la place jusqu'à ce que la trappe s'ouvre. Les villageois rentrent chez eux sans un mot. Vous finissez par reprendre votre chemin, encore bouleversé par ce que vous venez de voir.",
           "1": "Votre Colombe s'envole et se pose sur la tête du condamné. Le bourreau recule : au village, on dit que pendre un homme choisi par une colombe porte malheur. Les gardes hésitent, et l'exécution est remise à plus tard. Les proches du condamné vous adressent un signe de tête.",
           "2": "Vous ne regardez pas l'estrade, mais les gardes : leur nombre, leurs armes, leur carrure. L'un d'eux vous dévisage un peu trop longtemps. Vous rabattez votre capuche et vous éloignez de la place avant qu'on vous pose des questions.",
-          "3": "La trappe s'ouvre. Le souvenir de cet homme qui vous avait ouvert sa porte vous serre la gorge, et vos jambes cèdent. Vous heurtez les pavés en tombant. Une villageoise vous traîne jusqu'à sa paillasse, où vous sombrez dans un lourd sommeil."
+          "3": "La trappe s'ouvre. Vous ne connaissiez pas cet homme, mais le bruit sec du bois vous serre la gorge, et vos jambes cèdent. Vous heurtez les pavés en tombant. Une villageoise vous traîne jusqu'à sa paillasse, où vous sombrez dans un lourd sommeil."
         }
       },
       "goAway": {
         "text": "S'éloigner de la potence.",
         "outcomes": {
           "0": "Vous tournez le dos à la potence et quittez la place, le cœur serré. Sur votre passage, deux villageois murmurent que ce noble maudit la Charte à chaque repas et qu'il voulait un exemple. Derrière vous, la trappe claque.",
-          "1": "En vous écartant des villageois, vous remarquez une petite bourse tombée dans une ruelle déserte. Personne ne la réclame. Vous la ramassez, prenez le temps d'en compter le contenu et repartez en sifflotant.",
+          "1": "En vous écartant de la place, vous remarquez une petite bourse tombée dans une ruelle. Personne n'est là pour la réclamer : tout le village assiste à la pendaison. Vous la ramassez, en comptez le contenu et repartez en sifflotant.",
           "2": "Les querelles des nobles ne vous regardent pas. Vous traversez la place sans un regard pour l'estrade. Un garde, lui, ne vous quitte pas des yeux, et vous préférez ne pas vous attarder.",
           "3": "Vous n'aviez jamais vu pendre un homme. Au bruit de la trappe, votre estomac se retourne. Vous courez jusqu'à une ruelle voisine pour y vomir, et la nausée ne vous quitte plus de la journée.",
-          "4": "En partant, vous surprenez un rôdeur qui sort d'une maison vide, les bras chargés : tout le village est à la pendaison. Vous le rattrapez en quelques enjambées et le plaquez au sol. Les propriétaires de la maison vous offrent un objet pour vous remercier.",
+          "4": "En partant, vous surprenez un rôdeur qui sort d'une maison vide, les bras chargés : tout le village est à la pendaison. Vous le rattrapez en quelques enjambées et le plaquez au sol. Quand vous ramenez le butin sur la place, ses propriétaires vous offrent un objet pour vous remercier.",
           "5": "En partant, vous voyez un rôdeur sortir d'une maison vide, les bras chargés : tout le village est à la pendaison. Le temps de réagir, il a disparu dans les galeries sous les remparts. Vous prévenez une villageoise et reprenez votre route.",
           "6": "Vous vous éloignez des remparts et attendez à l'écart que la foule se disperse. Quand vous reprenez la route, la place est vide et le silence pèse sur Ville Forte."
         }
