@@ -916,61 +916,61 @@
     }
   },
   "26": {
-    "text": "À Ville Forte, au pied des remparts effondrés, un noble de passage fait pendre un paysan qui a défendu devant lui la Charte, celle qui donne la couronne au plus méritant et non au mieux né. Ce n'est pas la première fois : la Charte est née ici, et ceux qui la combattent aiment y faire des exemples. Près de vous, quelques villageois échangent des regards inquiets : ils pensaient comme lui.",
+    "text": "À Ville Forte, au pied des remparts effondrés, les villageois ont dressé une potence de bois peint. Pour quelques pièces, ils rejouent devant les voyageurs la pendaison du traître qui ouvrit les portes de la ville pendant la Guerre des Héritiers. Sur l'estrade, un paysan barbouillé de suie attend, une corde bien lâche autour du cou, pendant qu'un crieur appelle les passants.",
     "possibilities": {
-      "end": {
-        "outcomes": {
-          "0": "Vous restez figé au bord de la place jusqu'à ce que la trappe s'ouvre. Les villageois rentrent chez eux sans un mot. Vous finissez par reprendre votre chemin, encore bouleversé par ce que vous venez de voir.",
-          "1": "Votre Colombe s'envole et se pose sur la tête du condamné. Le bourreau recule : au village, on dit que pendre un homme choisi par une colombe porte malheur. Les gardes hésitent, et l'exécution est remise à plus tard. Les proches du condamné vous adressent un signe de tête.",
-          "2": "Vous ne regardez pas l'estrade, mais les gardes : leur nombre, leurs armes, leur carrure. L'un d'eux vous dévisage un peu trop longtemps. Vous rabattez votre capuche et vous éloignez de la place avant qu'on vous pose des questions.",
-          "3": "La trappe s'ouvre. Vous ne connaissiez pas cet homme, mais le bruit sec du bois vous serre la gorge, et vos jambes cèdent. Vous heurtez les pavés en tombant. Une villageoise vous traîne jusqu'à sa paillasse, où vous sombrez dans un lourd sommeil."
-        }
-      },
       "goAway": {
         "text": "S'éloigner de la potence.",
         "outcomes": {
-          "0": "Vous tournez le dos à la potence et quittez la place, le cœur serré. Sur votre passage, deux villageois murmurent que ce noble maudit la Charte à chaque repas et qu'il voulait un exemple. Derrière vous, la trappe claque.",
-          "1": "En vous écartant de la place, vous remarquez une petite bourse tombée dans une ruelle. Personne n'est là pour la réclamer : tout le village assiste à la pendaison. Vous la ramassez, en comptez le contenu et repartez en sifflotant.",
-          "2": "Les querelles des nobles ne vous regardent pas. Vous traversez la place sans un regard pour l'estrade. Un garde, lui, ne vous quitte pas des yeux, et vous préférez ne pas vous attarder.",
-          "3": "Vous n'aviez jamais vu pendre un homme. Au bruit de la trappe, votre estomac se retourne. Vous courez jusqu'à une ruelle voisine pour y vomir, et la nausée ne vous quitte plus de la journée.",
-          "4": "En partant, vous surprenez un rôdeur qui sort d'une maison vide, les bras chargés : tout le village est à la pendaison. Vous le rattrapez en quelques enjambées et le plaquez au sol. Quand vous ramenez le butin sur la place, ses propriétaires vous offrent un objet pour vous remercier.",
-          "5": "En partant, vous voyez un rôdeur sortir d'une maison vide, les bras chargés : tout le village est à la pendaison. Le temps de réagir, il a disparu dans les galeries sous les remparts. Vous prévenez une villageoise et reprenez votre route.",
-          "6": "Vous vous éloignez des remparts et attendez à l'écart que la foule se disperse. Quand vous reprenez la route, la place est vide et le silence pèse sur Ville Forte."
+          "0": "Les spectacles de rue ne vous attirent guère. Vous contournez l'attroupement et quittez Ville Forte par la route des remparts, sous les cris du crieur qui annonce déjà la prochaine séance.",
+          "1": "En contournant la foule, vous remarquez une petite bourse tombée dans une ruelle. Personne n'est là pour la réclamer : tout le village est au spectacle. Vous la ramassez, en comptez le contenu et repartez en sifflotant.",
+          "2": "Le crieur vous reconnaît et cesse aussitôt de héler les passants. Les villageois serrent leur bourse contre eux en vous regardant partir, et un enfant vous suit jusqu'au bout des remparts pour s'assurer que vous quittez bien le village.",
+          "3": "Vous n'aviez jamais vu de pendaison, même pour rire. Quand la trappe claque et que le condamné se met à gigoter au bout de sa corde, votre estomac se retourne, et la nausée ne vous quitte plus de la journée.",
+          "4": "Pendant que tout le village applaudit, un rôdeur sort d'une maison vide, les bras chargés. Vous le rattrapez en quelques enjambées et le plaquez au sol. Quand vous ramenez le butin sur la place, ses propriétaires vous offrent un objet pour vous remercier.",
+          "5": "En partant, vous voyez un rôdeur sortir d'une maison vide, les bras chargés : tout le village est au spectacle. Le temps de réagir, il a disparu dans les galeries sous les remparts. Vous prévenez une villageoise et reprenez votre route.",
+          "6": "Vous vous asseyez sur un pan de rempart, à l'écart, et regardez la pièce de loin. Quand le condamné se relève pour saluer la foule, vous reprenez la route en souriant."
         }
       },
       "steal": {
         "text": "Voler les spectateurs de la pendaison.",
         "outcomes": {
-          "0": "Tous les regards sont tournés vers l'estrade. Vous glissez la main dans quelques besaces, puis vous vous éclipsez derrière un pan de rempart. Parmi votre butin, un objet semble avoir de la valeur.",
-          "1": "Un paysan sent votre main dans sa poche. Il se retourne, vous saisit au col et vous roue de coups. Vous parvenez à vous dégager et à disparaître derrière les maisons, le visage en sang.",
-          "2": "Un paysan sent votre main dans sa poche et vous saisit au col. D'une seule poussée, vous l'envoyez rouler dans la poussière. Vous filez les mains vides et attendez derrière un mur que les gardes cessent de vous chercher.",
-          "3": "Un paysan surprend votre geste et vous menace de ses poings. Vous reculez en levant les mains, l'air penaud. Pendant ce temps, votre Singe a grimpé sur son épaule, et il en redescend avec sa bourse sans que l'homme s'en aperçoive.",
-          "4": "Un paysan vous surprend et crie au voleur. Vous prenez votre air le plus innocent et parlez d'une méprise. Les villageois se souviennent de vous comme d'un voyageur honnête et haussent les épaules. Vous repartez les mains vides.",
-          "5": "Un paysan vous surprend et crie au voleur. Les villageois reconnaissent votre visage, qu'on décrit dans toutes les auberges du pays. Ils vous rouent de coups jusqu'à ce que les gardes vous arrachent à eux et vous chassent de la place.",
-          "6": "Un paysan sent votre main dans sa poche et vous saisit au col. Vous vous dégagez après une courte lutte, la lèvre fendue, et disparaissez derrière les maisons, les mains vides."
+          "0": "Tous les regards sont tournés vers l'estrade. Vous glissez la main dans les besaces de quelques voyageurs, puis vous vous éclipsez derrière un pan de rempart. Parmi votre butin, un objet semble avoir de la valeur.",
+          "1": "Un villageois vous attrape le poignet : ici, on connaît le tour, et quelqu'un surveille toujours la foule pendant la pièce. Il vous roue de coups devant les voyageurs, puis vous chasse de la place, le visage en sang.",
+          "2": "Un villageois qui surveille la foule vous saisit au col. D'une seule poussée, vous l'envoyez rouler dans la poussière. Vous filez les mains vides et attendez derrière un mur que la place se calme.",
+          "3": "Un voyageur surprend votre geste et vous menace de ses poings. Vous reculez en levant les mains, l'air penaud. Pendant ce temps, votre Singe a grimpé sur son épaule, et il en redescend avec sa bourse sans que l'homme s'en aperçoive.",
+          "4": "Un voyageur vous surprend et crie au voleur. Vous prenez votre air le plus innocent et parlez d'une méprise. Les villageois se souviennent de vous comme d'un voyageur honnête et haussent les épaules. Vous repartez les mains vides.",
+          "5": "Un voyageur vous surprend et crie au voleur. Les villageois reconnaissent votre visage, qu'on décrit dans toutes les auberges du pays. Ils vous rouent de coups jusqu'à ce que le crieur les arrête : il ne veut pas de vrai sang pendant le spectacle.",
+          "6": "Un villageois qui surveille la foule vous saisit au col. Vous vous dégagez après une courte lutte, la lèvre fendue, et disparaissez derrière les maisons, les mains vides."
         }
       },
       "trySave": {
         "text": "S'interposer pour le sauver.",
         "outcomes": {
-          "0": "Vous jouez des coudes jusqu'à l'estrade et arrachez le nœud du cou du condamné avant que les gardes réagissent. Vous l'entraînez dans les galeries sous les remparts. À l'abri, il vous remercie, vous offre un objet et disparaît dans le noir.",
-          "1": "Vous foncez vers l'estrade, mais un garde vous barre le passage d'un coup d'épaule. Vous tombez lourdement sur les pavés. Quand vous vous relevez, la trappe s'est déjà ouverte.",
-          "2": "Vous arrachez le nœud du cou du condamné et fuyez avec lui. Des gardes vous rattrapent au pied des remparts. Ils le ramènent vers la potence, vous rouent de coups et repartent avec votre bourse.",
-          "3": "Vous bondissez sur l'estrade, mais un garde reconnaît votre visage : on vous recherche dans tout le pays. Vous êtes maîtrisé avant d'avoir atteint la corde. Le noble ordonne qu'on vous pende aux côtés du condamné.",
-          "4": "Vous dégainez et foncez vers la potence, en écartant deux gardes sans ralentir. Votre lame tranche la corde à l'instant où la trappe s'ouvre. Vous fuyez avec le condamné, qui vous offre son bien le plus précieux. Dans la cohue, vous avez perdu votre bourse.",
-          "5": "Vous sautez sur le dos de votre monture et foncez vers la potence. Vous arrachez le nœud du cou du condamné, le hissez derrière vous et quittez la place au galop. Il descend un peu plus loin, à l'abri des ruines, en vous remerciant.",
-          "6": "Vous arrachez le condamné à l'estrade et prenez la fuite. En vous retournant, vous voyez votre Paresseux resté au pied de la potence, une épée pointée sur lui. Vous vous rendez. Le condamné est pendu, et le noble vous inflige une lourde amende."
+          "0": "Vous bondissez sur l'estrade et retirez la corde du cou du condamné. Le paysan éclate de rire et vous présente à la foule comme le héros du jour. On vous applaudit, et le crieur vous remet une part de la quête.",
+          "1": "Vous foncez vers l'estrade, mais deux villageois, persuadés que vous voulez gâcher la pièce, vous plaquent au sol. Le temps de vous expliquer, vous avez récolté quelques bleus.",
+          "2": "Vous arrivez à l'estrade bien après la trappe. Le condamné se balance au bout de sa corde et vous fait un clin d'œil. La foule rit de votre héroïsme tardif, et vous repartez rouge de honte.",
+          "3": "Le crieur vous reconnaît et vous désigne à la foule : voilà un vrai pendard, qui mériterait la corde bien plus que l'acteur. Les rires redoublent, et l'on vous chasse de la place sous une pluie de trognons de pommes.",
+          "4": "Vous fendez la foule et tranchez la corde d'un coup de lame avant même que la trappe s'ouvre. Le paysan, privé de son grand final, fait la moue, mais le crieur, ravi du spectacle, vous laisse une belle part de la quête.",
+          "5": "Vous sautez sur le dos de votre monture et traversez la place au galop. Vous hissez le condamné derrière vous et faites le tour de la potence sous les vivats : la foule croit que cela fait partie de la pièce. Le crieur vous supplie de revenir.",
+          "6": "Vous foncez vers l'estrade, mais votre Paresseux s'accroche à votre jambe et vous ralentit à chaque pas. Quand vous atteignez enfin la corde, la pièce est finie. La foule, hilare, croit que votre familier faisait partie du spectacle."
         }
       },
       "tell": {
         "text": "Dénoncer les complices du condamné.",
         "outcomes": {
-          "0": "Vous désignez aux gardes les proches du condamné qui se parlent à voix basse. Deux d'entre eux sont saisis et emmenés par les gardes. Un sergent vous lance quelques pièces. Autour de vous, les villageois détournent le regard.",
-          "1": "Vous désignez les complices aux gardes. La panique gagne aussitôt la place, et les accusés s'enfuient vers les galeries sous les remparts. Dans la bousculade, votre tête heurte un mur, et vous restez un moment hébété.",
-          "2": "Les gardes vous prennent au mot et arrêtent sans discuter les hommes que vous désignez. Le sergent vous remet un objet au nom du noble. En partant, vous croisez le regard de ceux que vous avez livrés, et vous ne l'oublierez pas de sitôt.",
-          "3": "Vous dénoncez les complices, qui vous accusent aussitôt d'être des leurs. Les gardes vous trouvent une mine de brigand et n'ont aucun mal à les croire : ils vous rouent de coups avec les autres.",
-          "4": "Vous grimpez sur un tonneau pour désigner les complices. Au premier geste, vous perdez l'équilibre et tombez dans la boue. Les villageois éclatent de rire et vous chassent de la place sans vous laisser dire un mot.",
-          "5": "Vous désignez les complices aux gardes. La panique gagne la place, et les accusés s'enfuient vers les galeries. Dans la bousculade, on vous marche sur les pieds et vous recevez quelques coups de coude."
+          "0": "Le crieur demande à la foule de démasquer les complices du traître, cachés parmi les spectateurs. Vous désignez un homme au chapeau trop grand : c'est bien l'un des acteurs. On l'emmène sous les huées, et le crieur vous lance quelques pièces.",
+          "1": "Vous désignez un homme dans la foule, mais c'est un voyageur qui n'a rien à voir avec la pièce. Furieux, il vous pousse contre un pan de mur, et vous restez un moment hébété pendant que la foule rit.",
+          "2": "Le crieur vous reconnaît : on lui a dit du bien de vous. Il vous fait monter sur l'estrade pour juger les complices démasqués. Vous les graciez tous, la foule applaudit, et les villageois vous offrent un objet pour avoir si bien joué le jeu.",
+          "3": "Vous montrez un homme du doigt, mais il vous désigne à son tour : avec votre mine, vous feriez un bien meilleur complice. Les acteurs vous traînent sur l'estrade et vous font jouer le traître jusqu'à la fin de la pièce, sous les huées.",
+          "4": "Pour désigner les complices, vous grimpez sur un tonneau. Au premier geste, vous perdez l'équilibre et tombez dans la boue. La foule, ravie, croit que cela fait partie de la pièce et vous applaudit à tout rompre.",
+          "5": "Toute la foule se presse pour voir les complices démasqués. Dans la bousculade, on vous marche sur les pieds et vous recevez quelques coups de coude avant de pouvoir vous dégager."
+        }
+      },
+      "end": {
+        "outcomes": {
+          "0": "Vous restez au bord de la place jusqu'à la fin du spectacle. Le condamné finit par se relever pour saluer, et la foule applaudit. Vous reprenez votre chemin, encore un peu secoué par le réalisme de la pièce.",
+          "1": "Votre Colombe s'envole et se pose sur la tête du condamné. Le crieur, qui n'en rate pas une, annonce que le ciel a gracié le traître. La foule acclame l'oiseau, et les villageois vous laissent une part de la quête.",
+          "2": "Vous ne regardez pas l'estrade, mais les bourses des spectateurs, et le crieur l'a remarqué. Il interrompt la pièce pour vous montrer du doigt, et vous préférez vous éloigner avant qu'on vous pose des questions.",
+          "3": "La trappe claque. Vous savez que ce n'est qu'un spectacle, mais le cri du condamné sonne si vrai que vos jambes cèdent. Une villageoise vous traîne jusqu'à sa paillasse, où vous sombrez dans un lourd sommeil."
         }
       }
     }

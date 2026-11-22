@@ -879,7 +879,7 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 23 | Vous vous baladez en forêt, quand soudain, vous apercevez un chariot qui semble cassé. Autour, le groupe de personnes semble mal en point. |
 | 24 | Du haut d'une colline, vous apercevez Mergagnan : des lumières dansent sur le port et de la musique monte jusqu'à vous. C'est jour de fête. |
 | 25 | Au Croisement des Destins, le grand carrefour à l'ouest du Mont Célestrum, l'herbe est piétinée et couverte d'armes brisées. Des mercenaires |
-| 26 | À Ville Forte, au pied des remparts effondrés, un noble de passage fait pendre un paysan qui a défendu devant lui la Charte, celle qui donne |
+| 26 | À Ville Forte, au pied des remparts effondrés, les villageois ont dressé une potence de bois peint. Pour quelques pièces, ils rejouent devan |
 | 27 | En arrivant dans un petit village, vous remarquez un puits avec un petit objet brillant au fond. |
 | 28 | Pendant votre périple, un groupe d'hommes "prêchant la parole des dieux" vous invite à rejoindre leur cause. |
 | 29 | Les températures dépassant les 30°C depuis plusieurs jours vous accablent. Alors que vos forces commencent à faiblir, incapable de continuer |
