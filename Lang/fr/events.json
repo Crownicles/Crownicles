@@ -3363,30 +3363,47 @@
     "text": "Alors que vous vous approchez de l'imposante muraille entourant la cité royale, vous remarquez qu'une fissure descend le long des murs et mène à une ouverture dans l'édifice. Elle vous semble assez grande pour laisser passer un homme..."
   },
   "9": {
+    "text": "Au milieu d'un champ de blé du Berceau, à deux pas de la grande route qui traverse la plaine, un paysan fouille ses meules de foin en jurant. Il a perdu sa fourche, et la moisson n'attend pas. En vous voyant passer, il lève vers vous un regard plein d'espoir.",
     "possibilities": {
-      "end": {
+      "help": {
+        "text": "Chercher la fourche.",
         "outcomes": {
-          "0": "Vous regardez bêtement pendant 15 minutes le paysan chercher sa fourche avant de repartir."
+          "0": "Vous fouillez le champ avec le paysan. Au bout d'un moment, vous apercevez le manche de la fourche qui dépasse d'un tas de foin. Soulagé, le paysan vous remercie et vous glisse quelques pièces.",
+          "1": "Vous retournez le foin et longez les sillons sans trouver la fourche. En revanche, sous une motte, vous déterrez un objet oublié là depuis longtemps. Le paysan vous le laisse volontiers.",
+          "2": "Vous cherchez la fourche dans chaque sillon et sous chaque meule, en vain. Le soleil a bien tourné quand vous saluez le paysan, toujours bredouille, et reprenez votre route.",
+          "3": "Votre familier renifle les mains du paysan, puis file entre les blés. Il semble avoir compris : il revient en traînant la fourche derrière lui. Ravi, le paysan vous donne une belle poignée de pièces.",
+          "4": "Vous parcourez le champ à grandes enjambées. Mais dans votre élan, vous marchez sur les dents de la fourche cachée dans l'herbe, et le manche vous revient en plein front. Étourdi, vous la rendez au paysan, qui vous remercie de quelques pièces.",
+          "5": "Le paysan vous dévisage, puis se raidit : il vous a reconnu. Persuadé que vous êtes venu lui voler autre chose, il vous demande de quitter son champ. Vous repartez sans avoir rien cherché.",
+          "6": "Peu habitué au travail des champs, vous plongez les mains dans un tas de foin. La fourche y était cachée, dents vers le haut. Vous vous faites une vilaine entaille à la main, et le paysan vous aide à la panser."
         }
       },
-      "help": {
-        "outcomes": {
-          "0": "Après un quart d'heure à chercher, vous retrouvez la fourche à côté d'un tas de foin. Pour vous remercier, le paysan vous offre quelques pièces.",
-          "1": "Après une demi-heure de recherches, vous ne trouvez pas la fourche. Vous découvrez cependant un objet qui pourra peut-être vous être utile !",
-          "2": "En cherchant la fourche, vous marchez dessus et vous faites une vilaine entaille.",
-          "3": "Vous cherchez la fourche pendant presque une heure, mais vous ne parvenez pas à la retrouver. Vous quittez poliment le paysan et continuez votre route."
-        },
-        "text": "Aider le paysan à chercher sa fourche."
-      },
       "skip": {
+        "text": "Passer votre chemin.",
         "outcomes": {
-          "0": "Vous continuez votre chemin sans prêter attention au paysan.",
-          "1": "En continuant à travers le champ, vous tombez sur la fourche et vous entaillez sévèrement le pied."
-        },
-        "text": "Passer son chemin."
+          "0": "Vous laissez le paysan à ses recherches et reprenez la grande route qui traverse la plaine. Derrière vous, il continue de fouiller ses meules en maugréant.",
+          "1": "Vous coupez à travers le champ pour gagner du temps. Votre pied se pose sur une chose dure cachée dans l'herbe : les dents de la fourche. Vous repartez en boitant, le pied entaillé.",
+          "2": "Vous coupez à travers le champ, et votre pied se pose sur les dents de la fourche, cachée dans l'herbe. Elles ripent sur le métal de votre armure. Vous ramassez l'outil et le rendez au paysan, qui vous remercie de quelques pièces.",
+          "3": "Le paysan vous reconnaît : on lui a dit du bien de vous. Vous ne vous arrêtez pas, mais il vous lance une pomme de son panier avec un grand signe. Vous la croquez en reprenant votre route.",
+          "4": "Votre familier prend son envol au-dessus du champ, puis se pose sur un manche de bois qui dépasse des blés : la fourche. Vous la rapportez au paysan, qui vous remercie de quelques pièces."
+        }
+      },
+      "makeFork": {
+        "text": "Tailler une fourche.",
+        "outcomes": {
+          "0": "Vous sortez du bois de votre sac et taillez une fourche de fortune, trois dents fichées dans un manche. Elle n'est pas belle, mais elle tient. Touché, le paysan vous remercie et vous donne quelques pièces.",
+          "1": "Vous allez couper une branche fourchue à la lisière de la forêt qui borde la plaine. Il vous faut un bon moment pour l'écorcer et en tailler les pointes. Le paysan essaie votre fourche, hoche la tête et vous donne quelques pièces.",
+          "2": "Vous tirez de toutes vos forces sur une branche, à la lisière de la forêt. Elle finit par céder d'un coup et vous fouette le visage. Étourdi, vous renoncez, et le paysan vous remercie quand même d'avoir essayé.",
+          "3": "D'un coup sec, vous cassez à la lisière une branche fourchue bien droite et en taillez les pointes en un rien de temps. Le paysan n'en revient pas : elle vaut presque la sienne. Il vous la paie comme un outil neuf.",
+          "4": "Le paysan regarde votre fourche de fortune, puis vous : il vous a reconnu. Méfiant, il la refuse, persuadé qu'il y a un piège. Vous la plantez dans un tas de foin et reprenez votre route."
+        }
+      },
+      "end": {
+        "outcomes": {
+          "0": "Vous regardez bêtement le paysan fouiller ses meules un long moment. Il finit par vous jeter un regard noir, et vous reprenez votre route, un peu gêné.",
+          "1": "Sans bouger, vous parcourez le champ du regard, comme la route vous l'a appris. Une fourche est appuyée contre la charrette, à moitié cachée par une bâche. Vous la montrez du doigt. Confus, le paysan vous remercie de quelques pièces."
+        }
       }
-    },
-    "text": "Au milieu d'un champ, vous rencontrez un paysan. Ce dernier a perdu sa fourche..."
+    }
   },
   "83": {
     "possibilities": {

@@ -1197,8 +1197,12 @@ export const CrowniclesIcons: {
 			stepAside: "↔️"
 		},
 		9: {
-			end: { 0: "🚶" },
+			end: {
+				0: "🚶",
+				1: "🧐"
+			},
 			help: "🔎",
+			makeFork: "🪵",
 			skip: "▶️"
 		}
 	},

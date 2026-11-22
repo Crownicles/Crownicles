@@ -862,7 +862,7 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 6 | Vous vous étiez arrêté dans une grotte pour manger et vous hésitez à repartir... |
 | 7 | Parmi les ruines de Ville Forte, vous découvrez une maison encore debout. Elle semble abandonnée... |
 | 8 | Vous avez décidé de profiter de l'été pour passer par les montagnes tant que les cols ne sont pas trop enneigés. Cependant, l'ascension s'av |
-| 9 | Au milieu d'un champ, vous rencontrez un paysan. Ce dernier a perdu sa fourche... |
+| 9 | Au milieu d'un champ de blé du Berceau, à deux pas de la grande route qui traverse la plaine, un paysan fouille ses meules de foin en jurant |
 | 10 | Au bord du Lac Mirage, des familles pique-niquent près des roseaux. Au bout d'un vieux ponton, un pêcheur se bat avec sa canne : un poisson |
 | 11 | À l'orée du Bois Hurlant, dont les collines cachent des grottes à brigands, une femme encapuchonnée vous aborde. Elle vous déconseille le se |
 | 12 | Devant vous, la Rivière Vacarme charrie branches et écume dans un grondement assourdissant. Un vieux pont de bois l'enjambe encore : plusieu |
