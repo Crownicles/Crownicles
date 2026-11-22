@@ -186,7 +186,7 @@ L'échelle est calée sur les 130 joueurs réguliers en production, c'est-à-dir
 2. **Écrire la sortie.** `out/<id>.json` contient `text`, `possibilities`, `data` (le contenu complet de `Core/resources/events/<id>.json`), `icons` et `notes`.
 3. **Valider.** Lance `python3 validate.py <id>` depuis `src/`. Il vérifie le style, les longueurs, la parité entre textes et données, les destinations et la couverture de tous les profils.
 4. **Appliquer.** Lance `python3 apply.py <dossier Crownicles> [ids]`. Il écrit `Lang/fr/events.json`, `Core/resources/events/<id>.json` et les emojis des nouvelles issues dans `Lib/src/CrowniclesIcons.ts`. Il n'écrit que le français : les autres langues sont à traduire ensuite (`node .github/scripts/check-translations.mjs parity Lang` liste les clés manquantes).
-5. **Mettre à jour le site.** Lance `python3 ../build.py` pour régénérer le site avant/après.
+5. **Relire sur le site.** Une fois la branche poussée, le site de comparaison (`https://crownicles.github.io/Tools/generators/event-rewrites/index.html?base=develop&head=<branche>`) montre l'avant / après de chaque event modifié.
 6. **Tester dans Crownicles :**
    - `cd Core && npx vitest run __tests__/data/events __tests__/core/eventsRequirements.test.ts` ;
    - `cd Lib && npx eslint src/CrowniclesIcons.ts` ;
