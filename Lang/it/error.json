@@ -73,7 +73,7 @@
   "unknownPlayer": "Nome utente 404",
   "petNickNotValid": "Le regole per dare un nome a un animale domestico sono le seguenti:\n$t(error:stringRules)",
   "guildDescriptionNotValid": "Le regole per descrivere una gilda sono le seguenti:\n$t(error:stringRules)",
-  "stringRules": "\n\n\n {{min}} {{max}} - Utilizzare almeno una lettera - Non utilizzare più di 2 spazi consecutivi - I caratteri speciali non sono ammessi - Tra e caratteri",
+  "stringRules": "- Utilizzare almeno una lettera\n- Niente due spazi né due segni di punteggiatura di seguito\n- Non più di due lettere accentate di seguito\n- I caratteri speciali non sono ammessi\n- Tra {{min}} e {{max}} caratteri",
   "notInAGuild": "Dovete essere in una gilda per Effettuare questo comando.",
   "notAuthorizedError": "Non avete le permissione necessarie per Effettuare questo commando in vostra gilda, chiedete a un dei vostri superiori se bisogno.",
   "levelTooLow": "È necessario essere di **livello {{level, number}}** per utilizzare questo comando! Tornate più tardi!",

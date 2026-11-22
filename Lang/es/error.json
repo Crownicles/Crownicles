@@ -73,7 +73,7 @@
   "unknownPlayer": "Nombre de usuario 404",
   "petNickNotValid": "Las normas para poner nombre a una mascota son las siguientes:\n$t(error:stringRules)",
   "guildDescriptionNotValid": "Las normas para describir un gremio son las siguientes:\n$t(error:stringRules)",
-  "stringRules": "\n\n\n {{min}} {{max}} - Utilice al menos una letra - No utilice más de 2 espacios consecutivos - No se admiten caracteres especiales - Entre y caracteres",
+  "stringRules": "- Utilice al menos una letra\n- Sin dos espacios ni dos signos de puntuación seguidos\n- No más de dos letras acentuadas seguidas\n- No se admiten caracteres especiales\n- Entre {{min}} y {{max}} caracteres",
   "notInAGuild": "Debes pertenecer a un gremio para realizar este pedido.",
   "notAuthorizedError": "No tienes los permisos necesarios para realizar este pedido dentro de tu gremio, así que pregunta a uno de tus superiores si lo necesitas.",
   "levelTooLow": "¡Debes ser **nivel {{level, number}}** para usar este comando! Vuelve más tarde.",
