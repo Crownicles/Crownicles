@@ -119,6 +119,7 @@ export default {
 		"src/core/missions/interfaces/trainedPet.ts",
 		"src/core/missions/interfaces/travelHours.ts",
 		"src/core/missions/interfaces/upgradeHomeLevel.ts",
+		"src/core/missions/interfaces/upgradeItem.ts",
 		"src/core/missions/interfaces/visitCityNpc.ts",
 		"src/core/missions/interfaces/winBossWithDifferentClasses.ts",
 		"src/core/report/ReportBigEventService.ts",

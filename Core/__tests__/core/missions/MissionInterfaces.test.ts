@@ -111,7 +111,7 @@ describe("Mission interfaces", () => {
 		// The MissionsController only progresses a mission whose parameters match: a state mission must accept any update
 		it.each([
 			"buyApartment", "buyApartments", "buyHome", "chooseClass", "guildLevel", "haveGardenTalisman", "havePet", "havePotions",
-			"joinGuild", "joinGuildHouse", "maxTokensReached", "reachGlory", "reachLevel", "reachScore", "showPetsToTalvar"
+			"joinGuild", "joinGuildHouse", "maxTokensReached", "reachGlory", "reachLevel", "reachScore", "showPetsToTalvar", "upgradeItem"
 		])("%s has a single variant, saves nothing and progresses on any update", id => {
 			const missionInterface = missionNamed(id);
 
