@@ -22,6 +22,7 @@ interface OutcomeRequirements {
 	validPetTypeIds?: number[];
 	petTags?: string[];
 	weaponTags?: string[];
+	badges?: string[];
 	campaignCurrentMissionId?: number;
 	materials?: { quantity?: Range };
 	enchantment?: object;
@@ -147,6 +148,13 @@ function buildDimensions(outcomes: Outcome[]): Dimension[] {
 	});
 
 	// Asking for a weapon tag only adds outcomes: a weapon with every asked tag, and a weapon with none, bound the profiles
+	dimensions.push({
+		name: 'badges',
+		values: [false, true],
+		constrains: o => o.requirements?.badges !== undefined,
+		accepts: (o, value) => !o.requirements?.badges || value as boolean
+	});
+
 	dimensions.push({
 		name: 'weaponTags',
 		values: [false, true],

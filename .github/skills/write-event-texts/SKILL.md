@@ -256,6 +256,7 @@ L'échelle est calée sur les 130 joueurs réguliers en production, c'est-à-dir
   - Les matériaux sont très répandus : une condition de matériau raconte ce que le joueur a dans son sac, pas un joueur rare.
   - Le matériau doit correspondre au texte : pour une corde, vise les `ids` des cordes, pas le type `rope` qui contient aussi les tissus.
   - Une condition `materials` ne retire rien : le texte ne dit pas que le matériau est perdu. Si l'issue l'utilise, c'est `consumeMaterials`, et le jeu affiche lui-même ce qui est retiré.
+- **Badges.** Une issue peut dépendre d'un badge gagné dans le monde du jeu (`badges`) : guilde puissante, familier légendaire, chef cuisinier, protecteur de l'Oracle, relique reforgée… La liste, le sens de chaque badge et la part des joueurs qui l'ont sont dans `reference.md`, section « Badges ». Les badges hors fiction (équipe, donateurs, concours, votes) sont refusés. Le badge se montre comme le karma, par un personnage qui reconnaît le joueur ou ce qu'il a fait, et doit être en lien avec la scène.
 - **Karma.**
   - Il part de 0 et n'est pas encore en production.
   - Les seuils sont `min` 0, 50, 80 ou 100, et `max` -30 ou -50.

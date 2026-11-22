@@ -7,6 +7,8 @@ import {
 import { PetDataController } from "../Pet";
 import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
 import { PetTag } from "../../../../Lib/src/constants/PetConstants";
+import { EventOutcomeBadge } from "../../../../Lib/src/types/Badge";
+import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
 import {
 	isRangeValid, OutcomeRange
 } from "./OutcomeRange";
@@ -76,6 +78,11 @@ export type OutcomeRequirements = {
 	 * The equipped weapon has at least one of these item tags (blunt, fire, ranged…)
 	 */
 	weaponTags?: string[];
+
+	/**
+	 * The player owns at least one of these badges (only the badges of EVENT_OUTCOME_BADGES)
+	 */
+	badges?: EventOutcomeBadge[];
 };
 
 /**
@@ -139,7 +146,21 @@ async function areProgressionRequirementsValid(req: OutcomeRequirements, player:
 	return await isCampaignMissionValid(req.campaignCurrentMissionId, player)
 		&& await isPetTypeValid(req.validPetTypeIds, player)
 		&& await isPetDataValid(req, player)
-		&& await areMaterialsValid(req.materials, player);
+		&& await areMaterialsValid(req.materials, player)
+		&& await areBadgesValid(req.badges, player);
+}
+
+/**
+ * Check if the player owns at least one of the required badges
+ * @param badges - The accepted badges
+ * @param player - The player to check
+ */
+async function areBadgesValid(badges: EventOutcomeBadge[] | undefined, player: Player): Promise<boolean> {
+	if (!badges) {
+		return true;
+	}
+	const owned = await PlayerBadgesManager.getOfPlayer(player.id);
+	return badges.some(badge => owned.includes(badge));
 }
 
 /**

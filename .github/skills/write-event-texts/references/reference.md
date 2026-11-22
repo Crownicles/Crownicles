@@ -82,6 +82,28 @@ Types de matériaux : `metal` métal, `alloy` alliage, `nature` plantes, `spirit
 
 Enchantements : types `damage` (attaque), `defense`, `speed`, `health` (énergie max), `magic` (aspects de feu, de givre, de venin), `other` (souffle). Les `kinds` précis sont `pvpAttack`, `pveAttack`, `allAttack`, `defense`, `speed`, `maxEnergy`, `baseBreath`, `maxBreath`, `burnedDamage`, `frozenDamage`, `poisonedDamage`. Les armes portent les enchantements d'attaque, de magie et de souffle de base ; les armures ceux de défense, de vitesse, d'énergie et de souffle max.
 
+## Badges (`badges`)
+
+`"badges": ["master_chef", "animal_lover"]` : le joueur possède au moins un de ces badges. Seuls les badges gagnés **dans le monde du jeu** sont permis, ceux qu'un personnage peut connaître ou deviner (`EVENT_OUTCOME_BADGES` dans `Lib/src/types/Badge.ts`) ; le validateur et les tests refusent les autres. Les badges hors fiction (équipe, donateurs, concours, bugs signalés, votes, anciens classements) n'entrent jamais dans un event.
+
+Part des 186 joueurs actifs sur 14 jours (mesurée le 22/11/2026) :
+
+| Badge | Ce qu'il raconte dans le monde | Joueurs actifs |
+|---|---|---|
+| `powerful_guild` | membre d'une guilde puissante | 51 % |
+| `very_powerful_guild` | membre d'une guilde très puissante | 33 % |
+| `rich` | badge acheté à la Bourse : un joueur riche, connu des courtiers | 28 % |
+| `mission_completer` | badge acheté au Marché royal : un « maître des quêtes » | 28 % |
+| `legendary_pet` | a dressé un familier puissant | 27 % |
+| `expert_expediteur` | a mené de nombreuses expéditions avec son familier | 12 % |
+| `sentimental_crafter` | a fait améliorer une humble relique jusqu'au sommet par le forgeron royal | 7 % |
+| `oracle_patron` | a beaucoup contribué aux bénédictions de l'Oracle | 4 % |
+| `top_glory` | a remporté le plus de gloire d'une saison de combat : un combattant célèbre | 3 % |
+| `master_chef` | cuisinier émérite, niveau 100 de cuisine | 2 % |
+| `animal_lover` | a montré tous les familiers à Talvar le nain | 0 % (badge très rare) |
+
+Comme pour le karma, le badge se **montre** : un personnage reconnaît le joueur, ou réagit à ce qu'il a fait (*le forgeron reconnaît celui qui a fait reforger une babiole jusqu'au sommet*, *un dresseur a entendu parler de votre familier*). Le texte ne nomme jamais le badge. Choisis un badge en lien avec la scène, et une issue à badge reste un bonus : il faut toujours une autre issue pour les joueurs qui ne l'ont pas.
+
 ## Karma
 
 Il commence à 0 et n'est pas borné. Une issue le change de -1 à -5 pour une petite faute, de -10 à -20 pour un acte grave, de +1 à +5 pour un geste correct, de +8 à +15 pour un acte vraiment généreux. Une issue conditionnée par le karma montre comment le monde traite le joueur selon sa réputation, sans la nommer : on le reconnaît, on se méfie de lui, on lui fait confiance.

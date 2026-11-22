@@ -7,7 +7,7 @@
  * Prints "<n> outcomes, <m> conditional", then the errors and the warnings. Exits with 1 when there is an error.
  * Pets (id, rarity) and materials (id) come from Core/resources of the repository.
  */
-import { readdirSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import { parseArgs } from "node:util";
 import {
@@ -28,7 +28,7 @@ const OUTCOME_KEYS = new Set([
 	"mapLink", "goBackToPreviousMap", "forceStayInCity", "forceLeaveCity", "tags", "consumeMaterials", "giveMaterials"
 ]);
 const REQ_RANGES = ["level", "karma", "health", "attack", "defense", "speed", "petRarity", "cookingLevel", "weaponLevel", "armorLevel"];
-const REQ_LISTS = ["validClassIds", "validPetTypeIds", "petTags", "weaponTags"];
+const REQ_LISTS = ["validClassIds", "validPetTypeIds", "petTags", "weaponTags", "badges"];
 const REQ_KEYS = new Set([...REQ_RANGES, ...REQ_LISTS, "campaignCurrentMissionId", "materials", "enchantment"]);
 const MATERIAL_FILTERS = new Set(["type", "rarity", "ids", "quantity"]);
 const MATERIAL_TYPES = new Set(["metal", "alloy", "nature", "spiritual", "magic", "leather", "rope", "poison", "explosive", "wood"]);
@@ -54,6 +54,17 @@ function loadPets() {
 			const { rarity, tags } = readJson(join(directory, file));
 			return [id, { name: names[`${id}_male`], rarity, tags: tags ?? [] }];
 		}));
+}
+
+/**
+ * Badges an event outcome may depend on, read from EVENT_OUTCOME_BADGES in Lib/src/types/Badge.ts
+ * @returns {Set<string>}
+ */
+function loadEventBadges() {
+	const source = readFileSync(join(REPO_ROOT, "Lib/src/types/Badge.ts"), "utf8");
+	const values = new Map([...source.matchAll(/(\w+) = "(\w+)"/gu)].map(([, key, value]) => [key, value]));
+	const list = source.match(/EVENT_OUTCOME_BADGES = \[([^\]]*)\]/u)?.[1] ?? "";
+	return new Set([...list.matchAll(/Badge\.(\w+)/gu)].map(([, key]) => values.get(key)));
 }
 
 /**
@@ -207,6 +218,9 @@ function checkRequirementReferences(report, path, req, game) {
 	const isUnknownPet = petId => !game.pets.has(typeof petId === "boolean" ? Number(petId) : petId);
 	for (const petId of get(req, "validPetTypeIds", []).filter(isUnknownPet)) {
 		report.errors.push(`${path}: unknown pet ${pyStr(petId)}`);
+	}
+	for (const badge of get(req, "badges", []).filter(eventBadge => !game.eventBadges.has(eventBadge))) {
+		report.errors.push(`${path}: ${pyStr(badge)} is not an event outcome badge (EVENT_OUTCOME_BADGES)`);
 	}
 	for (const tag of get(req, "weaponTags", []).filter(weaponTag => !game.weaponTags.has(weaponTag))) {
 		report.errors.push(`${path}: no weapon has the tag ${pyStr(tag)}`);
@@ -447,7 +461,7 @@ function validate(inp, out, pets, materials) {
 	const report = { errors: [], warnings: [] };
 	checkTexts(report, out, orig);
 	const counts = checkData(report, inp, out, {
-		pets, materials, weaponTags: loadWeaponTags()
+		pets, materials, weaponTags: loadWeaponTags(), eventBadges: loadEventBadges()
 	});
 	checkConsistency(report, out, pets);
 	checkOutcomeCounts(report, counts, origPossibilities);

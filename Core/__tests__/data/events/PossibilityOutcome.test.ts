@@ -10,6 +10,8 @@ import { Materials } from "../../../src/core/database/game/models/Material";
 import { MaterialDataController } from "../../../src/data/Material";
 import { PetConstants, PetTag } from "../../../../Lib/src/constants/PetConstants";
 import { ItemConstants } from "../../../../Lib/src/constants/ItemConstants";
+import { PlayerBadgesManager } from "../../../src/core/database/game/models/PlayerBadges";
+import { Badge } from "../../../../Lib/src/types/Badge";
 
 // Mock des dépendances
 vi.mock("../../../src/core/database/game/models/PlayerMissionsInfo");
@@ -18,6 +20,7 @@ vi.mock("../../../src/core/database/game/models/InventorySlot");
 vi.mock("../../../src/data/Pet");
 vi.mock("../../../src/core/database/game/models/Material");
 vi.mock("../../../src/data/Material");
+vi.mock("../../../src/core/database/game/models/PlayerBadges");
 
 describe("PossibilityOutcome Requirements", () => {
 	let mockPlayer: Partial<Player>;
@@ -402,6 +405,12 @@ describe("PossibilityOutcome Requirements", () => {
 			const owned = [{ materialId: 5, quantity: 2 }, { materialId: 7, quantity: 9 }, { materialId: 8, quantity: 4 }];
 			expect(pickMaterialsToConsume(owned, { type: "rope" }, 5)).toEqual([{ materialId: 8, quantity: 4 }, { materialId: 5, quantity: 1 }]);
 			expect(pickMaterialsToConsume(owned, { type: "rope" }, 7)).toEqual([]);
+		});
+
+		it("should check the badges of the player", async () => {
+			vi.mocked(PlayerBadgesManager.getOfPlayer).mockResolvedValue([Badge.MASTER_CHEF, Badge.VOTER]);
+			expect(await isValid({ badges: [Badge.ANIMAL_LOVER, Badge.MASTER_CHEF] })).toBe(true);
+			expect(await isValid({ badges: [Badge.RICH] })).toBe(false);
 		});
 
 		it("should check the tags of the equipped weapon", async () => {

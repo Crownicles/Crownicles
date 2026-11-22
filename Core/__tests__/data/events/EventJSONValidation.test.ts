@@ -3,6 +3,7 @@ import { readdirSync, readFileSync } from "fs";
 import { join } from "path";
 import { MaterialType } from "../../../../Lib/src/types/MaterialType";
 import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
+import { EVENT_OUTCOME_BADGES } from "../../../../Lib/src/types/Badge";
 
 const materialTypes: string[] = Object.values(MaterialType);
 const enchantmentKinds = [...new Set(ItemEnchantment.getAllEnchantments().map(e => e.kind.id))];
@@ -42,7 +43,8 @@ describe("Event JSON Validation", () => {
 		"enchantment",
 		"weaponLevel",
 		"armorLevel",
-		"weaponTags"
+		"weaponTags",
+		"badges"
 	];
 
 	eventFiles.forEach(filename => {
@@ -139,6 +141,27 @@ describe("Event JSON Validation", () => {
 						}
 						weaponTags.filter((tag: unknown) => !weaponTagsCarried.has(tag as string))
 							.forEach((tag: unknown) => invalidFields.push(`${possibilityKey}.outcomes.${outcomeKey}.requirements.weaponTags: no weapon has the tag ${String(tag)}`));
+					});
+				});
+
+				expect(invalidFields).toEqual([]);
+			});
+
+			it("should only use the badges allowed in event outcomes", () => {
+				if (!eventData?.possibilities) return;
+
+				const allowed: readonly string[] = EVENT_OUTCOME_BADGES;
+				const invalidFields: string[] = [];
+				Object.entries(eventData.possibilities).forEach(([possibilityKey, possibility]: [string, any]) => {
+					Object.entries(possibility.outcomes ?? {}).forEach(([outcomeKey, outcome]: [string, any]) => {
+						const badges = outcome.requirements?.badges;
+						if (badges === undefined) return;
+						if (!Array.isArray(badges) || badges.length === 0) {
+							invalidFields.push(`${possibilityKey}.outcomes.${outcomeKey}.requirements.badges should be a non-empty array`);
+							return;
+						}
+						badges.filter((badge: unknown) => !allowed.includes(badge as string))
+							.forEach((badge: unknown) => invalidFields.push(`${possibilityKey}.outcomes.${outcomeKey}.requirements.badges: ${String(badge)} is not an event outcome badge`));
 					});
 				});
 
