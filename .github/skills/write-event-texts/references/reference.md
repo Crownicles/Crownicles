@@ -82,9 +82,28 @@ Types de matériaux : `metal` métal, `alloy` alliage, `nature` plantes, `spirit
 
 Enchantements : types `damage` (attaque), `defense`, `speed`, `health` (énergie max), `magic` (aspects de feu, de givre, de venin), `other` (souffle). Les `kinds` précis sont `pvpAttack`, `pveAttack`, `allAttack`, `defense`, `speed`, `maxEnergy`, `baseBreath`, `maxBreath`, `burnedDamage`, `frozenDamage`, `poisonedDamage`. Les armes portent les enchantements d'attaque, de magie et de souffle de base ; les armures ceux de défense, de vitesse, d'énergie et de souffle max.
 
+## Argent du joueur (`money` dans `requirements`)
+
+`"requirements": {"money": {"min": 100000}}` : une plage sur les pièces que le joueur porte au moment de l'event. À ne pas confondre avec le champ `money` de l'issue, qui donne ou retire des pièces.
+
+Part des 187 joueurs actifs sur 14 jours (mesurée le 22/11/2026). La plupart ont beaucoup d'argent : la médiane est autour de 30 000.
+
+| Le texte décrit… | `money` | Joueurs actifs |
+|---|---|---|
+| un joueur fauché | `max` 5 000 | 9 % |
+| un joueur qui compte ses pièces | `max` 20 000 | 36 % |
+| un joueur à l'aise | `min` 50 000 | 39 % |
+| un joueur riche | `min` 100 000 | 19 % |
+| un joueur très riche | `min` 200 000 | 7 % |
+| une fortune | `min` 500 000 | 3 % |
+
+- La richesse se **montre** : une bourse qui tinte, des vêtements fins, un marchand qui flaire le client, un pickpocket qui vous repère. Le texte ne donne jamais le montant.
+- Elle sert aussi de garde-fou : une issue où le joueur **paie** (`money` négatif, tag `moneyUsage`) peut exiger qu'il ait de quoi payer, et une autre issue raconte le joueur qui n'a pas assez.
+- Comme pour une stat, un riche n'a pas que des avantages : on lui gonfle les prix, on cherche à le détrousser.
+
 ## Badges (`badges`)
 
-`"badges": ["master_chef", "animal_lover"]` : le joueur possède au moins un de ces badges. Seuls les badges gagnés **dans le monde du jeu** sont permis, ceux qu'un personnage peut connaître ou deviner (`EVENT_OUTCOME_BADGES` dans `Lib/src/types/Badge.ts`) ; le validateur et les tests refusent les autres. Les badges hors fiction (équipe, donateurs, concours, bugs signalés, votes, anciens classements) n'entrent jamais dans un event.
+`"badges": ["master_chef", "animal_lover"]` : le joueur possède au moins un de ces badges. Seuls les badges gagnés **dans le monde du jeu** sont permis, ceux qu'un personnage peut connaître ou deviner (`EVENT_OUTCOME_BADGES` dans `Lib/src/types/Badge.ts`) ; le validateur et les tests refusent les autres. Les badges hors fiction (équipe, donateurs, concours, bugs signalés, votes, anciens classements) n'entrent jamais dans un event. Le badge `rich`, acheté une fois à la Bourse, n'y entre pas non plus : la richesse se lit dans l'argent que le joueur porte (condition `money`, plus bas).
 
 Part des 186 joueurs actifs sur 14 jours (mesurée le 22/11/2026) :
 
@@ -92,7 +111,6 @@ Part des 186 joueurs actifs sur 14 jours (mesurée le 22/11/2026) :
 |---|---|---|
 | `powerful_guild` | membre d'une guilde puissante | 51 % |
 | `very_powerful_guild` | membre d'une guilde très puissante | 33 % |
-| `rich` | badge acheté à la Bourse : un joueur riche, connu des courtiers | 28 % |
 | `mission_completer` | badge acheté au Marché royal : un « maître des quêtes » | 28 % |
 | `legendary_pet` | a dressé un familier puissant | 27 % |
 | `expert_expediteur` | a mené de nombreuses expéditions avec son familier | 12 % |

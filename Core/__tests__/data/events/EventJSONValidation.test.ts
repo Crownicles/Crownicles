@@ -33,6 +33,7 @@ describe("Event JSON Validation", () => {
 		"defense",
 		"attack",
 		"speed",
+		"money",
 		"campaignCurrentMissionId",
 		"validPetTypeIds",
 		"petTags",
@@ -221,7 +222,7 @@ describe("Event JSON Validation", () => {
 				if (!eventData?.possibilities) return;
 
 				const invalidRanges: string[] = [];
-				const rangeBasedRequirements = ["level", "karma", "health", "defense", "attack", "speed", "petRarity", "cookingLevel", "weaponLevel", "armorLevel"];
+				const rangeBasedRequirements = ["level", "karma", "health", "defense", "attack", "speed", "money", "petRarity", "cookingLevel", "weaponLevel", "armorLevel"];
 				
 				Object.entries(eventData.possibilities).forEach(([possibilityKey, possibility]: [string, any]) => {
 					if (!possibility.outcomes) return;

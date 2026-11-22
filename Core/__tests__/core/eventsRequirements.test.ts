@@ -14,6 +14,7 @@ interface OutcomeRequirements {
 	attack?: Range;
 	defense?: Range;
 	speed?: Range;
+	money?: Range;
 	cookingLevel?: Range;
 	weaponLevel?: Range;
 	armorLevel?: Range;
@@ -41,7 +42,7 @@ interface Event {
 	possibilities?: Record<string, Possibility>;
 }
 
-const RANGE_KEYS = ['level', 'karma', 'health', 'attack', 'defense', 'speed', 'cookingLevel', 'weaponLevel', 'armorLevel'] as const;
+const RANGE_KEYS = ['level', 'karma', 'health', 'attack', 'defense', 'speed', 'money', 'cookingLevel', 'weaponLevel', 'armorLevel'] as const;
 
 const PETS: Record<number, { rarity: number; tags: string[] }> = Object.fromEntries(
 	fs.readdirSync(PETS_DIR)

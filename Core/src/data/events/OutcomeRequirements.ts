@@ -38,6 +38,11 @@ export type OutcomeRequirements = {
 	defense?: OutcomeRange;
 	attack?: OutcomeRange;
 	speed?: OutcomeRange;
+
+	/**
+	 * Coins the player currently carries
+	 */
+	money?: OutcomeRange;
 	campaignCurrentMissionId?: number;
 	validPetTypeIds?: number[];
 
@@ -129,6 +134,7 @@ function areStatRequirementsValid(
 		[req.defense, player.getCumulativeDefense(playerActiveObjects)],
 		[req.attack, player.getCumulativeAttack(playerActiveObjects)],
 		[req.speed, player.getCumulativeSpeed(playerActiveObjects)],
+		[req.money, player.money],
 		[req.cookingLevel, player.cookingLevel ?? 0],
 		[req.weaponLevel, playerActiveObjects.weapon?.itemLevel ?? 0],
 		[req.armorLevel, playerActiveObjects.armor?.itemLevel ?? 0]

@@ -68,6 +68,7 @@ function coverageDimensions(reqs, pets) {
 		["attack", boundaryValues(reqs, "attack", [0, 2000])],
 		["defense", boundaryValues(reqs, "defense", [0, 2000])],
 		["speed", boundaryValues(reqs, "speed", [0, 2000])],
+		["money", boundaryValues(reqs, "money", [0, 10 ** 7])],
 		["class", [...new Set([...reqs.flatMap(r => get(r, "validClassIds", [])), 0])].sort(byNumber)],
 		["pet", petProfiles],
 		["cooking", optionalLevel("cookingLevel", [0, 100])],
@@ -116,7 +117,7 @@ function areBelongingsCovered(r, profile) {
  * @returns {boolean}
  */
 function areStatsCovered(r, profile) {
-	return ["level", "karma", "health", "attack", "defense", "speed"].every(key => inRange(get(r, key), profile[key]));
+	return ["level", "karma", "health", "attack", "defense", "speed", "money"].every(key => inRange(get(r, key), profile[key]));
 }
 
 /**
@@ -196,7 +197,7 @@ function isProfileCovered(r, profile, pets) {
  */
 function uncoveredProfileError(name, profile) {
 	const { pet } = profile;
-	return `${name}: no valid outcome for level=${profile.level} karma=${profile.karma} health=${profile.health} attack=${profile.attack} defense=${profile.defense} speed=${profile.speed} class=${profile.class} pet=${pet === null ? "None" : `(${pet[0]}, ${pet[1]})`}`
+	return `${name}: no valid outcome for level=${profile.level} karma=${profile.karma} health=${profile.health} attack=${profile.attack} defense=${profile.defense} speed=${profile.speed} money=${profile.money} class=${profile.class} pet=${pet === null ? "None" : `(${pet[0]}, ${pet[1]})`}`
 		+ ` cooking=${profile.cooking} weaponLevel=${profile.weaponLevel} armorLevel=${profile.armorLevel} materials=${profile.hasMaterials ? "oui" : "aucun"} enchantment=${profile.hasEnchantment ? "oui" : "aucun"}`;
 }
 

@@ -27,7 +27,7 @@ const OUTCOME_KEYS = new Set([
 	"bonusPoints", "randomItem", "randomPet", "givePet", "oneshot", "nextEvent", "mapTypesDestination", "mapTypesExcludeDestination",
 	"mapLink", "goBackToPreviousMap", "forceStayInCity", "forceLeaveCity", "tags", "consumeMaterials", "giveMaterials"
 ]);
-const REQ_RANGES = ["level", "karma", "health", "attack", "defense", "speed", "petRarity", "cookingLevel", "weaponLevel", "armorLevel"];
+const REQ_RANGES = ["level", "karma", "health", "attack", "defense", "speed", "money", "petRarity", "cookingLevel", "weaponLevel", "armorLevel"];
 const REQ_LISTS = ["validClassIds", "validPetTypeIds", "petTags", "weaponTags", "badges"];
 const REQ_KEYS = new Set([...REQ_RANGES, ...REQ_LISTS, "campaignCurrentMissionId", "materials", "enchantment"]);
 const MATERIAL_FILTERS = new Set(["type", "rarity", "ids", "quantity"]);

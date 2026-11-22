@@ -407,6 +407,12 @@ describe("PossibilityOutcome Requirements", () => {
 			expect(pickMaterialsToConsume(owned, { type: "rope" }, 7)).toEqual([]);
 		});
 
+		it("should check the coins the player carries", async () => {
+			mockPlayer = { ...mockPlayer, money: 12000 } as Partial<Player>;
+			expect(await isValid({ money: { min: 10000 } })).toBe(true);
+			expect(await isValid({ money: { min: 50000 } })).toBe(false);
+		});
+
 		it("should check the badges of the player", async () => {
 			vi.mocked(PlayerBadgesManager.getOfPlayer).mockResolvedValue([Badge.MASTER_CHEF, Badge.VOTER]);
 			expect(await isValid({ badges: [Badge.ANIMAL_LOVER, Badge.MASTER_CHEF] })).toBe(true);
