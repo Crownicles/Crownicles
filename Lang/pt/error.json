@@ -73,7 +73,7 @@
   "unknownPlayer": "Nome de utilizador 404",
   "petNickNotValid": "As regras para dar nome a um animal de estimação são as seguintes:\n$t(error:stringRules)",
   "guildDescriptionNotValid": "As regras para a descrição de um grémio são as seguintes:\n$t(error:stringRules)",
-  "stringRules": "\n\n\n {{min}} {{max}} - Utilizar pelo menos uma letra - Não utilizar mais de 2 espaços consecutivos - Não são permitidos caracteres especiais - Entre e caracteres",
+  "stringRules": "- Utilizar pelo menos uma letra\n- Sem dois espaços nem dois sinais de pontuação seguidos\n- Não mais de duas letras acentuadas seguidas\n- Não são permitidos caracteres especiais\n- Entre {{min}} e {{max}} caracteres",
   "notInAGuild": "É necessário pertencer a um grémio para efetuar esta encomenda.",
   "notAuthorizedError": "Não tens as permissões necessárias para fazer esta encomenda na tua guilda, por isso pede a um dos teus superiores se precisares.",
   "levelTooLow": "Tens de ser **level {{level, number}}** para usar este comando! Volte mais tarde!",

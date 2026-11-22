@@ -73,7 +73,7 @@
   "unknownPlayer": "Pseudo 404",
   "petNickNotValid": "Die Regeln für den Namen eines Vertrauten lauten wie folgt:\n$t(error:stringRules)",
   "guildDescriptionNotValid": "Die Regeln für die Beschreibung einer Gilde lauten wie folgt:\n$t(error:stringRules)",
-  "stringRules": "- Mindestens einen Buchstaben verwenden\n- Nicht mehr als zwei aufeinanderfolgende Leerzeichen verwenden\n- Sonderzeichen sind nicht erlaubt\n- Zwischen {{min}} und {{max}} Zeichen",
+  "stringRules": "- Mindestens einen Buchstaben verwenden\n- Keine zwei Leerzeichen und keine zwei Satzzeichen hintereinander\n- Nicht mehr als zwei Buchstaben mit Akzent hintereinander\n- Sonderzeichen sind nicht erlaubt\n- Zwischen {{min}} und {{max}} Zeichen",
   "notInAGuild": "Sie müssen zu einer Gilde gehören, um diesen Befehl ausführen zu können.",
   "notAuthorizedError": "Sie haben nicht die erforderlichen Berechtigungen, um diese Bestellung innerhalb Ihrer Gilde durchzuführen. Fragen Sie ggf. einen Ihrer Vorgesetzten.",
   "levelTooLow": "Sie müssen **level {{level, number}}** sein, um diesen Befehl zu verwenden! Kommen Sie später wieder!",
