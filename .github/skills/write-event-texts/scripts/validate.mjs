@@ -27,7 +27,7 @@ const OUTCOME_KEYS = new Set([
 	"mapLink", "forceStayInCity", "forceLeaveCity", "tags", "consumeMaterials", "giveMaterials"
 ]);
 const REQ_RANGES = ["level", "karma", "health", "attack", "defense", "speed", "petRarity", "cookingLevel", "weaponLevel", "armorLevel"];
-const REQ_LISTS = ["validClassIds", "validPetTypeIds"];
+const REQ_LISTS = ["validClassIds", "validPetTypeIds", "petTags"];
 const REQ_KEYS = new Set([...REQ_RANGES, ...REQ_LISTS, "campaignCurrentMissionId", "materials", "enchantment"]);
 const MATERIAL_FILTERS = new Set(["type", "rarity", "ids", "quantity"]);
 const MATERIAL_TYPES = new Set(["metal", "alloy", "nature", "spiritual", "magic", "leather", "rope", "poison", "explosive", "wood"]);
@@ -41,8 +41,8 @@ const EFFECTS = new Set([
 	"lost", "fished", "working", "burning"
 ]);
 /**
- * Pets of the game: id -> { name, rarity } (pet 0 is "no pet")
- * @returns {Map<number, {name: string, rarity: number}>}
+ * Pets of the game: id -> { name, rarity, tags } (pet 0 is "no pet")
+ * @returns {Map<number, {name: string, rarity: number, tags: string[]}>}
  */
 function loadPets() {
 	const names = readJson(join(REPO_ROOT, "Lang/fr/models.json")).pets;
@@ -50,7 +50,8 @@ function loadPets() {
 	return new Map(readdirSync(directory).filter(file => file.endsWith(".json"))
 		.map(file => {
 			const id = Number(basename(file, ".json"));
-			return [id, { name: names[`${id}_male`], rarity: readJson(join(directory, file)).rarity }];
+			const { rarity, tags } = readJson(join(directory, file));
+			return [id, { name: names[`${id}_male`], rarity, tags: tags ?? [] }];
 		}));
 }
 
@@ -189,12 +190,16 @@ function checkRequirementShapes(report, path, req) {
  * @param {Report} report
  * @param {string} path
  * @param {object} req
- * @param {{pets: Map<number, unknown>, materials: Map<string, unknown>}} game
+ * @param {{pets: Map<number, {tags: string[]}>, materials: Map<string, unknown>}} game
  */
 function checkRequirementReferences(report, path, req, game) {
 	const isUnknownPet = petId => !game.pets.has(typeof petId === "boolean" ? Number(petId) : petId);
 	for (const petId of get(req, "validPetTypeIds", []).filter(isUnknownPet)) {
 		report.errors.push(`${path}: unknown pet ${pyStr(petId)}`);
+	}
+	const carriedTags = new Set([...game.pets.values()].flatMap(pet => pet.tags));
+	for (const tag of get(req, "petTags", []).filter(petTag => !carriedTags.has(petTag))) {
+		report.errors.push(`${path}: no pet has the tag ${pyStr(tag)}`);
 	}
 	const materialFilter = get(req, "materials");
 	if (materialFilter !== null) {

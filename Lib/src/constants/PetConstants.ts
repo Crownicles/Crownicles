@@ -653,7 +653,13 @@ export abstract class PetConstants {
 		FIRE: "fire",
 		FLYING: "flying",
 		AQUATIC: "aquatic",
-		NOCTURNAL: "nocturnal"
+		NOCTURNAL: "nocturnal",
+
+		// Abilities shared by several pets, checked by the big event outcomes through the petTags requirement
+		KEEN_NOSE: "keenNose",
+		MOUNT: "mount",
+		HEAVY: "heavy",
+		INTIMIDATING: "intimidating"
 	} as const;
 
 	static SEX = {

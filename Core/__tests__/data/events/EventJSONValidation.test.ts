@@ -7,6 +7,12 @@ import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
 const materialTypes: string[] = Object.values(MaterialType);
 const enchantmentKinds = [...new Set(ItemEnchantment.getAllEnchantments().map(e => e.kind.id))];
 const enchantmentTypes = [...new Set(ItemEnchantment.getAllEnchantments().map(e => e.kind.type.id))];
+const petsDir = join(__dirname, "../../../resources/pets");
+const petTagsCarried = new Set<string>(
+	readdirSync(petsDir)
+		.filter(file => file.endsWith(".json"))
+		.flatMap(file => (JSON.parse(readFileSync(join(petsDir, file), "utf8")).tags ?? []) as string[])
+);
 
 describe("Event JSON Validation", () => {
 	const eventsDir = join(__dirname, "../../../resources/events");
@@ -22,6 +28,7 @@ describe("Event JSON Validation", () => {
 		"speed",
 		"campaignCurrentMissionId",
 		"validPetTypeIds",
+		"petTags",
 		"petRarity",
 		"validClassIds",
 		"cookingLevel",
@@ -85,6 +92,26 @@ describe("Event JSON Validation", () => {
 								}
 							});
 						}
+					});
+				});
+
+				expect(invalidFields).toEqual([]);
+			});
+
+			it("should only use pet tags that at least one pet carries", () => {
+				if (!eventData?.possibilities) return;
+
+				const invalidFields: string[] = [];
+				Object.entries(eventData.possibilities).forEach(([possibilityKey, possibility]: [string, any]) => {
+					Object.entries(possibility.outcomes ?? {}).forEach(([outcomeKey, outcome]: [string, any]) => {
+						const petTags = outcome.requirements?.petTags;
+						if (petTags === undefined) return;
+						if (!Array.isArray(petTags) || petTags.length === 0) {
+							invalidFields.push(`${possibilityKey}.outcomes.${outcomeKey}.requirements.petTags should be a non-empty array`);
+							return;
+						}
+						petTags.filter((tag: unknown) => !petTagsCarried.has(tag as string))
+							.forEach((tag: unknown) => invalidFields.push(`${possibilityKey}.outcomes.${outcomeKey}.requirements.petTags: no pet has the tag ${String(tag)}`));
 					});
 				});
 

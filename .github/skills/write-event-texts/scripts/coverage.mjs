@@ -43,11 +43,14 @@ function boundaryValues(reqs, key, defaults) {
 /**
  * Profiles of the dimensions to try: each key with the values to try
  * @param {object[]} reqs
- * @param {Map<number, {rarity: number}>} pets
+ * @param {Map<number, {rarity: number, tags: string[]}>} pets
  * @returns {[string, unknown[]][]}
  */
 function coverageDimensions(reqs, pets) {
-	const listedPets = [...new Set(reqs.flatMap(r => get(r, "validPetTypeIds", [])))].sort(byNumber);
+	// Pets listed by id, and every pet carrying a tag an outcome asks for
+	const askedTags = new Set(reqs.flatMap(r => get(r, "petTags", [])));
+	const taggedPets = [...pets].filter(([, pet]) => pet.tags.some(tag => askedTags.has(tag))).map(([id]) => id);
+	const listedPets = [...new Set([...reqs.flatMap(r => get(r, "validPetTypeIds", [])), ...taggedPets])].sort(byNumber);
 	const petProfiles = [
 		null,
 		...listedPets.filter(id => pets.has(id)).map(id => [id, pets.get(id).rarity]),
@@ -136,6 +139,21 @@ function isPetTypeCovered(r, pet) {
 }
 
 /**
+ * Whether the pet tag requirement accepts the pet of the profile (a pet known only by its rarity has no tag)
+ * @param {object} r requirements
+ * @param {[number, number] | null} pet type and rarity, null without pet
+ * @param {Map<number, {tags: string[]}>} pets
+ * @returns {boolean}
+ */
+function isPetTagCovered(r, pet, pets) {
+	if (!Object.hasOwn(r, "petTags")) {
+		return true;
+	}
+	const tags = pet === null ? [] : pets.get(pet[0])?.tags ?? [];
+	return r.petTags.some(tag => tags.includes(tag));
+}
+
+/**
  * Whether the pet rarity requirement accepts the pet of the profile
  * @param {object} r requirements
  * @param {[number, number] | null} pet type and rarity, null without pet
@@ -152,15 +170,17 @@ function isPetRarityCovered(r, pet) {
  * Whether an outcome with these requirements is valid for the profile
  * @param {object} r requirements
  * @param {object} profile
+ * @param {Map<number, {tags: string[]}>} pets
  * @returns {boolean}
  */
-function isProfileCovered(r, profile) {
+function isProfileCovered(r, profile, pets) {
 	return areLevelsCovered(r, profile)
 		&& areBelongingsCovered(r, profile)
 		&& areStatsCovered(r, profile)
 		&& isClassCovered(r, profile.class)
 		&& isPetTypeCovered(r, profile.pet)
 		&& isPetRarityCovered(r, profile.pet)
+		&& isPetTagCovered(r, profile.pet, pets)
 		&& !Object.hasOwn(r, "campaignCurrentMissionId");
 }
 
@@ -199,7 +219,7 @@ function* profilesOf(dims) {
  * Coverage: every player profile must have at least one valid outcome of the possibility
  * @param {string} name possibility
  * @param {any[]} outs outcomes of the possibility
- * @param {Map<number, {rarity: number}>} pets
+ * @param {Map<number, {rarity: number, tags: string[]}>} pets
  * @returns {string | null} the error for the first uncovered profile
  */
 export function checkCoverage(name, outs, pets) {
@@ -208,7 +228,7 @@ export function checkCoverage(name, outs, pets) {
 		return null;
 	}
 	for (const profile of profilesOf(coverageDimensions(reqs, pets))) {
-		if (!reqs.some(r => isProfileCovered(r, profile))) {
+		if (!reqs.some(r => isProfileCovered(r, profile, pets))) {
 			return uncoveredProfileError(name, profile);
 		}
 	}

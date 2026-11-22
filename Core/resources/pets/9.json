@@ -3,5 +3,6 @@
   "diet": "herbivorous",
   "force": 10,
   "feedDelay": 3,
-  "speed": 6
+  "speed": 6,
+  "tags": ["keenNose"]
 }

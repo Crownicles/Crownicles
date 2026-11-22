@@ -13,7 +13,7 @@
 
 ## Conditions (`requirements`)
 
-Plages `{"min": x, "max": y}` (bornes incluses, l'une ou l'autre facultative) : `level`, `karma`, `health` (vie actuelle), `attack`, `defense`, `speed` (statistiques avec l'équipement). Listes : `validClassIds`, `validPetTypeIds` (le joueur doit avoir un familier de ce type). `petRarity` : plage sur la rareté du familier (il en faut un). `campaignCurrentMissionId` : n'y touche pas. Cuisine, matériaux, enchantements et amélioration de l'équipement : voir plus bas.
+Plages `{"min": x, "max": y}` (bornes incluses, l'une ou l'autre facultative) : `level`, `karma`, `health` (vie actuelle), `attack`, `defense`, `speed` (statistiques avec l'équipement). Listes : `validClassIds`, `validPetTypeIds` (le joueur doit avoir un familier de ce type), `petTags` (son familier a au moins un de ces tags, voir « Familiers »). `petRarity` : plage sur la rareté du familier (il en faut un). `campaignCurrentMissionId` : n'y touche pas. Cuisine, matériaux, enchantements et amélioration de l'équipement : voir plus bas.
 
 ### Seuils calés sur les joueurs réguliers en production
 
@@ -91,15 +91,20 @@ Il commence à 0 et n'est pas borné. Une issue le change de -1 à -5 pour une p
 
 Voir `Core/resources/pets/<id>.json` (rareté) et `Lang/fr/models.json`, clé `pets` (nom `<id>_male`). Exemples parlants : 1 Chien, 3 Chat, 15 Serpent, 20 Renard, 24 Singe, 28 Loup, 54 Perroquet, 58 Aigle, 64 Dragon, 65 T-Rex, 84 Diplodocus, 91 Gorille, 95 Corbeau.
 
-Familles à viser en entier quand l'issue repose sur une capacité (le texte dit alors *votre familier*) :
+**Capacités : la condition `petTags`.** Quand l'issue repose sur une capacité que plusieurs familiers partagent, la condition vise le tag, pas une liste d'ids : `"petTags": ["flying"]`. Le familier doit avoir au moins un des tags listés. Le texte dit alors *votre familier*, et ce qu'il fait convient à chaque animal qui a le tag. Un nouveau familier tagué est pris en compte tout seul.
 
-| Capacité | `validPetTypeIds` |
-|---|---|
-| vole | 11 Oiseau, 12 Canard, 26 Hibou, 27 Chauve-souris, 33 Cygne, 34 Flamant rose, 54 Perroquet, 58 Aigle, 62 Colombe, 64 Dragon, 68 Canard écarlate, 83 Phénix, 94 Merle, 95 Corbeau, 97 Oie |
-| a du flair | 1 Chien, 2 Caniche, 3 Chat, 4 Chat noir, 9 Porc, 20 Renard, 21 Ours, 28 Loup, 29 Sanglier, 56 Tigre, 57 Lion, 60 Léopard |
-| porte le joueur sur son dos | 13 Étalon, 47 Zèbre, 49 Dromadaire, 50 Chameau, 63 Licorne, 87 Cerf, 88 Buffle d'eau, 96 Âne, 98 Élan |
-| très lourd | 31 Hippopotame, 46 Éléphant, 48 Rhinocéros, 61 Mammouth, 65 T-Rex, 84 Diplodocus, 89 Bison |
-| intimide un autre animal | 21 Ours, 28 Loup, 42 Ours polaire, 56 Tigre, 57 Lion, 60 Léopard, 64 Dragon, 65 T-Rex |
+| Tag | Capacité | Familiers (dans `Core/resources/pets/<id>.json`, champ `tags`) |
+|---|---|---|
+| `flying` | vole | 11 Oiseau, 12 Canard, 26 Hibou, 27 Chauve-souris, 33 Cygne, 34 Flamant rose, 54 Perroquet, 58 Aigle, 62 Colombe, 64 Dragon, 68 Canard écarlate, 83 Phénix, 94 Merle, 95 Corbeau, 97 Oie, 102 Féetaud |
+| `keenNose` | a du flair (piste, cachette, guet-apens) | 1 Chien, 2 Caniche, 3 Chat, 4 Chat noir, 9 Porc, 20 Renard, 21 Ours, 28 Loup, 29 Sanglier, 37 Blaireau, 42 Ours polaire, 56 Tigre, 57 Lion, 60 Léopard |
+| `mount` | porte le joueur sur son dos | 13 Étalon, 47 Zèbre, 49 Dromadaire, 50 Chameau, 63 Licorne, 87 Cerf, 88 Buffle d'eau, 96 Âne, 98 Élan |
+| `heavy` | très lourd (pont, glace, barque) | 31 Hippopotame, 46 Éléphant, 48 Rhinocéros, 61 Mammouth, 65 T-Rex, 84 Diplodocus, 89 Bison |
+| `intimidating` | fait peur aux gens et aux bêtes | 21 Ours, 28 Loup, 42 Ours polaire, 45 Crocodile, 48 Rhinocéros, 56 Tigre, 57 Lion, 60 Léopard, 64 Dragon, 65 T-Rex |
+| `aquatic` | vit dans l'eau | 71 Poulpe, 73 à 82 (poissons, Méduse, Requin, Baleine, Crevette, Homard, Dauphin), 85 Escargot, 86 Crabe, 103 Oursin |
+| `nocturnal` | vit la nuit | 4 Chat noir, 20 Renard, 26 Hibou, 27 Chauve-souris, 28 Loup, 35 Raton laveur, 36 Putois, 37 Blaireau, 41 Hérisson, 93 Rat, 99 Jack-o'-lantern, 100 Fantôme, 101 Vampire |
+| `fire` | crache ou porte le feu | 64 Dragon, 83 Phénix |
+
+**Quand créer un tag.** Crée-le quand une capacité est partagée par plusieurs familiers (au moins 4 ou 5) et qu'elle peut resservir dans d'autres events : ajoute-le à `PetConstants.TAGS` (`Lib/src/constants/PetConstants.ts`) et dans le champ `tags` de chaque familier concerné, puis mets ce tableau à jour. Ne crée pas de tag pour un seul familier ou pour un comportement propre à quelques animaux : le chien qui aboie, les petits oiseaux qui se posent sur un instrument ou l'aileron du requin et du dauphin restent des `validPetTypeIds`. Pas de tag non plus quand une donnée existe déjà (le régime `diet`, la rareté `petRarity`).
 
 ## Exemple tiré de l'event 19 (réécrit) : la possibilité `butch` (dépecer un renard mort)
 

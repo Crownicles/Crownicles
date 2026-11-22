@@ -6,6 +6,7 @@ import {
 } from "../../core/database/game/models/PlayerActiveObjects";
 import { PetDataController } from "../Pet";
 import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
+import { PetTag } from "../../../../Lib/src/constants/PetConstants";
 import {
 	isRangeValid, OutcomeRange
 } from "./OutcomeRange";
@@ -37,6 +38,11 @@ export type OutcomeRequirements = {
 	speed?: OutcomeRange;
 	campaignCurrentMissionId?: number;
 	validPetTypeIds?: number[];
+
+	/**
+	 * The player's pet has at least one of these tags (an ability shared by several pets, such as flying)
+	 */
+	petTags?: PetTag[];
 	petRarity?: OutcomeRange;
 	validClassIds?: number[];
 
@@ -126,7 +132,7 @@ function areStatRequirementsValid(
 async function areProgressionRequirementsValid(req: OutcomeRequirements, player: Player): Promise<boolean> {
 	return await isCampaignMissionValid(req.campaignCurrentMissionId, player)
 		&& await isPetTypeValid(req.validPetTypeIds, player)
-		&& await isPetRarityValid(req.petRarity, player)
+		&& await isPetDataValid(req, player)
 		&& await areMaterialsValid(req.materials, player);
 }
 
@@ -178,27 +184,29 @@ async function isPetTypeValid(validPetTypeIds: number[] | undefined, player: Pla
 }
 
 /**
- * Check if the player's pet rarity matches the requirement
- * @param petRarityRange - The required pet rarity range
+ * Check if the player's pet rarity and tags match the requirement
+ * @param req - The requirements, of which the pet rarity range and the pet tags are checked
  * @param player - The player to check
  */
-async function isPetRarityValid(petRarityRange: OutcomeRange | undefined, player: Player): Promise<boolean> {
-	if (!petRarityRange) {
+async function isPetDataValid(req: OutcomeRequirements, player: Player): Promise<boolean> {
+	const {
+		petRarity, petTags
+	} = req;
+	if (!petRarity && !petTags) {
 		return true;
 	}
 
-	// Check if player has a pet
 	if (!player.petId) {
 		return false;
 	}
 
-	// Get the player's pet and its rarity from the pet data
 	const petEntity = await PetEntities.getById(player.petId);
-	if (!petEntity) {
+	const petData = petEntity ? PetDataController.instance.getById(petEntity.typeId) : undefined;
+	if (!petData) {
 		return false;
 	}
-	const petData = PetDataController.instance.getById(petEntity.typeId);
-	return petData !== undefined && isRangeValid(petRarityRange, petData.rarity);
+	return isRangeValid(petRarity, petData.rarity)
+		&& (!petTags || petTags.some(tag => petData.hasTag(tag)));
 }
 
 /**

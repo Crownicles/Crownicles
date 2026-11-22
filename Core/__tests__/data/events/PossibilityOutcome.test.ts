@@ -8,6 +8,7 @@ import { InventorySlots } from "../../../src/core/database/game/models/Inventory
 import { PetDataController } from "../../../src/data/Pet";
 import { Materials } from "../../../src/core/database/game/models/Material";
 import { MaterialDataController } from "../../../src/data/Material";
+import { PetConstants, PetTag } from "../../../../Lib/src/constants/PetConstants";
 
 // Mock des dépendances
 vi.mock("../../../src/core/database/game/models/PlayerMissionsInfo");
@@ -255,6 +256,32 @@ describe("PossibilityOutcome Requirements", () => {
 			);
 
 			expect(validOutcomes).toHaveLength(0);
+		});
+	});
+
+	describe("Pet tag requirements", () => {
+		const isValid = async (petTags: PetTag[]): Promise<boolean> =>
+			(await getValidOutcomesForPlayer({ outcome: { requirements: { petTags } } }, mockPlayer as Player)).length === 1;
+
+		beforeEach(() => {
+			vi.mocked(PetEntities.getById).mockResolvedValue({ typeId: 58 } as any);
+			vi.mocked(PetDataController.instance.getById).mockReturnValue({
+				rarity: 6,
+				hasTag: (tag: string) => tag === PetConstants.TAGS.FLYING
+			} as any);
+		});
+
+		it("should accept a pet carrying one of the tags", async () => {
+			expect(await isValid([PetConstants.TAGS.KEEN_NOSE, PetConstants.TAGS.FLYING])).toBe(true);
+		});
+
+		it("should reject a pet carrying none of the tags", async () => {
+			expect(await isValid([PetConstants.TAGS.MOUNT])).toBe(false);
+		});
+
+		it("should reject a player without a pet", async () => {
+			mockPlayer = { ...mockPlayer, petId: null } as Partial<Player>;
+			expect(await isValid([PetConstants.TAGS.FLYING])).toBe(false);
 		});
 	});
 

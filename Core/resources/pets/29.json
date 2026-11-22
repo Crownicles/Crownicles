@@ -2,5 +2,6 @@
   "rarity": 2,
   "force": 14,
   "feedDelay": 3,
-  "speed": 18
+  "speed": 18,
+  "tags": ["keenNose"]
 }

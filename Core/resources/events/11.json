@@ -41,9 +41,8 @@
         },
         "5": {
           "requirements": {
-            "validPetTypeIds": [
-              1,
-              28
+            "petTags": [
+              "keenNose"
             ]
           },
           "effect": "occupied",
@@ -194,22 +193,8 @@
         },
         "4": {
           "requirements": {
-            "validPetTypeIds": [
-              11,
-              12,
-              26,
-              27,
-              33,
-              34,
-              54,
-              58,
-              62,
-              64,
-              68,
-              83,
-              94,
-              95,
-              97
+            "petTags": [
+              "flying"
             ]
           },
           "effect": "occupied",

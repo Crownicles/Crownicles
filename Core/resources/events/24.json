@@ -28,15 +28,8 @@
         },
         "4": {
           "requirements": {
-            "validPetTypeIds": [
-              21,
-              42,
-              48,
-              56,
-              57,
-              60,
-              64,
-              65
+            "petTags": [
+              "intimidating"
             ]
           },
           "effect": "occupied",

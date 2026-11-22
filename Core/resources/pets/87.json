@@ -2,5 +2,6 @@
   "rarity": 5,
   "force": 16,
   "feedDelay": 3,
-  "speed": 24
+  "speed": 24,
+  "tags": ["mount"]
 }

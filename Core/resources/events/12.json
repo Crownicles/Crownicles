@@ -37,14 +37,8 @@
         },
         "4": {
           "requirements": {
-            "validPetTypeIds": [
-              31,
-              46,
-              48,
-              61,
-              65,
-              84,
-              89
+            "petTags": [
+              "heavy"
             ]
           },
           "effect": "occupied",
@@ -104,16 +98,8 @@
         },
         "4": {
           "requirements": {
-            "validPetTypeIds": [
-              13,
-              47,
-              49,
-              50,
-              63,
-              87,
-              88,
-              96,
-              98
+            "petTags": [
+              "mount"
             ]
           }
         },
@@ -173,19 +159,8 @@
         },
         "5": {
           "requirements": {
-            "validPetTypeIds": [
-              1,
-              2,
-              3,
-              4,
-              9,
-              20,
-              21,
-              28,
-              29,
-              56,
-              57,
-              60
+            "petTags": [
+              "keenNose"
             ]
           },
           "randomItem": {},

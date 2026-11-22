@@ -98,12 +98,8 @@
         },
         "4": {
           "requirements": {
-            "validPetTypeIds": [
-              21,
-              28,
-              56,
-              57,
-              65
+            "petTags": [
+              "intimidating"
             ]
           },
           "money": 60,

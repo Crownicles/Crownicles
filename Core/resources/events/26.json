@@ -211,14 +211,8 @@
         },
         "5": {
           "requirements": {
-            "validPetTypeIds": [
-              13,
-              47,
-              98,
-              63,
-              87,
-              49,
-              50
+            "petTags": [
+              "mount"
             ]
           },
           "effect": "occupied",

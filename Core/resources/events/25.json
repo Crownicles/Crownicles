@@ -92,14 +92,8 @@
         },
         "5": {
           "requirements": {
-            "validPetTypeIds": [
-              1,
-              2,
-              20,
-              21,
-              28,
-              37,
-              42
+            "petTags": [
+              "keenNose"
             ]
           },
           "karma": 10,

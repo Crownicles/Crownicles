@@ -20,6 +20,7 @@ interface OutcomeRequirements {
 	petRarity?: Range;
 	validClassIds?: number[];
 	validPetTypeIds?: number[];
+	petTags?: string[];
 	campaignCurrentMissionId?: number;
 	materials?: { quantity?: Range };
 	enchantment?: object;
@@ -40,10 +41,13 @@ interface Event {
 
 const RANGE_KEYS = ['level', 'karma', 'health', 'attack', 'defense', 'speed', 'cookingLevel', 'weaponLevel', 'armorLevel'] as const;
 
-const PET_RARITIES: Record<number, number> = Object.fromEntries(
+const PETS: Record<number, { rarity: number; tags: string[] }> = Object.fromEntries(
 	fs.readdirSync(PETS_DIR)
 		.filter(f => f.endsWith('.json'))
-		.map(f => [parseInt(f, 10), JSON.parse(fs.readFileSync(path.join(PETS_DIR, f), 'utf-8')).rarity as number])
+		.map(f => {
+			const pet = JSON.parse(fs.readFileSync(path.join(PETS_DIR, f), 'utf-8'));
+			return [parseInt(f, 10), { rarity: pet.rarity as number, tags: (pet.tags ?? []) as string[] }];
+		})
 );
 
 /**
@@ -94,7 +98,13 @@ function buildDimensions(outcomes: Outcome[]): Dimension[] {
 		accepts: (o, value) => !o.requirements?.validClassIds || o.requirements.validClassIds.includes(value as number)
 	});
 
-	const petTypes = [...new Set(outcomes.flatMap(o => o.requirements?.validPetTypeIds ?? []))];
+	// Pets listed by id, and every pet carrying a tag an outcome asks for
+	const askedTags = new Set(outcomes.flatMap(o => o.requirements?.petTags ?? []));
+	const petTypes = [...new Set([
+		...outcomes.flatMap(o => o.requirements?.validPetTypeIds ?? []),
+		...Object.entries(PETS).filter(([, pet]) => pet.tags.some(tag => askedTags.has(tag)))
+			.map(([type]) => parseInt(type, 10))
+	])];
 	const rarities = new Set<number>();
 	for (const o of outcomes) {
 		const range = o.requirements?.petRarity;
@@ -104,19 +114,23 @@ function buildDimensions(outcomes: Outcome[]): Dimension[] {
 			}
 		}
 	}
-	const pets: ({ type: number; rarity: number } | null)[] = [
+	type PetProfile = { type: number; rarity: number; tags: string[] } | null;
+	const pets: PetProfile[] = [
 		null,
-		...petTypes.map(type => ({ type, rarity: PET_RARITIES[type] ?? 0 })),
-		...[...rarities].filter(r => r >= 1).map(rarity => ({ type: -1, rarity }))
+		...petTypes.map(type => ({ type, rarity: PETS[type]?.rarity ?? 0, tags: PETS[type]?.tags ?? [] })),
+		...[...rarities].filter(r => r >= 1).map(rarity => ({ type: -1, rarity, tags: [] }))
 	];
 	dimensions.push({
 		name: 'pet',
 		values: pets,
-		constrains: o => o.requirements?.validPetTypeIds !== undefined || o.requirements?.petRarity !== undefined,
+		constrains: o => o.requirements?.validPetTypeIds !== undefined || o.requirements?.petRarity !== undefined || o.requirements?.petTags !== undefined,
 		accepts: (o, value) => {
-			const pet = value as { type: number; rarity: number } | null;
+			const pet = value as PetProfile;
 			const req = o.requirements;
 			if (req?.validPetTypeIds && (!pet || !req.validPetTypeIds.includes(pet.type))) {
+				return false;
+			}
+			if (req?.petTags && (!pet || !req.petTags.some(tag => pet.tags.includes(tag)))) {
 				return false;
 			}
 			return !req?.petRarity || (pet !== null && isInRange(req.petRarity, pet.rarity));
