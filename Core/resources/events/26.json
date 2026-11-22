@@ -38,8 +38,7 @@
         "1": {
           "effect": "occupied",
           "lostTime": 10,
-          "money": 75,
-          "karma": 1
+          "money": 75
         },
         "2": {
           "requirements": {

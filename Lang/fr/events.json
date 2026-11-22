@@ -931,7 +931,7 @@
         "text": "S'éloigner de la potence.",
         "outcomes": {
           "0": "Les spectacles de rue ne vous attirent guère. Vous contournez l'attroupement et quittez Ville Forte par la route des remparts, sous les cris du crieur qui annonce déjà la prochaine séance.",
-          "1": "En contournant la foule, vous ramassez une petite bourse tombée dans une ruelle. Vous la rapportez au crieur, qui retrouve vite son propriétaire parmi les voyageurs. Soulagé, celui-ci vous en laisse une partie pour votre honnêteté.",
+          "1": "En contournant la foule, vous ramassez une petite bourse tombée dans une ruelle, sans doute de la poche d'un spectateur trop pris par la pièce. Vous en comptez le contenu et repartez en sifflotant.",
           "2": "Le crieur vous reconnaît et cesse aussitôt de héler les passants. Les villageois serrent leur bourse contre eux en vous regardant partir, et un enfant vous suit jusqu'au bout des remparts pour s'assurer que vous quittez bien le village.",
           "3": "Vous n'aviez jamais vu de pendaison, même pour rire. Quand la trappe claque et que le condamné se met à gigoter au bout de sa corde, votre estomac se retourne, et la nausée ne vous quitte plus de la journée.",
           "4": "Pendant que tout le village applaudit, un rôdeur sort d'une maison vide, les bras chargés. Vous le rattrapez en quelques enjambées et le plaquez au sol. Quand vous ramenez le butin sur la place, ses propriétaires vous offrent un objet pour vous remercier.",
