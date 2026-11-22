@@ -7,7 +7,7 @@ Ces events ont été réécrits par un contributeur, Gabriel (GabrieLre). Son br
 - **Applique le skill `write-event-texts`** : `.github/skills/write-event-texts/SKILL.md`. Lis-le en entier : c'est la référence. Points qui reviennent dans son brouillon :
   - pas de religion structurée (Kyutisme, prêtre, Église, Minotaure, « envoyé divin », « sceau divin », résurrection) ; une superstition légère reste possible ;
   - pas de discours direct ni de guillemets dans le texte ;
-  - issues de 150 à 280 caractères, intro de 200 à 300 (400 au plus) ; ses textes font souvent 300 à 600 caractères : resserre ;
+  - issues de la longueur de ce qu'elles racontent (400 caractères au plus), intro de 200 à 300 (400 au plus) ; ses textes font souvent 300 à 600 caractères : resserre ce qui ne sert pas l'action ;
   - phrases simples, orthographe et accords corrects, apostrophe droite `'` (il utilise souvent `’`), pas de « ! » en série, pas de points de suspension finaux ;
   - pas de montant ni de durée chiffrée dans le texte (« après 45 minutes », « 15 minutes ») ;
   - le cas général d'abord : chaque possibilité a au moins une issue sans condition, ou une paire de conditions complémentaires ; une condition fait basculer la situation, elle ne pénalise jamais une force ;

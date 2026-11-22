@@ -11,7 +11,8 @@ import {
 const TEXT_LENGTHS = {
 	intro: [180, 420],
 	choice: [8, 90],
-	outcome: [90, 300]
+	// Bounds of what is reasonable, not a target: an outcome is as long as what it tells (SKILL.md)
+	outcome: [60, 420]
 };
 
 // Python's Unicode \w and \s, so that the checks behave like the original Python validator
@@ -108,7 +109,7 @@ function checkText(report, path, text, { ref = "", kind = "outcome" } = {}) {
 	const [low, high] = TEXT_LENGTHS[kind];
 	const length = [...text].length;
 	if (length < low || length > high) {
-		report.warnings.push(`${path}: ${length} chars (target ${low}-${high})`);
+		report.warnings.push(`${path}: ${length} chars (reasonable ${low}-${high})`);
 	}
 }
 

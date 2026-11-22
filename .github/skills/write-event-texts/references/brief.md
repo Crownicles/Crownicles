@@ -37,7 +37,7 @@ Ne modifie **aucun** autre fichier, et surtout pas le dépôt Crownicles.
 4. **Respecter le canon du lieu** : ne contredis pas la description, ne suppose comme proches que les voisins listés, et ne suppose pas la destination suivante du joueur. Dans une ville, ne nie pas ce que le menu propose (auberge du jeu, forgeron, boutiques), voir section 5 « Les villes : ce qu'un event peut en dire ».
 5. **Style** (section 14) :
    - **pas de discours direct** : ni guillemets « » ou " ", ni « dit-il », ni réplique entre apostrophes ; les paroles passent au style indirect ;
-   - introduction de 200 à 300 caractères (lieu, situation, accroche), jusqu'à 400 quand elle pose un personnage ou un enjeu que les choix utilisent ; jamais de points de suspension finaux ; issue de 150 à 280 caractères ; libellé de choix court (verbe à l'infinitif) ;
+   - introduction de 200 à 300 caractères (lieu, situation, accroche), jusqu'à 400 quand elle pose un personnage ou un enjeu que les choix utilisent ; jamais de points de suspension finaux ; issue de la longueur de ce qu'elle raconte, souvent 150 à 280 caractères, mais une ou deux phrases suffisent pour une issue sans histoire et jusqu'à 400 pour une scène avec un retournement (des longueurs variées, pas un gabarit) ; libellé de choix court (verbe à l'infinitif) ;
    - montrer la condition plutôt que la nommer ; registre sobre (pas de « héros de légende ») ; au plus un point d'exclamation par texte ;
    - typographie : apostrophe droite `'`, pas de tiret cadratin `—`, espace avant `: ; ! ?` ; on vouvoie le joueur ;
    - conserve tels quels les éventuels placeholders (`{{...}}`, `{emote:...}`, `$t(...)`).
