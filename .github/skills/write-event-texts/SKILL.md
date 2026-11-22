@@ -76,6 +76,9 @@ Le français (`Lang/fr`) est la référence. Depuis l'abandon de Crowdin (#5181)
   - Pas de « Vous voyez » en ouverture.
 - **Issue : 150 à 280 caractères.** C'est une petite scène qui se tient : ce que fait le joueur, ce qui se passe, et la conséquence. Le décor se limite à ce qui sert l'action, avec un détail concret au plus.
 - **Choix : un libellé court**, avec un verbe à l'infinitif.
+  - Il dit l'action, sans détail : les détails vont dans l'issue. *Prêter main-forte au pêcheur en difficulté* devient *Aider le pêcheur* ; *Chercher un chemin pour contourner l'obstacle* devient *Contourner l'obstacle*.
+  - Il annonce la réussite visée, pas une tentative : *Faire fuir le chien*, pas *Essayer de faire fuir le chien*. C'est l'issue qui dit si ça marche.
+  - Pas de « quand même » ni de jugement sur le choix : *Rester sur le sentier principal*, pas *Traverser quand même par le sentier principal*.
 - **Ne pas déplacer un event.** Garde le déclencheur de `develop`. L'event 10 avait glissé du Lac Mirage à la Rivière Vacarme, qui avait déjà deux events au bord de l'eau.
 - **Ne pas copier un autre event.** Quand deux events se ressemblent, leurs choix doivent différer. L'arbre tombé de la Forêt Du Vieillard (event 1) reprenait les choix de celui du Chemin aux Loups (event 55) ; on y a remplacé « escalader » par « rebrousser chemin ».
 - **Fidélité à l'original.**
@@ -120,14 +123,20 @@ L'un des buts de la réécriture : quand le joueur clique sur un bouton, il sait
 ### Combien et lesquelles
 
 - **Par possibilité :** 3 à 6 issues, dont au moins une sans condition.
+  - Des paliers complémentaires seuls (vitesse faible / moyenne / forte) ne suffisent pas : un joueur donné retomberait toujours sur la même issue. Ajoute une ou deux issues sans condition pour la variété (event 12, emprunter le pont et traverser à la nage).
 - **Pour tout l'event :**
   - environ 2 à 4 fois plus d'issues que l'original ;
   - environ les trois quarts sont conditionnelles ;
   - une ou deux possibilités nouvelles au plus.
-- **Le cas général d'abord.** Chaque possibilité traite le cas général sans condition, ou avec une paire de conditions complémentaires (défense `max` 519 / `min` 520). Une issue conditionnelle fait basculer la situation pour un profil particulier ; elle ne doit jamais pénaliser une force.
+- **Le cas général d'abord.** Chaque possibilité traite le cas général sans condition, ou avec une paire de conditions complémentaires (défense `max` 519 / `min` 520). Une issue conditionnelle fait basculer la situation pour un profil particulier ; elle ne doit jamais pénaliser une force *par accident*, c'est-à-dire en réservant aux forts un risque que la situation fait courir à tout le monde.
   - Faux (event 2, ignorer le chien) : seule une défense ≥ 400 donnait une issue où le chien attaque. Les autres joueurs n'étaient jamais attaqués : avoir une grosse défense ajoutait un risque.
   - Juste : le chien attaque tout le monde (défense `max` 519, -20 PV) ; une bonne armure réduit les dégâts (défense `min` 520, -8 PV).
   - Juste aussi, sans complémentaire (event 10, aider le pêcheur) : une attaque faible ajoute un risque de chute, mais le cas général, tirer la ligne avec lui, est déjà traité sans condition.
+- **Le revers d'une force.** Toutes les stats ne doivent pas jouer dans le même sens : quand c'est la force elle-même qui cause le problème, une issue où un joueur fort s'en sort moins bien est bienvenue. Elle s'ajoute aux issues habituelles de ce joueur, sans les remplacer.
+  - Le pont pourri cède sous le poids d'une lourde armure (event 12, défense `min` 740) ; une armure gorgée d'eau tire le nageur vers le fond.
+  - Une attaque trop forte casse la canne du pêcheur (event 10, attaque `min` 780) ou défigure le marchand qu'on voulait juste bousculer.
+  - Un coureur trop rapide rate la marche effondrée (event 2, vitesse `min` 500).
+  - Le malus reste petit (étourdi, quelques PV, quelques pièces) : c'est un clin d'œil, pas une punition.
 - **Chaque profil doit avoir au moins une issue possible**, karma et familier compris.
   - Le test `eventsRequirements.test.ts` ignore le karma et les familiers.
   - Or une liste d'issues valides vide fait planter `pickRandomOutcome` : `random-js` lève une erreur sur `pick([])`. Le choix reste affiché : seul un `condition` posé sur la possibilité elle-même la masque.
@@ -142,6 +151,9 @@ L'un des buts de la réécriture : quand le joueur clique sur un bouton, il sait
   - `randomItem` est un objet ;
   - `lostTime` est du temps perdu ;
   - `effect` doit être plausible : `sleeping` quand le joueur dort, `drunk` quand il a bu.
+  - `confounded` veut dire **étourdi** (pas « confus ») : c'est l'altération d'une petite blessure, d'un coup ou d'une chute légère (event 10, tomber dans le lac avec le pêcheur ; event 11, une entaille au bras). Garde `hurt` pour une vraie blessure, et ne mets aucune altération pour une égratignure.
+- **La gravité du texte suit la perte de vie.** Un chien qui mord *encore et encore* ne colle pas à -25 PV ; une mâchoire de piège qui s'enfonce dans la cheville vaut -40 PV. Ajuste le texte ou le chiffre.
+- **Une perte de temps plutôt qu'une altération lourde** quand la situation est bénigne : se perdre dans une auberge en ruine, c'est fort ; mettre longtemps à en ressortir (`occupied`), c'est juste.
 - **Le mot du texte suit le seuil**, et inversement.
 
 ### L'échelle des seuils
@@ -174,6 +186,8 @@ L'échelle est calée sur les 130 joueurs réguliers en production, c'est-à-dir
 - **De la variété dans les seuils.** Les joueurs réguliers sont nombreux tout en haut, avec un creux autour du niveau 80 : ne mets pas tous les seuils tout en haut. Quelques issues vraiment réservées aux meilleurs, qu'on découvre tard, c'est voulu ; mais chaque event a aussi des issues pour les joueurs faibles et moyens.
 - **Un niveau 60 est encore le début du jeu.**
 - **Classes et familiers.** Une condition sur une seule classe ou un seul type de familier peut ne toucher que 1 à 2 % des joueurs : c'est voulu. Des issues rares, avec une part de joueurs concernés très variable, rendent l'event plus riche.
+  - Quand l'issue repose sur une capacité (voler, flairer, porter le joueur, nager), vise **toute la famille** d'animaux qui l'ont, pas un ou deux : listes dans `reference.md`, section « Familiers ». Le texte dit alors *votre familier*, et ce qu'il fait convient à chaque animal de la liste.
+  - Ne mets pas le chien partout : d'autres animaux ont du flair.
 - **Cuisine, matériaux, enchantements et amélioration de l'équipement.** Des conditions existent aussi sur le niveau de cuisine (`cookingLevel`), les matériaux du sac (`materials`), l'enchantement de l'arme ou de l'armure équipée (`enchantment`) et leur amélioration chez le forgeron (`weaponLevel`, `armorLevel`). Une issue peut aussi consommer (`consumeMaterials`) ou donner (`giveMaterials`) des matériaux. Formats et repères en production : `reference.md` de l'atelier, section « Cuisine, matériaux et équipement ».
   - Cuisine : 47 % des joueurs réguliers sont au niveau 0 ; « bon cuisinier » = `min` 70 (10 %), « chef » = `min` 90 (5 %).
   - Les matériaux sont très répandus : une condition de matériau raconte ce que le joueur a dans son sac, pas un joueur rare.
@@ -230,4 +244,5 @@ Les 21 events déjà réécrits (1, 2, 10 à 20, 30, 39, 46, 56, 69, 71, 76, 89)
 - **Relecture de GabrieLre (events 1, 2, 10)** : cas général d'abord, enchaînements logiques, sentiments à la mesure du résultat, animal interprété, event à garder à sa place, choix différents d'un event voisin, demi-tour par un voisin. Voir « Style », « Structure d'un event », « Canon des lieux » et « Combien et lesquelles ».
 - **Brouillon de Gabriel (events 24, 25, 26)** : son brouillon est commité sous son nom, puis repris selon le skill dans un second commit. Voir « Brouillon d'un contributeur ».
 - **Prévisibilité et paliers (le propriétaire et GabrieLre)** : le joueur doit à peu près savoir ce qui va se passer quand il clique ; un malus ou un bonus lié à une stat se gradue en trois paliers au lieu d'un seuil binaire, et les seuils ne sont pas tous tout en haut. Voir « Un choix doit être prévisible » et « L'échelle des seuils ». Appliqué aux events 2, 10, 24, 25 et 26.
+- **Relecture de Gabriel (events 1, 2, 10, 11, 12)** : libellés de choix courts qui visent la réussite, `confounded` (étourdi) pour les petites blessures, gravité du texte à la mesure de la perte de vie, revers d'une force, familles de familiers entières, quelques issues sans condition en plus pour varier. Voir « Structure d'un event », « Texte et mécanique », « Le revers d'une force » et « Classes et familiers ».
 - **Cuisine, matériaux, équipement** : des issues doivent dépendre du niveau de cuisine, des matériaux et des enchantements ou améliorations de l'équipement, et certaines peuvent consommer des matériaux. Voir « L'échelle des seuils ».

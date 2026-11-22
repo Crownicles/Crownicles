@@ -118,3 +118,17 @@ Le relecteur a lu l'event 30 réécrit. Voici ce qui ne va pas, et la règle gé
 | *Les bras chargés de régimes* | Mot ambigu (« régimes » se lit d'abord comme une diète) | **Évite les mots à double sens qui font trébucher** (dis « bananes »). |
 | *puis vous fait reconduire sans que vous ayez vu le duc* | Le relecteur a buté sur la négation (la phrase est correcte, mais elle fait douter) | **Préfère une tournure qui ne fait pas hésiter** (*… et vous fait reconduire. Vous n'aurez pas vu le duc.*). |
 | *Le duc remarque vos cicatrices et votre équipement usé par les routes.* avec la condition `level: {min: 60}` | Niveau 60, c'est encore le début du jeu : le texte décrit un vétéran | **Une condition doit correspondre à ce que le texte raconte.** Un vétéran couvert de cicatrices, c'est le premier dixième des joueurs réguliers (`level` `min` 130) : suis l'échelle de `reference.md`. |
+
+## Retours de relecture (Gabriel, events 1, 2, 10, 11, 12) : à appliquer à tous les events
+
+| Relevé | Problème | Règle |
+|---|---|---|
+| *Prêter main-forte au pêcheur en difficulté* ; *Chercher un chemin pour contourner l'obstacle* | Libellé trop long, encombré de détails | **Libellé court** : l'action seule (*Aider le pêcheur*, *Contourner l'obstacle*). Les détails vont dans l'issue. |
+| *Essayer de faire fuir le chien* ; *Traverser quand même par le sentier principal* | Le libellé annonce un essai, ou juge le choix | **Le libellé vise la réussite** (*Faire fuir le chien*, *Rester sur le sentier principal*). L'issue dit si ça marche. |
+| Une entaille au bras avec `hurt` | `hurt` dure 5 heures : trop lourd pour une petite blessure | **`confounded` = étourdi** (pas « confus ») pour un coup, une chute, une morsure légère ; rien pour une égratignure ; `hurt` pour une vraie blessure. |
+| *il vous mord au mollet, encore et encore* pour -25 PV ; un piège à loups pour -25 PV | La violence du texte ne colle pas à la perte de vie | **Le texte et le chiffre ont la même gravité.** On adoucit le texte ou on augmente la perte (-40 pour le piège). |
+| Se perdre (`lost`) dans une auberge en ruine | Altération disproportionnée | **Une perte de temps (`occupied`) suffit** quand la situation est bénigne. |
+| Tous les malus baissent quand la stat monte | Les stats jouent toujours dans le même sens | **Le revers d'une force** : le pont cède sous une lourde armure, une attaque trop forte casse la canne, un coureur trop rapide rate la marche. Petit malus, en plus des issues habituelles. |
+| Un aigle et un corbeau seulement ; un chien seulement | Liste arbitraire, trop de chiens | **Toute la famille** d'animaux qui ont la capacité (voler, flairer, porter, nager) : listes dans `reference.md`. Le texte dit *votre familier*. |
+| Trois paliers de vitesse complémentaires et rien d'autre | Chaque joueur voit toujours la même issue | **Une ou deux issues sans condition en plus**, pour la variété. |
+| *Pour une fois, le raccourci en était bien un.* sans condition | Le commentaire suppose un joueur expérimenté | **Un commentaire qui suppose un profil va dans une issue conditionnée par ce profil** (ici `level` `min` 120). |
