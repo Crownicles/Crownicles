@@ -116,6 +116,8 @@ Le français (`Lang/fr`) est la référence. Depuis l'abandon de Crowdin (#5181)
   - Pas de mort d'un personnage récurrent.
   - Le joueur ne sauve pas la princesse et n'est pas adoubé : on reste à échelle humaine.
   - L'aléatoire s'explique par un trait de caractère.
+- **Un terme du lore s'explique en quelques mots, et une faction agit selon ses buts.** Le joueur ne connaît pas la bible : *la Charte* seule ne lui dit rien, *la Charte, qui donne la couronne au plus méritant et non au mieux né* lui suffit. Vérifie dans la bible ce que veut chaque faction. Event 26 : un noble du Parti des Lignées, qui veut abolir la Charte, faisait pendre un paysan pour avoir parlé *contre* la Charte ; c'est l'inverse. Évite aussi les mots rares comme *séditieux*.
+- **Pas de passé commun inventé.** Le joueur n'a pas vécu ce que l'intro lui prête (*le paysan qui vous a un jour hébergé*), et il le relirait à chaque passage. Un lien personnel passe par une condition (karma, badge) ou par la scène elle-même.
 - **Personnages nommés** : on suit leur fiche dans la bible. Un lien discret avec le lore est bienvenu s'il est naturel (le Grand Livre de Liard, la Résonance, une faction), sans en faire le sujet.
 
 ## Canon des lieux
@@ -316,6 +318,7 @@ Les 21 events déjà réécrits (1, 2, 10 à 20, 30, 39, 46, 56, 69, 71, 76, 89)
 - **Prévisibilité et paliers (le propriétaire et GabrieLre)** : le joueur doit à peu près savoir ce qui va se passer quand il clique ; un malus ou un bonus lié à une stat se gradue en trois paliers au lieu d'un seuil binaire, et les seuils ne sont pas tous tout en haut. Voir « Un choix doit être prévisible » et « L'échelle des seuils ». Appliqué aux events 2, 10, 24, 25 et 26.
 - **Équipement réellement porté (le propriétaire, event 3)** : pas de pioche ni d'armure supposées ; condition `weaponTags` et tag d'arme `blunt`. Le validateur avertit d'une arme ou d'une armure nommée sans condition qui la garantit. Voir « Texte et mécanique ».
 - **Event 3, chiens et phrases hachées (Gabriel)** : un chien partout où un autre familier ferait l'affaire ; deux phrases courtes au lieu d'une phrase liée. Voir « Classes et familiers » et « Style ».
+- **Event 26, intro confuse (le propriétaire)** : termes du lore jetés sans explication, faction qui agit contre ses propres buts, seigneur installé dans une ville en ruine, passé commun inventé. Voir « Lore ».
 - **Event 71, la bourse aux noyaux** : une ruse sans auteur crédible, découverte trop tard. Voir « Une ruse tient debout des deux côtés ».
 - **Event 3, issues enchaînées (Gabriel)** : les issues d'un même choix s'appuyaient les unes sur les autres (*La pierre ripe*, *Le vacarme*), alors que le joueur n'en lit qu'une. Voir « Chaque issue se lit seule ».
 - **Event 3 (le propriétaire)** : une issue contredisait l'état posé par l'intro (un coffret enfoui depuis longtemps, mais tombé d'une charrette le matin même). Voir « L'intro fixe l'état des choses ».
