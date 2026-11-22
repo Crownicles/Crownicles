@@ -6,6 +6,7 @@ on:
       - '**'
     paths:
       - Lang/**
+      - Lib/src/Language.ts
       - .github/scripts/check-emojis.*
       - .github/scripts/check-translations.*
       - .github/workflows/translations.yml
