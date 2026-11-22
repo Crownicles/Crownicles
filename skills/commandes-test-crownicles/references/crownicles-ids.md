@@ -856,7 +856,7 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 |---|---|
 | 1 | Dans la pénombre de la Forêt Du Vieillard, un chêne déraciné barre le sentier. Son tronc fait bien deux mètres de diamètre, ses branches emm |
 | 2 | Sur les pavés brisés de la Grande Rue, un chien efflanqué au pelage tacheté surgit des ruines d'un ancien comptoir. Il tourne autour de vous |
-| 3 | Alors que vous voyagez sur la Route des Merveilles, vous découvrez un coffret ! Malheureusement, il est verrouillé... |
+| 3 | Sur la Route des Merveilles, entre les étals des marchands ambulants et les échoppes en ruine, votre pied heurte un petit coffret à demi enf |
 | 4 | Vous avez décidé de profiter d'une nuit calme pour continuer votre progression. Le ciel est magnifique et après quelques minutes à le scrute |
 | 5 | Vous avez trouvé une fontaine ! |
 | 6 | Vous vous étiez arrêté dans une grotte pour manger et vous hésitez à repartir... |

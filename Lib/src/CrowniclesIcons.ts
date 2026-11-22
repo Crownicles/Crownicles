@@ -600,6 +600,7 @@ export const CrowniclesIcons: {
 			abandon: "▶️",
 			end: { 0: "▶️" },
 			mineIt: "⛏️",
+			pickLock: "🪝",
 			searchKey: "🔑"
 		},
 		30: {

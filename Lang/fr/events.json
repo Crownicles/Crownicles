@@ -1050,39 +1050,57 @@
     "text": "Les températures dépassant les 30°C depuis plusieurs jours vous accablent. Alors que vos forces commencent à faiblir, incapable de continuer votre route, vous réfléchissez à une stratégie à suivre..."
   },
   "3": {
+    "text": "Sur la Route des Merveilles, entre les étals des marchands ambulants et les échoppes en ruine, votre pied heurte un petit coffret à demi enfoui dans le sable. Ses ferrures sont rouillées, et un lourd cadenas le garde fermé.",
     "possibilities": {
       "abandon": {
+        "text": "Laisser le coffret là où vous l'avez trouvé.",
         "outcomes": {
-          "0": "Vous passez votre chemin : le vol, c'est mal, et ce coffret ne vous appartient pas !",
-          "1": "Vous décidez de ne pas vous approcher du petit coffre, estimant qu'il ne vaut pas un arrêt qui vous ferait perdre du temps précieux."
-        },
-        "text": "Abandonner le coffret à l'endroit où vous l'avez trouvé."
-      },
-      "end": {
-        "outcomes": {
-          "0": "C'est sûrement un piège ! En tout cas, il est hors de question que vous vous approchiez plus près du coffret ! Vous continuez calmement votre route."
+          "0": "Ce coffret n'est pas à vous, et son propriétaire le cherche peut-être. Vous le reposez dans le sable, là où vous l'avez trouvé, et reprenez votre route entre les étals, la conscience tranquille.",
+          "1": "Un vieux coffret rouillé ne vaut sûrement pas qu'on perde du temps à l'ouvrir. Vous le laissez dans le sable et reprenez votre route sans un regard pour les échoppes en ruine.",
+          "2": "Vous reposez le coffret. Un marchand ambulant accourt : il est tombé de sa charrette ce matin. Il vous reconnaît et sait qu'on peut vous faire confiance. Soulagé, il vous glisse quelques pièces.",
+          "3": "Vous tournez le dos au coffret, mais votre singe, lui, s'en empare et file entre les étals. Le temps de le rattraper et de remettre le coffret à sa place, vous avez perdu un bon moment.",
+          "4": "Vous vous éloignez du coffret, mais un marchand vous a vu tourner autour. Il vous reconnaît et crie au voleur. Vous devez vider votre sac devant tout le marché pour prouver que vous n'avez rien pris."
         }
       },
       "mineIt": {
+        "text": "Attaquer le cadenas à coups de pioche.",
         "outcomes": {
-          "0": "Après avoir perdu 30 minutes à casser la serrure, vous découvrez que le coffre est vide !",
-          "1": "Après avoir perdu 30 minutes à exploser la serrure, vous découvrez que le coffre est vide !",
-          "2": "Après avoir perdu 15 minutes à exploser la serrure, vous découvrez quelques pièces d'or !"
-        },
-        "text": "Attaquer le cadenas à coups de pioche."
+          "0": "Vous frappez le cadenas à grands coups de pioche. Il finit par céder, mais le coffret ne contient que du sable et une vieille étoffe mangée par les mites. Tout ce travail pour rien.",
+          "1": "Trois coups de pioche suffisent : le cadenas rouillé vole en éclats. Au fond du coffret, sous une étoffe usée, vous trouvez quelques pièces oubliées depuis longtemps.",
+          "2": "Votre pioche ricoche sur le cadenas et vous frappe la main. Vous vous acharnez encore un moment, les doigts endoloris, puis vous renoncez. Le coffret reste fermé.",
+          "3": "D'un seul coup bien placé, vous faites sauter le cadenas sans abîmer le coffret. À l'intérieur, une belle poignée de pièces vous attend, soigneusement enveloppée dans une étoffe.",
+          "4": "Le vacarme attire les marchands ambulants. L'un d'eux vous reconnaît et ameute les autres. Vous laissez retomber la pioche, abandonnez le coffret et filez avant que l'affaire ne tourne mal.",
+          "5": "Avant même que vous leviez la pioche, votre gorille saisit le coffret et en arrache le couvercle d'un seul geste. À l'intérieur, une bourse bien garnie a survécu au traitement."
+        }
       },
       "searchKey": {
+        "text": "Chercher la clef autour du coffret.",
         "outcomes": {
-          "0": "Après 50 minutes de recherches, vous trouvez la clef ! Enterrée juste à côté du coffre, elle vous permet de découvrir de nombreuses pièces d'or !",
-          "1": "Après une heure de recherches, vous trouvez la clef ! Enterrée juste à côté du coffre, elle vous permet de découvrir quelques pièces d'or !",
-          "2": "Après 40 minutes de recherches, vous trouvez la clef ! Enterrée juste à côté du coffre, elle est tellement endommagée qu'il vous est impossible d'ouvrir le coffre ! Vous finissez par abandonner et laissez le coffret derrière vous.",
-          "3": "Après 20 minutes passées à creuser partout autour du petit coffre, vous finissez par abandonner et laissez le coffret derrière vous.",
-          "4": "Après 2 heures de recherches, vous finissez par abandonner et laissez le coffret derrière vous."
-        },
-        "text": "Chercher la clef autour du lieu de découverte."
+          "0": "Vous fouillez le sable autour du coffret pendant un long moment. La clef était enterrée juste à côté. Elle tourne sans peine dans le cadenas, et vous trouvez quelques pièces à l'intérieur.",
+          "1": "Vous retournez le sable, soulevez les pierres et fouillez les ruines voisines. Rien. Quand vous abandonnez enfin, le soleil a bien tourné, et le coffret est toujours aussi fermé.",
+          "2": "Vous finissez par déterrer la clef, rongée par la rouille. Elle entre dans le cadenas, mais se brise net au premier tour. Agacé, vous laissez le coffret derrière vous.",
+          "3": "Vous connaissez les habitudes des voyageurs : une pierre plate posée près du coffret marque la cachette. La clef est dessous. Le cadenas s'ouvre sur un coffret plein de pièces.",
+          "4": "Vous creusez un peu partout au hasard, sans méthode. Au bout d'un moment, les ongles pleins de sable et le dos courbaturé, vous abandonnez et laissez le coffret où il est.",
+          "5": "Votre chien renifle le sable autour du coffret, puis se met à gratter avec ardeur. Il semble avoir trouvé quelque chose : la clef apparaît sous ses pattes. Le coffret contient une jolie somme.",
+          "6": "Vous ratissez les alentours en un rien de temps et repérez un éclat de métal dans le sable. C'est la clef. Elle tourne sans peine, et le coffret contient quelques pièces."
+        }
+      },
+      "pickLock": {
+        "text": "Crocheter le cadenas avec un bout de métal.",
+        "outcomes": {
+          "0": "Vous tordez un bout de métal de votre sac en forme de crochet. Après quelques essais, le cadenas cède avec un déclic. Le crochet reste coincé dedans, mais le coffret contient quelques pièces.",
+          "1": "Vous essayez de crocheter le cadenas, mais votre outil de fortune glisse sans cesse. Après un long moment, vous renoncez et laissez le coffret derrière vous, un peu vexé.",
+          "2": "Vos gestes sont trop lents et maladroits : l'outil dérape et vous entaille le doigt. Vous bandez la plaie comme vous pouvez et renoncez au coffret.",
+          "3": "D'un geste vif et précis, vous glissez un fil de métal dans le cadenas. Il s'ouvre en un instant. Le coffret contient une bourse bien remplie, que vous empochez avant que quelqu'un ne vous remarque.",
+          "4": "Vos mains connaissent ce genre de serrure, et le cadenas cède presque tout seul. Un marchand qui vous observait fronce les sourcils. Vous empochez les pièces du coffret et filez sans attendre."
+        }
+      },
+      "end": {
+        "outcomes": {
+          "0": "Ce coffret abandonné en plein passage ressemble trop à un piège. Vous refusez de vous en approcher davantage et reprenez calmement votre route entre les étals du marché."
+        }
       }
-    },
-    "text": "Alors que vous voyagez sur la Route des Merveilles, vous découvrez un coffret ! Malheureusement, il est verrouillé..."
+    }
   },
   "30": {
     "text": "Sur le Chemin aux Loups, au-dessus des berges glissantes de la Vacarme, se dresse le château du Duc Benatis, entouré de ses plantations de bananes. Le duc y fête ses 21 ans, comme chaque année. À l'entrée, un garde vous fait signe : tout le monde est invité, et le festin est servi.",
