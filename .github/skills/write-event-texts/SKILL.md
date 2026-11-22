@@ -171,8 +171,8 @@ Si l'une n'a pas de réponse dans le texte, l'issue ne tient pas.
 - **Monter d'un cran demande une raison montrée dans le texte, portée par une condition** : un joueur au karma bas qu'on reconnaît, un joueur qui surprend un secret, un personnage déjà présenté comme ivre, fou ou hostile dans l'introduction.
 - **Sans raison, change la cause du malus, pas son effet** : un accident (une salve d'adieu mal pointée), le lieu (une planche pourrie), la maladresse du joueur, un tiers qui a ses propres raisons.
 - **Gradue la conséquence, jamais une prémisse douteuse.** Avant de découper une issue en paliers, vérifie que sa situation de départ est plausible pour tous les joueurs : les paliers la multiplient et en font la norme.
-- **Un choix prudent reste prudent.** Refuser, décliner, passer son chemin, ne pas répondre (`end`) : la majorité de ses issues se passent bien. Un malus y reste rare et vient du monde, pas d'un personnage qui surréagit.
-- **Quand le joueur ne répond pas (`end`), il n'agit pas.** Les issues de `end` racontent ce qui arrive autour d'un joueur qui reste immobile ou rêveur. Il ne pousse personne, ne vole rien, ne prend aucune initiative qu'il n'a pas choisie. Event 71 : le joueur qui ne répondait pas poussait l'ermite dans l'eau ; maintenant, c'est l'ermite qui le chasse.
+- **Un choix prudent reste prudent.** Refuser, décliner, passer son chemin : la majorité de ses issues se passent bien. Un malus y reste rare et vient du monde, pas d'un personnage qui surréagit.
+- **Quand le joueur ne répond pas (`end`), son personnage fait ce qu'il veut.** Le joueur n'a rien choisi : c'est le personnage qui prend la main, et il peut agir librement (monter un campement, partir en chasse au trésor, se méfier d'un piège, pousser quelqu'un). Ce qu'il fait reste plausible dans la scène, et les réactions des autres restent à la mesure de ses actes. C'est la possibilité où l'on a le plus de liberté.
 - **Un personnage garde la même attitude envers un même profil dans tout l'event.** Si l'équipage traite un joueur au karma bas comme l'un des siens quand il accepte, il ne le canarde pas quand il refuse.
 
 ### Combien et lesquelles
@@ -297,7 +297,7 @@ Avant de rendre un texte, vérifie chaque point :
 5. Chaque condition se montre dans le texte, et chaque seuil correspond au mot de l'échelle.
 6. Chaque issue a une mécanique qui correspond au texte, et chaque profil de joueur a au moins une issue.
 7. Chaque personnage qui s'en prend au joueur a une raison montrée dans le texte, à la mesure de ce que le joueur a fait, et un choix prudent reste prudent.
-8. Le joueur ne fait que ce que son choix annonce, et rien quand il ne répond pas.
+8. Le joueur ne fait que ce que son choix annonce (quand il ne répond pas, son personnage est libre).
 9. Chaque issue reste vraie avec ce que l'intro dit des choses, des lieux et des personnages.
 10. Chaque issue se comprend lue seule, juste après l'intro et le libellé du choix.
 
@@ -318,7 +318,8 @@ Les 21 events déjà réécrits (1, 2, 10 à 20, 30, 39, 46, 56, 69, 71, 76, 89)
 - **Event 71, la bourse aux noyaux** : une ruse sans auteur crédible, découverte trop tard. Voir « Une ruse tient debout des deux côtés ».
 - **Event 3, issues enchaînées (Gabriel)** : les issues d'un même choix s'appuyaient les unes sur les autres (*La pierre ripe*, *Le vacarme*), alors que le joueur n'en lit qu'une. Voir « Chaque issue se lit seule ».
 - **Event 3 (le propriétaire)** : une issue contredisait l'état posé par l'intro (un coffret enfoui depuis longtemps, mais tombé d'une charrette le matin même). Voir « L'intro fixe l'état des choses ».
-- **Event 71 (le propriétaire)** : détail parasite (le scorpion dans la botte), geste de familier impossible à se représenter, libellé raccourci qui cachait une agression, joueur qui agit alors qu'il n'a pas répondu, libellés sans point final. Voir « Style », « Structure d'un event » et « Une réaction à la mesure de ce que fait le joueur ».
+- **Event 71 (le propriétaire)** : détail parasite (le scorpion dans la botte), geste de familier impossible à se représenter, libellé raccourci qui cachait une agression, libellés sans point final. Voir « Style », « Structure d'un event » et « Une réaction à la mesure de ce que fait le joueur ».
+- **Le personnage est libre dans `end` (le propriétaire)** : quand le joueur ne répond pas, son personnage peut agir comme il veut ; une règle qui le disait immobile a été retirée. Voir « Une réaction à la mesure de ce que fait le joueur ».
 - **Réaction disproportionnée (le propriétaire, event 75)** : un pirate inconnu tirait au canon sur un joueur qui déclinait poliment, et les paliers en faisaient la norme. Voir « Une réaction à la mesure de ce que fait le joueur ».
 - **Longueur des issues (le propriétaire)** : la fourchette 150-280 était devenue une cible, et toutes les issues avaient la même longueur. Elle suit maintenant ce que l'issue raconte, de 80 à 400 caractères. Voir « Structure d'un event ».
 - **Relecture de Gabriel (events 1, 2, 10, 11, 12)**, deuxième passe : verbe juste, réaction motivée, contraste, décor des ruines, stat plutôt qu'équipement, temps à la mesure de la durée, trouvaille plausible, issue qui rappelle le choix, conséquence pour les meilleurs, demi-tour réel (`goBackToPreviousMap`). Le validateur avertit maintenant des libellés trop longs ou en « Essayer de », de `hurt` pour une petite blessure, de *sans armure* sur une condition de défense, des durées incohérentes, de *retard*, des listes d'ids qui partagent un tag et des events qui misent tout sur le chien.
