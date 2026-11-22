@@ -104,6 +104,8 @@ export default {
 	// Imports reach ../Lib through relative paths that a copied sandbox would break: mutate the files in place (restored at the end)
 	inPlace: true,
 	coverageAnalysis: "perTest",
+	// A static mutant runs the whole suite and took 91 % of the time for 3 % of the mutants: the data tests already cover the module-level constants
+	ignoreStatic: true,
 	incremental: true,
 	incrementalFile: "reports/stryker-incremental.json",
 	reporters: ["clear-text", "progress", "html", "json"],
