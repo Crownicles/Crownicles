@@ -70,6 +70,9 @@ const TEXT_RULES = [
 		level: "warnings", test: (text, kind) => kind === "choice" && /^(?:Essayer|Tenter) d/u.test(text), message: "the choice aims at success, not an attempt (Faire fuir, not Essayer de faire fuir)"
 	},
 	{
+		level: "warnings", test: (text, kind) => kind === "choice" && !/[.!?]$/u.test(text.replace(TRAILING_SPACES, "")), message: "the choice ends without a period"
+	},
+	{
 		level: "warnings", test: (text, kind) => kind === "choice" && /quand même/u.test(text), message: "the choice judges itself (quand même): say the action only"
 	},
 	{

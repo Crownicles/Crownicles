@@ -44,6 +44,7 @@ Le français (`Lang/fr`) est la référence. Depuis l'abandon de Crowdin (#5181)
   - Un « ! » au plus par texte. Pas de points de suspension en fin d'introduction.
 - **Pas de morale finale** (*Après tout, la mort fait partie du cycle naturel*).
 - **Des enchaînements logiques.** Chaque phrase découle de la précédente.
+- **Pas de détail parasite.** Une phrase qui n'a ni cause dans ce qui précède ni conséquence dans ce qui suit se supprime. Event 71 : après un repas et une bonne nuit, *Au réveil, vous secouez un scorpion hors de votre botte* tombait de nulle part.
   - Faux : *Malgré vos efforts conjugués, le courant emporte la ligne. Le pêcheur vous remercie chaleureusement pour votre tentative et partage quelques pièces.* Le gain tombe comme un cheveu sur la soupe.
   - Juste : *Le poisson casse la ligne. Le pêcheur hausse les épaules, vous remercie quand même et vous glisse quelques pièces pour votre peine.*
 - **Des sentiments à la mesure du résultat.** Si le joueur n'a servi à rien, il n'est pas *heureux d'avoir tenté d'aider* : *Vous repartez avec un léger sourire.* suffit.
@@ -55,6 +56,7 @@ Le français (`Lang/fr`) est la référence. Depuis l'abandon de Crowdin (#5181)
 - **L'humour de l'original se garde**, et une chute qui brise le quatrième mur est bienvenue : l'issue qui s'ouvre sur *Mais pourquoi avoir fait cela ?* après avoir poussé le pêcheur.
 - **Une tournure naturelle.** *Les familles accourues* sonne bizarre ; *les familles venues voir l'incident* se lit sans buter.
 - **On ne lit pas dans la tête d'un animal.** Le narrateur interprète ce qu'il voit : *Il semble vouloir que vous le suiviez*, pas *Il veut que vous le suiviez*.
+- **Un familier fait un geste naturel pour son espèce, et on le voit.** Pas de formulation qui laisse imaginer une scène impossible. Event 71 : *votre scorpion se glisse sous le bol de Xirtex* ne se représente pas ; *votre scorpion grimpe sur la natte et s'approche du plat* se voit tout de suite. La réaction du personnage suit ce geste.
 - **Pas de montant dans le texte.** Le jeu affiche les pièces, les points de vie et le temps perdu : *une bourse*, *une poignée de pièces*.
 - **Typographie.**
   - Apostrophe droite `'`, pas de tiret cadratin `—`.
@@ -89,6 +91,8 @@ Le français (`Lang/fr`) est la référence. Depuis l'abandon de Crowdin (#5181)
   - Des longueurs variées se lisent mieux qu'une série d'issues taillées sur le même gabarit. Dans les 27 premiers events réécrits, 99 % des issues faisaient entre 150 et 280 caractères : c'est ce qu'on veut éviter.
 - **L'issue rend le choix lisible.** Le libellé est court, donc la première phrase de l'issue rappelle ce que fait le joueur quand ce n'est pas évident : *Par méfiance, vous partez dans la direction opposée et contournez le Bois Hurlant par l'est.* Une chute comique peut tenir lieu de rappel.
 - **Choix : un libellé court**, avec un verbe à l'infinitif.
+  - Raccourcir un libellé ne doit pas cacher ce que font ses issues. Event 71 : *Accepter et profiter de la nuit pour lui dérober ses biens* était devenu *Le suivre pour le voler*, alors que dans quatre issues sur sept le joueur assommait l'ermite d'un coup de pierre. Le joueur ne fait que ce qu'il a choisi : si le libellé dit *voler*, les issues racontent un vol ; un coup reste une issue minoritaire, portée par une condition, ou le libellé l'annonce.
+  - Il finit par un point, comme une phrase.
   - Il dit l'action, sans détail : les détails vont dans l'issue. *Prêter main-forte au pêcheur en difficulté* devient *Aider le pêcheur* ; *Chercher un chemin pour contourner l'obstacle* devient *Contourner l'obstacle*.
   - Il annonce la réussite visée, pas une tentative : *Faire fuir le chien*, pas *Essayer de faire fuir le chien*. C'est l'issue qui dit si ça marche.
   - Pas de « quand même » ni de jugement sur le choix : *Rester sur le sentier principal*, pas *Traverser quand même par le sentier principal*.
@@ -164,7 +168,8 @@ Si l'une n'a pas de réponse dans le texte, l'issue ne tient pas.
 - **Monter d'un cran demande une raison montrée dans le texte, portée par une condition** : un joueur au karma bas qu'on reconnaît, un joueur qui surprend un secret, un personnage déjà présenté comme ivre, fou ou hostile dans l'introduction.
 - **Sans raison, change la cause du malus, pas son effet** : un accident (une salve d'adieu mal pointée), le lieu (une planche pourrie), la maladresse du joueur, un tiers qui a ses propres raisons.
 - **Gradue la conséquence, jamais une prémisse douteuse.** Avant de découper une issue en paliers, vérifie que sa situation de départ est plausible pour tous les joueurs : les paliers la multiplient et en font la norme.
-- **Un choix prudent reste prudent.** Refuser, décliner, passer son chemin : la majorité de ses issues se passent bien. Un malus y reste rare et vient du monde, pas d'un personnage qui surréagit.
+- **Un choix prudent reste prudent.** Refuser, décliner, passer son chemin, ne pas répondre (`end`) : la majorité de ses issues se passent bien. Un malus y reste rare et vient du monde, pas d'un personnage qui surréagit.
+- **Quand le joueur ne répond pas (`end`), il n'agit pas.** Les issues de `end` racontent ce qui arrive autour d'un joueur qui reste immobile ou rêveur. Il ne pousse personne, ne vole rien, ne prend aucune initiative qu'il n'a pas choisie. Event 71 : le joueur qui ne répondait pas poussait l'ermite dans l'eau ; maintenant, c'est l'ermite qui le chasse.
 - **Un personnage garde la même attitude envers un même profil dans tout l'event.** Si l'équipage traite un joueur au karma bas comme l'un des siens quand il accepte, il ne le canarde pas quand il refuse.
 
 ### Combien et lesquelles
@@ -286,6 +291,7 @@ Avant de rendre un texte, vérifie chaque point :
 5. Chaque condition se montre dans le texte, et chaque seuil correspond au mot de l'échelle.
 6. Chaque issue a une mécanique qui correspond au texte, et chaque profil de joueur a au moins une issue.
 7. Chaque personnage qui s'en prend au joueur a une raison montrée dans le texte, à la mesure de ce que le joueur a fait, et un choix prudent reste prudent.
+8. Le joueur ne fait que ce que son choix annonce, et rien quand il ne répond pas.
 
 ## Journal des retours du propriétaire
 
@@ -300,6 +306,7 @@ Les 21 events déjà réécrits (1, 2, 10 à 20, 30, 39, 46, 56, 69, 71, 76, 89)
 - **Brouillon de Gabriel (events 24, 25, 26)** : son brouillon est commité sous son nom, puis repris selon le skill dans un second commit. Voir « Brouillon d'un contributeur ».
 - **Prévisibilité et paliers (le propriétaire et GabrieLre)** : le joueur doit à peu près savoir ce qui va se passer quand il clique ; un malus ou un bonus lié à une stat se gradue en trois paliers au lieu d'un seuil binaire, et les seuils ne sont pas tous tout en haut. Voir « Un choix doit être prévisible » et « L'échelle des seuils ». Appliqué aux events 2, 10, 24, 25 et 26.
 - **Équipement réellement porté (le propriétaire, event 3)** : pas de pioche ni d'armure supposées ; condition `weaponTags` et tag d'arme `blunt`. Le validateur avertit d'une arme ou d'une armure nommée sans condition qui la garantit. Voir « Texte et mécanique ».
+- **Event 71 (le propriétaire)** : détail parasite (le scorpion dans la botte), geste de familier impossible à se représenter, libellé raccourci qui cachait une agression, joueur qui agit alors qu'il n'a pas répondu, libellés sans point final. Voir « Style », « Structure d'un event » et « Une réaction à la mesure de ce que fait le joueur ».
 - **Réaction disproportionnée (le propriétaire, event 75)** : un pirate inconnu tirait au canon sur un joueur qui déclinait poliment, et les paliers en faisaient la norme. Voir « Une réaction à la mesure de ce que fait le joueur ».
 - **Longueur des issues (le propriétaire)** : la fourchette 150-280 était devenue une cible, et toutes les issues avaient la même longueur. Elle suit maintenant ce que l'issue raconte, de 80 à 400 caractères. Voir « Structure d'un event ».
 - **Relecture de Gabriel (events 1, 2, 10, 11, 12)**, deuxième passe : verbe juste, réaction motivée, contraste, décor des ruines, stat plutôt qu'équipement, temps à la mesure de la durée, trouvaille plausible, issue qui rappelle le choix, conséquence pour les meilleurs, demi-tour réel (`goBackToPreviousMap`). Le validateur avertit maintenant des libellés trop longs ou en « Essayer de », de `hurt` pour une petite blessure, de *sans armure* sur une condition de défense, des durées incohérentes, de *retard*, des listes d'ids qui partagent un tag et des events qui misent tout sur le chien.
