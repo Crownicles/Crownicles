@@ -224,7 +224,17 @@
   },
   "triggers": [
     {
-      "mapId": 3
+      "mapId": 3,
+      "date": {
+        "month": {
+          "from": 4,
+          "to": 4
+        },
+        "day": {
+          "from": 1,
+          "to": 1
+        }
+      }
     }
   ]
 }
