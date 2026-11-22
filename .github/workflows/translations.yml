@@ -1,11 +1,13 @@
 name: Translations
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
     branches:
       - '**'
     paths:
-      - Lang/fr/**
+      - Lang/**
       - .github/scripts/check-emojis.*
+      - .github/scripts/check-translations.*
       - .github/workflows/translations.yml
   workflow_dispatch:
 
@@ -25,6 +27,36 @@ jobs:
         with:
           node-version: '24'
 
-      # Other languages are synced from French by Crowdin, so only the source locale is checked
-      - name: Forbid hardcoded emojis in French translations
-        run: node .github/scripts/check-emojis.mjs translations Lang/fr
+      - name: Forbid hardcoded emojis in translations
+        run: node .github/scripts/check-emojis.mjs translations Lang
+
+  translations-in-sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Test the translation checks
+        run: node --test .github/scripts/check-translations.test.mjs
+
+      - name: Every locale has the keys of the French reference
+        run: node .github/scripts/check-translations.mjs parity Lang
+
+      # A French-only change (typo, wording) can skip the update of the other locales with the no-translation-sync label
+      - name: Every edited string is updated in every locale
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          REFERENCE_ONLY: ${{ contains(github.event.pull_request.labels.*.name, 'no-translation-sync') }}
+        run: |
+          git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          if [ "$REFERENCE_ONLY" = "true" ]; then
+            node .github/scripts/check-translations.mjs sync Lang "$BASE_SHA" --allow-reference-only-edits
+          else
+            node .github/scripts/check-translations.mjs sync Lang "$BASE_SHA"
+          fi
