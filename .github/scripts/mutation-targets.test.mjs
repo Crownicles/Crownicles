@@ -26,6 +26,11 @@ test("a file mutated on a range keeps its range", () => {
 	assert.deepEqual(selectMutationTargets(MUTATE, ["src/types/HomeLevel.ts"]), ["src/types/HomeLevel.ts:144-181"]);
 });
 
+test("a file excluded with ! is not selected, even when a glob matches it", () => {
+	const mutate = [...MUTATE, "!src/locks/Pending.ts"];
+	assert.deepEqual(selectMutationTargets(mutate, ["src/locks/Pending.ts", "src/locks/AsyncLock.ts"]), ["src/locks/AsyncLock.ts"]);
+});
+
 test("a change outside the mutated files selects nothing", () => {
 	assert.deepEqual(selectMutationTargets(MUTATE, ["src/core/report/ReportCityService.ts"]), []);
 	assert.deepEqual(selectMutationTargets(MUTATE, []), []);

@@ -15,10 +15,12 @@ import { pathToFileURL } from "node:url";
  * @param changedFiles - Changed files, relative to the module
  */
 export function selectMutationTargets(mutate, changedFiles) {
+	const exclusions = mutate.filter(entry => entry.startsWith("!")).map(entry => entry.slice(1));
+	const mutatedFiles = changedFiles.filter(file => !exclusions.some(exclusion => file === exclusion || matchesGlob(file, exclusion)));
 	const targets = [];
-	for (const entry of mutate) {
+	for (const entry of mutate.filter(entry => !entry.startsWith("!"))) {
 		const pattern = entry.replace(/:\d+-\d+$/u, "");
-		const matching = changedFiles.filter(file => file === pattern || matchesGlob(file, pattern));
+		const matching = mutatedFiles.filter(file => file === pattern || matchesGlob(file, pattern));
 		// A glob is narrowed to the changed files, an explicit file or range is kept as written
 		targets.push(...(pattern.includes("*") ? matching : matching.length > 0 ? [entry] : []));
 	}
