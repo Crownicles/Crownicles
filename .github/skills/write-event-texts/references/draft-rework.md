@@ -11,7 +11,7 @@ Ces events ont été réécrits par un contributeur, Gabriel (GabrieLre). Son br
   - phrases simples, orthographe et accords corrects, apostrophe droite `'` (il utilise souvent `’`), pas de « ! » en série, pas de points de suspension finaux ;
   - pas de montant ni de durée chiffrée dans le texte (« après 45 minutes », « 15 minutes ») ;
   - le cas général d'abord : chaque possibilité a au moins une issue sans condition, ou une paire de conditions complémentaires ; une condition fait basculer la situation, elle ne pénalise jamais une force ;
-  - 3 à 6 issues par possibilité (7 au plus si vraiment nécessaire) : il en a parfois 12 ou 13, garde les meilleures ;
+  - au moins 3 issues par possibilité, et au plus 6 sans condition : il en a parfois 12 ou 13 générales, garde les meilleures (les issues rares, liées à un familier, un badge ou une classe, peuvent être nombreuses) ;
   - seuils de l'échelle des joueurs réguliers (`reference.md`) : un « vétéran », un joueur « expérimenté » c'est `level` `min` 130, pas 60 ou 80 ; karma `min` 0/50/80/100 et `max` -30/-50 ; karma ±1 à ±5 pour un petit geste, -10 à -20 pour un acte grave, +8 à +15 pour un acte vraiment généreux ;
   - chaque texte correspond à sa mécanique, et inversement ; effets valides seulement (`confused` n'existe pas, c'est `confounded`) ;
   - `validPetTypeIds: []` ne veut pas dire « sans familier » : une liste vide rend l'issue impossible. Pour « sans familier », il n'existe pas de condition : retire-la ;

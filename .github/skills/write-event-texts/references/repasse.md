@@ -6,7 +6,7 @@ Ta tâche : **reprendre la version actuelle (`draft`) selon les règles actuelle
 
 La référence est le skill `write-event-texts` : `.github/skills/write-event-texts/SKILL.md`. Lis-le en entier, y compris son « Journal des retours du propriétaire ». Les défauts qu'on trouve dans ces premières réécritures :
 
-- **Trop lourd** : jusqu'à 13 issues par possibilité. Vise 3 à 6 (7 au plus). Retire les doublons (deux familiers avec le même texte), les issues sans effet ni intérêt, les possibilités ajoutées juste pour remplir (« se reposer et observer », « contempler »).
+- **Trop lourd** : jusqu'à 13 issues générales par possibilité. Garde au plus 6 issues sans condition ; les issues rares (familier, badge, classe) peuvent rester nombreuses si chacune apporte quelque chose. Retire les doublons (deux familiers avec le même texte), les issues sans effet ni intérêt, les possibilités ajoutées juste pour remplir (« se reposer et observer », « contempler »).
 - **Prévisibilité** : quand le joueur clique, il sait à peu près ce qui va se passer. Les issues d'un choix sont des variantes du résultat annoncé par le libellé ; une surprise par choix au plus.
 - **Le cas général d'abord** : chaque possibilité a au moins une issue sans condition, ou une paire de conditions complémentaires. Une condition fait basculer la situation ; elle ne pénalise jamais une force (pas d'issue négative réservée aux joueurs forts, rapides ou bien défendus).
 - **Paliers** : un malus ou un bonus lié à une stat se gradue en trois paliers (faible / moyen / fort, table du skill), au lieu d'un seuil binaire. Varie les seuils : pas tous tout en haut.

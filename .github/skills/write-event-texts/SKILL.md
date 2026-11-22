@@ -56,6 +56,7 @@ Le français (`Lang/fr`) est la référence. Depuis l'abandon de Crowdin (#5181)
 - **La réaction suit la condition.** Un chien intimidé par votre familier s'éloigne *en hâte*, pas *sans hâte*.
 - **Pas de répétition en cascade.** *Puis d'autres histoires, puis d'autres encore* : une de trop. Deux *puis* au plus par phrase.
 - **L'humour de l'original se garde**, et une chute qui brise le quatrième mur est bienvenue : l'issue qui s'ouvre sur *Mais pourquoi avoir fait cela ?* après avoir poussé le pêcheur.
+- **Un brin d'absurde va bien au jeu**, surtout dans les issues rares : le requin qui se glisse dans le lac pour aider le pêcheur et vide d'un coup l'eau et le pique-nique (event 10). La situation reste logique, c'est la conséquence qui surprend.
 - **Une tournure naturelle.** *Les familles accourues* sonne bizarre ; *les familles venues voir l'incident* se lit sans buter.
 - **On ne lit pas dans la tête d'un animal.** Le narrateur interprète ce qu'il voit : *Il semble vouloir que vous le suiviez*, pas *Il veut que vous le suiviez*.
 - **Un familier fait un geste naturel pour son espèce, et on le voit.** Pas de formulation qui laisse imaginer une scène impossible. Event 71 : *votre scorpion se glisse sous le bol de Xirtex* ne se représente pas ; *votre scorpion grimpe sur la natte et s'approche du plat* se voit tout de suite. La réaction du personnage suit ce geste.
@@ -181,7 +182,7 @@ Si l'une n'a pas de réponse dans le texte, l'issue ne tient pas.
 
 ### Combien et lesquelles
 
-- **Par possibilité :** 3 à 6 issues, dont au moins une sans condition.
+- **Par possibilité :** au moins 3 issues, dont au moins une sans condition. Le cas général tient en quelques issues (6 sans condition au plus). Les issues rares, réservées à un familier, un badge, une classe ou un profil particulier, n'ont pas de plafond : ajoutes-en autant que la scène s'y prête (event 10 : la loutre qui plonge, l'ours qui pêche comme au saumon, le chat qui vole la prise).
   - Des paliers complémentaires seuls (vitesse faible / moyenne / forte) ne suffisent pas : un joueur donné retomberait toujours sur la même issue. Ajoute une ou deux issues sans condition pour la variété (event 12, emprunter le pont et traverser à la nage).
 - **Pour tout l'event :**
   - environ 2 à 4 fois plus d'issues que l'original ;

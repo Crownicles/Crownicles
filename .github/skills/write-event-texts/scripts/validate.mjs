@@ -311,17 +311,17 @@ function haveSameElements(a, b) {
 }
 
 /**
- * Whether a possibility has an unusual number of outcomes ("end" may have any)
+ * Whether a possibility has too few outcomes ("end" may have any)
  * @param {string} name
  * @param {number} count
  * @returns {boolean}
  */
 function isOutcomeCountOff(name, count) {
-	if (name === "end") {
-		return false;
-	}
-	return count < 3 || count > 8;
+	return name !== "end" && count < 3;
 }
+
+// Rare outcomes (pet, badge, class…) are not capped, but the general case stays readable
+const MAX_UNCONDITIONAL_OUTCOMES = 6;
 
 /**
  * Check the outcome ids of a possibility: same as the texts, numbered 0..n-1, and their count
@@ -340,7 +340,7 @@ function checkOutcomeIds(report, name, outcomeIds, textOutcomes) {
 		report.warnings.push(`${name}: outcome ids are not 0..n-1`);
 	}
 	if (isOutcomeCountOff(name, outcomeIds.length)) {
-		report.warnings.push(`${name}: ${outcomeIds.length} outcomes (target 3-6)`);
+		report.warnings.push(`${name}: ${outcomeIds.length} outcomes (at least 3)`);
 	}
 }
 
@@ -397,6 +397,10 @@ function checkData(report, inp, out, game) {
 		for (const [outcome, x] of entriesOf(outs)) {
 			counts.total++;
 			counts.conditional += checkOutcome(report, `data.${name}.${outcome}`, x, context) ? 1 : 0;
+		}
+		const unconditional = entriesOf(outs).filter(([, x]) => !truthy(getOrEmpty(x, "requirements")) && !Object.hasOwn(x, "consumeMaterials")).length;
+		if (unconditional > MAX_UNCONDITIONAL_OUTCOMES) {
+			report.warnings.push(`${name}: ${unconditional} outcomes without condition (at most ${MAX_UNCONDITIONAL_OUTCOMES})`);
 		}
 		const coverageError = checkCoverage(name, entriesOf(outs).map(([, x]) => x), game.pets);
 		if (coverageError) {

@@ -64,6 +64,69 @@
           },
           "money": 80,
           "karma": 2
+        },
+        "8": {
+          "requirements": {
+            "validPetTypeIds": [
+              25,
+              30,
+              55,
+              72
+            ]
+          },
+          "money": 100,
+          "karma": 2
+        },
+        "9": {
+          "requirements": {
+            "validPetTypeIds": [
+              21,
+              42
+            ]
+          },
+          "money": 100,
+          "karma": 2
+        },
+        "10": {
+          "requirements": {
+            "validPetTypeIds": [
+              71
+            ]
+          },
+          "money": 80,
+          "karma": 2
+        },
+        "11": {
+          "requirements": {
+            "validPetTypeIds": [
+              82
+            ]
+          },
+          "money": 80,
+          "health": 5,
+          "karma": 2
+        },
+        "12": {
+          "requirements": {
+            "validPetTypeIds": [
+              3,
+              4
+            ]
+          },
+          "money": -60,
+          "karma": 1,
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "13": {
+          "requirements": {
+            "validPetTypeIds": [
+              45,
+              77
+            ]
+          },
+          "karma": 1
         }
       }
     },
@@ -95,6 +158,16 @@
               "max": -30
             }
           },
+          "karma": 1
+        },
+        "4": {
+          "requirements": {
+            "validPetTypeIds": [
+              12,
+              33
+            ]
+          },
+          "money": 40,
           "karma": 1
         }
       }
@@ -146,6 +219,15 @@
           "health": -10,
           "karma": -12,
           "effect": "freezing"
+        },
+        "5": {
+          "requirements": {
+            "validPetTypeIds": [
+              30,
+              55
+            ]
+          },
+          "karma": -6
         }
       }
     },

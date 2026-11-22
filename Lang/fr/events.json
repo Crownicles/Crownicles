@@ -49,7 +49,13 @@
           "4": "En unissant vos forces, vous réussissez à sortir de l'eau une vieille botte remplie de vase. Le pêcheur éclate de rire devant cette drôle de prise et vous laisse repartir en vous remerciant de vos efforts.",
           "5": "Le poisson tire fort et vous entraîne vers le bord du ponton. Vous dérapez sur les planches mouillées et vous rattrapez de justesse à un poteau, les genoux écorchés. Le temps de vous relever, la ligne a cassé.",
           "6": "Vous empoignez la canne et tirez d'un coup sec, de toutes vos forces. La canne se brise net entre vos mains, et le poisson file avec la ligne. Le pêcheur contemple les morceaux, puis vous les tend sans un mot. Vous lui laissez quelques pièces pour la remplacer.",
-          "7": "Pendant que vous tirez sur la ligne, votre familier se laisse glisser dans le lac et file tourner autour du gros poisson. Affolé, celui-ci fonce droit vers le ponton, et vous le sortez de l'eau sans peine. Le pêcheur vous paie bien, puis jette un regard gourmand sur votre familier. Vous le repêchez en vitesse et repartez sans traîner."
+          "7": "Pendant que vous tirez sur la ligne, votre familier se laisse glisser dans le lac et file tourner autour du gros poisson. Affolé, celui-ci fonce droit vers le ponton, et vous le sortez de l'eau sans peine. Le pêcheur vous paie bien, puis jette un regard gourmand sur votre familier. Vous le repêchez en vitesse et repartez sans traîner.",
+          "8": "Votre familier plonge du ponton et file sous l'eau. Il ressort un instant plus tard, le gros poisson entre les dents, et le dépose sur les planches avant même que le pêcheur ait repris sa canne. Un peu vexé de se faire voler la vedette, le vieil homme vous paie quand même.",
+          "9": "Votre familier entre dans l'eau jusqu'au ventre et, d'un coup de patte, envoie le gros poisson sur le ponton, comme un saumon. Partagé entre la joie et la peur, le pêcheur vous tend une bourse sans quitter votre familier des yeux.",
+          "10": "Votre poulpe se glisse dans le lac, enroule ses bras autour du gros poisson et le hisse jusqu'au ponton. Le pêcheur n'a jamais vu ça. Il vous paie bien, en gardant tout de même ses distances avec votre familier.",
+          "11": "Votre dauphin pousse le gros poisson du museau jusqu'au ponton, puis fait un bond hors de l'eau. Sur la rive, les familles applaudissent. Ravi, le pêcheur vous laisse une part de sa prise et quelques pièces.",
+          "12": "Vous sortez ensemble un poisson superbe. À peine est-il sur le ponton que votre chat bondit dessus et file avec dans les roseaux. Le pêcheur reste bouche bée. Vous le dédommagez de quelques pièces pendant que votre chat dévore sa prise.",
+          "13": "Votre familier se glisse dans le lac pour vous aider. En un instant, l'eau se vide : le gros poisson file au large, et les familles plient bagage en criant. Le pêcheur ramasse sa canne et vous prie poliment de partir avec votre bestiole."
         }
       },
       "advice": {
@@ -58,7 +64,8 @@
           "0": "Vous repérez vite son erreur : il tire trop tôt. Sur vos conseils, il laisse le poisson se fatiguer et le sort enfin de l'eau. Il vous remercie avec quelques pièces qui traînaient au fond de ses poches.",
           "1": "Vous tentez de donner des conseils au pêcheur, mais il ne vous écoute que d'une oreille : il pêchait sur ce lac bien avant que vous ne preniez la route. Vous finissez par vous lasser et reprenez votre chemin.",
           "2": "Le pêcheur suit vos recommandations à la lettre, mais le poisson finit quand même par casser la ligne. Il vous remercie tout de même de votre aide. Vous repartez avec un léger sourire.",
-          "3": "Le pêcheur vous dévisage, méfiant : on lui a parlé de vous. Il refuse vos conseils et vous demande de partir. Pour une fois que vous étiez animé de bonnes intentions, vous reprenez votre route, déçu."
+          "3": "Le pêcheur vous dévisage, méfiant : on lui a parlé de vous. Il refuse vos conseils et vous demande de partir. Pour une fois que vous étiez animé de bonnes intentions, vous reprenez votre route, déçu.",
+          "4": "Pendant que vous conseillez le pêcheur, votre familier se pose sur le lac et tourne au-dessus d'un même endroit en battant des ailes. Le pêcheur y lance sa ligne : le poisson était bien là. Il vous remercie de quelques pièces."
         }
       },
       "push": {
@@ -68,7 +75,8 @@
           "1": "Le pêcheur bascule dans les roseaux. Vous sautez pour l'aider, et vous vous retrouvez tous les deux pris dans la vase, trempés et couverts d'écorchures. Furieux, il exige une forte compensation pour cette mauvaise plaisanterie.",
           "2": "Le pêcheur perd l'équilibre et s'agrippe à vous. Vous tombez ensemble dans le lac et regagnez le ponton à grand-peine, couverts de vase et d'écorchures.",
           "3": "Le pêcheur remonte seul sur le ponton, furieux. Il vous a reconnu. Devant les familles venues voir l'incident, il exige une lourde compensation, et vous payez sans discuter pour éviter que l'affaire tourne mal.",
-          "4": "Le pêcheur s'écarte au dernier moment, et c'est vous que votre élan envoie dans l'eau froide du lac. Le vieil homme vous tend sa canne pour vous aider à remonter, trempé, frigorifié et humilié."
+          "4": "Le pêcheur s'écarte au dernier moment, et c'est vous que votre élan envoie dans l'eau froide du lac. Le vieil homme vous tend sa canne pour vous aider à remonter, trempé, frigorifié et humilié.",
+          "5": "Vous poussez le pêcheur dans le lac. Votre familier plonge aussitôt et le ramène jusqu'au ponton avant que vous ayez fait un geste. Trempé mais indemne, le vieil homme ne sait plus s'il doit vous maudire ou remercier votre familier."
         }
       },
       "skip": {
