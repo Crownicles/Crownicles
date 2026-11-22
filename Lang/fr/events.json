@@ -3729,5 +3729,52 @@
         }
       }
     }
+  },
+  "90": {
+    "text": "Dans une ferme du Berceau réputée pour son cidre, tout le hameau se dispute un dindon énorme et très fier : Gros-Léon pour les uns, Dindonus Maximus pour les autres. Une moitié veut le rôtir et brandit des poêles, l'autre le défend avec des pancartes. Il a déjà échappé à bien des festins. Un fermier vous attrape par la manche : c'est à vous de trancher.",
+    "possibilities": {
+      "protect": {
+        "text": "Protéger le dindon.",
+        "outcomes": {
+          "0": "Vous faites tournoyer un manche de fourche au milieu de la cour, puis le plantez devant le dindon. La foule se tait. Gros-Léon se relève alors et dévoile un œuf : il couvait simplement un œuf de poule, mais vous criez au prodige. Émus, ses défenseurs vous confient quelques pièces pour porter l'œuf au Roi.",
+          "1": "Vous attrapez le dindon sous le bras et filez vers la haie, mais il pèse son poids. À mi-chemin, ceux qui voulaient le rôtir vous rattrapent et vous le reprennent. Dans la bousculade, un coup de poêle vous atteint à l'épaule.",
+          "2": "Vous attrapez le dindon sous le bras et filez à travers la cour. Il glousse de colère, une fourche vous frôle et un œuf éclate sur une poutre. Vous écrasez les choux du potager et sautez la haie au bord du champ, où vous relâchez Gros-Léon. Un vieux paysan hilare vous donne une pièce pour le spectacle.",
+          "3": "Vous saisissez le dindon et filez si vite que personne ne vous suit. Vous le cachez dans la grange, derrière les tonneaux de cidre, puis revenez les mains vides. Le soir, vous indiquez la cachette à ses défenseurs, qui vous glissent une bourse.",
+          "4": "Vous voulez mettre le dindon à l'abri, mais il n'a rien d'un oiseau docile. D'un coup de bec, il vous fait lâcher prise, puis il vous chasse à coups de pattes jusqu'à l'abreuvoir, où vous tombez à la renverse. Trempé et griffé, vous vous relevez sous les rires de toute la cour.",
+          "5": "Vous voulez mettre le dindon à l'abri, mais il vous pince la main d'un coup de bec et vous lâchez prise. Gros-Léon s'éloigne en glougloutant, très fier de lui, sous les rires de toute la cour.",
+          "6": "Vous voulez mettre le dindon à l'abri, et il martèle votre armure à grands coups de bec. Il finit par s'arrêter, vexé, et se laisse porter jusqu'à la grange. Ses défenseurs vous remercient d'une poignée de pièces.",
+          "7": "Un fermier vous reconnaît et assure à tous qu'on peut vous croire sur parole. Vous proposez que Gros-Léon reste la fierté de la ferme et que le festin se fasse autour d'une tarte aux pommes. Les deux camps finissent par accepter et vous en offrent une part.",
+          "8": "Un fermier vous reconnaît et prévient la cour que vous allez revendre le dindon au premier marché venu. Méfiants, les deux camps oublient leur querelle et vous raccompagnent au chemin à coups de pancartes.",
+          "9": "Vous écartez une fourche d'un revers de bras, mais si fort qu'elle vole par-dessus la haie. Furieux, son propriétaire vous envoie la chercher dans le champ voisin. Quand vous la rapportez, la querelle a repris de plus belle.",
+          "10": "Votre familier se poste devant le dindon, menaçant. Les poêles retombent d'un coup, et ceux qui voulaient le rôtir reculent jusqu'au poulailler. Soulagés, ses défenseurs vous offrent une bourse et un pichet de cidre.",
+          "11": "Vous avancez vers le dindon, votre renard sur les talons. Gros-Léon l'aperçoit, pousse un cri terrible et file se cacher dans le poulailler. Les deux camps vous reprochent d'avoir amené le pire ennemi des volailles, et vous passez un moment à les calmer.",
+          "12": "Vous vous placez devant Gros-Léon avec votre propre dindon. Ceux qui voulaient le rôtir ne savent plus lequel prendre, se disputent entre eux et finissent par rentrer bouder. Ravis, les défenseurs des dindons vous offrent une poignée de pièces."
+        }
+      },
+      "feast": {
+        "text": "Attraper le dindon pour le festin.",
+        "outcomes": {
+          "0": "Vous plongez sur le dindon et le saisissez à pleines mains. Il se débat en criant, mais vous tenez bon, et ceux qui voulaient le rôtir vous acclament. Le soir, on vous sert une volaille dorée au romarin et au thym. Au dessert, un glouglou familier monte de la cour : Gros-Léon picore sous la fenêtre. Ses défenseurs l'avaient échangé contre un dindon du poulailler.",
+          "1": "Vous vous élancez vers le dindon, et ceux qui voulaient le rôtir vous suivent aussitôt. Les casseroles volent, les plumes aussi, et ses défenseurs forment un mur autour de lui. Gros-Léon s'échappe dans la mêlée, et le festin se fait avec un vieux dindon du poulailler. Sa chair a un goût étrange, et toute la nuit vous rêvez d'un dindon géant qui vous regarde manger.",
+          "2": "Au moment où vous vous penchez pour l'attraper, le dindon bondit sur votre épaule. Sans savoir pourquoi, vous chargez la foule ensemble, en criant et en gloussant. D'abord stupéfaits, les villageois éclatent de rire, et la ferme improvise un festin de tartes et de cidre en votre honneur.",
+          "3": "Vous plongez sur le dindon, mais il file entre vos jambes et vous finissez tête la première dans la boue. Le temps de vous relever, il trône de nouveau au milieu de la cour, sous les rires des deux camps.",
+          "4": "Vous attrapez le dindon d'une seule main et le soulevez au-dessus de la foule. Impressionnés, ses défenseurs préfèrent négocier : ils vous le rachètent pour une bourse bien pleine, et ceux qui voulaient le rôtir se consolent avec un jambon.",
+          "5": "Vous plongez sur le dindon, mais le poids de votre armure vous enfonce jusqu'aux genoux dans le tas de fumier. Gros-Léon vous regarde vous débattre, puis s'éloigne d'un pas digne. Il faut un bon moment pour vous tirer de là.",
+          "6": "Vous attrapez le dindon et le tâtez en connaisseur : c'est une vieille bête, toute en nerfs, qui serait immangeable. Vous le dites aux cuisiniers du hameau et prenez les fourneaux à leur place. Vos tartes aux pommes font l'unanimité, et Gros-Léon retourne parader dans la cour.",
+          "7": "Vous attrapez le dindon, mais un fermier vous reconnaît et crie au voleur : il vous croit prêt à filer le revendre. Méfiants, les deux camps vous le reprennent et vous raccompagnent au chemin.",
+          "8": "Votre familier se plante devant le dindon, qui se fige de peur : vous n'avez plus qu'à le ramasser. Ceux qui voulaient le rôtir vous invitent à leur table et l'enferment dans le poulailler en attendant la broche. Au matin, la porte est ouverte et Gros-Léon picore dans la cour.",
+          "9": "Au moment où vous attrapez Gros-Léon, votre dindon pousse un glouglou indigné. Toute la cour se tourne vers lui, et quelqu'un remarque qu'il a l'air bien plus tendre. Vous repartez en hâte, votre familier sous le bras, avant que le festin ne change de plat."
+        }
+      },
+      "end": {
+        "outcomes": {
+          "0": "Vous reculez lentement, les mains levées, et vous vous adossez à la margelle du puits. Les deux camps s'affrontent à coups de cris, de poêles et de pancartes, tandis que Gros-Léon se pavane au milieu, indifférent. Lassé, vous finissez par reprendre la route.",
+          "1": "Vous restez à l'écart et assistez à une bataille de plumes et de pommes. Au milieu, Gros-Léon court en rond, tente de s'envoler, rate son décollage et s'étale dans la cour. Vous filez avant qu'on ne vous demande encore votre avis.",
+          "2": "Pendant que les deux camps se disputent, vous vous allongez dans une meule de foin et vous endormez au son des glouglous.",
+          "3": "Votre dindon s'avance au milieu de la cour et lance un glouglou. Gros-Léon lui répond, et les deux volatiles se mettent à parader côte à côte. Charmée, la cour oublie sa querelle et vous offre un verre de cidre.",
+          "4": "Pendant que la cour se dispute, vous vous glissez jusqu'au cellier et emportez un pichet de cidre. Personne ne remarque rien."
+        }
+      }
+    }
   }
 }

@@ -1207,6 +1207,17 @@ export const CrowniclesIcons: {
 			help: "🔎",
 			makeFork: "🪵",
 			skip: "▶️"
+		},
+		90: {
+			end: {
+				0: "🚶",
+				1: "🪶",
+				2: "💤",
+				3: "🦃",
+				4: "🍺"
+			},
+			feast: "🍗",
+			protect: "🛡️"
 		}
 	},
 	mapTypes: {
@@ -1706,6 +1717,7 @@ export const CrowniclesIcons: {
 		}
 	},
 	monsters: {
+		bandit: "🥷",
 		spider: "🕷️",
 		slimyMutant: "🦠",
 		skeleton: "💀",
