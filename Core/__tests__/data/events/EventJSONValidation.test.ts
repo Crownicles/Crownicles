@@ -7,6 +7,12 @@ import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
 const materialTypes: string[] = Object.values(MaterialType);
 const enchantmentKinds = [...new Set(ItemEnchantment.getAllEnchantments().map(e => e.kind.id))];
 const enchantmentTypes = [...new Set(ItemEnchantment.getAllEnchantments().map(e => e.kind.type.id))];
+const weaponsDir = join(__dirname, "../../../resources/weapons");
+const weaponTagsCarried = new Set<string>(
+	readdirSync(weaponsDir)
+		.filter(file => file.endsWith(".json"))
+		.flatMap(file => (JSON.parse(readFileSync(join(weaponsDir, file), "utf8")).tags ?? []) as string[])
+);
 const petsDir = join(__dirname, "../../../resources/pets");
 const petTagsCarried = new Set<string>(
 	readdirSync(petsDir)
@@ -35,7 +41,8 @@ describe("Event JSON Validation", () => {
 		"materials",
 		"enchantment",
 		"weaponLevel",
-		"armorLevel"
+		"armorLevel",
+		"weaponTags"
 	];
 
 	eventFiles.forEach(filename => {
@@ -112,6 +119,26 @@ describe("Event JSON Validation", () => {
 						}
 						petTags.filter((tag: unknown) => !petTagsCarried.has(tag as string))
 							.forEach((tag: unknown) => invalidFields.push(`${possibilityKey}.outcomes.${outcomeKey}.requirements.petTags: no pet has the tag ${String(tag)}`));
+					});
+				});
+
+				expect(invalidFields).toEqual([]);
+			});
+
+			it("should only use weapon tags that at least one weapon carries", () => {
+				if (!eventData?.possibilities) return;
+
+				const invalidFields: string[] = [];
+				Object.entries(eventData.possibilities).forEach(([possibilityKey, possibility]: [string, any]) => {
+					Object.entries(possibility.outcomes ?? {}).forEach(([outcomeKey, outcome]: [string, any]) => {
+						const weaponTags = outcome.requirements?.weaponTags;
+						if (weaponTags === undefined) return;
+						if (!Array.isArray(weaponTags) || weaponTags.length === 0) {
+							invalidFields.push(`${possibilityKey}.outcomes.${outcomeKey}.requirements.weaponTags should be a non-empty array`);
+							return;
+						}
+						weaponTags.filter((tag: unknown) => !weaponTagsCarried.has(tag as string))
+							.forEach((tag: unknown) => invalidFields.push(`${possibilityKey}.outcomes.${outcomeKey}.requirements.weaponTags: no weapon has the tag ${String(tag)}`));
 					});
 				});
 

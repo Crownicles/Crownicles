@@ -9,6 +9,7 @@ import { PetDataController } from "../../../src/data/Pet";
 import { Materials } from "../../../src/core/database/game/models/Material";
 import { MaterialDataController } from "../../../src/data/Material";
 import { PetConstants, PetTag } from "../../../../Lib/src/constants/PetConstants";
+import { ItemConstants } from "../../../../Lib/src/constants/ItemConstants";
 
 // Mock des dépendances
 vi.mock("../../../src/core/database/game/models/PlayerMissionsInfo");
@@ -349,7 +350,7 @@ describe("PossibilityOutcome Requirements", () => {
 				cookingLevel: 40
 			} as Partial<Player>;
 			vi.mocked(InventorySlots.getPlayerActiveObjects).mockResolvedValue({
-				weapon: { itemLevel: 3, itemEnchantmentId: "burnedDamage1" },
+				weapon: { item: { tags: [ItemConstants.TAGS.METALLIC, ItemConstants.TAGS.BLUNT] }, itemLevel: 3, itemEnchantmentId: "burnedDamage1" },
 				armor: { itemLevel: 0, itemEnchantmentId: null }
 			} as any);
 			vi.mocked(Materials.getPlayerMaterials).mockResolvedValue([
@@ -401,6 +402,11 @@ describe("PossibilityOutcome Requirements", () => {
 			const owned = [{ materialId: 5, quantity: 2 }, { materialId: 7, quantity: 9 }, { materialId: 8, quantity: 4 }];
 			expect(pickMaterialsToConsume(owned, { type: "rope" }, 5)).toEqual([{ materialId: 8, quantity: 4 }, { materialId: 5, quantity: 1 }]);
 			expect(pickMaterialsToConsume(owned, { type: "rope" }, 7)).toEqual([]);
+		});
+
+		it("should check the tags of the equipped weapon", async () => {
+			expect(await isValid({ weaponTags: [ItemConstants.TAGS.FIRE, ItemConstants.TAGS.BLUNT] })).toBe(true);
+			expect(await isValid({ weaponTags: [ItemConstants.TAGS.RANGED] })).toBe(false);
 		});
 
 		it("should check the upgrade level of the equipped weapon and armor", async () => {

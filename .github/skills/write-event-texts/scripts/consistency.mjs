@@ -22,6 +22,26 @@ const EFFECT_MINUTES = {
  */
 const busyMinutes = x => Math.max(x.lostTime ?? 0, EFFECT_MINUTES[x.effect] ?? 0);
 
+// A strong attack or defense can only come from real equipment: "fort" on the scale of reference.md
+const ATTACK_WITH_WEAPON = 600;
+const DEFENSE_WITH_ARMOR = 520;
+const WEAPON_WORDS = /(?:[Vv]otre|[Vv]os) (?:arme|épée|lame|pioche|hache|marteau|masse|arc|dague|couteau)(?!\p{L})/u;
+const ARMOR_WORDS = /(?:[Vv]otre|[Vv]os) (?:armure|bouclier|cotte|casque)(?!\p{L})/u;
+
+/**
+ * Whether the requirements guarantee that the player really carries a weapon (or an armor)
+ * @param {object} req requirements
+ * @param {"weapon" | "armor"} slot
+ * @returns {boolean}
+ */
+function isEquipmentGuaranteed(req, slot) {
+	const [stat, threshold, level] = slot === "weapon" ? ["attack", ATTACK_WITH_WEAPON, "weaponLevel"] : ["defense", DEFENSE_WITH_ARMOR, "armorLevel"];
+	return (slot === "weapon" && Object.hasOwn(req, "weaponTags"))
+		|| (get(get(req, stat, {}), "min") ?? 0) >= threshold
+		|| (get(get(req, level, {}), "min") ?? 0) >= 1
+		|| get(get(req, "enchantment", {}), "slot") === slot;
+}
+
 /**
  * Text/mechanics rules of an outcome: each one warns when its test matches
  * @type {{test: (text: string, x: any) => boolean, message: string}[]}
@@ -50,6 +70,14 @@ const OUTCOME_RULES = [
 	{
 		test: (text, x) => /bien plus longtemps/u.test(text) && busyMinutes(x) < 120,
 		message: "\"bien plus longtemps\" for less than 2 hours lost: \"plus longtemps que prévu\""
+	},
+	{
+		test: (text, x) => WEAPON_WORDS.test(text) && !isEquipmentGuaranteed(getOrEmpty(x, "requirements"), "weapon"),
+		message: "names the player's weapon without a condition that guarantees one (weaponTags, attack min 600, weaponLevel, weapon enchantment): the player may fight bare-handed"
+	},
+	{
+		test: (text, x) => ARMOR_WORDS.test(text) && !isEquipmentGuaranteed(getOrEmpty(x, "requirements"), "armor"),
+		message: "names the player's armor without a condition that guarantees one (defense min 520, armorLevel, armor enchantment)"
 	},
 	{
 		test: (_, x) => x.goBackToPreviousMap === true && !Array.isArray(x.mapTypesDestination),

@@ -142,3 +142,4 @@ Le relecteur a lu l'event 30 réécrit. Voici ce qui ne va pas, et la règle gé
 | *Par méfiance, vous contournez le bois par l'est.* | Le choix « opposé aux conseils » ne se lit plus | **L'issue rappelle le choix** quand le libellé court ne suffit pas. |
 | Joueur fort : même issue sans dégâts | Pas de récompense à la hauteur | **Une vraie conséquence pour les meilleurs** : initiative, prime, destination. |
 | Rebrousser chemin vers un voisin au hasard | Ce n'est pas un demi-tour | **`goBackToPreviousMap`** avec `mapTypesDestination` en secours. |
+| *Attaquer le cadenas à coups de pioche* ; *Votre armure encaisse le plus gros* (défense moyenne) | Le joueur n'a peut-être ni pioche ni armure | **Pas d'équipement que le joueur ne porte pas vraiment** : une condition le garantit (`weaponTags`, `attack` `min` 600, `defense` `min` 520…), sinon une pierre trouvée sur place ou un texte neutre. |

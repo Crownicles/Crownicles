@@ -4,7 +4,8 @@
   "speed": -20,
   "type": "magic",
   "tags": [
-    "metallic"
+    "metallic",
+    "blunt"
   ],
   "materialCategory": 2
 }

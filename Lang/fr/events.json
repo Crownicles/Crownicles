@@ -7,7 +7,7 @@
         "outcomes": {
           "0": "Faute de mieux, vous vous attaquez aux branches qui bloquent le sentier, puis au tronc lui-même. Après de longs efforts, vous ouvrez enfin un passage et reprenez votre route, les bras couverts d'éclats de bois.",
           "1": "En taillant dans le tronc, vous découvrez qu'il est creux. Sous les feuilles mortes, un vieux paquet attend là depuis longtemps, et personne n'est venu le reprendre. Vous le glissez dans votre sac et finissez de dégager le passage.",
-          "2": "Votre arme rebondit sur le bois dur du chêne. Vous vous acharnez sur les branches jusqu'à ouvrir un passage, mais vous êtes à bout de forces : à peine de l'autre côté, vous vous endormez au pied d'un arbre.",
+          "2": "Vos coups rebondissent sur le bois dur du chêne. Vous vous acharnez sur les branches jusqu'à ouvrir un passage, mais vous êtes à bout de forces : à peine de l'autre côté, vous vous endormez au pied d'un arbre.",
           "3": "Vous taillez dans les branches à grands coups d'arme. Très vite, une brèche s'ouvre dans le mur de feuillage, assez large pour passer, et vous reprenez votre route sans avoir perdu de temps."
         }
       },
@@ -378,8 +378,8 @@
         "outcomes": {
           "0": "Vous traversez des salles vides et finissez par trouver l'ancienne armurerie. Presque tout y a rouillé, mais un objet a tenu bon. Vous le ramassez et ressortez sans traîner, pressé de quitter ces murs.",
           "1": "À peine entré, vous entendez des pas dans les étages, puis une porte qui grince quelque part au fond. Le château est moins abandonné qu'il n'y paraît. Peu rassuré, vous ressortez aussitôt et reprenez votre route.",
-          "2": "Dans la grande salle, un morceau du plafond se détache juste au-dessus de vous. Votre armure légère n'arrête rien : les pierres vous frappent de plein fouet. Vous ressortez du château en boitant, couvert de poussière et de sang.",
-          "3": "Dans la grande salle, un morceau du plafond se détache juste au-dessus de vous. Votre armure encaisse le plus gros, mais une pierre vous entaille l'épaule. Vous ressortez du château en vous tenant le bras.",
+          "2": "Dans la grande salle, un morceau du plafond se détache juste au-dessus de vous. Rien ne vous protège vraiment : les pierres vous frappent de plein fouet. Vous ressortez du château en boitant, couvert de poussière et de sang.",
+          "3": "Dans la grande salle, un morceau du plafond se détache juste au-dessus de vous. Vous vous protégez la tête de vos bras, mais une pierre vous entaille l'épaule. Vous ressortez du château en vous tenant le bras.",
           "4": "Un escalier effondré descend vers les caves. Vous attachez une corde à un pilier et vous laissez glisser dans le noir. En bas, un coffre a échappé aux pillards. Vous en tirez un bel objet, puis remontez à la force des bras en laissant la corde nouée au pilier.",
           "5": "Des voix montent d'une salle : des brigands ont fait du château leur repaire. Leur chef vous reconnaît et vous invite à leur feu comme un vieux camarade. Vous acceptez votre part de leur dernier butin sans poser de questions."
         }
@@ -398,7 +398,7 @@
       "searchRiver": {
         "text": "Fouiller les berges près du château.",
         "outcomes": {
-          "0": "En longeant la berge, vous tombez sur les restes d'un moulin à eau. Des pièces se sont coincées entre les dents rouillées des engrenages. Vous passez un moment à les extraire avec la pointe de votre lame.",
+          "0": "En longeant la berge, vous tombez sur les restes d'un moulin à eau. Des pièces se sont coincées entre les dents rouillées des engrenages. Vous passez un moment à les extraire avec la pointe d'un bâton.",
           "1": "Vous vous penchez au bord de l'eau pour fouiller sous les racines. Les pierres sont glissantes, et vous basculez dans la rivière. Le courant vous emporte, et vous regagnez la berge quelques mètres plus loin, trempé et transi.",
           "2": "Sous le vieux ponton, une forme sombre repose au fond de l'eau. Vous avez fouillé assez de ruines pour reconnaître une barge coulée. Vous plongez plusieurs fois et remontez de l'épave une bourse et un objet.",
           "3": "Votre hippopotame se jette dans la rivière dans une grande gerbe d'eau. Vous le rejoignez, et la baignade vous fait du bien. Il refait surface un peu plus loin, un objet brillant entre les dents, et le laisse tomber à vos pieds.",
@@ -443,7 +443,7 @@
           "0": "Vous suivez les traces de gibier dans les fourrés pendant un long moment. À chaque fois, les bêtes vous entendent venir et détalent avant que vous soyez à portée. Vous revenez bredouille, le ventre toujours vide.",
           "1": "Après une courte traque, vous surprenez des lapins à la sortie de leur terrier et en attrapez deux. Vous les faites griller sur un petit feu et les dévorez avec appétit. Repu, vous reprenez la route.",
           "2": "Vous poursuivez un sanglier à travers les fourrés. Acculé, il fait soudain volte-face et vous charge. Vous n'avez pas le temps de l'éviter, et ses défenses vous labourent la jambe. Gravement blessé, vous devez vous soigner longuement.",
-          "3": "Vous poursuivez un sanglier à travers les fourrés. Acculé, il fait volte-face et vous charge. Votre armure encaisse le plus gros du choc, mais une défense vous entaille la cuisse. La bête s'enfuit, et vous repartez en boitant.",
+          "3": "Vous poursuivez un sanglier à travers les fourrés. Acculé, il fait volte-face et vous charge. Vous encaissez le plus gros du choc, mais une défense vous entaille la cuisse. La bête s'enfuit, et vous repartez en boitant.",
           "4": "Votre familier flaire une piste et file dans les fourrés avant vous. Il revient un moment plus tard en traînant un lièvre bien gras. Vous le faites rôtir et partagez le repas avec lui. Vous repartez tous les deux rassasiés.",
           "5": "Vous rapportez un faisan. Vous le plumez, le farcissez d'herbes cueillies en chemin et le faites rôtir lentement sur la braise, jusqu'à ce que la peau dore et croustille. Vous vous régalez, et repartez en pleine forme."
         }
@@ -557,7 +557,7 @@
       "butch": {
         "text": "Dépecer le renard pour vendre sa peau.",
         "outcomes": {
-          "0": "Votre couteau accroche et déchire la peau à plusieurs endroits. Un marchand ambulant qui passe au carrefour retourne la fourrure trouée en grimaçant. Il vous en donne quelques pièces, sans plus.",
+          "0": "Maladroit, vous déchirez la peau à plusieurs endroits. Un marchand ambulant qui passe au carrefour retourne la fourrure trouée en grimaçant. Il vous en donne quelques pièces, sans plus.",
           "1": "Vous dépecez le renard sans trop abîmer la peau. Un marchand ambulant s'arrête au carrefour, examine la fourrure et vous en propose un prix correct. Vous acceptez.",
           "2": "D'une main sûre, vous retirez la peau d'un seul tenant. Le premier marchand qui passe au carrefour la palpe, siffle entre ses dents et vous en offre une belle somme.",
           "3": "Un marchand ambulant vous reconnaît : on lui a dit que vous étiez honnête en affaires. Plutôt que des pièces, il vous propose d'échanger la fourrure contre un objet de sa charrette. Vous acceptez sans hésiter.",
@@ -600,7 +600,7 @@
         "outcomes": {
           "0": "Mieux vaut ne pas manger une bête trouvée morte dont on ne sait rien. Vous passez à côté du renard sans vous arrêter et reprenez la route d'un bon pas, le ventre vide.",
           "1": "Au moment où vous passez près du renard, son corps est pris d'un violent spasme. Surpris, vous reculez d'un bond et heurtez de plein dos le poteau indicateur. Le choc vous coupe le souffle.",
-          "2": "Au moment où vous passez près du renard, son corps est pris d'un spasme. Vous reculez d'un bond et vous cognez contre le poteau indicateur. Votre armure encaisse une partie du choc, mais votre épaule vous lance.",
+          "2": "Au moment où vous passez près du renard, son corps est pris d'un spasme. Vous reculez d'un bond et vous cognez contre le poteau indicateur. Le choc est rude, et votre épaule vous lance.",
           "3": "Au moment où vous passez près du renard, son corps est pris d'un spasme. Vous reculez et heurtez le poteau indicateur, mais votre armure épaisse prend presque tout le choc. Le poteau, lui, penche un peu plus qu'avant.",
           "4": "Votre renard s'arrête net devant la dépouille et la renifle longuement. Il semble ne pas vouloir la quitter. Après plusieurs appels sans effet, vous le prenez dans vos bras pour reprendre la route."
         }
@@ -676,7 +676,7 @@
         "text": "Intimider le garde.",
         "outcomes": {
           "0": "Vous bombez le torse, et le garde éclate de rire. Il vous repousse d'une bourrade contre le mur, puis s'éloigne tranquillement avec la bourse de sa victime.",
-          "1": "Vous vous avancez, la main sur votre arme. Le garde vous toise un long moment, puis s'éloigne en grommelant, la bourse à la ceinture. Libérée, la femme vous remercie d'un signe de tête.",
+          "1": "Vous vous avancez, l'air menaçant. Le garde vous toise un long moment, puis s'éloigne en grommelant, la bourse à la ceinture. Libérée, la femme vous remercie d'un signe de tête.",
           "2": "Vous vous avancez, la main sur votre arme. Le garde mesure vite la différence, lâche la bourse et file dans les ruelles. La femme ramasse son bien et vous glisse quelques pièces, encore tremblante.",
           "3": "Le garde vous reconnaît et pâlit. Il lâche sa victime et détale sans demander son reste. La femme vous regarde avec autant de crainte que de soulagement, puis s'éloigne en hâte elle aussi.",
           "4": "Votre familier vient se placer à vos côtés et gronde sourdement. Le garde pâlit, lâche la bourse et s'enfuit en trébuchant. La femme récupère son bien et vous offre quelques pièces."
@@ -686,8 +686,8 @@
         "text": "Attaquer le garde par surprise.",
         "outcomes": {
           "0": "Le garde esquive votre coup au dernier moment, et la femme en profite pour s'enfuir. Après un bref échange de coups, il prend la fuite à son tour. Vous retrouvez la femme un peu plus loin : elle vous offre quelques pièces.",
-          "1": "Au dernier moment, le garde se retourne et dégaine. Ses coups traversent votre armure légère, et vous vous effondrez, blessé. Il s'enfuit, et la femme a disparu dans la confusion.",
-          "2": "Au dernier moment, le garde se retourne et riposte. Votre armure encaisse le plus gros, mais une entaille au bras vous fait lâcher prise. Il s'enfuit, et la femme a disparu dans la confusion.",
+          "1": "Au dernier moment, le garde se retourne et dégaine. Ses coups vous atteignent de plein fouet, et vous vous effondrez, blessé. Il s'enfuit, et la femme a disparu dans la confusion.",
+          "2": "Au dernier moment, le garde se retourne et riposte. Vous encaissez le plus gros, mais une entaille au bras vous fait lâcher prise. Il s'enfuit, et la femme a disparu dans la confusion.",
           "3": "Profitant de la surprise, vous assommez le garde d'un seul coup. Un objet de valeur tombe de sa ceinture, sans doute le fruit d'un autre vol. La femme récupère sa bourse et vous laisse l'objet.",
           "4": "Vous ceinturez le garde, et des passants qui vous ont reconnu vous prêtent main-forte. Une patrouille arrive et emmène le garde. Le sergent vous remet une récompense pour votre aide."
         }
@@ -1071,14 +1071,15 @@
         }
       },
       "mineIt": {
-        "text": "Attaquer le cadenas à coups de pioche.",
+        "text": "Forcer le cadenas.",
         "outcomes": {
-          "0": "Vous frappez le cadenas à grands coups de pioche. Il finit par céder, mais le coffret ne contient que du sable et une vieille étoffe mangée par les mites. Tout ce travail pour rien.",
-          "1": "Trois coups de pioche suffisent : le cadenas rouillé vole en éclats. Au fond du coffret, sous une étoffe usée, vous trouvez quelques pièces oubliées depuis longtemps.",
-          "2": "Votre pioche ricoche sur le cadenas et vous frappe la main. Vous vous acharnez encore un moment, les doigts endoloris, puis vous renoncez. Le coffret reste fermé.",
-          "3": "D'un seul coup bien placé, vous faites sauter le cadenas sans abîmer le coffret. À l'intérieur, une belle poignée de pièces vous attend, soigneusement enveloppée dans une étoffe.",
-          "4": "Le vacarme attire les marchands ambulants. L'un d'eux vous reconnaît et ameute les autres. Vous laissez retomber la pioche, abandonnez le coffret et filez avant que l'affaire ne tourne mal.",
-          "5": "Avant même que vous leviez la pioche, votre gorille saisit le coffret et en arrache le couvercle d'un seul geste. À l'intérieur, une bourse bien garnie a survécu au traitement."
+          "0": "Faute d'outil, vous frappez le cadenas avec une grosse pierre jusqu'à ce qu'il cède. Le coffret ne contient que du sable et une vieille étoffe mangée par les mites. Tout ce travail pour rien.",
+          "1": "À coups de pierre, vous finissez par faire sauter le cadenas rouillé. Au fond du coffret, sous une étoffe usée, vous trouvez quelques pièces oubliées depuis longtemps.",
+          "2": "La pierre ripe sur le cadenas et vous écrase les doigts. Vous vous acharnez encore un moment, la main endolorie, puis vous renoncez. Le coffret reste fermé.",
+          "3": "Votre arme lourde est faite pour ce genre de travail. Deux coups bien placés, et le cadenas vole en éclats sans abîmer le coffret. À l'intérieur, une belle poignée de pièces vous attend, enveloppée dans une étoffe.",
+          "4": "Le vacarme attire les marchands ambulants. L'un d'eux vous reconnaît et ameute les autres. Vous lâchez votre pierre, abandonnez le coffret et filez avant que l'affaire ne tourne mal.",
+          "5": "Avant même que vous leviez la pioche, votre gorille saisit le coffret et en arrache le couvercle d'un seul geste. À l'intérieur, une bourse bien garnie a survécu au traitement.",
+          "6": "D'un seul coup de pierre, assené de toutes vos forces, vous faites sauter le cadenas. Au fond du coffret, quelques pièces vous attendent, enveloppées dans une étoffe."
         }
       },
       "searchKey": {
@@ -1856,7 +1857,7 @@
           "1": "Pérotin n'aime pas le pouvoir en place. Il vous souffle sa poudre, et vous voilà à la tête du peuple, en marche vers le palais. Une corde casse. Vous êtes debout sur une table de l'auberge, une fourche à la main, devant des nobles muets. La Garde vous enferme pour folie.",
           "2": "La chanson vous fait vivre une journée dans la peau de la reine Aliénor : des audiences sans fin, des broderies, et des ragots sur une fille qui a encore refusé un champion. Rien d'utile, tout sort des fioles de Pérotin. Vous revenez à vous quelques instants plus tard.",
           "3": "Pérotin chante les louanges des ducs et des comtes. Un seigneur descendu à l'auberge s'arrête, conquis. Puis il vous reconnaît, et son sourire disparaît. Il donne sa bourse au ménestrel seul, qui hausse les épaules d'un air désolé. Vous repartez les mains vides.",
-          "4": "En voyant votre armure, Pérotin garde pour lui ses couplets contre le pouvoir et chante l'histoire des sept Élus. Le temps d'une chanson, vous chevauchez à leurs côtés. À la fin, un vieux noble sorti de l'auberge vous serre la main et vous offre un objet de sa jeunesse.",
+          "4": "En voyant votre allure de chevalier, Pérotin garde pour lui ses couplets contre le pouvoir et chante l'histoire des sept Élus. Le temps d'une chanson, vous chevauchez à leurs côtés. À la fin, un vieux noble sorti de l'auberge vous serre la main et vous offre un objet de sa jeunesse.",
           "5": "Pérotin vous met à la tête du peuple, en marche vers le palais, puis une corde casse. Vous voilà debout sur une table de l'auberge, une fourche à la main. Vous sautez par la fenêtre avant que la Garde arrive, et restez caché derrière la forge pendant une heure.",
           "6": "Pérotin remarque votre familier, une bête peu commune, et en fait le roi de sa chanson. Il lui donne une cour, des impôts et un bouffon : vous. Les nobles, hilares, paient un deuxième couplet, puis un troisième. Vous repartez la bourse plus lourde, un peu vexé tout de même."
         }
@@ -3628,7 +3629,7 @@
           "2": "Vous traversez la voie sans vous arrêter. Deux gardes vous reconnaissent et ne cherchent pas à comprendre : ils vous arrêtent pour outrage à la Garde et vous jettent en cellule.",
           "3": "Vous heurtez un soldat, qui lève le poing. Vous lui saisissez le bras et le plaquez au sol. Des rires parcourent la colonne. Amusé, le roi Aubéric vous fait remettre une belle somme, puis vous ordonne de dégager la voie.",
           "4": "Vous traversez devant les chevaux. Un garde vous donne un coup de lance, mais votre bouclier arrête l'essentiel du choc. Vous filez parmi les passants avant qu'on vous attrape, le bras un peu douloureux.",
-          "5": "Un garde remarque votre armure de chevalier et vous salue. Il vous demande poliment d'attendre au bord de la voie. Vous n'insistez pas et patientez quelques minutes, le temps que la colonne passe.",
+          "5": "Un garde reconnaît en vous un chevalier et vous salue. Il vous demande poliment d'attendre au bord de la voie. Vous n'insistez pas et patientez quelques minutes, le temps que la colonne passe.",
           "6": "Vous traversez devant les chevaux. Un garde vous donne un coup de lance dans les côtes. Le souffle coupé, vous filez parmi les passants avant qu'on vous attrape. Vous marchez un moment plié en deux, une main sur le flanc."
         }
       },

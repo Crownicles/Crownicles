@@ -58,9 +58,9 @@
         },
         "3": {
           "requirements": {
-            "attack": {
-              "min": 600
-            }
+            "weaponTags": [
+              "blunt"
+            ]
           },
           "money": 200,
           "effect": "occupied",
@@ -83,6 +83,16 @@
             ]
           },
           "money": 150
+        },
+        "6": {
+          "requirements": {
+            "attack": {
+              "min": 600
+            }
+          },
+          "money": 150,
+          "effect": "occupied",
+          "lostTime": 10
         }
       }
     },

@@ -21,6 +21,7 @@ interface OutcomeRequirements {
 	validClassIds?: number[];
 	validPetTypeIds?: number[];
 	petTags?: string[];
+	weaponTags?: string[];
 	campaignCurrentMissionId?: number;
 	materials?: { quantity?: Range };
 	enchantment?: object;
@@ -143,6 +144,14 @@ function buildDimensions(outcomes: Outcome[]): Dimension[] {
 		constrains: o => o.requirements?.materials !== undefined || o.consumeMaterials !== undefined,
 		accepts: (o, value) => isInRange(o.requirements?.materials?.quantity ?? (o.requirements?.materials ? { min: 1 } : undefined), value as number)
 			&& (!o.consumeMaterials || (value as number) >= o.consumeMaterials.quantity)
+	});
+
+	// Asking for a weapon tag only adds outcomes: a weapon with every asked tag, and a weapon with none, bound the profiles
+	dimensions.push({
+		name: 'weaponTags',
+		values: [false, true],
+		constrains: o => o.requirements?.weaponTags !== undefined,
+		accepts: (o, value) => !o.requirements?.weaponTags || value as boolean
 	});
 
 	dimensions.push({

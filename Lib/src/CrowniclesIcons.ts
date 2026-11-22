@@ -599,7 +599,7 @@ export const CrowniclesIcons: {
 		3: {
 			abandon: "▶️",
 			end: { 0: "▶️" },
-			mineIt: "⛏️",
+			mineIt: "🔨",
 			pickLock: "🪝",
 			searchKey: "🔑"
 		},

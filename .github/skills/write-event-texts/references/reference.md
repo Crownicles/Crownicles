@@ -47,6 +47,9 @@ Ces conditions s'ajoutent aux autres dans `requirements`. Elles ne consomment ri
 | `materials` | `{"type": "rope", "ids": [12, 47], "rarity": {"min": 3}, "quantity": {"min": 5}}`, chaque filtre est facultatif | la quantité totale des matériaux qui passent tous les filtres ; par défaut au moins 1 ; `"quantity": {"max": 0}` veut dire « n'en a aucun » |
 | `enchantment` | `{"slot": "weapon", "types": ["magic"], "kinds": ["burnedDamage"], "level": {"min": 2}}`, chaque filtre est facultatif ; `{}` = n'importe quel enchantement | l'arme ou l'armure équipée (ou seulement `slot`) porte un enchantement qui passe tous les filtres |
 | `weaponLevel`, `armorLevel` | plage | le niveau d'amélioration de l'arme ou de l'armure équipée, de 0 à 4 (forgeron) |
+| `weaponTags` | liste de tags | l'arme équipée porte au moins un de ces tags : `blunt` (arme lourde qui frappe : marteau, pioche, masse, poêle, chaise…), `fire`, `ranged` (arc, pistolet, bombe), `metallic`, `holy` |
+
+Les tags d'arme sont dans `Core/resources/weapons/<id>.json` (champ `tags`) et `ItemConstants.TAGS`. Même règle que pour les familiers : un tag pour une capacité partagée par plusieurs armes et utile à d'autres events (forcer, couper, tirer de loin), pas pour une arme isolée.
 
 **Repères sur les 130 joueurs réguliers** (mesurés le 21/11/2026) :
 

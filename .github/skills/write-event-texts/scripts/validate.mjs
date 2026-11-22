@@ -28,7 +28,7 @@ const OUTCOME_KEYS = new Set([
 	"mapLink", "goBackToPreviousMap", "forceStayInCity", "forceLeaveCity", "tags", "consumeMaterials", "giveMaterials"
 ]);
 const REQ_RANGES = ["level", "karma", "health", "attack", "defense", "speed", "petRarity", "cookingLevel", "weaponLevel", "armorLevel"];
-const REQ_LISTS = ["validClassIds", "validPetTypeIds", "petTags"];
+const REQ_LISTS = ["validClassIds", "validPetTypeIds", "petTags", "weaponTags"];
 const REQ_KEYS = new Set([...REQ_RANGES, ...REQ_LISTS, "campaignCurrentMissionId", "materials", "enchantment"]);
 const MATERIAL_FILTERS = new Set(["type", "rarity", "ids", "quantity"]);
 const MATERIAL_TYPES = new Set(["metal", "alloy", "nature", "spiritual", "magic", "leather", "rope", "poison", "explosive", "wood"]);
@@ -54,6 +54,16 @@ function loadPets() {
 			const { rarity, tags } = readJson(join(directory, file));
 			return [id, { name: names[`${id}_male`], rarity, tags: tags ?? [] }];
 		}));
+}
+
+/**
+ * Tags carried by at least one weapon of the game
+ * @returns {Set<string>}
+ */
+function loadWeaponTags() {
+	const directory = join(REPO_ROOT, "Core/resources/weapons");
+	return new Set(readdirSync(directory).filter(file => file.endsWith(".json"))
+		.flatMap(file => readJson(join(directory, file)).tags ?? []));
 }
 
 /**
@@ -197,6 +207,9 @@ function checkRequirementReferences(report, path, req, game) {
 	const isUnknownPet = petId => !game.pets.has(typeof petId === "boolean" ? Number(petId) : petId);
 	for (const petId of get(req, "validPetTypeIds", []).filter(isUnknownPet)) {
 		report.errors.push(`${path}: unknown pet ${pyStr(petId)}`);
+	}
+	for (const tag of get(req, "weaponTags", []).filter(weaponTag => !game.weaponTags.has(weaponTag))) {
+		report.errors.push(`${path}: no weapon has the tag ${pyStr(tag)}`);
 	}
 	const carriedTags = new Set([...game.pets.values()].flatMap(pet => pet.tags));
 	for (const tag of get(req, "petTags", []).filter(petTag => !carriedTags.has(petTag))) {
@@ -433,7 +446,9 @@ function validate(inp, out, pets, materials) {
 	const origPossibilities = need(orig, "possibilities");
 	const report = { errors: [], warnings: [] };
 	checkTexts(report, out, orig);
-	const counts = checkData(report, inp, out, { pets, materials });
+	const counts = checkData(report, inp, out, {
+		pets, materials, weaponTags: loadWeaponTags()
+	});
 	checkConsistency(report, out, pets);
 	checkOutcomeCounts(report, counts, origPossibilities);
 	const icons = getOrEmpty(out, "icons");

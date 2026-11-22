@@ -71,6 +71,11 @@ export type OutcomeRequirements = {
 	 * Upgrade level of the equipped armor
 	 */
 	armorLevel?: OutcomeRange;
+
+	/**
+	 * The equipped weapon has at least one of these item tags (blunt, fire, ranged…)
+	 */
+	weaponTags?: string[];
 };
 
 /**
@@ -123,7 +128,8 @@ function areStatRequirementsValid(
 	];
 	return rangeChecks.every(([range, value]) => isRangeValid(range, value))
 		&& isClassValid(req.validClassIds, player.class)
-		&& isEnchantmentValid(req.enchantment, playerActiveObjects);
+		&& isEnchantmentValid(req.enchantment, playerActiveObjects)
+		&& (!req.weaponTags || req.weaponTags.some(tag => playerActiveObjects.weapon?.item.tags?.includes(tag)));
 }
 
 /**

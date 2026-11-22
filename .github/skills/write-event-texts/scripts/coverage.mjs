@@ -74,7 +74,8 @@ function coverageDimensions(reqs, pets) {
 		["weaponLevel", optionalLevel("weaponLevel", [0, 10])],
 		["armorLevel", optionalLevel("armorLevel", [0, 10])],
 		["hasMaterials", uses("materials") ? [false, true] : [true]],
-		["hasEnchantment", uses("enchantment") ? [false, true] : [true]]
+		["hasEnchantment", uses("enchantment") ? [false, true] : [true]],
+		["hasWeaponTags", uses("weaponTags") ? [false, true] : [true]]
 	];
 }
 
@@ -102,7 +103,8 @@ function areBelongingsCovered(r, profile) {
 			return false;
 		}
 	}
-	return !Object.hasOwn(r, "enchantment") || profile.hasEnchantment;
+	return (!Object.hasOwn(r, "enchantment") || profile.hasEnchantment)
+		&& (!Object.hasOwn(r, "weaponTags") || profile.hasWeaponTags);
 }
 
 /**
