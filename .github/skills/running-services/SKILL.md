@@ -11,7 +11,7 @@ When using VS Code background terminals (`isBackground=true`), the **working dir
 **Solution**: Use `pushd` to change directory before launching:
 ```bash
 # Core
-pushd /path/to/Crownicles/Core && node dist/Core/src/index.js; popd
+pushd /path/to/Crownicles/Core && node dist/Core/src/main.js; popd
 
 # Discord
 pushd /path/to/Crownicles/Discord && node dist/Discord/src/index.js; popd
@@ -36,7 +36,7 @@ cd Discord && pnpm tsc
 
 ## Build Output Paths
 Both services compile to `dist/` inside their own directory:
-- Core: `Core/dist/Core/src/index.js`
+- Core: `Core/dist/Core/src/main.js`
 - Discord: `Discord/dist/Discord/src/index.js`
 
 The `node dist/{Service}/src/index.js` path is **relative** — requires correct cwd.
