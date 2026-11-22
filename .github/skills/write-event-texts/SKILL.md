@@ -129,6 +129,39 @@ L'un des buts de la réécriture : quand le joueur clique sur un bouton, il sait
 - Les conditions rendent le résultat plus prévisible, pas moins : un joueur fort s'attend à s'en sortir, un joueur mal famé à être reconnu. Ce que le texte raconte découle du profil, et le profil se lit dans le texte.
 - Les surprises restent possibles, mais minoritaires : une issue inattendue par choix au plus, et elle doit rester liée à la situation de l'event.
 
+### Une réaction à la mesure de ce que fait le joueur
+
+**Le contre-exemple (event 75).** Le joueur décline poliment l'invitation d'un capitaine pirate qu'il n'a jamais vu. Dans la réécriture, le capitaine fait tirer au canon sur lui, et quatre issues sur cinq de ce choix étaient des boulets (trois paliers de vitesse et une armure). Quand le joueur ne répond pas, le même capitaine descend de son navire pour l'assommer. On lit ça et on se dit : pourquoi ?
+
+1. **Disproportion.** Un refus poli ne mérite pas de l'artillerie. La réaction dépasse de loin ce que le joueur a fait.
+2. **Aucune relation.** Le capitaine ne connaît pas le joueur. Une hostilité envers un inconnu n'a pas de cause.
+3. **Contre l'intérêt du personnage.** Tirer au canon à côté du port de Mergagnan coûte un boulet et attire la garde, pour rien.
+4. **Les paliers ont fait de l'exception la règle.** L'original avait un coup de canon parmi deux issues. En le graduant en trois paliers et une armure, la réécriture a fait du bombardement le cas normal : le choix le plus prudent est devenu le plus dangereux, à l'inverse de « Un choix doit être prévisible ».
+
+L'original contenait déjà le canon. La fidélité garde l'idée (un coup de canon, une bouteille de rhum), pas l'incohérence.
+
+**Avant d'écrire qu'un personnage s'en prend au joueur, réponds à trois questions :**
+- Qu'a fait le joueur pour le provoquer ?
+- Que sait le personnage du joueur ?
+- Qu'y gagne-t-il, et que risque-t-il ?
+
+Si l'une n'a pas de réponse dans le texte, l'issue ne tient pas.
+
+**L'échelle de réaction d'un inconnu :**
+
+| Ce que fait le joueur | Réaction la plus forte d'un inconnu |
+|---|---|
+| neutre ou poli : refuser, passer, se taire | indifférence, moquerie, un geste d'humeur (une bouteille lancée par dépit) |
+| maladroit ou vexant : insister, fouiner, se moquer | refus sec, on le chasse |
+| malhonnête ou menaçant : voler, pousser, provoquer | bagarre, poursuite, garde appelée |
+| hostile : attaquer | violence |
+
+- **Monter d'un cran demande une raison montrée dans le texte, portée par une condition** : un joueur au karma bas qu'on reconnaît, un joueur qui surprend un secret, un personnage déjà présenté comme ivre, fou ou hostile dans l'introduction.
+- **Sans raison, change la cause du malus, pas son effet** : un accident (une salve d'adieu mal pointée), le lieu (une planche pourrie), la maladresse du joueur, un tiers qui a ses propres raisons.
+- **Gradue la conséquence, jamais une prémisse douteuse.** Avant de découper une issue en paliers, vérifie que sa situation de départ est plausible pour tous les joueurs : les paliers la multiplient et en font la norme.
+- **Un choix prudent reste prudent.** Refuser, décliner, passer son chemin : la majorité de ses issues se passent bien. Un malus y reste rare et vient du monde, pas d'un personnage qui surréagit.
+- **Un personnage garde la même attitude envers un même profil dans tout l'event.** Si l'équipage traite un joueur au karma bas comme l'un des siens quand il accepte, il ne le canarde pas quand il refuse.
+
 ### Combien et lesquelles
 
 - **Par possibilité :** 3 à 6 issues, dont au moins une sans condition.
@@ -247,6 +280,7 @@ Avant de rendre un texte, vérifie chaque point :
 4. Il ne contredit ni le canon du lieu ni le menu de la ville, et ne suppose pas la destination suivante.
 5. Chaque condition se montre dans le texte, et chaque seuil correspond au mot de l'échelle.
 6. Chaque issue a une mécanique qui correspond au texte, et chaque profil de joueur a au moins une issue.
+7. Chaque personnage qui s'en prend au joueur a une raison montrée dans le texte, à la mesure de ce que le joueur a fait, et un choix prudent reste prudent.
 
 ## Journal des retours du propriétaire
 
@@ -261,6 +295,7 @@ Les 21 events déjà réécrits (1, 2, 10 à 20, 30, 39, 46, 56, 69, 71, 76, 89)
 - **Brouillon de Gabriel (events 24, 25, 26)** : son brouillon est commité sous son nom, puis repris selon le skill dans un second commit. Voir « Brouillon d'un contributeur ».
 - **Prévisibilité et paliers (le propriétaire et GabrieLre)** : le joueur doit à peu près savoir ce qui va se passer quand il clique ; un malus ou un bonus lié à une stat se gradue en trois paliers au lieu d'un seuil binaire, et les seuils ne sont pas tous tout en haut. Voir « Un choix doit être prévisible » et « L'échelle des seuils ». Appliqué aux events 2, 10, 24, 25 et 26.
 - **Équipement réellement porté (le propriétaire, event 3)** : pas de pioche ni d'armure supposées ; condition `weaponTags` et tag d'arme `blunt`. Le validateur avertit d'une arme ou d'une armure nommée sans condition qui la garantit. Voir « Texte et mécanique ».
+- **Réaction disproportionnée (le propriétaire, event 75)** : un pirate inconnu tirait au canon sur un joueur qui déclinait poliment, et les paliers en faisaient la norme. Voir « Une réaction à la mesure de ce que fait le joueur ».
 - **Relecture de Gabriel (events 1, 2, 10, 11, 12)**, deuxième passe : verbe juste, réaction motivée, contraste, décor des ruines, stat plutôt qu'équipement, temps à la mesure de la durée, trouvaille plausible, issue qui rappelle le choix, conséquence pour les meilleurs, demi-tour réel (`goBackToPreviousMap`). Le validateur avertit maintenant des libellés trop longs ou en « Essayer de », de `hurt` pour une petite blessure, de *sans armure* sur une condition de défense, des durées incohérentes, de *retard*, des listes d'ids qui partagent un tag et des events qui misent tout sur le chien.
 - **Relecture de Gabriel (events 1, 2, 10, 11, 12)**, première passe : libellés de choix courts qui visent la réussite, `confounded` (étourdi) pour les petites blessures, gravité du texte à la mesure de la perte de vie, revers d'une force, familles de familiers entières (condition `petTags`), quelques issues sans condition en plus pour varier. Voir « Structure d'un event », « Texte et mécanique », « Le revers d'une force » et « Classes et familiers ».
 - **Cuisine, matériaux, équipement** : des issues doivent dépendre du niveau de cuisine, des matériaux et des enchantements ou améliorations de l'équipement, et certaines peuvent consommer des matériaux. Voir « L'échelle des seuils ».

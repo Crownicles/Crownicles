@@ -3048,10 +3048,9 @@
         "text": "Refuser l'invitation.",
         "outcomes": {
           "0": "Vous déclinez poliment. Le capitaine hausse les épaules avec un sourire narquois et fait signe à ses hommes de lever l'ancre. Vous regardez un instant le navire s'éloigner, puis reprenez votre route le long de la plage.",
-          "1": "Votre refus vexe le capitaine. Il aboie un ordre, et un canon tonne depuis le pont. Vous fuyez à travers le sable, mais trop lentement : le boulet s'écrase juste derrière vous et vous crible le dos d'éclats. Vous repartez en boitant.",
-          "2": "Votre refus vexe le capitaine. Il aboie un ordre, et un canon tonne depuis le pont. Le boulet s'écrase à quelques pas, et le souffle vous jette au sol. Étourdi, vous filez le long de la plage sous les rires de l'équipage.",
-          "3": "Votre refus vexe le capitaine. Il aboie un ordre, mais avant que le canon ne tonne, vous avez déjà plongé derrière une dune. Le boulet soulève une gerbe de sable loin derrière vous. Vous repartez sans une égratignure.",
-          "4": "Votre refus vexe le capitaine, qui fait tirer le canon. Vous voulez fuir, mais votre lourde armure s'enfonce dans le sable mou à chaque pas. Le souffle du boulet vous renverse. Étourdi, vous vous relevez couvert de sable."
+          "1": "Vous déclinez. Le capitaine hausse les épaules et, pour la forme, fait tirer un coup de canon vers le large en guise d'adieu. La détonation vous fait sursauter si fort que vous trébuchez dans le sable, sous les rires de l'équipage.",
+          "2": "Vous déclinez. Le capitaine éclate de rire, lève sa bouteille à votre santé et vous la lance depuis le pont. Vous la rattrapez au vol : il reste un fond de rhum. Le navire lève l'ancre pendant que vous reprenez votre route.",
+          "3": "Vous déclinez, mais un vieux marin vous a reconnu : pour lui, vous êtes de la famille, et on ne refuse pas une tournée entre amis. Deux matelots vous hissent à bord en riant. Vous vous réveillez sur la plage au petit matin, la tête lourde."
         }
       },
       "askAbout": {
@@ -3069,7 +3068,7 @@
           "0": "Vous tournez le dos au capitaine et vous asseyez sur le sable. Vous regardez le navire lever l'ancre et quitter la baie, jusqu'à ce qu'il ne soit plus qu'un point à l'horizon. Puis vous reprenez votre route.",
           "1": "En vous détournant du capitaine, vous apercevez une vieille bouteille à demi enfouie dans le sable. Elle contient une carte. Vous suivez ses indications à travers les dunes jusqu'à un petit coffre enterré, qui renferme un objet curieux.",
           "2": "En vous détournant du capitaine, vous apercevez une bouteille à demi enfouie dans le sable. Le parchemin qu'elle contient est rongé par le sel, et les lettres se sont effacées. Vous le rendez aux vagues, un peu déçu, et reprenez votre route.",
-          "3": "Vous tournez le dos au capitaine sans un mot. Vexé, il descend de son navire, vous rattrape à grands pas et vous assène un coup sur l'arrière du crâne. Étourdi, vous vous affaissez dans le sable pendant qu'il regagne son bord en ricanant."
+          "3": "Vous tournez le dos au capitaine sans un mot. Vexé d'être ignoré, il vous lance sa bouteille vide depuis le pont. Elle vous atteint à l'arrière du crâne, et vous vous affaissez dans le sable, étourdi, sous les rires de l'équipage."
         }
       }
     }

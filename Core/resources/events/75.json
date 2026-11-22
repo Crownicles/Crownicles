@@ -56,39 +56,17 @@
       "outcomes": {
         "0": {},
         "1": {
-          "requirements": {
-            "speed": {
-              "max": 40
-            }
-          },
-          "health": -20,
-          "effect": "hurt"
+          "effect": "scared"
         },
-        "2": {
-          "requirements": {
-            "speed": {
-              "min": 41,
-              "max": 349
-            }
-          },
-          "health": -10,
-          "effect": "confounded"
-        },
+        "2": {},
         "3": {
           "requirements": {
-            "speed": {
-              "min": 350
-            }
-          }
-        },
-        "4": {
-          "requirements": {
-            "defense": {
-              "min": 740
+            "karma": {
+              "max": -30
             }
           },
-          "health": -8,
-          "effect": "confounded"
+          "effect": "drunk",
+          "karma": -1
         }
       }
     },
