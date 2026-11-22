@@ -109,18 +109,6 @@
         },
         "6": {
           "requirements": {
-            "validPetTypeIds": [
-              62,
-              63
-            ]
-          },
-          "health": 12,
-          "karma": 8,
-          "effect": "occupied",
-          "lostTime": 20
-        },
-        "7": {
-          "requirements": {
             "attack": {
               "min": 231,
               "max": 599

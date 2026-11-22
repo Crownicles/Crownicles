@@ -864,16 +864,16 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 8 | Vous avez décidé de profiter de l'été pour passer par les montagnes tant que les cols ne sont pas trop enneigés. Cependant, l'ascension s'av |
 | 9 | Au milieu d'un champ, vous rencontrez un paysan. Ce dernier a perdu sa fourche... |
 | 10 | Au bord du Lac Mirage, des familles pique-niquent près des roseaux. Au bout d'un vieux ponton, un pêcheur se bat avec sa canne : un poisson |
-| 11 | Aux abords du Bois Hurlant, une femme encapuchonnée sort de l'ombre et vous aborde, le regard inquiet. Elle vous déconseille le sentier prin |
+| 11 | À l'orée du Bois Hurlant, dont les collines cachent des grottes à brigands, une femme encapuchonnée vous aborde. Elle vous déconseille le se |
 | 12 | Devant vous, la Rivière Vacarme charrie branches et écume dans un grondement assourdissant. Un vieux pont de bois l'enjambe encore : plusieu |
-| 13 | Vous voici à Claire de Ville, la grande cité marchande de la région. Les caravanes se croisent sous les portes fortifiées, les marteaux des |
-| 14 | Au milieu de L'Étendue, une maisonnette de pierre se niche au creux d'un vallon abrité du vent. Le marteau y sonne clair sur l'enclume : un |
-| 15 | Dans une ruelle de Claire de Ville, vous poussez la porte d'une petite boutique. Des marchands y négocient âprement autour d'étals chargés d |
-| 16 | Au détour d'un méandre de la Rivière aux Crabes, les ruines d'un château se dressent sur un promontoire rocheux. Le lierre ronge ses murs gr |
-| 17 | Sur le Grand Axe, la faim vous oblige à faire halte. Un grand arbre ploie sous des fruits dorés, des champignons colorés parsèment le sous-b |
-| 18 | Dans les ruelles de Mergagnan, vous tombez sur un chantier à l'abandon : poutres noircies, échafauds grinçants, outils rouillés. Le baron Al |
-| 19 | Au Croisement des Destins, vous vous arrêtez net : le corps encore tiède d'un renard gît à demi caché par les herbes. Pas de trace de lutte, |
-| 20 | Dans une ruelle de Claire de Ville, à l'écart du grand marché, un garde aux armes de la cité a acculé une femme contre un mur. Il lui arrach |
+| 13 | Après des semaines de route sans croiser âme qui vive, vous entrez dans Claire de Ville. La grande cité marchande grouille de monde, mais to |
+| 14 | La fatigue commence à vous peser quand, au milieu de la plaine vide de L'Étendue, vous apercevez une petite maison de pierre au bord d'une p |
+| 15 | Dans une ruelle de Claire de Ville, vous poussez la porte d'une petite boutique. Quelques hommes y discutent tranquillement entre des étals |
+| 16 | Après de longues heures à suivre la Rivière aux Crabes, vous découvrez un vieux château au bord de l'eau. Le lierre couvre ses murs, des cor |
+| 17 | Sur le Grand Axe, qui contourne le Mont Célestrum par le nord, la faim vous force à faire halte. Un grand arbre ploie sous des fruits dorés, |
+| 18 | Au détour d'une ruelle de Mergagnan, vous tombez sur un chantier à l'abandon : poutres noircies, échafaudages qui grincent, outils rouillés. |
+| 19 | Au Croisement des Destins, là où se rejoignent les grands chemins de l'ouest, un renard gît au pied du poteau indicateur. Il semble mort dep |
+| 20 | Dans une ruelle de Claire de Ville, un garde aux armes de la cité a acculé une femme contre un mur. Il lui arrache sa bourse en invoquant un |
 | 21 | En continuant votre périple, vous arrivez devant un pont délabré qui, de plus, est au dessus d'un énorme gouffre. |
 | 22 | Alors que vous traversez la propriété d'un fermier, vous voyez un pommier aux fruits forts appétissants. |
 | 23 | Vous vous baladez en forêt, quand soudain, vous apercevez un chariot qui semble cassé. Autour, le groupe de personnes semble mal en point. |

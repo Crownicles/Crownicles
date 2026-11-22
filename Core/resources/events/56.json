@@ -5,7 +5,7 @@
         "0": {
           "requirements": {
             "speed": {
-              "max": 349
+              "max": 40
             }
           },
           "money": -100
@@ -21,7 +21,6 @@
               "min": 350
             }
           },
-          "karma": 2,
           "effect": "occupied",
           "lostTime": 10
         },
@@ -33,6 +32,15 @@
           },
           "effect": "occupied",
           "lostTime": 20
+        },
+        "5": {
+          "requirements": {
+            "speed": {
+              "min": 41,
+              "max": 349
+            }
+          },
+          "money": -40
         }
       }
     },
@@ -78,12 +86,10 @@
           "money": 200,
           "tags": [
             "drinkAlcohol"
-          ],
-          "karma": -3
+          ]
         },
         "1": {
-          "health": 10,
-          "karma": 2
+          "health": 10
         },
         "2": {
           "effect": "occupied",
@@ -91,8 +97,7 @@
         },
         "3": {
           "effect": "freezing",
-          "health": -20,
-          "karma": -1
+          "health": -20
         },
         "4": {
           "requirements": {
@@ -166,7 +171,7 @@
         "0": {
           "requirements": {
             "speed": {
-              "max": 349
+              "max": 40
             }
           },
           "effect": "confounded",
@@ -203,6 +208,15 @@
             }
           },
           "effect": "freezing"
+        },
+        "6": {
+          "requirements": {
+            "speed": {
+              "min": 41,
+              "max": 349
+            }
+          },
+          "health": -5
         }
       }
     }

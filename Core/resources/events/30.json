@@ -202,17 +202,16 @@
         },
         "5": {
           "requirements": {
-            "validPetTypeIds": [
-              24,
-              91
-            ]
+            "attack": {
+              "min": 231,
+              "max": 699
+            }
           },
           "effect": "occupied",
-          "lostTime": 40,
-          "money": -150,
+          "lostTime": 60,
+          "money": 60,
           "tags": [
-            "bigFeast",
-            "moneyUsage"
+            "bigFeast"
           ]
         },
         "6": {
@@ -277,12 +276,14 @@
         },
         "6": {
           "requirements": {
-            "level": {
-              "max": 30
+            "speed": {
+              "min": 41,
+              "max": 499
             }
           },
-          "health": -10,
-          "karma": -2
+          "effect": "occupied",
+          "lostTime": 60,
+          "karma": -3
         }
       }
     },

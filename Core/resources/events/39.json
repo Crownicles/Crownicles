@@ -66,6 +66,21 @@
           "mapTypesDestination": [
             "ro"
           ]
+        },
+        "6": {
+          "requirements": {
+            "attack": {
+              "min": 231,
+              "max": 699
+            }
+          },
+          "money": -50,
+          "tags": [
+            "moneyUsage"
+          ],
+          "mapTypesDestination": [
+            "ro"
+          ]
         }
       }
     },
@@ -77,7 +92,6 @@
               "min": 0
             }
           },
-          "karma": 1,
           "forceStayInCity": true,
           "effect": "occupied",
           "lostTime": 120
@@ -169,6 +183,16 @@
           },
           "karma": -5,
           "health": -6
+        },
+        "6": {
+          "requirements": {
+            "speed": {
+              "min": 41,
+              "max": 349
+            }
+          },
+          "money": 50,
+          "karma": -5
         }
       }
     },
@@ -240,6 +264,15 @@
           "money": 60,
           "effect": "occupied",
           "lostTime": 10
+        },
+        "4": {
+          "requirements": {
+            "level": {
+              "min": 56,
+              "max": 119
+            }
+          },
+          "money": -100
         }
       }
     }

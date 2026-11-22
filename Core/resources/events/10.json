@@ -13,11 +13,11 @@
             }
           },
           "randomItem": {},
-          "karma": 8
+          "karma": 2
         },
         "2": {
           "money": 25,
-          "karma": 7
+          "karma": 2
         },
         "3": {
           "requirements": {
@@ -26,10 +26,11 @@
             }
           },
           "health": -15,
-          "effect": "hurt"
+          "effect": "hurt",
+          "karma": 2
         },
         "4": {
-          "karma": 3
+          "karma": 2
         },
         "5": {
           "requirements": {
@@ -38,7 +39,8 @@
               "max": 599
             }
           },
-          "health": -5
+          "health": -5,
+          "karma": 2
         }
       }
     },
@@ -51,68 +53,66 @@
             }
           },
           "money": 40,
-          "karma": 3
+          "karma": 1
         },
         "1": {
+          "requirements": {
+            "level": {
+              "max": 55
+            }
+          },
           "karma": 1
         },
-        "2": {},
+        "2": {
+          "karma": 1
+        },
         "3": {
-          "karma": 1
-        },
-        "4": {
           "requirements": {
             "karma": {
               "max": -30
             }
           },
-          "effect": "occupied",
-          "lostTime": 3,
-          "karma": -1
+          "karma": 1
         }
       }
     },
     "push": {
       "outcomes": {
         "0": {
-          "requirements": {
-            "karma": {
-              "min": 0
-            }
-          },
           "money": -100,
           "health": -10,
           "karma": -10,
           "effect": "occupied",
-          "lostTime": 30
+          "lostTime": 30,
+          "tags": [
+            "moneyUsage"
+          ]
         },
         "1": {
-          "requirements": {
-            "karma": {
-              "min": 0
-            }
-          },
           "money": -200,
           "health": -15,
-          "karma": -15,
-          "effect": "hurt"
+          "karma": -10,
+          "effect": "hurt",
+          "tags": [
+            "moneyUsage"
+          ]
         },
         "2": {
+          "health": -20,
+          "karma": -10,
+          "effect": "hurt"
+        },
+        "3": {
           "requirements": {
             "karma": {
               "max": -30
             }
           },
-          "money": -150,
-          "randomItem": {},
-          "karma": -20,
-          "effect": "occupied",
-          "lostTime": 10
-        },
-        "3": {
-          "health": -20,
-          "karma": -15,
-          "effect": "hurt"
+          "money": -300,
+          "karma": -10,
+          "tags": [
+            "moneyUsage"
+          ]
         },
         "4": {
           "requirements": {
@@ -123,27 +123,27 @@
           "health": -10,
           "karma": -10,
           "effect": "freezing"
-        },
-        "5": {
-          "requirements": {
-            "karma": {
-              "min": 0
-            }
-          },
-          "money": -300,
-          "karma": -20,
-          "effect": "occupied",
-          "lostTime": 45
         }
       }
     },
     "skip": {
       "outcomes": {
         "0": {
-          "karma": -2
+          "karma": -1
         },
         "1": {
-          "karma": -3
+          "karma": -1
+        },
+        "2": {
+          "requirements": {
+            "validPetTypeIds": [
+              1,
+              2
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 20,
+          "karma": -1
         }
       }
     },
@@ -151,8 +151,7 @@
       "outcomes": {
         "0": {
           "effect": "occupied",
-          "lostTime": 45,
-          "karma": -1
+          "lostTime": 45
         }
       }
     }

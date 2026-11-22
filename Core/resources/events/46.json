@@ -8,11 +8,6 @@
           "randomItem": {}
         },
         "2": {
-          "requirements": {
-            "karma": {
-              "max": 49
-            }
-          },
           "effect": "jailed"
         },
         "3": {
@@ -37,8 +32,7 @@
               64
             ]
           },
-          "money": 110,
-          "karma": -1
+          "money": 110
         }
       }
     },
@@ -129,17 +123,12 @@
         },
         "5": {
           "requirements": {
-            "validPetTypeIds": [
-              54,
-              10,
-              95,
-              97,
-              19,
-              12
-            ]
+            "level": {
+              "min": 56,
+              "max": 129
+            }
           },
-          "effect": "occupied",
-          "lostTime": 60
+          "money": 100
         },
         "6": {
           "requirements": {
@@ -161,11 +150,6 @@
           "health": 20
         },
         "2": {
-          "requirements": {
-            "karma": {
-              "max": 49
-            }
-          },
           "money": -100
         },
         "3": {
@@ -209,8 +193,7 @@
           "money": 600
         },
         "1": {
-          "effect": "jailed",
-          "karma": -2
+          "effect": "jailed"
         },
         "2": {},
         "3": {
@@ -267,8 +250,7 @@
               "min": 0
             }
           },
-          "money": 300,
-          "karma": 2
+          "money": 300
         },
         "3": {
           "requirements": {

@@ -86,7 +86,7 @@
         "4": {
           "requirements": {
             "karma": {
-              "max": -40
+              "max": -30
             }
           },
           "money": 22,
@@ -144,8 +144,7 @@
             }
           },
           "effect": "occupied",
-          "lostTime": 20,
-          "karma": 2
+          "lostTime": 20
         },
         "5": {
           "requirements": {

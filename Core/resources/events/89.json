@@ -98,6 +98,14 @@
           },
           "effect": "occupied",
           "lostTime": 10
+        },
+        "6": {
+          "requirements": {
+            "defense": {
+              "max": 519
+            }
+          },
+          "health": -15
         }
       }
     },
@@ -221,6 +229,16 @@
             ]
           },
           "money": 100,
+          "karma": 3
+        },
+        "6": {
+          "requirements": {
+            "level": {
+              "min": 56,
+              "max": 119
+            }
+          },
+          "health": -40,
           "karma": 3
         }
       }

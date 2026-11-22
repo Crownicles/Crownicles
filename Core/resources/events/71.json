@@ -9,7 +9,7 @@
         "1": {
           "requirements": {
             "karma": {
-              "min": 65
+              "min": 50
             }
           },
           "health": 40
@@ -176,6 +176,16 @@
           "effect": "occupied",
           "lostTime": 15,
           "karma": -4
+        },
+        "6": {
+          "requirements": {
+            "attack": {
+              "min": 231,
+              "max": 699
+            }
+          },
+          "money": 220,
+          "karma": -16
         }
       }
     },
