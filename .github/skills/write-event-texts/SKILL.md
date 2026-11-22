@@ -7,7 +7,7 @@ description: Règles de style, de lore et de données pour écrire ou réécrire
 
 Le joueur revoit chaque event des dizaines de fois, dans n'importe quel ordre. Un bon texte reste vrai et agréable à la centième lecture. Ces règles viennent des relectures du propriétaire du jeu sur la branche `outcomerequirements` (PR #3329).
 
-On n'édite que `Lang/fr` : les autres langues viennent de Crowdin.
+Le français (`Lang/fr`) est la référence. Depuis l'abandon de Crowdin (#5181), chaque clé ajoutée, modifiée ou supprimée en français doit l'être aussi dans les autres langues (`de`, `en`, `es`, `it`, `pt`) dans la même PR, avec les mêmes placeholders : voir `Lang/README.md`. Le workflow `Translations` le vérifie. On écrit et on fait relire d'abord le français, puis on traduit quand le texte est stable.
 
 ## Sources à lire avant d'écrire
 
@@ -185,7 +185,7 @@ L'échelle est calée sur les 130 joueurs réguliers en production, c'est-à-dir
 1. **Préparer l'entrée.** `python3 prepare.py <dossier Crownicles> <id> [--draft-ref <commit>]` écrit `generators/event-rewrites/src/input/<id>.json` : les textes et la mécanique de `develop`, le canon du lieu et, avec `--draft-ref`, le brouillon d'un contributeur (champ `draft`).
 2. **Écrire la sortie.** `out/<id>.json` contient `text`, `possibilities`, `data` (le contenu complet de `Core/resources/events/<id>.json`), `icons` et `notes`.
 3. **Valider.** Lance `python3 validate.py <id>` depuis `src/`. Il vérifie le style, les longueurs, la parité entre textes et données, les destinations et la couverture de tous les profils.
-4. **Appliquer.** Lance `python3 apply.py <dossier Crownicles> [ids]`. Il écrit `Lang/fr/events.json`, `Core/resources/events/<id>.json` et les emojis des nouvelles issues dans `Lib/src/CrowniclesIcons.ts`.
+4. **Appliquer.** Lance `python3 apply.py <dossier Crownicles> [ids]`. Il écrit `Lang/fr/events.json`, `Core/resources/events/<id>.json` et les emojis des nouvelles issues dans `Lib/src/CrowniclesIcons.ts`. Il n'écrit que le français : les autres langues sont à traduire ensuite (`node .github/scripts/check-translations.mjs parity Lang` liste les clés manquantes).
 5. **Mettre à jour le site.** Lance `python3 ../build.py` pour régénérer le site avant/après.
 6. **Tester dans Crownicles :**
    - `cd Core && npx vitest run __tests__/data/events __tests__/core/eventsRequirements.test.ts` ;

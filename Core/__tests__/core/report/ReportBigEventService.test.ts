@@ -22,7 +22,11 @@ vi.mock("../../../src/core/missions/MissionsController", () => ({
 
 vi.mock("../../../src/core/report/ReportDestinationService", () => ({ chooseDestination: vi.fn().mockResolvedValue(undefined) }));
 
-vi.mock("../../../src/data/events/PossibilityOutcome", () => ({ applyPossibilityOutcome: vi.fn().mockResolvedValue(null) }));
+// Outcome requirements are covered by PossibilityOutcome.test.ts: here every outcome is valid
+vi.mock("../../../src/data/events/PossibilityOutcome", () => ({
+	applyPossibilityOutcome: vi.fn().mockResolvedValue(null),
+	getValidOutcomesForPlayer: vi.fn((outcomes: object) => Promise.resolve(Object.entries(outcomes)))
+}));
 
 vi.mock("../../../src/data/events/PossibilityOutcomeCondition", () => ({ verifyPossibilityOutcomeCondition: vi.fn().mockResolvedValue(true) }));
 
