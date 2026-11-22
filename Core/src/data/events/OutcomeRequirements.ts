@@ -13,7 +13,7 @@ import {
 	isRangeValid, OutcomeRange
 } from "./OutcomeRange";
 import {
-	countMatchingMaterials, OutcomeMaterialFilter, OutcomeMaterialQuantity
+	countMatchingMaterials, getMaterialQuantities, OutcomeMaterialConsumption, OutcomeMaterialFilter
 } from "./OutcomeMaterials";
 
 /**
@@ -98,15 +98,12 @@ export type OutcomeRequirements = {
  */
 export async function isOutcomeValidForPlayer(
 	outcome: {
-		requirements?: OutcomeRequirements; consumeMaterials?: OutcomeMaterialQuantity;
+		requirements?: OutcomeRequirements; consumeMaterials?: OutcomeMaterialConsumption;
 	},
 	player: Player,
 	playerActiveObjects: PlayerActiveObjects
 ): Promise<boolean> {
-	if (outcome.consumeMaterials && !await areMaterialsValid({
-		...outcome.consumeMaterials,
-		quantity: { min: outcome.consumeMaterials.quantity }
-	}, player)) {
+	if (outcome.consumeMaterials && !await areConsumedMaterialsOwned(outcome.consumeMaterials, player)) {
 		return false;
 	}
 
@@ -117,6 +114,21 @@ export async function isOutcomeValidForPlayer(
 
 	return areStatRequirementsValid(req, player, playerActiveObjects)
 		&& await areProgressionRequirementsValid(req, player);
+}
+
+/**
+ * Check that the player owns enough materials for every filter of the consumption
+ */
+async function areConsumedMaterialsOwned(consumption: OutcomeMaterialConsumption, player: Player): Promise<boolean> {
+	for (const filter of getMaterialQuantities(consumption)) {
+		if (!await areMaterialsValid({
+			...filter,
+			quantity: { min: filter.quantity }
+		}, player)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 /**

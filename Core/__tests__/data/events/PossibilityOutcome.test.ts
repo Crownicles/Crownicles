@@ -399,6 +399,15 @@ describe("PossibilityOutcome Requirements", () => {
 			expect(await consuming(3)).toHaveLength(0);
 		});
 
+		it("should only allow consuming several materials when the player owns each of them", async () => {
+			const consuming = (woodQuantity: number): Promise<unknown[]> => getValidOutcomesForPlayer(
+				{ outcome: { consumeMaterials: [{ type: "rope", quantity: 2 }, { type: "wood", quantity: woodQuantity }] } },
+				mockPlayer as Player
+			);
+			expect(await consuming(1)).toHaveLength(1);
+			expect(await consuming(2)).toHaveLength(0);
+		});
+
 		it("should consume the most plentiful matching materials first", () => {
 			vi.mocked(MaterialDataController.instance.getById).mockImplementation(id =>
 				({ "5": { type: "rope", rarity: 1 }, "7": { type: "wood", rarity: 3 }, "8": { type: "rope", rarity: 2 } } as any)[id]);

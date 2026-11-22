@@ -28,7 +28,7 @@ import {
 } from "../../../../Lib/src/utils/TimeUtils";
 import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
 import {
-	applyOutcomeMaterials, OutcomeMaterialQuantity
+	applyOutcomeMaterials, OutcomeMaterialConsumption, OutcomeMaterialQuantity
 } from "./OutcomeMaterials";
 import {
 	isOutcomeValidForPlayer, OutcomeRequirements
@@ -450,7 +450,7 @@ export interface PossibilityOutcome {
 	 * Consume this quantity of the player's materials matching the filters, taken from the most plentiful first.
 	 * The outcome is only possible when the player owns enough of them.
 	 */
-	consumeMaterials?: OutcomeMaterialQuantity;
+	consumeMaterials?: OutcomeMaterialConsumption;
 
 	/**
 	 * Give this quantity of one random material matching the filters

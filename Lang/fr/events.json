@@ -3423,13 +3423,13 @@
         }
       },
       "makeFork": {
-        "text": "Tailler une fourche.",
+        "text": "Fabriquer une fourche.",
         "outcomes": {
-          "0": "Vous sortez du bois de votre sac et taillez une fourche de fortune, trois dents fichées dans un manche. Elle n'est pas belle, mais elle tient. Touché, le paysan vous remercie et vous donne quelques pièces.",
-          "1": "Vous allez couper une branche fourchue à la lisière de la forêt qui borde la plaine. Il vous faut un bon moment pour l'écorcer et en tailler les pointes. Le paysan essaie votre fourche, hoche la tête et vous donne quelques pièces.",
-          "2": "Vous tirez de toutes vos forces sur une branche, à la lisière de la forêt. Elle finit par céder d'un coup et vous fouette le visage. Étourdi, vous renoncez, et le paysan vous remercie quand même d'avoir essayé.",
-          "3": "D'un coup sec, vous cassez à la lisière une branche fourchue bien droite et en taillez les pointes en un rien de temps. Le paysan n'en revient pas : elle vaut presque la sienne. Il vous la paie comme un outil neuf.",
-          "4": "Le paysan regarde votre fourche de fortune, puis vous : il vous a reconnu. Méfiant, il la refuse, persuadé qu'il y a un piège. Vous la plantez dans un tas de foin et reprenez votre route."
+          "0": "Vous sortez de votre sac un morceau de bois et quelques pièces de métal. Vous taillez un manche, y fixez trois dents de métal et serrez le tout avec soin. L'outil n'est pas beau, mais il est solide. Touché, le paysan vous remercie et vous donne quelques pièces.",
+          "1": "Dans la charrette du paysan traîne une vieille fourche au manche brisé. Vous la réparez avec ce que vous trouvez sur place, une éclisse de bois et un bout de ficelle. Elle tiendra jusqu'à la fin de la moisson, et le paysan vous remercie de quelques pièces.",
+          "2": "Vous essayez de réparer la vieille fourche au manche brisé qui traîne dans la charrette du paysan. En forçant sur l'éclisse, elle vous saute au visage. Étourdi, vous renoncez, et le paysan vous remercie quand même d'avoir essayé.",
+          "3": "Dans la charrette du paysan traîne une vieille fourche aux dents tordues. Vous les redressez une à une à la force des bras. Le paysan n'en revient pas : elle est presque comme neuve. Il vous la paie comme un outil neuf.",
+          "4": "Vous proposez au paysan de lui fabriquer une fourche, mais il vous a reconnu. Méfiant, il refuse votre aide et vous demande de quitter son champ."
         }
       },
       "end": {

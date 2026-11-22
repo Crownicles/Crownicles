@@ -14,7 +14,8 @@ function coverageRequirements(outs) {
 	return outs.map(x => {
 		const requirements = truthy(get(x, "requirements")) ? { ...x.requirements } : {};
 		if (Object.hasOwn(x, "consumeMaterials")) {
-			requirements.materials = { quantity: { min: need(x.consumeMaterials, "quantity") } };
+			const filters = Array.isArray(x.consumeMaterials) ? x.consumeMaterials : [x.consumeMaterials];
+			requirements.materials = { quantity: { min: filters.reduce((sum, filter) => sum + need(filter, "quantity"), 0) } };
 		}
 		return requirements;
 	});

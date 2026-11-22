@@ -138,9 +138,13 @@ function isPositiveQuantity(quantity) {
  */
 function checkOutcomeMaterials(report, path, x, materials) {
 	for (const field of ["consumeMaterials", "giveMaterials"].filter(key => Object.hasOwn(x, key))) {
-		checkMaterialFilter(report, `${path}.${field}`, x[field], materials);
-		if (!isPositiveQuantity(get(x[field], "quantity"))) {
-			report.errors.push(`${path}.${field}: quantity must be a positive integer`);
+		// Only consumeMaterials may list several filters (wood and metal, for instance)
+		const filters = field === "consumeMaterials" && Array.isArray(x[field]) ? x[field] : [x[field]];
+		for (const filter of filters) {
+			checkMaterialFilter(report, `${path}.${field}`, filter, materials);
+			if (!isPositiveQuantity(get(filter, "quantity"))) {
+				report.errors.push(`${path}.${field}: quantity must be a positive integer`);
+			}
 		}
 	}
 }

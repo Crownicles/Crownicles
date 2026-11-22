@@ -31,7 +31,7 @@ interface OutcomeRequirements {
 
 interface Outcome {
 	requirements?: OutcomeRequirements;
-	consumeMaterials?: { quantity: number };
+	consumeMaterials?: { quantity: number } | { quantity: number }[];
 }
 
 interface Possibility {
@@ -145,7 +145,7 @@ function buildDimensions(outcomes: Outcome[]): Dimension[] {
 		values: [0, Number.MAX_SAFE_INTEGER],
 		constrains: o => o.requirements?.materials !== undefined || o.consumeMaterials !== undefined,
 		accepts: (o, value) => isInRange(o.requirements?.materials?.quantity ?? (o.requirements?.materials ? { min: 1 } : undefined), value as number)
-			&& (!o.consumeMaterials || (value as number) >= o.consumeMaterials.quantity)
+			&& (!o.consumeMaterials || (value as number) >= [o.consumeMaterials].flat().reduce((sum, filter) => sum + filter.quantity, 0))
 	});
 
 	// Asking for a weapon tag only adds outcomes: a weapon with every asked tag, and a weapon with none, bound the profiles

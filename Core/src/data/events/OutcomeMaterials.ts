@@ -23,6 +23,19 @@ export type OutcomeMaterialFilter = {
 export type OutcomeMaterialQuantity = OutcomeMaterialFilter & { quantity: number };
 
 /**
+ * Materials an outcome consumes: one filter, or several that must all be satisfied (wood and metal, for instance).
+ * The filters of a list must not overlap, or a material could be counted for two of them.
+ */
+export type OutcomeMaterialConsumption = OutcomeMaterialQuantity | OutcomeMaterialQuantity[];
+
+/**
+ * The filters of a material consumption, as a list
+ */
+export function getMaterialQuantities(consumption: OutcomeMaterialConsumption): OutcomeMaterialQuantity[] {
+	return Array.isArray(consumption) ? consumption : [consumption];
+}
+
+/**
  * A material quantity won (positive) or consumed (negative) by an outcome
  */
 export type OutcomeMaterialChange = {
@@ -91,15 +104,38 @@ export function pickMaterialsToConsume(owned: OutcomeMaterialChange[], filter: O
 }
 
 /**
+ * Pick the materials of every filter, each filter picking among what the previous ones left
+ * @returns the picked materials, or an empty list when one filter cannot be satisfied
+ */
+function pickMaterialsForEveryFilter(owned: OutcomeMaterialChange[], filters: OutcomeMaterialQuantity[]): OutcomeMaterialChange[] {
+	const remaining = owned.map(m => ({ ...m }));
+	const picked: OutcomeMaterialChange[] = [];
+	for (const filter of filters) {
+		const pickedForFilter = pickMaterialsToConsume(remaining, filter, filter.quantity);
+		if (pickedForFilter.length === 0) {
+			return [];
+		}
+		for (const material of pickedForFilter) {
+			const left = remaining.find(m => m.materialId === material.materialId);
+			if (left) {
+				left.quantity -= material.quantity;
+			}
+			picked.push(material);
+		}
+	}
+	return picked;
+}
+
+/**
  * Consume the player's materials matching the filters
  * @returns the consumed materials as negative changes, or an empty list when nothing was consumed
  */
-async function consumeOutcomeMaterials(toConsume: OutcomeMaterialQuantity, player: Player): Promise<OutcomeMaterialChange[]> {
+async function consumeOutcomeMaterials(toConsume: OutcomeMaterialConsumption, player: Player): Promise<OutcomeMaterialChange[]> {
 	const owned = (await Materials.getPlayerMaterials(player.id)).map(m => ({
 		materialId: m.materialId,
 		quantity: m.quantity
 	}));
-	const picked = pickMaterialsToConsume(owned, toConsume, toConsume.quantity);
+	const picked = pickMaterialsForEveryFilter(owned, getMaterialQuantities(toConsume));
 	if (picked.length === 0 || !await Materials.consumeMaterials(player.id, picked)) {
 		return [];
 	}
@@ -134,7 +170,7 @@ async function giveOutcomeMaterials(toGive: OutcomeMaterialQuantity, player: Pla
  */
 export async function applyOutcomeMaterials(
 	materials: {
-		consume?: OutcomeMaterialQuantity; give?: OutcomeMaterialQuantity;
+		consume?: OutcomeMaterialConsumption; give?: OutcomeMaterialQuantity;
 	},
 	player: Player,
 	response: CrowniclesPacket[]

@@ -108,19 +108,25 @@
     "makeFork": {
       "outcomes": {
         "0": {
-          "consumeMaterials": {
-            "type": "wood",
-            "quantity": 2
-          },
+          "consumeMaterials": [
+            {
+              "type": "wood",
+              "quantity": 1
+            },
+            {
+              "type": "metal",
+              "quantity": 2
+            }
+          ],
           "effect": "occupied",
-          "lostTime": 30,
-          "money": 40,
+          "lostTime": 40,
+          "money": 50,
           "karma": 3
         },
         "1": {
           "effect": "occupied",
-          "lostTime": 60,
-          "money": 40,
+          "lostTime": 40,
+          "money": 20,
           "karma": 3
         },
         "2": {
@@ -149,10 +155,7 @@
             "karma": {
               "max": -30
             }
-          },
-          "effect": "occupied",
-          "lostTime": 30,
-          "karma": 1
+          }
         }
       }
     },
