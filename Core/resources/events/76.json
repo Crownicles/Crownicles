@@ -18,7 +18,7 @@
               "max": 30
             }
           },
-          "effect": "hurt",
+          "effect": "confounded",
           "health": -18
         },
         "2": {
@@ -87,9 +87,7 @@
             "karma": {
               "max": -30
             }
-          },
-          "money": 22,
-          "karma": -4
+          }
         },
         "5": {
           "requirements": {

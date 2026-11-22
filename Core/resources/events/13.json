@@ -176,8 +176,9 @@
             }
           },
           "forceStayInCity": true,
-          "effect": "injured",
-          "health": -60
+          "money": -150,
+          "effect": "occupied",
+          "lostTime": 20
         },
         "3": {
           "requirements": {

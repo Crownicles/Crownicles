@@ -5,7 +5,7 @@
         "0": {
           "requirements": {
             "speed": {
-              "max": 100
+              "max": 40
             }
           },
           "effect": "occupied",
@@ -31,8 +31,7 @@
           "requirements": {
             "validPetTypeIds": [
               1,
-              2,
-              28
+              2
             ]
           },
           "randomItem": {
@@ -148,7 +147,9 @@
               "flying"
             ]
           }
-        }
+        },
+        "6": {},
+        "7": {}
       }
     },
     "end": {
@@ -174,7 +175,8 @@
             ]
           },
           "randomItem": {}
-        }
+        },
+        "3": {}
       }
     }
   },

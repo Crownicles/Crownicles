@@ -112,7 +112,8 @@
           },
           "money": -250,
           "tags": [
-            "bigFeast"
+            "bigFeast",
+            "moneyUsage"
           ]
         },
         "5": {

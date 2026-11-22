@@ -17,8 +17,8 @@
               "max": 230
             }
           },
-          "effect": "injured",
-          "health": -50
+          "effect": "confounded",
+          "health": -20
         },
         "3": {
           "requirements": {

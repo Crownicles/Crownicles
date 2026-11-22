@@ -11,9 +11,7 @@
             "karma": {
               "max": -30
             }
-          },
-          "money": 250,
-          "karma": -5
+          }
         },
         "2": {
           "requirements": {
@@ -44,11 +42,14 @@
         "5": {
           "requirements": {
             "validPetTypeIds": [
-              1
+              1,
+              2
             ]
           },
           "karma": 3
-        }
+        },
+        "6": {},
+        "7": {}
       }
     },
     "ignore": {
@@ -260,7 +261,8 @@
         "2": {
           "requirements": {
             "validPetTypeIds": [
-              1
+              1,
+              2
             ]
           }
         },

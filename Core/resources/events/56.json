@@ -178,7 +178,8 @@
           "health": -10
         },
         "1": {
-          "money": -225
+          "effect": "occupied",
+          "lostTime": 15
         },
         "2": {
           "effect": "occupied",

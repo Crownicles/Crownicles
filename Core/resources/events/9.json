@@ -16,7 +16,7 @@
         },
         "2": {
           "effect": "occupied",
-          "lostTime": 50,
+          "lostTime": 60,
           "karma": 2
         },
         "3": {
@@ -68,7 +68,12 @@
         "1": {
           "health": -10,
           "effect": "feetHurt",
-          "karma": -1
+          "karma": -1,
+          "requirements": {
+            "speed": {
+              "min": 350
+            }
+          }
         },
         "2": {
           "requirements": {

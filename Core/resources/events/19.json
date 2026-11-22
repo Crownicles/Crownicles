@@ -228,6 +228,10 @@
           },
           "effect": "occupied",
           "lostTime": 10
+        },
+        "5": {},
+        "6": {
+          "health": 3
         }
       }
     },

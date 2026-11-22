@@ -164,7 +164,10 @@
             }
           },
           "money": -250,
-          "karma": 2
+          "karma": 2,
+          "tags": [
+            "moneyUsage"
+          ]
         },
         "1": {
           "requirements": {
@@ -174,7 +177,10 @@
             }
           },
           "money": -100,
-          "karma": 2
+          "karma": 2,
+          "tags": [
+            "moneyUsage"
+          ]
         },
         "2": {
           "requirements": {
@@ -183,7 +189,10 @@
             }
           },
           "money": -40,
-          "karma": 2
+          "karma": 2,
+          "tags": [
+            "moneyUsage"
+          ]
         },
         "3": {
           "requirements": {
@@ -192,7 +201,10 @@
             }
           },
           "money": -50,
-          "karma": 2
+          "karma": 2,
+          "tags": [
+            "moneyUsage"
+          ]
         },
         "4": {
           "requirements": {

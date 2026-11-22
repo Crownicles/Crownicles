@@ -136,7 +136,9 @@
           },
           "effect": "occupied",
           "lostTime": 10
-        }
+        },
+        "5": {},
+        "6": {}
       }
     },
     "end": {

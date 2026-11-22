@@ -172,9 +172,9 @@
             "badges": [
               "expert_expediteur"
             ],
-            "petRarity": {
-              "min": 1
-            }
+            "petTags": [
+              "keenNose"
+            ]
           },
           "effect": "occupied",
           "lostTime": 15
@@ -243,9 +243,9 @@
         },
         "1": {
           "requirements": {
-            "petRarity": {
-              "min": 1
-            }
+            "petTags": [
+              "keenNose"
+            ]
           },
           "effect": "occupied",
           "lostTime": 20

@@ -17,7 +17,7 @@
               "max": 40
             }
           },
-          "effect": "confounded",
+          "effect": "hurt",
           "health": -30
         },
         "3": {
@@ -162,8 +162,8 @@
       "outcomes": {
         "0": {},
         "1": {
-          "effect": "feetHurt",
-          "health": -10
+          "effect": "occupied",
+          "lostTime": 10
         },
         "2": {
           "requirements": {

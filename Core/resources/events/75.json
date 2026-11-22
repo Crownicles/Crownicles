@@ -8,7 +8,7 @@
         },
         "1": {
           "effect": "occupied",
-          "lostTime": 90
+          "lostTime": 60
         },
         "2": {
           "money": 100,

@@ -153,7 +153,7 @@
             }
           },
           "money": 340,
-          "karma": -15,
+          "karma": -10,
           "effect": "occupied",
           "lostTime": 10
         },
@@ -191,8 +191,7 @@
           "lostTime": 5
         },
         "1": {
-          "effect": "sleeping",
-          "health": -25
+          "effect": "sleeping"
         },
         "2": {
           "requirements": {

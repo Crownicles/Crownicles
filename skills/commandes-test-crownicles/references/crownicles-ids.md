@@ -866,7 +866,7 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 10 | Au bord du Lac Mirage, des familles pique-niquent près des roseaux. Au bout d'un vieux ponton, un pêcheur se bat avec sa canne : un poisson |
 | 11 | À l'orée du Bois Hurlant, dont les collines cachent des grottes à brigands, une femme encapuchonnée vous aborde. Elle vous déconseille le se |
 | 12 | Devant vous, la Rivière Vacarme charrie branches et écume dans un grondement assourdissant. Un vieux pont de bois l'enjambe encore : plusieu |
-| 13 | Après des semaines de route sans croiser âme qui vive, vous entrez dans Claire de Ville. La grande cité marchande grouille de monde, mais to |
+| 13 | Au bout de la route, vous entrez dans Claire de Ville. La grande cité marchande grouille de monde, mais tout y reste calme : des gardes veil |
 | 14 | La fatigue commence à vous peser quand, au milieu de la plaine vide de L'Étendue, vous apercevez une petite maison de pierre au bord d'une p |
 | 15 | Dans une ruelle de Claire de Ville, vous poussez la porte d'une petite boutique. Quelques hommes y discutent tranquillement entre des étals |
 | 16 | Après de longues heures à suivre la Rivière aux Crabes, vous découvrez un vieux château au bord de l'eau. Le lierre couvre ses murs, des cor |

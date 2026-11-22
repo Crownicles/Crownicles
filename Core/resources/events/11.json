@@ -206,11 +206,11 @@
       "outcomes": {
         "0": {
           "effect": "occupied",
-          "lostTime": 45
+          "lostTime": 60
         },
         "1": {
           "effect": "occupied",
-          "lostTime": 60
+          "lostTime": 150
         },
         "2": {
           "requirements": {

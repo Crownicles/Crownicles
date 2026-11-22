@@ -46,7 +46,7 @@
             }
           },
           "effect": "occupied",
-          "lostTime": 40,
+          "lostTime": 60,
           "mapTypesDestination": [
             "ro",
             "pl"

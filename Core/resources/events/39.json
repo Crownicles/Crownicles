@@ -35,7 +35,7 @@
               "max": -30
             }
           },
-          "effect": "hurt",
+          "effect": "confounded",
           "health": -20,
           "money": -300,
           "tags": [
@@ -113,9 +113,9 @@
         "1": {},
         "2": {
           "requirements": {
-            "petRarity": {
-              "min": 3
-            }
+            "petTags": [
+              "keenNose"
+            ]
           },
           "money": 120,
           "forceStayInCity": true,
@@ -150,7 +150,7 @@
       "outcomes": {
         "0": {
           "karma": -5,
-          "effect": "hurt",
+          "effect": "confounded",
           "health": -20
         },
         "1": {
@@ -182,8 +182,7 @@
         "4": {
           "requirements": {
             "validPetTypeIds": [
-              24,
-              95
+              24
             ]
           },
           "money": 140,
@@ -255,10 +254,13 @@
         "1": {
           "requirements": {
             "level": {
-              "max": 55
+              "max": 30
             }
           },
-          "money": -300
+          "money": -300,
+          "tags": [
+            "moneyUsage"
+          ]
         },
         "2": {
           "requirements": {
@@ -279,15 +281,7 @@
           "effect": "occupied",
           "lostTime": 10
         },
-        "4": {
-          "requirements": {
-            "level": {
-              "min": 56,
-              "max": 119
-            }
-          },
-          "money": -100
-        }
+        "4": {}
       }
     }
   },

@@ -64,23 +64,12 @@
           "karma": 2
         },
         "5": {
-          "requirements": {
-            "speed": {
-              "max": 40
-            }
-          },
-          "effect": "confounded",
-          "health": -15
-        },
-        "6": {
-          "requirements": {
-            "speed": {
-              "min": 41,
-              "max": 349
-            }
-          },
           "effect": "occupied",
           "lostTime": 10
+        },
+        "6": {
+          "effect": "occupied",
+          "lostTime": 20
         }
       }
     },

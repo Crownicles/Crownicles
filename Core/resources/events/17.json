@@ -81,16 +81,8 @@
         },
         "4": {
           "requirements": {
-            "validPetTypeIds": [
-              1,
-              20,
-              21,
-              28,
-              42,
-              56,
-              57,
-              60,
-              65
+            "petTags": [
+              "keenNose"
             ]
           },
           "health": 30
