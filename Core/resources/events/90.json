@@ -227,14 +227,15 @@
       "mapId": 3,
       "date": {
         "month": {
-          "from": 4,
-          "to": 4
+          "from": 11,
+          "to": 11
         },
         "day": {
-          "from": 1,
-          "to": 1
+          "from": 22,
+          "to": 28
         }
-      }
+      },
+      "oncePer": "year"
     }
   ]
 }
