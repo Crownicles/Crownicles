@@ -159,7 +159,7 @@ L'échelle est calée sur les 130 joueurs réguliers en production, c'est-à-dir
 
 ## Workflow avec l'atelier (dépôt Tools)
 
-1. **Préparer l'entrée.** `generators/event-rewrites/src/input/<id>.json` contient les textes d'origine, la mécanique et le canon du lieu.
+1. **Préparer l'entrée.** `python3 prepare.py <dossier Crownicles> <id> [--draft-ref <commit>]` écrit `generators/event-rewrites/src/input/<id>.json` : les textes et la mécanique de `develop`, le canon du lieu et, avec `--draft-ref`, le brouillon d'un contributeur (champ `draft`).
 2. **Écrire la sortie.** `out/<id>.json` contient `text`, `possibilities`, `data` (le contenu complet de `Core/resources/events/<id>.json`), `icons` et `notes`.
 3. **Valider.** Lance `python3 validate.py <id>` depuis `src/`. Il vérifie le style, les longueurs, la parité entre textes et données, les destinations et la couverture de tous les profils.
 4. **Appliquer.** Lance `python3 apply.py <dossier Crownicles> [ids]`. Il écrit `Lang/fr/events.json`, `Core/resources/events/<id>.json` et les emojis des nouvelles issues dans `Lib/src/CrowniclesIcons.ts`.
@@ -168,6 +168,15 @@ L'échelle est calée sur les 130 joueurs réguliers en production, c'est-à-dir
    - `cd Core && npx vitest run __tests__/data/events __tests__/core/eventsRequirements.test.ts` ;
    - `cd Lib && npx eslint src/CrowniclesIcons.ts` ;
    - `node .github/scripts/generate-test-commands-skill.mjs` (la CI vérifie que ce skill est à jour).
+
+## Brouillon d'un contributeur
+
+Quand un contributeur envoie sa version d'un event :
+
+1. **Commit de son brouillon, dont il est l'auteur** (`git commit --author="Nom <id+login@users.noreply.github.com>"`). On n'y corrige que ce qui empêche de le lire (JSON cassé, clés mal orthographiées) et on ajoute les emojis des nouvelles issues pour que le jeu puisse les afficher.
+2. **Reprise selon ce skill, dans un second commit.** On garde ses idées et ses possibilités, on applique les règles. La consigne de l'atelier pour cette reprise est `draft-rework.md`.
+
+Le contributeur n'est pas forcément rédacteur : ses brouillons ont souvent des textes trop longs, des seuils de l'ancien barème, de la religion, du discours direct ou des fautes. C'est le travail de la reprise, pas une raison d'écarter ses idées.
 
 ## Relecture finale
 
@@ -190,4 +199,5 @@ Les 21 events déjà réécrits (1, 2, 10 à 20, 30, 39, 46, 56, 69, 71, 76, 89)
 - **Events 69 et 76** : une intro trop raccourcie perd ce qui motive les choix ; jusqu'à 400 caractères quand c'est nécessaire. Voir « Structure d'un event ».
 - **Trous de couverture (events 2, 11, 13, 15, 16, 17, 20)** : des plages qui ne se touchent pas laissaient des joueurs sans issue ; le test de couverture vérifie maintenant toutes les conditions. Voir « Combien et lesquelles ».
 - **Relecture de GabrieLre (events 1, 2, 10)** : cas général d'abord, enchaînements logiques, sentiments à la mesure du résultat, animal interprété, event à garder à sa place, choix différents d'un event voisin, demi-tour par un voisin. Voir « Style », « Structure d'un event », « Canon des lieux » et « Combien et lesquelles ».
+- **Brouillon de Gabriel (events 24, 25, 26)** : son brouillon est commité sous son nom, puis repris selon le skill dans un second commit. Voir « Brouillon d'un contributeur ».
 - **Cuisine, matériaux, équipement** : des issues doivent dépendre du niveau de cuisine, des matériaux et des enchantements ou améliorations de l'équipement, et certaines peuvent consommer des matériaux. Voir « L'échelle des seuils ».

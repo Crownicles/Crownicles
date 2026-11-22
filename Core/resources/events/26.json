@@ -11,8 +11,7 @@
             "validPetTypeIds": [
               62
             ]
-          },
-          "karma": 5
+          }
         },
         "2": {
           "requirements": {
@@ -28,20 +27,13 @@
             }
           },
           "effect": "sleeping",
-          "health": -20
+          "health": -10
         }
       }
     },
     "goAway": {
       "outcomes": {
-        "0": {
-          "requirements": {
-            "karma": {
-              "min": 1
-            }
-          },
-          "karma": 2
-        },
+        "0": {},
         "1": {
           "effect": "occupied",
           "lostTime": 10,
@@ -50,25 +42,22 @@
         "2": {
           "requirements": {
             "karma": {
-              "max": -50
+              "max": -30
             }
           }
         },
         "3": {
           "requirements": {
             "level": {
-              "max": 32
+              "max": 30
             }
           },
           "effect": "sick"
         },
         "4": {
           "requirements": {
-            "level": {
-              "min": 50
-            },
             "speed": {
-              "min": 150
+              "min": 350
             }
           },
           "randomItem": {},
@@ -76,129 +65,70 @@
         },
         "5": {
           "requirements": {
-            "level": {
-              "min": 50
-            },
             "speed": {
-              "max": 149
+              "max": 349
             }
           },
-          "effect": "confounded",
+          "effect": "hurt",
           "health": -15
-        },
-        "6": {
-          "requirements": {
-            "karma": {
-              "max": 0
-            }
-          }
         }
       }
     },
     "steal": {
       "outcomes": {
         "0": {
-          "requirements": {
-            "level": {
-              "min": 60
-            }
-          },
+          "effect": "occupied",
+          "lostTime": 30,
           "randomItem": {},
-          "karma": -8
+          "karma": -4
         },
         "1": {
           "requirements": {
-            "level": {
-              "max": 35
+            "attack": {
+              "max": 699
             }
           },
           "effect": "occupied",
-          "money": 180,
-          "lostTime": 40,
-          "karma": -10
+          "health": -15,
+          "lostTime": 25,
+          "karma": -2
         },
         "2": {
           "requirements": {
             "attack": {
-              "max": 150
+              "min": 700
             }
           },
-          "effect": "confounded",
-          "health": -10,
-          "karma": -3
+          "effect": "occupied",
+          "lostTime": 15,
+          "karma": -2
         },
         "3": {
-          "requirements": {
-            "attack": {
-              "min": 151
-            }
-          },
-          "effect": "hurt",
-          "health": -25,
-          "karma": -5
-        },
-        "4": {
           "requirements": {
             "validPetTypeIds": [
               24
             ]
           },
-          "money": 210,
-          "karma": -6
+          "money": 150,
+          "karma": -5
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "karma": -1
         },
         "5": {
           "requirements": {
-            "validPetTypeIds": [
-              15
-            ]
-          },
-          "money": 150,
-          "karma": -8
-        },
-        "6": {
-          "money": -213,
-          "karma": -6
-        },
-        "7": {
-          "requirements": {
             "karma": {
-              "min": 35
-            }
-          }
-        },
-        "8": {
-          "requirements": {
-            "karma": {
-              "max": -25
+              "max": -50
             }
           },
           "effect": "hurt",
-          "health": -30
-        },
-        "9": {
-          "requirements": {
-            "karma": {
-              "max": -110
-            },
-            "validPetTypeIds": []
-          },
-          "oneshot": true
-        },
-        "10": {
-          "requirements": {
-            "validPetTypeIds": [
-              62
-            ]
-          },
-          "karma": -1
-        },
-        "11": {
-          "requirements": {
-            "validPetTypeIds": [
-              63
-            ]
-          },
-          "karma": -1
+          "health": -30,
+          "karma": -3
         }
       }
     },
@@ -208,112 +138,56 @@
           "effect": "occupied",
           "lostTime": 15,
           "randomItem": {},
-          "karma": 20
+          "karma": 10
         },
         "1": {
           "requirements": {
             "defense": {
-              "max": 200
+              "max": 180
             }
           },
           "effect": "occupied",
           "health": -10,
-          "lostTime": 15
+          "lostTime": 15,
+          "karma": 2
         },
         "2": {
           "requirements": {
             "speed": {
-              "max": 100
-            },
-            "defense": {
-              "max": 200
+              "max": 349
             }
           },
           "effect": "occupied",
           "health": -15,
           "lostTime": 20,
           "money": -200,
-          "karma": 10
+          "karma": 3
         },
         "3": {
           "requirements": {
-            "attack": {
-              "max": 250
+            "karma": {
+              "max": -50
             },
-            "validPetTypeIds": []
+            "speed": {
+              "max": 349
+            }
           },
           "oneshot": true
         },
         "4": {
           "requirements": {
             "attack": {
-              "min": 251
+              "min": 700
             },
-            "validPetTypeIds": []
+            "speed": {
+              "min": 500
+            }
           },
-          "oneshot": true
+          "randomItem": {},
+          "money": -150,
+          "karma": 10
         },
         "5": {
-          "requirements": {
-            "karma": {
-              "min": 70
-            }
-          },
-          "health": 20,
-          "randomItem": {},
-          "effect": "occupied",
-          "lostTime": 100,
-          "karma": 25
-        },
-        "6": {
-          "requirements": {
-            "karma": {
-              "max": -80
-            },
-            "speed": {
-              "max": 200
-            },
-            "validPetTypeIds": []
-          },
-          "oneshot": true
-        },
-        "7": {
-          "requirements": {
-            "karma": {
-              "max": -80
-            },
-            "speed": {
-              "min": 201
-            }
-          },
-          "karma": 2
-        },
-        "8": {
-          "requirements": {
-            "level": {
-              "min": 100
-            },
-            "attack": {
-              "min": 500
-            },
-            "speed": {
-              "min": 400
-            }
-          },
-          "randomItem": {},
-          "money": -182
-        },
-        "9": {
-          "requirements": {
-            "validPetTypeIds": [
-              83
-            ]
-          },
-          "effect": "occupied",
-          "lostTime": 60,
-          "karma": 5
-        },
-        "10": {
           "requirements": {
             "validPetTypeIds": [
               13,
@@ -325,57 +199,45 @@
               50
             ]
           },
-          "karma": 15
+          "effect": "occupied",
+          "lostTime": 20,
+          "karma": 10
         },
-        "11": {
-          "requirements": {
-            "validPetTypeIds": [
-              64,
-              65,
-              84,
-              66,
-              45,
-              31,
-              21,
-              42,
-              48
-            ]
-          },
-          "randomItem": {},
-          "karma": 15
-        },
-        "12": {
+        "6": {
           "requirements": {
             "validPetTypeIds": [
               39
             ]
           },
-          "money": -403
+          "money": -300,
+          "karma": 3
         }
       }
     },
     "tell": {
       "outcomes": {
         "0": {
-          "karma": -2
+          "money": 60,
+          "karma": -15
         },
         "1": {
           "requirements": {
             "defense": {
-              "max": 180
+              "max": 519
             }
           },
-          "effect": "hurt",
-          "health": -35
+          "effect": "confounded",
+          "health": -15,
+          "karma": -5
         },
         "2": {
           "requirements": {
-            "defense": {
-              "min": 181
+            "karma": {
+              "min": 50
             }
           },
-          "money": -182,
-          "karma": -3
+          "randomItem": {},
+          "karma": -15
         },
         "3": {
           "requirements": {
@@ -385,33 +247,17 @@
           },
           "effect": "confounded",
           "health": -20,
-          "karma": -4
+          "karma": -10
         },
         "4": {
           "requirements": {
-            "karma": {
-              "min": 30
-            }
-          },
-          "karma": -6
-        },
-        "5": {
-          "requirements": {
-            "validPetTypeIds": [
-              63
-            ]
-          },
-          "money": 250,
-          "karma": 5
-        },
-        "6": {
-          "requirements": {
             "level": {
-              "max": 40
+              "max": 30
             }
           },
           "effect": "confounded",
-          "health": -10
+          "health": -10,
+          "karma": -2
         }
       }
     }
