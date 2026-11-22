@@ -14,8 +14,12 @@ import {
 	entriesOf, isObject, keysOf, readJson, REPO_ROOT, workDirectory
 } from "./common.mjs";
 import {
-	difference, get, getOrEmpty, inRange, need, pyEqual, pyInt, pyRepr, pyStr, truthy
+	byCodePoint, difference, get, getOrEmpty, need, pyEqual, pyInt, pyRepr, pyStr, truthy
 } from "./python.mjs";
+import { checkCoverage } from "./coverage.mjs";
+import { checkTexts } from "./texts.mjs";
+
+/** @typedef {import("./texts.mjs").Report} Report */
 
 const OUTCOME_KEYS = new Set([
 	"condition", "requirements", "lostTime", "health", "karma", "effect", "money", "energy", "gems", "tokens", "bonusExperience",
@@ -23,7 +27,9 @@ const OUTCOME_KEYS = new Set([
 	"mapLink", "forceStayInCity", "forceLeaveCity", "tags", "consumeMaterials", "giveMaterials"
 ]);
 const REQ_RANGES = ["level", "karma", "health", "attack", "defense", "speed", "petRarity", "cookingLevel", "weaponLevel", "armorLevel"];
-const REQ_KEYS = new Set([...REQ_RANGES, "validClassIds", "validPetTypeIds", "campaignCurrentMissionId", "materials", "enchantment"]);
+const REQ_LISTS = ["validClassIds", "validPetTypeIds"];
+const REQ_KEYS = new Set([...REQ_RANGES, ...REQ_LISTS, "campaignCurrentMissionId", "materials", "enchantment"]);
+const MATERIAL_FILTERS = new Set(["type", "rarity", "ids", "quantity"]);
 const MATERIAL_TYPES = new Set(["metal", "alloy", "nature", "spiritual", "magic", "leather", "rope", "poison", "explosive", "wood"]);
 const ENCHANT_TYPES = new Set(["damage", "health", "defense", "speed", "magic", "other"]);
 const ENCHANT_KINDS = new Set([
@@ -34,28 +40,6 @@ const EFFECTS = new Set([
 	"occupied", "sleeping", "drunk", "freezing", "feetHurt", "hurt", "sick", "jailed", "injured", "starving", "confounded", "scared",
 	"lost", "fished", "working", "burning"
 ]);
-const TEXT_LENGTHS = {
-	intro: [180, 420],
-	choice: [8, 90],
-	outcome: [90, 300]
-};
-
-// Python's Unicode \w and \s, so that the checks behave like the original Python validator
-const WORD = "[\\p{L}\\p{N}_]";
-const SPACE = "\\t\\n\\v\\f\\r\\x1c-\\x1f \\x85\\xa0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000";
-const PLACEHOLDER = /\{\{[^}]+\}\}|\{emote:[^}]+\}|\$t\([^)]+\)/gu;
-const DIRECT_SPEECH_VERB = new RegExp(
-	`(?<!${WORD})(?:dit-il|dit-elle|s'exclame-t-il|s'exclame-t-elle|s'écrie-t-il|répond-il|répond-elle|lance-t-il|lance-t-elle|ajoute-t-il|ajoute-t-elle)(?!${WORD})`,
-	"u"
-);
-const NAMED_CONDITION = new RegExp(
-	`(?<!${WORD})(?:Votre|Vos) (?:agilité|réputation|aura|force|vitesse|niveau|karma|expérience)(?!${WORD})`,
-	"u"
-);
-const MISSING_SPACE = new RegExp(`[^${SPACE}][!?;:]`, "u");
-const TRAILING_SPACES = new RegExp(`[${SPACE}]+$`, "u");
-const BLANK = new RegExp(`^[${SPACE}]*$`, "u");
-
 /**
  * Pets of the game: id -> { name, rarity } (pet 0 is "no pet")
  * @returns {Map<number, {name: string, rarity: number}>}
@@ -85,103 +69,10 @@ function loadMaterials() {
 		}));
 }
 
-const byNumber = (a, b) => a - b;
-const byCodePoint = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
-
 /**
  * Collected problems of an event: errors block the rewrite, warnings are advice
  * @typedef {{errors: string[], warnings: string[]}} Report
  */
-
-/**
- * Style rules of a text: each one reports an error or a warning when its test matches
- * @type {{level: "errors" | "warnings", test: (text: string, kind: string) => boolean, message: string}[]}
- */
-const TEXT_RULES = [
-	{
-		level: "errors", test: text => /[«»"“”]/u.test(text), message: "quotes (no direct speech)"
-	},
-	{
-		level: "errors", test: text => DIRECT_SPEECH_VERB.test(text), message: "direct speech verb"
-	},
-	{
-		level: "errors", test: text => text.includes("’"), message: "curly apostrophe"
-	},
-	{
-		level: "errors", test: text => text.includes("—"), message: "em dash"
-	},
-	{
-		level: "warnings", test: text => MISSING_SPACE.test(text.replace(/\{[^}]*\}|\$t\([^)]*\)/gu, "")), message: "missing space before ! ? ; :"
-	},
-	{
-		level: "warnings", test: text => text.split("!").length - 1 > 1, message: "more than one !"
-	},
-	{
-		level: "warnings", test: text => NAMED_CONDITION.test(text), message: "names the condition instead of showing it"
-	},
-	{
-		level: "errors", test: (text, kind) => kind === "intro" && /(?:\.\.\.|…)$/u.test(text.replace(TRAILING_SPACES, "")), message: "intro ends with ellipsis"
-	}
-];
-
-/**
- * Check the style and the length of a text, and that it keeps the placeholders of the original one
- * @param {Report} report
- * @param {string} path
- * @param {unknown} text
- * @param {string} ref original text
- * @param {"intro" | "choice" | "outcome"} kind
- */
-function checkText(report, path, text, ref = "", kind = "outcome") {
-	if (typeof text !== "string" || BLANK.test(text)) {
-		report.errors.push(`${path}: empty text`);
-		return;
-	}
-	for (const placeholder of new Set((ref || "").match(PLACEHOLDER) ?? [])) {
-		if (!text.includes(placeholder)) {
-			report.errors.push(`${path}: placeholder ${placeholder} missing`);
-		}
-	}
-	for (const rule of TEXT_RULES.filter(textRule => textRule.test(text, kind))) {
-		report[rule.level].push(`${path}: ${rule.message}`);
-	}
-	const [low, high] = TEXT_LENGTHS[kind];
-	const length = [...text].length;
-	if (length < low || length > high) {
-		report.warnings.push(`${path}: ${length} chars (target ${low}-${high})`);
-	}
-}
-
-/**
- * Check the texts: intro, choice labels and outcomes, against the original ones
- * @param {Report} report
- * @param {any} out writer output
- * @param {any} orig original event
- */
-function checkTexts(report, out, orig) {
-	const origPossibilities = need(orig, "possibilities");
-	checkText(report, "text", get(out, "text"), need(orig, "text"), "intro");
-	const tp = get(out, "possibilities", {});
-	const missing = difference(keysOf(origPossibilities), keysOf(tp));
-	if (missing.size > 0) {
-		report.errors.push(`original possibilities removed: ${pyRepr([...missing].sort(byCodePoint))}`);
-	}
-	if (difference(keysOf(tp), keysOf(origPossibilities)).size > 2) {
-		report.warnings.push("more than 2 new possibilities");
-	}
-	for (const [name, possibility] of entriesOf(tp)) {
-		const origPossibility = get(origPossibilities, name, {});
-		if (name !== "end") {
-			checkText(report, `${name}.text`, get(possibility, "text"), get(origPossibility, "text", ""), "choice");
-		}
-		else if (truthy(get(possibility, "text"))) {
-			report.errors.push("end.text: the end possibility has no choice label");
-		}
-		for (const [outcome, text] of entriesOf(get(possibility, "outcomes", {}))) {
-			checkText(report, `${name}.outcomes.${outcome}`, text, get(get(origPossibility, "outcomes", {}), outcome, ""));
-		}
-	}
-}
 
 /**
  * Check a material filter: known keys, type and ids
@@ -191,18 +82,28 @@ function checkTexts(report, out, orig) {
  * @param {Map<string, unknown>} materials
  */
 function checkMaterialFilter(report, path, filter, materials) {
-	const unknown = difference(keysOf(filter), new Set(["type", "rarity", "ids", "quantity"]));
+	const unknown = difference(keysOf(filter), MATERIAL_FILTERS);
 	if (unknown.size > 0) {
 		report.errors.push(`${path}: unknown filter ${pyRepr(unknown)}`);
 	}
 	if (Object.hasOwn(filter, "type") && !MATERIAL_TYPES.has(filter.type)) {
 		report.errors.push(`${path}: unknown material type ${pyStr(filter.type)}`);
 	}
-	for (const id of get(filter, "ids", [])) {
-		if (!materials.has(pyStr(id))) {
-			report.errors.push(`${path}: unknown material ${pyStr(id)}`);
-		}
+	for (const id of get(filter, "ids", []).filter(materialId => !materials.has(pyStr(materialId)))) {
+		report.errors.push(`${path}: unknown material ${pyStr(id)}`);
 	}
+}
+
+/**
+ * Whether a material quantity is a positive integer (Python's True counts as 1)
+ * @param {unknown} quantity
+ * @returns {boolean}
+ */
+function isPositiveQuantity(quantity) {
+	if (quantity === true) {
+		return true;
+	}
+	return Number.isInteger(quantity) && quantity > 0;
 }
 
 /**
@@ -215,8 +116,7 @@ function checkMaterialFilter(report, path, filter, materials) {
 function checkOutcomeMaterials(report, path, x, materials) {
 	for (const field of ["consumeMaterials", "giveMaterials"].filter(key => Object.hasOwn(x, key))) {
 		checkMaterialFilter(report, `${path}.${field}`, x[field], materials);
-		const quantity = get(x[field], "quantity");
-		if (!(quantity === true || Number.isInteger(quantity) && quantity > 0)) {
+		if (!isPositiveQuantity(get(x[field], "quantity"))) {
 			report.errors.push(`${path}.${field}: quantity must be a positive integer`);
 		}
 	}
@@ -231,7 +131,17 @@ function isBadRange(range) {
 	if (!isObject(range)) {
 		return true;
 	}
-	return get(range, "min") !== null && get(range, "max") !== null && range.min > range.max;
+	const hasBothBounds = get(range, "min") !== null && get(range, "max") !== null;
+	return hasBothBounds && range.min > range.max;
+}
+
+/**
+ * Whether a value is a list with at least one element
+ * @param {unknown} value
+ * @returns {boolean}
+ */
+function isNonEmptyList(value) {
+	return Array.isArray(value) && value.length > 0;
 }
 
 /**
@@ -257,28 +167,34 @@ function checkEnchantmentRequirement(report, path, enchantment) {
 }
 
 /**
- * Check the requirements of an outcome
+ * Check the shape of the requirements: known keys, valid ranges and non-empty lists
  * @param {Report} report
  * @param {string} path
  * @param {object} req
- * @param {{pets: Map<number, unknown>, materials: Map<string, unknown>}} game
  */
-function checkRequirements(report, path, req, game) {
+function checkRequirementShapes(report, path, req) {
 	for (const key of difference(keysOf(req), REQ_KEYS)) {
 		report.errors.push(`${path}: unknown requirement ${key}`);
 	}
 	for (const key of REQ_RANGES.filter(rangeKey => get(req, rangeKey) !== null && isBadRange(req[rangeKey]))) {
 		report.errors.push(`${path}: bad range for ${key}`);
 	}
-	for (const key of ["validClassIds", "validPetTypeIds"]) {
-		if (Object.hasOwn(req, key) && !(Array.isArray(req[key]) && req[key].length > 0)) {
-			report.errors.push(`${path}: ${key} must be a non-empty list`);
-		}
+	for (const key of REQ_LISTS.filter(listKey => Object.hasOwn(req, listKey) && !isNonEmptyList(req[listKey]))) {
+		report.errors.push(`${path}: ${key} must be a non-empty list`);
 	}
-	for (const petId of get(req, "validPetTypeIds", [])) {
-		if (!game.pets.has(typeof petId === "boolean" ? Number(petId) : petId)) {
-			report.errors.push(`${path}: unknown pet ${pyStr(petId)}`);
-		}
+}
+
+/**
+ * Check that the pets, materials and enchantments the requirements name exist in the game
+ * @param {Report} report
+ * @param {string} path
+ * @param {object} req
+ * @param {{pets: Map<number, unknown>, materials: Map<string, unknown>}} game
+ */
+function checkRequirementReferences(report, path, req, game) {
+	const isUnknownPet = petId => !game.pets.has(typeof petId === "boolean" ? Number(petId) : petId);
+	for (const petId of get(req, "validPetTypeIds", []).filter(isUnknownPet)) {
+		report.errors.push(`${path}: unknown pet ${pyStr(petId)}`);
 	}
 	const materialFilter = get(req, "materials");
 	if (materialFilter !== null) {
@@ -291,14 +207,12 @@ function checkRequirements(report, path, req, game) {
 }
 
 /**
- * Check the mechanics of an outcome: keys, effect, city and destination constraints, materials, requirements
+ * Check the keys and the effect of an outcome
  * @param {Report} report
  * @param {string} path
  * @param {any} x outcome data
- * @param {{inp: any, neighbourTypes: Set<string>, pets: Map<number, unknown>, materials: Map<string, unknown>}} context
- * @returns {boolean} whether the outcome is conditional
  */
-function checkOutcome(report, path, x, context) {
+function checkOutcomeKeys(report, path, x) {
 	for (const key of difference(keysOf(x), OUTCOME_KEYS)) {
 		report.errors.push(`${path}: unknown key ${key}`);
 	}
@@ -308,20 +222,68 @@ function checkOutcome(report, path, x, context) {
 	if (get(x, "effect") === "occupied" && !truthy(get(x, "lostTime"))) {
 		report.warnings.push(`${path}: occupied without lostTime`);
 	}
+}
+
+/**
+ * Check where an outcome sends the player: city stay only in a city, destination among the neighbours
+ * @param {Report} report
+ * @param {string} path
+ * @param {any} x outcome data
+ * @param {{inp: any, neighbourTypes: Set<string>}} context
+ */
+function checkOutcomeTravel(report, path, x, context) {
 	const changesCityStay = truthy(get(x, "forceStayInCity")) || truthy(get(x, "forceLeaveCity"));
 	if (changesCityStay && !truthy(need(context.inp, "isCity"))) {
 		report.errors.push(`${path}: forceStayInCity/forceLeaveCity outside a city`);
 	}
-	if (truthy(get(x, "mapTypesDestination")) && !Array.from(x.mapTypesDestination).some(type => context.neighbourTypes.has(type))) {
-		report.errors.push(`${path}: no neighbour of type ${pyStr(x.mapTypesDestination)}`);
+	const destinations = get(x, "mapTypesDestination");
+	if (truthy(destinations) && !Array.from(destinations).some(type => context.neighbourTypes.has(type))) {
+		report.errors.push(`${path}: no neighbour of type ${pyStr(destinations)}`);
 	}
+}
+
+/**
+ * Check the mechanics of an outcome: keys, effect, city and destination constraints, materials, requirements
+ * @param {Report} report
+ * @param {string} path
+ * @param {any} x outcome data
+ * @param {{inp: any, neighbourTypes: Set<string>, pets: Map<number, unknown>, materials: Map<string, unknown>}} context
+ * @returns {boolean} whether the outcome is conditional
+ */
+function checkOutcome(report, path, x, context) {
+	checkOutcomeKeys(report, path, x);
+	checkOutcomeTravel(report, path, x, context);
 	checkOutcomeMaterials(report, path, x, context.materials);
 	const req = getOrEmpty(x, "requirements");
 	if (!truthy(req) && !Object.hasOwn(x, "consumeMaterials")) {
 		return false;
 	}
-	checkRequirements(report, path, req, context);
+	checkRequirementShapes(report, path, req);
+	checkRequirementReferences(report, path, req, context);
 	return true;
+}
+
+/**
+ * Whether two sets hold the same elements
+ * @param {Set<unknown>} a
+ * @param {Set<unknown>} b
+ * @returns {boolean}
+ */
+function haveSameElements(a, b) {
+	return a.size === b.size && [...a].every(item => b.has(item));
+}
+
+/**
+ * Whether a possibility has an unusual number of outcomes ("end" may have any)
+ * @param {string} name
+ * @param {number} count
+ * @returns {boolean}
+ */
+function isOutcomeCountOff(name, count) {
+	if (name === "end") {
+		return false;
+	}
+	return count < 3 || count > 8;
 }
 
 /**
@@ -332,8 +294,7 @@ function checkOutcome(report, path, x, context) {
  * @param {object} textOutcomes
  */
 function checkOutcomeIds(report, name, outcomeIds, textOutcomes) {
-	const textIds = new Set(keysOf(textOutcomes));
-	if (outcomeIds.length !== textIds.size || outcomeIds.some(id => !textIds.has(id))) {
+	if (!haveSameElements(new Set(outcomeIds), new Set(keysOf(textOutcomes)))) {
 		report.errors.push(`${name}: text/data outcome ids differ`);
 	}
 	const sortedIds = outcomeIds.map(id => [pyInt(id), id]).sort((a, b) => a[0] - b[0])
@@ -341,23 +302,38 @@ function checkOutcomeIds(report, name, outcomeIds, textOutcomes) {
 	if (sortedIds.some((id, i) => id !== String(i))) {
 		report.warnings.push(`${name}: outcome ids are not 0..n-1`);
 	}
-	if (!(outcomeIds.length >= 3 && outcomeIds.length <= 8) && name !== "end") {
+	if (isOutcomeCountOff(name, outcomeIds.length)) {
 		report.warnings.push(`${name}: ${outcomeIds.length} outcomes (target 3-6)`);
 	}
 }
 
 /**
- * Check that two sets of names are equal
+ * Check that the texts and the data have the same possibilities
  * @param {Report} report
  * @param {Set<string>} dataNames
  * @param {Set<string>} textNames
  */
 function checkSameNames(report, dataNames, textNames) {
-	if (dataNames.size === textNames.size && [...dataNames].every(name => textNames.has(name))) {
+	if (haveSameElements(dataNames, textNames)) {
 		return;
 	}
 	const differing = [...difference(dataNames, textNames), ...difference(textNames, dataNames)];
 	report.errors.push(`text/data possibilities differ: ${pyRepr(differing.sort(byCodePoint))}`);
+}
+
+/**
+ * Check the triggers: unchanged from the input, or from the draft when there is one
+ * @param {Report} report
+ * @param {any} inp workshop input
+ * @param {object} data
+ */
+function checkTriggers(report, inp, data) {
+	const draftData = get(getOrEmpty(inp, "draft"), "data", {});
+	const inputTriggers = need(inp, "triggers");
+	const expectedTriggers = isObject(draftData) && Object.hasOwn(draftData, "triggers") ? draftData.triggers : inputTriggers;
+	if (!pyEqual(get(data, "triggers"), expectedTriggers)) {
+		report.errors.push("data.triggers must equal the triggers of the input (or of the draft when there is one)");
+	}
 }
 
 /**
@@ -370,12 +346,7 @@ function checkSameNames(report, dataNames, textNames) {
  */
 function checkData(report, inp, out, game) {
 	const data = getOrEmpty(out, "data");
-	const draftData = get(getOrEmpty(inp, "draft"), "data", {});
-	const inputTriggers = need(inp, "triggers");
-	const expectedTriggers = isObject(draftData) && Object.hasOwn(draftData, "triggers") ? draftData.triggers : inputTriggers;
-	if (!pyEqual(get(data, "triggers"), expectedTriggers)) {
-		report.errors.push("data.triggers must equal the triggers of the input (or of the draft when there is one)");
-	}
+	checkTriggers(report, inp, data);
 	const tp = get(out, "possibilities", {});
 	const dp = get(data, "possibilities", {});
 	checkSameNames(report, new Set(keysOf(dp)), new Set(keysOf(tp)));
@@ -415,27 +386,31 @@ function checkOutcomeCounts(report, { total, conditional }, origPossibilities) {
 }
 
 /**
- * Check that every new possibility and new "end" outcome has an emoji, and that there are notes
+ * Check that every new possibility has an emoji
  * @param {Report} report
- * @param {any} out writer output
+ * @param {object} icons
+ * @param {object} tp possibilities of the texts
  * @param {object} origPossibilities
  */
-function checkIconsAndNotes(report, out, origPossibilities) {
-	const tp = get(out, "possibilities", {});
-	const icons = getOrEmpty(out, "icons");
-	for (const name of difference(difference(keysOf(tp), keysOf(origPossibilities)), ["end"])) {
-		if (!truthy(get(icons, name))) {
-			report.errors.push(`icons: missing emoji for new possibility ${name}`);
-		}
+function checkPossibilityIcons(report, icons, tp, origPossibilities) {
+	const newPossibilities = difference(difference(keysOf(tp), keysOf(origPossibilities)), ["end"]);
+	for (const name of [...newPossibilities].filter(possibility => !truthy(get(icons, possibility)))) {
+		report.errors.push(`icons: missing emoji for new possibility ${name}`);
 	}
+}
+
+/**
+ * Check that every new outcome of the "end" possibility has an emoji
+ * @param {Report} report
+ * @param {object} icons
+ * @param {object} tp possibilities of the texts
+ * @param {object} origPossibilities
+ */
+function checkEndIcons(report, icons, tp, origPossibilities) {
 	const newEnd = difference(keysOf(get(get(tp, "end", {}), "outcomes", {})), keysOf(get(get(origPossibilities, "end", {}), "outcomes", {})));
-	for (const outcome of newEnd) {
-		if (!truthy(get(getOrEmpty(icons, "end"), outcome))) {
-			report.errors.push(`icons: missing emoji for new end outcome ${outcome}`);
-		}
-	}
-	if (!truthy(get(out, "notes"))) {
-		report.warnings.push("notes: missing");
+	const endIcons = getOrEmpty(icons, "end");
+	for (const outcome of [...newEnd].filter(endOutcome => !truthy(get(endIcons, endOutcome)))) {
+		report.errors.push(`icons: missing emoji for new end outcome ${outcome}`);
 	}
 }
 
@@ -454,196 +429,14 @@ function validate(inp, out, pets, materials) {
 	checkTexts(report, out, orig);
 	const counts = checkData(report, inp, out, { pets, materials });
 	checkOutcomeCounts(report, counts, origPossibilities);
-	checkIconsAndNotes(report, out, origPossibilities);
+	const icons = getOrEmpty(out, "icons");
+	const tp = get(out, "possibilities", {});
+	checkPossibilityIcons(report, icons, tp, origPossibilities);
+	checkEndIcons(report, icons, tp, origPossibilities);
+	if (!truthy(get(out, "notes"))) {
+		report.warnings.push("notes: missing");
+	}
 	return { ...report, ...counts };
-}
-
-/**
- * Requirements of each outcome, the consumed materials counting as a material requirement
- * @param {any[]} outs
- * @returns {object[]}
- */
-function coverageRequirements(outs) {
-	return outs.map(x => {
-		const requirements = truthy(get(x, "requirements")) ? { ...x.requirements } : {};
-		if (Object.hasOwn(x, "consumeMaterials")) {
-			requirements.materials = { quantity: { min: need(x.consumeMaterials, "quantity") } };
-		}
-		return requirements;
-	});
-}
-
-/**
- * Values to try for a range requirement: the defaults, and each bound with its neighbours
- * @param {object[]} reqs
- * @param {string} key
- * @param {number[]} defaults
- * @returns {number[]}
- */
-function boundaryValues(reqs, key, defaults) {
-	const found = new Set(defaults);
-	const bounds = reqs.flatMap(r => {
-		const range = getOrEmpty(r, key);
-		return [get(range, "min"), get(range, "max")];
-	}).filter(value => value !== null);
-	for (const value of bounds) {
-		found.add(value).add(value - 1)
-			.add(value + 1);
-	}
-	return [...found].sort(byNumber);
-}
-
-/**
- * Profiles of the dimensions to try: each key with the values to try
- * @param {object[]} reqs
- * @param {Map<number, {rarity: number}>} pets
- * @returns {[string, unknown[]][]}
- */
-function coverageDimensions(reqs, pets) {
-	const listedPets = [...new Set(reqs.flatMap(r => get(r, "validPetTypeIds", [])))].sort(byNumber);
-	const petProfiles = [
-		null,
-		...listedPets.filter(id => pets.has(id)).map(id => [id, pets.get(id).rarity]),
-		...boundaryValues(reqs, "petRarity", [1, 8]).filter(rarity => rarity >= 1 && rarity <= 8)
-			.map(rarity => [-1, rarity])
-	];
-	const uses = key => reqs.some(r => Object.hasOwn(r, key));
-	const optionalLevel = (key, defaults) => (uses(key) ? boundaryValues(reqs, key, defaults) : [0]);
-
-	// Extra dimensions only vary when an outcome uses them; materials and enchantment: the player has none, or has everything
-	return [
-		["level", boundaryValues(reqs, "level", [1, 200])],
-		["karma", boundaryValues(reqs, "karma", [-500, 0, 500])],
-		["health", boundaryValues(reqs, "health", [1, 1000])],
-		["attack", boundaryValues(reqs, "attack", [0, 2000])],
-		["defense", boundaryValues(reqs, "defense", [0, 2000])],
-		["speed", boundaryValues(reqs, "speed", [0, 2000])],
-		["class", [...new Set([...reqs.flatMap(r => get(r, "validClassIds", [])), 0])].sort(byNumber)],
-		["pet", petProfiles],
-		["cooking", optionalLevel("cookingLevel", [0, 100])],
-		["weaponLevel", optionalLevel("weaponLevel", [0, 10])],
-		["armorLevel", optionalLevel("armorLevel", [0, 10])],
-		["hasMaterials", uses("materials") ? [false, true] : [true]],
-		["hasEnchantment", uses("enchantment") ? [false, true] : [true]]
-	];
-}
-
-/**
- * Whether the equipment and cooking requirements accept the profile
- * @param {object} r requirements
- * @param {object} profile
- * @returns {boolean}
- */
-function areLevelsCovered(r, profile) {
-	return [["cookingLevel", profile.cooking], ["weaponLevel", profile.weaponLevel], ["armorLevel", profile.armorLevel]]
-		.every(([key, value]) => inRange(get(r, key), Math.max(value, 0)));
-}
-
-/**
- * Whether the material and enchantment requirements accept the profile
- * @param {object} r requirements
- * @param {object} profile
- * @returns {boolean}
- */
-function areBelongingsCovered(r, profile) {
-	if (Object.hasOwn(r, "materials")) {
-		const quantity = get(r.materials, "quantity");
-		if (!inRange(truthy(quantity) ? quantity : { min: 1 }, profile.hasMaterials ? 10 ** 6 : 0)) {
-			return false;
-		}
-	}
-	return !Object.hasOwn(r, "enchantment") || profile.hasEnchantment;
-}
-
-/**
- * Whether the level, karma, health and fight stat requirements accept the profile
- * @param {object} r requirements
- * @param {object} profile
- * @returns {boolean}
- */
-function areStatsCovered(r, profile) {
-	return ["level", "karma", "health", "attack", "defense", "speed"].every(key => inRange(get(r, key), profile[key]));
-}
-
-/**
- * Whether the class and pet requirements accept the profile
- * @param {object} r requirements
- * @param {object} profile
- * @returns {boolean}
- */
-function isIdentityCovered(r, { class: cls, pet }) {
-	if (Object.hasOwn(r, "validClassIds") && !r.validClassIds.includes(cls)) {
-		return false;
-	}
-	if (Object.hasOwn(r, "validPetTypeIds") && (pet === null || !r.validPetTypeIds.includes(pet[0]))) {
-		return false;
-	}
-	return !Object.hasOwn(r, "petRarity") || pet !== null && inRange(r.petRarity, pet[1]);
-}
-
-/**
- * Whether an outcome with these requirements is valid for the profile
- * @param {object} r requirements
- * @param {object} profile
- * @returns {boolean}
- */
-function isProfileCovered(r, profile) {
-	return areLevelsCovered(r, profile)
-		&& areBelongingsCovered(r, profile)
-		&& areStatsCovered(r, profile)
-		&& isIdentityCovered(r, profile)
-		&& !Object.hasOwn(r, "campaignCurrentMissionId");
-}
-
-/**
- * Error describing a profile no outcome covers
- * @param {string} name possibility
- * @param {object} profile
- * @returns {string}
- */
-function uncoveredProfileError(name, profile) {
-	const { pet } = profile;
-	return `${name}: no valid outcome for level=${profile.level} karma=${profile.karma} health=${profile.health} attack=${profile.attack} defense=${profile.defense} speed=${profile.speed} class=${profile.class} pet=${pet === null ? "None" : `(${pet[0]}, ${pet[1]})`}`
-		+ ` cooking=${profile.cooking} weaponLevel=${profile.weaponLevel} armorLevel=${profile.armorLevel} materials=${profile.hasMaterials ? "oui" : "aucun"} enchantment=${profile.hasEnchantment ? "oui" : "aucun"}`;
-}
-
-/**
- * Every profile of the cartesian product of the dimensions, the last one varying fastest (itertools.product)
- * @param {[string, unknown[]][]} dims
- * @returns {Generator<object>}
- */
-function* profilesOf(dims) {
-	const indexes = dims.map(() => 0);
-	for (;;) {
-		yield Object.fromEntries(dims.map(([key, values], i) => [key, values[indexes[i]]]));
-		let i = dims.length - 1;
-		while (i >= 0 && ++indexes[i] === dims[i][1].length) {
-			indexes[i--] = 0;
-		}
-		if (i < 0) {
-			return;
-		}
-	}
-}
-
-/**
- * Coverage: every player profile must have at least one valid outcome of the possibility
- * @param {string} name possibility
- * @param {any[]} outs outcomes of the possibility
- * @param {Map<number, {rarity: number}>} pets
- * @returns {string | null} the error for the first uncovered profile
- */
-function checkCoverage(name, outs, pets) {
-	const reqs = coverageRequirements(outs);
-	if (outs.length === 0) {
-		return null;
-	}
-	for (const profile of profilesOf(coverageDimensions(reqs, pets))) {
-		if (!reqs.some(r => isProfileCovered(r, profile))) {
-			return uncoveredProfileError(name, profile);
-		}
-	}
-	return null;
 }
 
 /**

@@ -115,12 +115,10 @@ async function applyOutcomeHealth(outcome: PossibilityOutcome, player: Player, r
 	return 0;
 }
 
-async function applyOutcomeKarma(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<number> {
-	if (outcome.karma && outcome.karma !== 0) {
+async function applyOutcomeKarma(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<void> {
+	if (outcome.karma) {
 		await player.addKarma(outcome.karma, response, NumberChangeReason.BIG_EVENT);
-		return outcome.karma;
 	}
-	return 0;
 }
 
 async function applyOutcomeMoneyUnderLock(outcome: PossibilityOutcome, time: number, player: Locked<Player>, response: CrowniclesPacket[]): Promise<number> {

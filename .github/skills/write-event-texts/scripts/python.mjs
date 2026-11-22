@@ -211,3 +211,19 @@ export function inRange(range, value) {
 	const aboveMax = max !== null && value > max;
 	return !belowMin && !aboveMax;
 }
+
+/**
+ * Python's sort order of numbers
+ * @param {number} a
+ * @param {number} b
+ * @returns {number}
+ */
+export const byNumber = (a, b) => a - b;
+
+/**
+ * Python's sort order of strings: by code point
+ * @param {string} a
+ * @param {string} b
+ * @returns {number}
+ */
+export const byCodePoint = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
