@@ -5,23 +5,18 @@
         "0": {
           "requirements": {
             "speed": {
-              "max": 249
+              "max": 40
             }
           },
           "effect": "lost"
         },
         "1": {
-          "requirements": {
-            "speed": {
-              "min": 250
-            }
-          },
           "money": 120
         },
         "2": {
           "requirements": {
             "level": {
-              "min": 110
+              "min": 130
             }
           },
           "randomItem": {
@@ -97,7 +92,7 @@
               "max": -30
             },
             "attack": {
-              "min": 300
+              "min": 600
             }
           },
           "karma": -5
@@ -105,7 +100,7 @@
         "1": {
           "requirements": {
             "attack": {
-              "max": 250
+              "max": 230
             }
           },
           "health": -20,
@@ -138,11 +133,6 @@
           "karma": -1
         },
         "4": {
-          "requirements": {
-            "karma": {
-              "min": -50
-            }
-          },
           "effect": "occupied",
           "lostTime": 10,
           "karma": -2
@@ -154,14 +144,14 @@
         "0": {
           "requirements": {
             "speed": {
-              "min": 300
+              "min": 350
             }
           }
         },
         "1": {
           "requirements": {
             "defense": {
-              "min": 400
+              "min": 520
             }
           },
           "health": -8
@@ -169,7 +159,7 @@
         "2": {
           "requirements": {
             "speed": {
-              "max": 299
+              "max": 40
             }
           },
           "health": -25,
@@ -192,6 +182,14 @@
             ]
           },
           "karma": 5
+        },
+        "5": {
+          "requirements": {
+            "defense": {
+              "max": 519
+            }
+          },
+          "health": -20
         }
       }
     },
@@ -204,7 +202,7 @@
         "1": {
           "requirements": {
             "defense": {
-              "max": 300
+              "max": 180
             }
           },
           "health": -30,

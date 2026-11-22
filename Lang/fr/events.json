@@ -11,13 +11,13 @@
         },
         "text": "Couper l'arbre pour dégager le passage."
       },
-      "climbOver": {
+      "turnBack": {
+        "text": "Rebrousser chemin.",
         "outcomes": {
-          "0": "Vous escaladez le tronc avec agilité. Du sommet, vous apercevez la suite du sentier au loin.",
-          "1": "Vous grimpez prudemment sur l'arbre. En redescendant de l'autre côté, vous glissez sur l'écorce humide et vous égratignez les mains, mais rien de grave.",
-          "2": "Vous glissez à mi-hauteur et retombez lourdement sur le sentier. Vous vous relevez tant bien que mal, meurtri mais décidé à continuer."
-        },
-        "text": "Escalader le tronc pour passer par-dessus."
+          "0": "Inutile de vous acharner sur ce chêne. Vous faites demi-tour et ressortez de la Forêt Du Vieillard par le premier sentier qui s'offre à vous. Tant pis pour cette route : vous en prendrez une autre.",
+          "1": "Vous faites demi-tour, mais le sentier serpente plus que dans votre souvenir. Le temps de retrouver la lisière de la forêt, la journée est bien avancée. Vous repartez par la première route venue.",
+          "2": "Vous faites demi-tour. Le nez au sol, votre chien retrouve sans hésiter vos propres traces et vous ramène à la lisière de la forêt en un rien de temps. Vous repartez par la première route venue."
+        }
       },
       "findPath": {
         "outcomes": {
@@ -40,10 +40,10 @@
     "possibilities": {
       "help": {
         "outcomes": {
-          "0": "Malgré vos efforts conjugués, le courant puissant de la Rivière Vacarme emporte la ligne. Le pêcheur vous remercie chaleureusement pour votre tentative et partage quelques pièces de monnaie qu'il avait dans sa poche.",
-          "1": "Ensemble, vous remontez une prise comme le vieux pêcheur n'en avait pas vu depuis longtemps. Ravi, il vous offre un objet qu'il gardait depuis des années en guise de porte-bonheur.",
-          "2": "Grâce à vous, le pêcheur sort de l'eau un poisson de belle taille. Reconnaissant, il vous donne quelques pièces et vous signale les passages les plus dangereux de la rivière.",
-          "3": "Le poisson tire plus fort que vous deux réunis. Vous glissez sur les rochers humides et tombez dans les rapides. Le pêcheur vous repêche de justesse, sonné et trempé jusqu'aux os.",
+          "0": "Malgré vos efforts, le poisson casse la ligne et disparaît dans les roseaux. Le pêcheur hausse les épaules, vous remercie quand même et vous glisse quelques pièces pour votre peine.",
+          "1": "Vous tirez de toutes vos forces et, ensemble, vous remontez une prise comme le vieux pêcheur n'en avait pas vu depuis longtemps. Ravi, il vous offre un objet qu'il gardait depuis des années comme porte-bonheur.",
+          "2": "Grâce à vous, le pêcheur sort de l'eau un poisson de belle taille. Reconnaissant, il vous donne quelques pièces et vous indique les coins du lac où mordent les plus gros.",
+          "3": "Le poisson tire plus fort que vous deux réunis. Vous glissez sur les planches mouillées et tombez à l'eau en heurtant le ponton. Le pêcheur vous aide à remonter, trempé et endolori.",
           "4": "En unissant vos forces, vous réussissez à sortir de l'eau une vieille botte remplie de vase. Le pêcheur éclate de rire devant cette drôle de prise et vous laisse repartir en vous remerciant de vos efforts."
         },
         "text": "Prêter main-forte au pêcheur en difficulté."
@@ -51,38 +51,38 @@
       "advice": {
         "outcomes": {
           "0": "Sur vos conseils, le pêcheur change de technique et attrape aussitôt un beau poisson. Il vous remercie avec quelques pièces qui traînaient au fond de ses poches.",
-          "1": "Le pêcheur suit vos recommandations mais sans succès. Il apprécie néanmoins votre bienveillance. Vous repartez avec un léger sourire, heureux d'avoir tenté d'aider.",
+          "1": "Le pêcheur suit vos recommandations, sans succès. Il vous remercie tout de même. Vous repartez avec un léger sourire.",
           "2": "Vous tentez de donner des conseils au pêcheur, mais il vous ignore complètement, trop concentré sur sa tâche. Vous finissez par vous lasser et décidez de continuer votre route.",
           "3": "Le pêcheur, amusé par vos tentatives de conseils, vous écoute poliment mais ne change pas sa technique. Il finit par attraper un poisson malgré tout et vous offre un sourire en guise de remerciement.",
           "4": "Le pêcheur vous dévisage, méfiant : on lui a parlé de vous. Il refuse vos conseils et vous demande de partir. Pour une fois que vous étiez animé de bonnes intentions, vous reprenez votre route, déçu."
         },
-        "text": "Donner des conseils depuis la berge."
+        "text": "Donner des conseils depuis la rive."
       },
       "push": {
         "outcomes": {
-          "0": "Vous poussez le pêcheur dans les rapides, et vous le regrettez aussitôt. Vous plongez, luttez contre le courant et le ramenez sur la berge. Choqué mais vivant, le vieil homme accepte vos excuses et quelques pièces de dédommagement.",
-          "1": "Le pêcheur bascule dans un remous. Vous sautez pour le rattraper, et le courant vous emporte tous les deux jusqu'à un banc de sable, trempés et meurtris. Furieux, il exige une forte compensation pour cette mauvaise plaisanterie.",
-          "2": "Le pêcheur tombe à l'eau en lâchant tout son matériel. Vous le repêchez, mais sa canne est partie avec le courant, et votre dédommagement ne le console pas. Un peu plus loin, vous retrouvez un de ses objets échoué sur la berge, et vous le gardez.",
-          "3": "Le pêcheur perd l'équilibre et s'agrippe à vous. Vous basculez ensemble dans la rivière, qui vous traîne sur quelques mètres avant de vous laisser regagner la rive, blessés tous les deux.",
-          "4": "Le pêcheur s'écarte au dernier moment, et c'est vous que votre élan envoie dans les eaux glacées de la Rivière Vacarme. Le vieil homme vous aide à en sortir, trempé, frigorifié et humilié.",
-          "5": "Le pêcheur disparaît dans les rapides les plus violents. Vous vous jetez à son secours et le sortez de l'eau après de longues minutes, inconscient mais vivant. À son réveil, terrorisé et furieux, il exige une lourde compensation et la promesse de vous tenir tranquille."
+          "0": "Vous poussez le pêcheur dans le lac, et vous le regrettez aussitôt. Vous plongez et le ramenez jusqu'au ponton, en vous écorchant aux planches. Trempé mais indemne, le vieil homme accepte vos excuses et quelques pièces de dédommagement.",
+          "1": "Le pêcheur bascule dans les roseaux. Vous sautez pour l'aider, et vous vous retrouvez tous les deux pris dans la vase, trempés et couverts d'écorchures. Furieux, il exige une forte compensation pour cette mauvaise plaisanterie.",
+          "2": "Le pêcheur tombe à l'eau en lâchant tout son matériel. Vous le repêchez, mais sa canne a coulé, et votre dédommagement ne le console pas. Sur le ponton traîne un de ses objets : vous le glissez dans votre sac.",
+          "3": "Le pêcheur perd l'équilibre et s'agrippe à vous. Vous tombez ensemble dans le lac et regagnez le ponton à grand-peine, couverts de vase et d'écorchures.",
+          "4": "Le pêcheur s'écarte au dernier moment, et c'est vous que votre élan envoie dans l'eau froide du lac. Le vieil homme vous tend sa canne pour vous aider à remonter, trempé, frigorifié et humilié.",
+          "5": "Le pêcheur coule à pic au milieu des roseaux. Vous plongez et le sortez de l'eau après de longues minutes, inconscient mais vivant. À son réveil, terrorisé et furieux, il exige une lourde compensation."
         },
         "text": "Pousser le pêcheur dans l'eau."
       },
       "skip": {
         "outcomes": {
-          "0": "Vous passez votre chemin sans vous attarder. Le bruit assourdissant de la Rivière Vacarme couvre vos pas tandis que vous poursuivez votre route.",
-          "1": "Vous décidez de ne pas vous mêler des affaires du pêcheur et de continuer votre route. Le bruit de la rivière s'estompe derrière vous tandis que vous avancez dans la forêt."
+          "0": "Vous passez votre chemin sans vous attarder, et laissez le pêcheur aux prises avec sa ligne.",
+          "1": "Vous ne vous mêlez pas des affaires du pêcheur. Derrière vous, les rires des familles au bord du lac couvrent bientôt ses jurons."
         },
         "text": "Poursuivre votre route sans vous arrêter."
       },
       "end": {
         "outcomes": {
-          "0": "Vous vous asseyez sur la berge pour regarder les flots et le pêcheur aux prises avec sa ligne. Le grondement de la Rivière Vacarme finit par vous bercer. Quand vous reprenez votre route, apaisé, le temps a filé sans que vous vous en rendiez compte."
+          "0": "Vous vous asseyez sur la rive pour regarder le pêcheur aux prises avec sa ligne. Le clapotis du lac finit par vous bercer. Quand vous reprenez votre route, le temps a filé sans que vous vous en rendiez compte."
         }
       }
     },
-    "text": "La Rivière Vacarme gronde à vous en assourdir, charriant branches et écume. Sur un rocher instable au bord des rapides, un vieux pêcheur se bat avec sa canne : sa ligne est prise dans le courant, et il peine à garder l'équilibre."
+    "text": "Au bord du Lac Mirage, des familles pique-niquent près des roseaux. Au bout d'un vieux ponton, un pêcheur se bat avec sa canne : un poisson énorme a mordu, et la ligne tire si fort qu'il manque de passer par-dessus bord."
   },
   "11": {
     "possibilities": {
@@ -684,10 +684,11 @@
       "skip": {
         "outcomes": {
           "0": "Vous enjambez les poutres effondrées et traversez les ruines de l'auberge avant que le chien n'ait fait trois pas. Il vous regarde filer, puis renonce à vous suivre.",
-          "1": "Vous passez sans un regard, et le chien se jette sur vous. Votre bouclier encaisse presque tous ses assauts. Après quelques minutes de lutte, vous vous dégagez avec de simples égratignures.",
+          "1": "Vous passez sans un regard, et le chien se jette sur vous. Votre armure encaisse presque tous ses coups de crocs. Vous le repoussez et repartez avec de simples égratignures.",
           "2": "Vous pressez le pas, et vos pieds se prennent dans les gravats de l'ancienne salle commune. Vous roulez sur les pavés de la cour effondrée et vous relevez couvert de contusions.",
           "3": "Le chien vous observe un instant près des vestiges de l'auberge, puis semble comprendre que vous n'êtes pas celui qu'il cherchait. Il s'éloigne de lui-même et disparaît dans l'ancienne écurie.",
-          "4": "D'un battement d'ailes, votre compagnon survole les ruines et entraîne le chien à sa suite. Vous en profitez pour poursuivre votre chemin le long de la Grande Rue, fier de votre familier."
+          "4": "D'un battement d'ailes, votre compagnon survole les ruines et entraîne le chien à sa suite. Vous en profitez pour poursuivre votre chemin le long de la Grande Rue, fier de votre familier.",
+          "5": "Vous passez sans un regard, et le chien se jette sur vous. Il vous mord au bras et ne lâche prise que lorsque vous parvenez à le repousser. Il file alors vers les ruines de l'auberge, et vous repartez en serrant votre bras blessé."
         },
         "text": "Continuer votre route en ignorant le chien."
       },
@@ -699,7 +700,7 @@
         }
       }
     },
-    "text": "Sur les pavés brisés de la Grande Rue, un chien efflanqué au pelage tacheté surgit des ruines d'un ancien comptoir. Il tourne autour de vous, aboie, file vers une auberge effondrée, puis revient en gémissant. Il veut que vous le suiviez."
+    "text": "Sur les pavés brisés de la Grande Rue, un chien efflanqué au pelage tacheté surgit des ruines d'un ancien comptoir. Il tourne autour de vous, aboie, file vers une auberge effondrée, puis revient en gémissant. Il semble vouloir que vous le suiviez !"
   },
   "20": {
     "possibilities": {

@@ -39,6 +39,11 @@ On n'édite que `Lang/fr` : les autres langues viennent de Crowdin.
   - Pas de *héros de légende*, de *gratitude éternelle*, de *noble quête*.
   - Un « ! » au plus par texte. Pas de points de suspension en fin d'introduction.
 - **Pas de morale finale** (*Après tout, la mort fait partie du cycle naturel*).
+- **Des enchaînements logiques.** Chaque phrase découle de la précédente.
+  - Faux : *Malgré vos efforts conjugués, le courant emporte la ligne. Le pêcheur vous remercie chaleureusement pour votre tentative et partage quelques pièces.* Le gain tombe comme un cheveu sur la soupe.
+  - Juste : *Le poisson casse la ligne. Le pêcheur hausse les épaules, vous remercie quand même et vous glisse quelques pièces pour votre peine.*
+- **Des sentiments à la mesure du résultat.** Si le joueur n'a servi à rien, il n'est pas *heureux d'avoir tenté d'aider* : *Vous repartez avec un léger sourire.* suffit.
+- **On ne lit pas dans la tête d'un animal.** Le narrateur interprète ce qu'il voit : *Il semble vouloir que vous le suiviez*, pas *Il veut que vous le suiviez*.
 - **Pas de montant dans le texte.** Le jeu affiche les pièces, les points de vie et le temps perdu : *une bourse*, *une poignée de pièces*.
 - **Typographie.**
   - Apostrophe droite `'`, pas de tiret cadratin `—`.
@@ -67,6 +72,8 @@ On n'édite que `Lang/fr` : les autres langues viennent de Crowdin.
   - Pas de « Vous voyez » en ouverture.
 - **Issue : 150 à 280 caractères.** C'est une petite scène qui se tient : ce que fait le joueur, ce qui se passe, et la conséquence. Le décor se limite à ce qui sert l'action, avec un détail concret au plus.
 - **Choix : un libellé court**, avec un verbe à l'infinitif.
+- **Ne pas déplacer un event.** Garde le déclencheur de `develop`. L'event 10 avait glissé du Lac Mirage à la Rivière Vacarme, qui avait déjà deux events au bord de l'eau.
+- **Ne pas copier un autre event.** Quand deux events se ressemblent, leurs choix doivent différer. L'arbre tombé de la Forêt Du Vieillard (event 1) reprenait les choix de celui du Chemin aux Loups (event 55) ; on y a remplacé « escalader » par « rebrousser chemin ».
 - **Fidélité à l'original.**
   - Même situation, mêmes personnages, même humour, mêmes possibilités.
   - Ce qui est illogique se corrige en gardant l'idée. Par exemple, le renard mort qui se relève pour mordre devient un spasme qui fait reculer le joueur contre un arbre, pour la même perte de vie.
@@ -94,6 +101,7 @@ On n'édite que `Lang/fr` : les autres langues viennent de Crowdin.
   - Pas de forgeron ni de boutique que la ville n'a pas.
   - Mernil est itinérante.
 - **`forceStayInCity`** : seulement dans une ville, et quand rester est naturel. Pas après une fuite.
+- **Rebrousser chemin.** Le demi-tour forcé n'existe plus (retiré par #4844). Une issue « rebrousser chemin » envoie vers un voisin avec `mapTypesDestination` listant les types des voisins, et le texte ne dit pas lequel (*vous repartez par la première route venue*).
 
 ## Issues conditionnelles
 
@@ -104,9 +112,13 @@ On n'édite que `Lang/fr` : les autres langues viennent de Crowdin.
   - environ 2 à 4 fois plus d'issues que l'original ;
   - environ les trois quarts sont conditionnelles ;
   - une ou deux possibilités nouvelles au plus.
+- **Le cas général d'abord.** Chaque possibilité traite le cas général sans condition, ou avec une paire de conditions complémentaires (défense `max` 519 / `min` 520). Une issue conditionnelle fait basculer la situation pour un profil particulier ; elle ne doit jamais pénaliser une force.
+  - Faux (event 2, ignorer le chien) : seule une défense ≥ 400 donnait une issue où le chien attaque. Les autres joueurs n'étaient jamais attaqués : avoir une grosse défense ajoutait un risque.
+  - Juste : le chien attaque tout le monde (défense `max` 519, -20 PV) ; une bonne armure réduit les dégâts (défense `min` 520, -8 PV).
+  - Juste aussi, sans complémentaire (event 10, aider le pêcheur) : une attaque faible ajoute un risque de chute, mais le cas général, tirer la ligne avec lui, est déjà traité sans condition.
 - **Chaque profil doit avoir au moins une issue possible**, karma et familier compris.
   - Le test `eventsRequirements.test.ts` ignore le karma et les familiers.
-  - Or une liste d'issues valides vide fait planter `pickRandomOutcome` : `random-js` lève une erreur sur `pick([])`.
+  - Or une liste d'issues valides vide fait planter `pickRandomOutcome` : `random-js` lève une erreur sur `pick([])`. Le choix reste affiché : seul un `condition` posé sur la possibilité elle-même la masque.
   - Le test `eventsRequirements.test.ts` explore toutes les conditions (karma, familier, cuisine, matériaux, enchantement compris) et donne le profil sans issue.
   - Piège fréquent : deux plages qui ne se touchent pas (`speed` `max` 200 et `min` 250 laissent 201 à 249 sans issue). Les plages opposées doivent se recouvrir ou se toucher, sinon il faut une issue sans condition.
 
@@ -177,4 +189,5 @@ Les 21 events déjà réécrits (1, 2, 10 à 20, 30, 39, 46, 56, 69, 71, 76, 89)
 - **Classes et familiers** : une issue qui ne concerne que 1 à 2 % des joueurs est voulue.
 - **Events 69 et 76** : une intro trop raccourcie perd ce qui motive les choix ; jusqu'à 400 caractères quand c'est nécessaire. Voir « Structure d'un event ».
 - **Trous de couverture (events 2, 11, 13, 15, 16, 17, 20)** : des plages qui ne se touchent pas laissaient des joueurs sans issue ; le test de couverture vérifie maintenant toutes les conditions. Voir « Combien et lesquelles ».
+- **Relecture de GabrieLre (events 1, 2, 10)** : cas général d'abord, enchaînements logiques, sentiments à la mesure du résultat, animal interprété, event à garder à sa place, choix différents d'un event voisin, demi-tour par un voisin. Voir « Style », « Structure d'un event », « Canon des lieux » et « Combien et lesquelles ».
 - **Cuisine, matériaux, équipement** : des issues doivent dépendre du niveau de cuisine, des matériaux et des enchantements ou améliorations de l'équipement, et certaines peuvent consommer des matériaux. Voir « L'échelle des seuils ».

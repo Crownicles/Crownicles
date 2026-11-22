@@ -22,7 +22,7 @@
         "3": {
           "requirements": {
             "attack": {
-              "max": 250
+              "max": 230
             }
           },
           "effect": "sleeping"
@@ -30,37 +30,45 @@
         "4": {
           "requirements": {
             "attack": {
-              "min": 250
+              "min": 600
             }
           }
         }
       }
     },
-    "climbOver": {
+    "turnBack": {
       "outcomes": {
         "0": {
-          "requirements": {
-            "speed": {
-              "min": 200
-            }
-          }
+          "mapTypesDestination": [
+            "ro",
+            "pl"
+          ]
         },
         "1": {
           "requirements": {
             "speed": {
-              "max": 500
+              "max": 40
             }
           },
-          "health": -8
+          "effect": "occupied",
+          "lostTime": 40,
+          "mapTypesDestination": [
+            "ro",
+            "pl"
+          ]
         },
         "2": {
           "requirements": {
-            "speed": {
-              "max": 350
-            }
+            "validPetTypeIds": [
+              1,
+              2,
+              28
+            ]
           },
-          "health": -20,
-          "effect": "hurt"
+          "mapTypesDestination": [
+            "ro",
+            "pl"
+          ]
         }
       }
     },
@@ -69,24 +77,18 @@
         "0": {
           "requirements": {
             "level": {
-              "min": 40
+              "min": 120
             }
           }
         },
-        "1": {
-          "requirements": {
-            "level": {
-              "min": 60
-            }
-          }
-        },
+        "1": {},
         "2": {
           "effect": "lost"
         },
         "3": {
           "requirements": {
             "level": {
-              "max": 40
+              "max": 55
             }
           },
           "health": -4,

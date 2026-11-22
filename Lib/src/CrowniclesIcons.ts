@@ -379,8 +379,8 @@ export const CrowniclesIcons: {
 	events: {
 		1: {
 			chopTree: "🪓",
-			climbOver: "🧗",
 			findPath: "🗺️",
+			turnBack: "↩️",
 			end: { 0: "🪓" }
 		},
 		10: {
