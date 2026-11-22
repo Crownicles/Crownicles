@@ -1,8 +1,8 @@
 {
   "quests": {
-    "title_obtained": "{{pseudo}}, you'll get a new quest!",
+    "title_obtained": "{{pseudo}}, you get a new quest!",
     "title_progressed": "{{pseudo}}, your quest is moving forward!",
-    "title_completed": "{{pseudo}}, you're on a quest!",
+    "title_completed": "{{pseudo}}, you have completed a quest!",
     "description": "> {{description}}",
     "stepDone": "{emote:quests.stepDone} Step completed",
     "nextStep": "{emote:quests.stepCurrent} Next step",

@@ -2,7 +2,7 @@
   "quests": {
     "title_obtained": "{{pseudo}}, vous obtenez une nouvelle quête !",
     "title_progressed": "{{pseudo}}, votre quête progresse !",
-    "title_completed": "{{pseudo}}, vous accomplissez une quête !",
+    "title_completed": "{{pseudo}}, vous avez accompli une quête !",
     "description": "> {{description}}",
     "stepDone": "{emote:quests.stepDone} Étape accomplie",
     "nextStep": "{emote:quests.stepCurrent} Prochaine étape",

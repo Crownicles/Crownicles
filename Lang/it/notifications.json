@@ -1,8 +1,8 @@
 {
   "quests": {
-    "title_obtained": "{{pseudo}}, riceverai una nuova missione!",
+    "title_obtained": "{{pseudo}}, ricevi una nuova missione!",
     "title_progressed": "{{pseudo}}, la tua missione va avanti!",
-    "title_completed": "{{pseudo}}, stai portando a termine una missione!",
+    "title_completed": "{{pseudo}}, hai completato una missione!",
     "description": "> {{description}}",
     "stepDone": "{emote:quests.stepDone} Fase completata",
     "nextStep": "{emote:quests.stepCurrent} Fase successiva",
