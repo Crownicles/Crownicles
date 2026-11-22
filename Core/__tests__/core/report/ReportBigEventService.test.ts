@@ -22,6 +22,8 @@ vi.mock("../../../src/core/missions/MissionsController", () => ({
 
 vi.mock("../../../src/core/report/ReportDestinationService", () => ({ chooseDestination: vi.fn().mockResolvedValue(undefined) }));
 
+vi.mock("../../../src/core/report/ReportBigEventFightService", () => ({ startBigEventFight: vi.fn().mockResolvedValue(undefined) }));
+
 // Outcome requirements are covered by PossibilityOutcome.test.ts: here every outcome is valid
 vi.mock("../../../src/data/events/PossibilityOutcome", () => ({
 	applyPossibilityOutcome: vi.fn().mockResolvedValue(null),
@@ -69,6 +71,7 @@ import {
 import { MapLinkDataController } from "../../../src/data/MapLink";
 import { MissionsController } from "../../../src/core/missions/MissionsController";
 import { chooseDestination } from "../../../src/core/report/ReportDestinationService";
+import { startBigEventFight } from "../../../src/core/report/ReportBigEventFightService";
 import { applyPossibilityOutcome } from "../../../src/data/events/PossibilityOutcome";
 import { verifyPossibilityOutcomeCondition } from "../../../src/data/events/PossibilityOutcomeCondition";
 import {
@@ -129,7 +132,9 @@ function firstMapLink(): MapLink {
 	return mapLink;
 }
 
-type OutcomeDouble = { condition?: object; tags?: string[]; forceLeaveCity?: boolean; forceStayInCity?: boolean };
+type OutcomeDouble = {
+	condition?: object; tags?: string[]; forceLeaveCity?: boolean; forceStayInCity?: boolean; fight?: { monster: string; level: number };
+};
 
 function bigEvent(id: number, possibilities: Record<string, { outcomes: Record<string, OutcomeDouble>; tags?: string[] }>, tags?: string[]): BigEvent {
 	return {
@@ -177,6 +182,7 @@ afterEach(() => {
 	vi.mocked(applyPossibilityOutcome).mockReset().mockResolvedValue(null);
 	vi.mocked(verifyPossibilityOutcomeCondition).mockReset().mockResolvedValue(true);
 	vi.mocked(withLockedEntities).mockReset();
+	vi.mocked(startBigEventFight).mockClear();
 	doubles.logBigEvent.mockClear();
 });
 
@@ -337,6 +343,37 @@ describe("doRandomBigEvent", () => {
 			vi.mocked(applyPossibilityOutcome).mockResolvedValue(teleport);
 			await choose("north");
 			expect(chooseDestination).toHaveBeenCalledWith(context, lockedRow, teleport, expect.any(Array), expect.anything());
+		});
+
+		it("should start the fight of the outcome after the lock and choose the destination only once it is over", async () => {
+			const fight = { monster: "bandit", level: 40 };
+			const freshRow = asPlayer(explorerRow());
+			vi.spyOn(Players, "getById").mockResolvedValue(freshRow);
+			await startBigEvent(bigEvent(5, { north: { outcomes: { 1: { fight, forceLeaveCity: true } } } }));
+
+			const response = await choose("north");
+
+			expect(chooseDestination).not.toHaveBeenCalled();
+			expect(lockedRow.save).toHaveBeenCalledTimes(2);
+			expect(doubles.logBigEvent).toHaveBeenCalledWith("explorer", 5, "north", "1");
+			expect(startBigEventFight).toHaveBeenCalledWith(freshRow, {
+				eventId: 5,
+				possibilityId: "north",
+				outcomeId: "1",
+				fight,
+				destination: { newMapLink: null, allowStayInCity: false, forceStayInCity: false }
+			}, context, response);
+			expect(vi.mocked(startBigEventFight).mock.invocationCallOrder[0])
+				.toBeLessThan(vi.mocked(BlockingUtils.unblockPlayer).mock.invocationCallOrder[0]);
+		});
+
+		it("should not start the fight of a player the outcome killed", async () => {
+			lockedRow.killIfNeeded.mockResolvedValue(true);
+			await startBigEvent(bigEvent(5, { north: { outcomes: { 1: { fight: { monster: "bandit", level: 40 } } } } }));
+
+			await choose("north");
+
+			expect(startBigEventFight).not.toHaveBeenCalled();
 		});
 
 		it("should only acknowledge the end of the very first report", async () => {

@@ -107,7 +107,20 @@
           "4": "Des brigands surgissent des fourrés, l'arme au poing. Leur chef vous dévisage, puis leur fait signe de ranger leurs lames : il vous a reconnu. Entre gens du métier, on ne se dépouille pas. Ils vous laissent passer.",
           "5": "À mi-chemin, votre familier s'arrête net et grogne vers les fourrés. Une lame brille entre les feuilles. Vous quittez le chemin de l'ouest et faites un long détour par les sous-bois pour éviter le guet-apens.",
           "6": "L'inconnue disait vrai. Le chemin de l'ouest longe les collines à l'écart des grottes, et vous traversez le Bois Hurlant sans croiser personne. Pour une fois, le raccourci en était bien un.",
-          "7": "Au premier virage, vous repérez des silhouettes tapies dans les fourrés. Vous les prenez à revers et en capturez un avant que les autres ne s'enfuient. Vous le livrez aux soldats de Claire de Ville, qui vous versent la prime promise pour sa capture."
+          "7": "Au premier virage, vous repérez des silhouettes tapies dans les fourrés. Vous les prenez à revers et en capturez un avant que les autres ne s'enfuient. Vous le livrez aux soldats de Claire de Ville, qui vous versent la prime promise pour sa capture.",
+          "8": "C'était un piège. Un brigand surgit des fourrés et vous barre la route, lame au clair, pendant que ses complices restent en retrait. Il en veut à votre bourse, et il compte bien se battre pour l'avoir.",
+          "9": "C'était un piège. Le chef de la bande sort lui-même des fourrés et fait signe à ses hommes de reculer. Il a entendu parler de vous et tient à vous affronter seul, sous les yeux de toute la bande.",
+          "10": "C'était un piège. Des brigands surgissent des fourrés, mais la route vous a vidé de vos forces et vous tenez à peine debout. Ils vous rouent de coups, vident votre bourse et vous abandonnent au bord du chemin."
+        },
+        "fights": {
+          "8": {
+            "won": "Le brigand mord la poussière et ses complices détalent vers les grottes. Dans sa fuite, il abandonne la bourse qu'il avait remplie sur le dos d'autres voyageurs.",
+            "lost": "Le brigand vous envoie au sol. Pendant que vous reprenez votre souffle, il vide votre bourse et disparaît avec ses complices dans les fourrés."
+          },
+          "9": {
+            "won": "Le chef de la bande finit à genoux devant ses hommes. Pour sauver ce qui lui reste d'honneur, il vous cède une part du butin de la semaine et rappelle sa bande vers les grottes.",
+            "lost": "Le chef de la bande vous jette à terre sous les acclamations de ses hommes. Beau joueur, il vous laisse la vie sauve, mais pas votre bourse."
+          }
         }
       },
       "questionStranger": {

@@ -33,6 +33,7 @@ import {
 import {
 	isOutcomeValidForPlayer, OutcomeRequirements
 } from "./OutcomeRequirements";
+import { OutcomeFight } from "./OutcomeFight";
 
 async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	const scoreChange = TravelTime.timeTravelledToScore(minutesToMilliseconds(asMinutes(time)))
@@ -181,7 +182,12 @@ async function applyOutcomeTokens(outcome: PossibilityOutcome, player: Player, r
 	return 0;
 }
 
-async function applyOutcomeRandomItem(outcome: PossibilityOutcome, player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
+export async function applyOutcomeRandomItem(
+	outcome: { randomItem?: OutcomeRandomItem },
+	player: Player,
+	context: PacketContext,
+	response: CrowniclesPacket[]
+): Promise<void> {
 	if (!outcome.randomItem) {
 		return;
 	}
@@ -367,6 +373,17 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 	return getNextMapLink(possibilityOutcome.outcome[1], player);
 }
 
+/**
+ * Random item given by an outcome, of the given category and rarity range
+ */
+export type OutcomeRandomItem = {
+	category?: number;
+	rarity?: {
+		min?: number;
+		max?: number;
+	};
+};
+
 export interface PossibilityOutcome {
 
 	condition?: PossibilityOutcomeCondition;
@@ -426,13 +443,7 @@ export interface PossibilityOutcome {
 	/**
 	 * Give a random item
 	 */
-	randomItem?: {
-		category?: number;
-		rarity?: {
-			min?: number;
-			max?: number;
-		};
-	};
+	randomItem?: OutcomeRandomItem;
 
 	/**
 	 * Give a random pet
@@ -502,6 +513,11 @@ export interface PossibilityOutcome {
 	 * allowing them to choose their next destination.
 	 */
 	forceLeaveCity?: boolean;
+
+	/**
+	 * Fight a monster once the outcome is applied. The next destination is chosen after the fight
+	 */
+	fight?: OutcomeFight;
 
 	/**
 	 * Tags

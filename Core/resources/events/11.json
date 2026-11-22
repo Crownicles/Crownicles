@@ -70,6 +70,62 @@
           "mapTypesDestination": [
             "ci"
           ]
+        },
+        "8": {
+          "requirements": {
+            "level": {
+              "min": 20,
+              "max": 79
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "fight": {
+            "monster": "bandit",
+            "level": 40,
+            "won": {
+              "money": 150,
+              "experience": 40
+            },
+            "lost": {
+              "money": -150,
+              "health": -15
+            }
+          }
+        },
+        "9": {
+          "requirements": {
+            "level": {
+              "min": 80
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "fight": {
+            "monster": "bandit",
+            "level": 100,
+            "won": {
+              "money": 350,
+              "experience": 100,
+              "randomItem": {}
+            },
+            "lost": {
+              "money": -300,
+              "health": -20
+            }
+          }
+        },
+        "10": {
+          "requirements": {
+            "energyPercent": {
+              "max": 15
+            }
+          },
+          "effect": "hurt",
+          "health": -35,
+          "money": -250
         }
       }
     },

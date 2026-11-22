@@ -14,6 +14,7 @@ interface OutcomeRequirements {
 	attack?: Range;
 	defense?: Range;
 	speed?: Range;
+	energyPercent?: Range;
 	money?: Range;
 	cookingLevel?: Range;
 	weaponLevel?: Range;
@@ -42,7 +43,7 @@ interface Event {
 	possibilities?: Record<string, Possibility>;
 }
 
-const RANGE_KEYS = ['level', 'karma', 'health', 'attack', 'defense', 'speed', 'money', 'cookingLevel', 'weaponLevel', 'armorLevel'] as const;
+const RANGE_KEYS = ['level', 'karma', 'health', 'attack', 'defense', 'speed', 'energyPercent', 'money', 'cookingLevel', 'weaponLevel', 'armorLevel'] as const;
 
 const PETS: Record<number, { rarity: number; tags: string[] }> = Object.fromEntries(
 	fs.readdirSync(PETS_DIR)
@@ -81,8 +82,9 @@ function rangeBoundaries(outcomes: Outcome[], key: typeof RANGE_KEYS[number]): n
 			}
 		}
 	}
-	// Karma can be negative; a player in an event has at least 1 health point
-	return [...values].filter(v => key === 'karma' || v >= (key === 'health' ? 1 : 0));
+	// Karma can be negative; a player in an event has at least 1 health point; energy is a percentage
+	return [...values].filter(v => key === 'karma' || v >= (key === 'health' ? 1 : 0))
+		.filter(v => key !== 'energyPercent' || v <= 100);
 }
 
 function buildDimensions(outcomes: Outcome[]): Dimension[] {

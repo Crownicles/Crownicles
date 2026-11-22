@@ -40,6 +40,9 @@ import {
 } from "../../../../Lib/src/utils/TimeUtils";
 import { chooseDestination } from "./ReportDestinationService";
 import {
+	PendingBigEventFight, startBigEventFight
+} from "./ReportBigEventFightService";
+import {
 	Locked, LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 import {
@@ -135,6 +138,7 @@ async function updateTagMissions(
  * Body of the critical section: apply the outcome, persist the player,
  * log only after the row is durably saved. Runs under
  * `withLockedEntities([Player, PlayerMissionsInfo])`.
+ * @returns the fight the outcome triggers, if the player survived it: the destination is then chosen after the fight
  */
 async function applyLockedOutcomeUnderLock(
 	lockedPlayer: Locked<Player>,
@@ -146,7 +150,7 @@ async function applyLockedOutcomeUnderLock(
 	},
 	context: PacketContext,
 	response: CrowniclesPacket[]
-): Promise<void> {
+): Promise<PendingBigEventFight | null> {
 	const {
 		event, possibility, randomOutcome, time
 	} = outcomeContext;
@@ -162,15 +166,30 @@ async function applyLockedOutcomeUnderLock(
 
 	const isDead = await lockedPlayer.killIfNeeded(response, NumberChangeReason.BIG_EVENT);
 
+	const destination = {
+		newMapLink,
+		allowStayInCity: randomOutcome[1].forceLeaveCity !== true,
+		forceStayInCity: randomOutcome[1].forceStayInCity ?? false
+	};
+	const pendingFight: PendingBigEventFight | null = randomOutcome[1].fight && !isDead
+		? {
+			eventId: event.id,
+			possibilityId: possibility[0],
+			outcomeId: randomOutcome[0],
+			fight: randomOutcome[1].fight,
+			destination
+		}
+		: null;
+
 	/*
 	 * If the player is dead but a forced map link is provided, teleport them there.
 	 * Otherwise, only choose destination if player is alive.
 	 */
-	if (newMapLink || !isDead) {
+	if (!pendingFight && (newMapLink || !isDead)) {
 		await chooseDestination(context, lockedPlayer, newMapLink, response, {
 			mainPacket: false,
-			allowStayInCity: randomOutcome[1].forceLeaveCity !== true,
-			forceStayInCity: randomOutcome[1].forceStayInCity ?? false
+			allowStayInCity: destination.allowStayInCity,
+			forceStayInCity: destination.forceStayInCity
 		});
 	}
 
@@ -182,6 +201,8 @@ async function applyLockedOutcomeUnderLock(
 	// Log only after the outcome is durably persisted (#3760).
 	crowniclesInstance?.logsDatabase.logBigEvent(lockedPlayer.keycloakId, event.id, possibility[0], randomOutcome[0])
 		.then();
+
+	return pendingFight;
 }
 
 /**
@@ -238,22 +259,21 @@ async function doPossibility(
 	 */
 	await PlayerMissionsInfos.getOfPlayer(freshPlayer.id);
 
+	let pendingFight: PendingBigEventFight | null = null;
 	try {
-		await withLockedEntities(
+		pendingFight = await withLockedEntities(
 			[
 				Player.lockKey(freshPlayer.id),
 				PlayerMissionsInfo.lockKey(freshPlayer.id)
 			] as const,
-			async ([lockedPlayer]) => {
-				await lockedPlayer.runWithTokenCapReference(() => applyLockedOutcomeUnderLock(
-					lockedPlayer,
-					{
-						event, possibility, randomOutcome, time
-					},
-					context,
-					response
-				));
-			}
+			([lockedPlayer]) => lockedPlayer.runWithTokenCapReference(() => applyLockedOutcomeUnderLock(
+				lockedPlayer,
+				{
+					event, possibility, randomOutcome, time
+				},
+				context,
+				response
+			))
 		);
 	}
 	catch (e) {
@@ -261,6 +281,10 @@ async function doPossibility(
 			throw e;
 		}
 		await handleLockLost(freshPlayer, context, response);
+	}
+	if (pendingFight) {
+		// The fight blocks the player on its own, before the report unblocks them
+		await startBigEventFight(await Players.getById(freshPlayer.id), pendingFight, context, response);
 	}
 	BlockingUtils.unblockPlayer(freshPlayer.keycloakId, BlockingConstants.REASONS.REPORT);
 }

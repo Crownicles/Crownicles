@@ -422,6 +422,12 @@ describe("PossibilityOutcome Requirements", () => {
 			expect(await isValid({ money: { min: 50000 } })).toBe(false);
 		});
 
+		it("should check the fight energy left in percent, rounded down", async () => {
+			mockPlayer = { ...mockPlayer, getRatioCumulativeEnergy: () => 0.499 } as Partial<Player>;
+			expect(await isValid({ energyPercent: { max: 49 } })).toBe(true);
+			expect(await isValid({ energyPercent: { min: 50 } })).toBe(false);
+		});
+
 		it("should check the badges of the player", async () => {
 			vi.mocked(PlayerBadgesManager.getOfPlayer).mockResolvedValue([Badge.MASTER_CHEF, Badge.VOTER]);
 			expect(await isValid({ badges: [Badge.ANIMAL_LOVER, Badge.MASTER_CHEF] })).toBe(true);

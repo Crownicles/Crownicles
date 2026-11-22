@@ -75,6 +75,7 @@ function coverageDimensions(reqs, pets) {
 		["cooking", optionalLevel("cookingLevel", [0, 100])],
 		["weaponLevel", optionalLevel("weaponLevel", [0, 10])],
 		["armorLevel", optionalLevel("armorLevel", [0, 10])],
+		["energyPercent", uses("energyPercent") ? boundaryValues(reqs, "energyPercent", [0, 100]).filter(value => value >= 0 && value <= 100) : [100]],
 		["hasMaterials", uses("materials") ? [false, true] : [true]],
 		["hasEnchantment", uses("enchantment") ? [false, true] : [true]],
 		["hasWeaponTags", uses("weaponTags") ? [false, true] : [true]],
@@ -89,7 +90,7 @@ function coverageDimensions(reqs, pets) {
  * @returns {boolean}
  */
 function areLevelsCovered(r, profile) {
-	return [["cookingLevel", profile.cooking], ["weaponLevel", profile.weaponLevel], ["armorLevel", profile.armorLevel]]
+	return [["cookingLevel", profile.cooking], ["weaponLevel", profile.weaponLevel], ["armorLevel", profile.armorLevel], ["energyPercent", profile.energyPercent]]
 		.every(([key, value]) => inRange(get(r, key), Math.max(value, 0)));
 }
 
@@ -199,7 +200,7 @@ function isProfileCovered(r, profile, pets) {
 function uncoveredProfileError(name, profile) {
 	const { pet } = profile;
 	return `${name}: no valid outcome for level=${profile.level} karma=${profile.karma} health=${profile.health} attack=${profile.attack} defense=${profile.defense} speed=${profile.speed} money=${profile.money} class=${profile.class} pet=${pet === null ? "None" : `(${pet[0]}, ${pet[1]})`}`
-		+ ` cooking=${profile.cooking} weaponLevel=${profile.weaponLevel} armorLevel=${profile.armorLevel} materials=${profile.hasMaterials ? "oui" : "aucun"} enchantment=${profile.hasEnchantment ? "oui" : "aucun"}`;
+		+ ` cooking=${profile.cooking} weaponLevel=${profile.weaponLevel} armorLevel=${profile.armorLevel} energy=${profile.energyPercent}% materials=${profile.hasMaterials ? "oui" : "aucun"} enchantment=${profile.hasEnchantment ? "oui" : "aucun"}`;
 }
 
 /**

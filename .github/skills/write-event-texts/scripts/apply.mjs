@@ -40,6 +40,9 @@ function langEntry(out) {
 			setKey(value, "text", possibility.text);
 		}
 		setKey(value, "outcomes", possibility.outcomes);
+		if (possibility.fights) {
+			setKey(value, "fights", possibility.fights);
+		}
 		setKey(possibilities, name, value);
 	}
 	return ordered([["text", out.text], ["possibilities", possibilities]]);

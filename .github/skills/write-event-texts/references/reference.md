@@ -3,7 +3,7 @@
 ## Champs d'une issue (`Core/resources/events/<id>.json`)
 
 - `requirements` : conditions pour que l'issue puisse tomber (voir plus bas). Sans `requirements`, l'issue est toujours possible.
-- `health` (vie, négatif = blessure), `money` (argent), `lostTime` (minutes perdues), `karma` (entier, voir plus bas), `effect` (altération), `randomItem` (`{}` = objet au hasard ; `{"rarity": {"min": 3}}` ou `{"category": 0}` possibles), `energy`, `gems`, `tokens`, `bonusExperience`, `bonusPoints`, `randomPet`, `givePet`, `oneshot`, `nextEvent`, `mapTypesDestination` / `mapTypesExcludeDestination` (types des cartes voisines, voir `neighbours[].type` dans ton input), `mapLink`, `goBackToPreviousMap` (demi-tour vers la carte d'où vient le joueur ; exige `mapTypesDestination`, utilisé quand le demi-tour est impossible), `forceStayInCity` / `forceLeaveCity` (villes seulement), `tags` (garde ceux de l'original), `condition` (n'existe qu'avec `canAcceptPet` : garde-le s'il y est), `consumeMaterials` / `giveMaterials` (voir « Cuisine, matériaux et équipement »).
+- `health` (vie, négatif = blessure), `money` (argent), `fight` (combat contre un monstre, voir « Combats »), `lostTime` (minutes perdues), `karma` (entier, voir plus bas), `effect` (altération), `randomItem` (`{}` = objet au hasard ; `{"rarity": {"min": 3}}` ou `{"category": 0}` possibles), `energy`, `gems`, `tokens`, `bonusExperience`, `bonusPoints`, `randomPet`, `givePet`, `oneshot`, `nextEvent`, `mapTypesDestination` / `mapTypesExcludeDestination` (types des cartes voisines, voir `neighbours[].type` dans ton input), `mapLink`, `goBackToPreviousMap` (demi-tour vers la carte d'où vient le joueur ; exige `mapTypesDestination`, utilisé quand le demi-tour est impossible), `forceStayInCity` / `forceLeaveCity` (villes seulement), `tags` (garde ceux de l'original), `condition` (n'existe qu'avec `canAcceptPet` : garde-le s'il y est), `consumeMaterials` / `giveMaterials` (voir « Cuisine, matériaux et équipement »).
 
 ## Altérations (`effect`) et leur durée en minutes
 
@@ -102,6 +102,30 @@ Part des 187 joueurs actifs sur 14 jours (mesurée le 22/11/2026). La plupart on
 - La richesse se **montre** : une bourse qui tinte, des vêtements fins, un marchand qui flaire le client, un pickpocket qui vous repère. Le texte ne donne jamais le montant.
 - Elle sert aussi de garde-fou : une issue où le joueur **paie** (`money` négatif, tag `moneyUsage`) peut exiger qu'il ait de quoi payer, et une autre issue raconte le joueur qui n'a pas assez.
 - Comme pour une stat, un riche n'a pas que des avantages : on lui gonfle les prix, on cherche à le détrousser.
+
+## Combats (`fight`) et énergie (`energyPercent`)
+
+`"requirements": {"energyPercent": {"min": 40}}` : l'énergie de combat qu'il reste au joueur, en pourcentage de son maximum (0 à 100). Elle baisse après chaque combat et remonte avec le temps.
+
+Une issue peut déclencher un combat :
+
+```json
+"8": {
+  "requirements": {"level": {"min": 20, "max": 79}, "energyPercent": {"min": 40}},
+  "fight": {
+    "monster": "bandit",
+    "level": 40,
+    "won": {"money": 150, "experience": 40},
+    "lost": {"money": -150, "health": -15}
+  }
+}
+```
+
+- `monster` : un fichier de `Core/resources/monsters`. Les monstres sans île (`"maps": []`) sont réservés aux events : `bandit` (détrousseur rapide).
+- `level` : fixe. Un monstre au niveau du joueur est un vrai combat ; 20 niveaux de moins, une formalité. Borne `level` dans `requirements` pour que le combat reste à la mesure des joueurs qui le reçoivent.
+- `won` / `lost` : `money`, `health`, `experience`, `effect` + `lostTime`, `randomItem`. Un nul compte comme une victoire (l'adversaire renonce). Un combat perdu vide déjà l'énergie du joueur : la perte reste modérée.
+- `energyPercent.min` d'au moins 1 est obligatoire (validateur et tests) : sans énergie, le joueur perdrait d'office.
+- Textes dans `possibilities.<choix>.fights.<issue>` : `{"won": "...", "lost": "..."}`. Le validateur exige les deux.
 
 ## Badges (`badges`)
 

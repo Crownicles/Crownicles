@@ -14,6 +14,10 @@ const weaponTagsCarried = new Set<string>(
 		.filter(file => file.endsWith(".json"))
 		.flatMap(file => (JSON.parse(readFileSync(join(weaponsDir, file), "utf8")).tags ?? []) as string[])
 );
+const monstersDir = join(__dirname, "../../../resources/monsters");
+const monsterIds = new Set(readdirSync(monstersDir).map(file => file.replace(/\.json$/u, "")));
+const frenchEventTexts = JSON.parse(readFileSync(join(__dirname, "../../../../Lang/fr/events.json"), "utf8"));
+const fightConsequenceKeys = ["money", "health", "experience", "effect", "lostTime", "randomItem"];
 const petsDir = join(__dirname, "../../../resources/pets");
 const petTagsCarried = new Set<string>(
 	readdirSync(petsDir)
@@ -33,6 +37,7 @@ describe("Event JSON Validation", () => {
 		"defense",
 		"attack",
 		"speed",
+		"energyPercent",
 		"money",
 		"campaignCurrentMissionId",
 		"validPetTypeIds",
@@ -222,7 +227,7 @@ describe("Event JSON Validation", () => {
 				if (!eventData?.possibilities) return;
 
 				const invalidRanges: string[] = [];
-				const rangeBasedRequirements = ["level", "karma", "health", "defense", "attack", "speed", "money", "petRarity", "cookingLevel", "weaponLevel", "armorLevel"];
+				const rangeBasedRequirements = ["level", "karma", "health", "defense", "attack", "speed", "energyPercent", "money", "petRarity", "cookingLevel", "weaponLevel", "armorLevel"];
 				
 				Object.entries(eventData.possibilities).forEach(([possibilityKey, possibility]: [string, any]) => {
 					if (!possibility.outcomes) return;
@@ -272,6 +277,38 @@ describe("Event JSON Validation", () => {
 						
 						if (typeof outcome.requirements.campaignCurrentMissionId !== "number") {
 							invalidFields.push(`${possibilityKey}.outcomes.${outcomeKey}.requirements.campaignCurrentMissionId should be number, got ${typeof outcome.requirements.campaignCurrentMissionId}`);
+						}
+					});
+				});
+
+				expect(invalidFields).toEqual([]);
+			});
+
+			it("should only trigger fights against a known monster, with energy and both texts", () => {
+				if (!eventData?.possibilities) return;
+
+				const eventId = filename.replace(/\.json$/u, "");
+				const invalidFields: string[] = [];
+
+				Object.entries(eventData.possibilities).forEach(([possibilityKey, possibility]: [string, any]) => {
+					Object.entries(possibility.outcomes ?? {}).forEach(([outcomeKey, outcome]: [string, any]) => {
+						if (!outcome.fight) return;
+						const path = `${possibilityKey}.outcomes.${outcomeKey}`;
+						const { monster, level, won, lost } = outcome.fight;
+						if (!monsterIds.has(monster)) {
+							invalidFields.push(`${path}.fight.monster ${monster} is not a monster`);
+						}
+						if (!Number.isInteger(level) || level < 1) {
+							invalidFields.push(`${path}.fight.level should be a positive integer`);
+						}
+						Object.keys({ ...won, ...lost }).filter(key => !fightConsequenceKeys.includes(key))
+							.forEach(key => invalidFields.push(`${path}.fight consequence ${key} is not supported`));
+						if (!(outcome.requirements?.energyPercent?.min >= 1)) {
+							invalidFields.push(`${path} triggers a fight: it needs requirements.energyPercent.min of at least 1`);
+						}
+						const texts = frenchEventTexts[eventId]?.possibilities?.[possibilityKey]?.fights?.[outcomeKey];
+						if (typeof texts?.won !== "string" || typeof texts?.lost !== "string") {
+							invalidFields.push(`${path} triggers a fight: Lang/fr needs possibilities.${possibilityKey}.fights.${outcomeKey}.won and .lost`);
 						}
 					});
 				});

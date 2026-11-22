@@ -40,6 +40,11 @@ export type OutcomeRequirements = {
 	speed?: OutcomeRange;
 
 	/**
+	 * Fight energy the player has left, in percent of their maximum fight energy (0 to 100)
+	 */
+	energyPercent?: OutcomeRange;
+
+	/**
 	 * Coins the player currently carries
 	 */
 	money?: OutcomeRange;
@@ -152,6 +157,7 @@ function areStatRequirementsValid(
 		[req.armorLevel, playerActiveObjects.armor?.itemLevel ?? 0]
 	];
 	return rangeChecks.every(([range, value]) => isRangeValid(range, value))
+		&& (!req.energyPercent || isRangeValid(req.energyPercent, Math.floor(player.getRatioCumulativeEnergy(playerActiveObjects) * 100)))
 		&& isClassValid(req.validClassIds, player.class)
 		&& isEnchantmentValid(req.enchantment, playerActiveObjects)
 		&& (!req.weaponTags || req.weaponTags.some(tag => playerActiveObjects.weapon?.item.tags?.includes(tag)));

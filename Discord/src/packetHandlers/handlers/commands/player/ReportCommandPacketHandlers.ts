@@ -5,6 +5,7 @@ import {
 	CommandReportApartmentClaimRentRes,
 	CommandReportApartmentClaimRentTooLowRes,
 	CommandReportApartmentRequiresHomeRes,
+	CommandReportBigEventFightResultRes,
 	CommandReportBigEventResultRes,
 	CommandReportBlacksmithEnchantmentTransferRes,
 	CommandReportBlacksmithMissingMaterialsRes,
@@ -62,6 +63,7 @@ import {
 } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
+	reportFightResult,
 	reportResult,
 	stayInCity
 } from "../../../../commands/player/ReportCommand";
@@ -117,6 +119,11 @@ export default class ReportCommandPacketHandlers {
 	@packetHandler(CommandReportBigEventResultRes)
 	async reportResultRes(context: PacketContext, packet: CommandReportBigEventResultRes): Promise<void> {
 		await reportResult(packet, context);
+	}
+
+	@packetHandler(CommandReportBigEventFightResultRes)
+	async reportFightResultRes(context: PacketContext, packet: CommandReportBigEventFightResultRes): Promise<void> {
+		await reportFightResult(packet, context);
 	}
 
 	@packetHandler(CommandReportTravelSummaryRes)

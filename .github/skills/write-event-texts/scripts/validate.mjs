@@ -25,9 +25,10 @@ import { checkConsistency } from "./consistency.mjs";
 const OUTCOME_KEYS = new Set([
 	"condition", "requirements", "lostTime", "health", "karma", "effect", "money", "energy", "gems", "tokens", "bonusExperience",
 	"bonusPoints", "randomItem", "randomPet", "givePet", "oneshot", "nextEvent", "mapTypesDestination", "mapTypesExcludeDestination",
-	"mapLink", "goBackToPreviousMap", "forceStayInCity", "forceLeaveCity", "tags", "consumeMaterials", "giveMaterials"
+	"mapLink", "goBackToPreviousMap", "forceStayInCity", "forceLeaveCity", "tags", "consumeMaterials", "giveMaterials", "fight"
 ]);
-const REQ_RANGES = ["level", "karma", "health", "attack", "defense", "speed", "money", "petRarity", "cookingLevel", "weaponLevel", "armorLevel"];
+const FIGHT_CONSEQUENCE_KEYS = new Set(["money", "health", "experience", "effect", "lostTime", "randomItem"]);
+const REQ_RANGES = ["level", "karma", "health", "attack", "defense", "speed", "energyPercent", "money", "petRarity", "cookingLevel", "weaponLevel", "armorLevel"];
 const REQ_LISTS = ["validClassIds", "validPetTypeIds", "petTags", "weaponTags", "badges"];
 const REQ_KEYS = new Set([...REQ_RANGES, ...REQ_LISTS, "campaignCurrentMissionId", "materials", "enchantment"]);
 const MATERIAL_FILTERS = new Set(["type", "rarity", "ids", "quantity"]);
@@ -75,6 +76,15 @@ function loadWeaponTags() {
 	const directory = join(REPO_ROOT, "Core/resources/weapons");
 	return new Set(readdirSync(directory).filter(file => file.endsWith(".json"))
 		.flatMap(file => readJson(join(directory, file)).tags ?? []));
+}
+
+/**
+ * Ids of the monsters of the game
+ * @returns {Set<string>}
+ */
+function loadMonsters() {
+	return new Set(readdirSync(join(REPO_ROOT, "Core/resources/monsters")).filter(file => file.endsWith(".json"))
+		.map(file => basename(file, ".json")));
 }
 
 /**
@@ -301,6 +311,41 @@ function checkOutcome(report, path, x, context) {
 }
 
 /**
+ * Check the fight an outcome triggers: known monster, fixed level, energy condition and texts after the fight
+ * @param {Report} report
+ * @param {string} path
+ * @param {any} x outcome data
+ * @param {any} texts the won and lost texts of the outcome (possibility.fights.<outcome>)
+ * @param {Set<string>} monsters
+ */
+function checkOutcomeFight(report, path, x, texts, monsters) {
+	const fight = get(x, "fight");
+	if (fight === null) {
+		if (texts !== null) {
+			report.errors.push(`${path}: texts after a fight, but the outcome triggers no fight`);
+		}
+		return;
+	}
+	if (!monsters.has(get(fight, "monster"))) {
+		report.errors.push(`${path}: unknown monster ${pyStr(get(fight, "monster"))}`);
+	}
+	if (!Number.isInteger(get(fight, "level")) || fight.level < 1) {
+		report.errors.push(`${path}: the fight needs a fixed level (positive integer)`);
+	}
+	for (const key of ["won", "lost"].flatMap(side => keysOf(getOrEmpty(fight, side)))) {
+		if (!FIGHT_CONSEQUENCE_KEYS.has(key)) {
+			report.errors.push(`${path}: unknown fight consequence ${key}`);
+		}
+	}
+	if (!(get(get(getOrEmpty(x, "requirements"), "energyPercent", {}), "min", 0) >= 1)) {
+		report.errors.push(`${path}: a fight needs requirements.energyPercent.min (a player without energy cannot fight)`);
+	}
+	if (typeof get(texts ?? {}, "won") !== "string" || typeof get(texts ?? {}, "lost") !== "string") {
+		report.errors.push(`${path}: a fight needs the texts fights.<outcome>.won and .lost`);
+	}
+}
+
+/**
  * Whether two sets hold the same elements
  * @param {Set<unknown>} a
  * @param {Set<unknown>} b
@@ -394,9 +439,11 @@ function checkData(report, inp, out, game) {
 	for (const [name, possibility] of entriesOf(dp)) {
 		const outs = get(possibility, "outcomes", {});
 		checkOutcomeIds(report, name, keysOf(outs), get(get(tp, name, {}), "outcomes", {}));
+		const fightTexts = get(get(tp, name, {}), "fights", {});
 		for (const [outcome, x] of entriesOf(outs)) {
 			counts.total++;
 			counts.conditional += checkOutcome(report, `data.${name}.${outcome}`, x, context) ? 1 : 0;
+			checkOutcomeFight(report, `data.${name}.${outcome}`, x, get(fightTexts, outcome), game.monsters);
 		}
 		const unconditional = entriesOf(outs).filter(([, x]) => !truthy(getOrEmpty(x, "requirements")) && !Object.hasOwn(x, "consumeMaterials")).length;
 		if (unconditional > MAX_UNCONDITIONAL_OUTCOMES) {
@@ -406,6 +453,10 @@ function checkData(report, inp, out, game) {
 		if (coverageError) {
 			report.errors.push(coverageError);
 		}
+	}
+	const fightingChoices = entriesOf(dp).filter(([, possibility]) => entriesOf(get(possibility, "outcomes", {})).some(([, x]) => get(x, "fight") !== null));
+	if (fightingChoices.length > 1) {
+		report.warnings.push(`${fightingChoices.length} choices lead to a fight (at most 1 per event)`);
 	}
 	return counts;
 }
@@ -469,7 +520,7 @@ function validate(inp, out, pets, materials) {
 	const report = { errors: [], warnings: [] };
 	checkTexts(report, out, orig);
 	const counts = checkData(report, inp, out, {
-		pets, materials, weaponTags: loadWeaponTags(), eventBadges: loadEventBadges()
+		pets, materials, weaponTags: loadWeaponTags(), eventBadges: loadEventBadges(), monsters: loadMonsters()
 	});
 	checkConsistency(report, out, pets);
 	checkOutcomeCounts(report, counts, origPossibilities);

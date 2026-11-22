@@ -148,6 +148,11 @@ export function checkTexts(report, out, orig) {
 		for (const [outcome, text] of entriesOf(get(possibility, "outcomes", {}))) {
 			checkText(report, `${name}.outcomes.${outcome}`, text, { ref: get(get(origPossibility, "outcomes", {}), outcome, "") });
 		}
+		for (const [outcome, texts] of entriesOf(get(possibility, "fights", {}))) {
+			for (const [side, text] of entriesOf(texts)) {
+				checkText(report, `${name}.fights.${outcome}.${side}`, text, { ref: "" });
+			}
+		}
 	}
 }
 

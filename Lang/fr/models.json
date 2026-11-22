@@ -1712,6 +1712,10 @@
     "8": "$t(commands:report.city.shops.materialMerchant.label)"
   },
   "monsters": {
+    "bandit": {
+      "name": "Bandit",
+      "description": "Un détrousseur de grand chemin qui guette les voyageurs isolés. Rapide et sans scrupules, il préfère frapper par surprise et fuir avec la bourse que livrer un combat loyal."
+    },
     "forestTroll": {
       "name": "Troll de la forêt",
       "description": "Un grand troll qui vit dans les forêts. Très fort et très résistant, il est aussi très agressif et attaque tout ce qui bouge. Il est très dangereux pour les aventuriers qui s'aventurent dans les forêts."

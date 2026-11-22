@@ -942,7 +942,7 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 87 | Le sentier serpente entre les rochers, rude et escarpé. Le souffle court, vous grimpez sous un ciel gris quand, au détour d'un virage, vous |
 | 88 | Le sable brûlant s'enfonce sous vos pas tandis que vous progressez difficilement, le foulard serré sur le visage pour filtrer le vent chaud |
 | 89 | Dans la Cour du Château, l'esplanade pavée qui mène aux portes royales est noire de monde. Des messagers se fraient un chemin entre les pass |
-| 90 | Dans une ferme du Berceau réputée pour son cidre, tout le hameau se dispute un dindon énorme et très fier : Gros-Léon pour les uns, Dindonus |
+| 90 | Dans une ferme du Berceau, la fin des récoltes ramène chaque année la même querelle autour d'un dindon énorme et très fier : Gros-Léon pour |
 
 ## Mini-événements (/test smallEvent <nom>)
 
