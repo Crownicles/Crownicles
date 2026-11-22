@@ -916,7 +916,7 @@
     }
   },
   "26": {
-    "text": "Au pied des remparts effondrés de Ville Forte, une potence a été dressée. Des gardes tiennent à l'écart une poignée de villageois. Sur l'estrade, vous reconnaissez le paysan qui vous a un jour hébergé. Le seigneur retranché dans la dernière tour, un noble des Lignées, le fait pendre pour des propos séditieux contre la Charte. Près de vous, quelques proches du condamné échangent des regards.",
+    "text": "À Ville Forte, au pied des remparts effondrés, une potence a été dressée. Un noble de passage, escorté de ses gardes, y fait pendre un paysan : celui-ci a osé défendre devant lui la Charte, qui donne la couronne au plus méritant et non au mieux né. Les villageois regardent en silence. Près de vous, quelques-uns échangent des regards inquiets : ils pensaient comme lui.",
     "possibilities": {
       "end": {
         "outcomes": {
@@ -929,9 +929,9 @@
       "goAway": {
         "text": "S'éloigner de la potence.",
         "outcomes": {
-          "0": "Vous tournez le dos à la potence et quittez la place, le cœur serré. Sur votre passage, deux villageois murmurent que le seigneur maudit lui-même la Charte à chaque repas. Derrière vous, la trappe claque.",
+          "0": "Vous tournez le dos à la potence et quittez la place, le cœur serré. Sur votre passage, deux villageois murmurent que ce noble maudit la Charte à chaque repas et qu'il voulait un exemple. Derrière vous, la trappe claque.",
           "1": "En vous écartant des villageois, vous remarquez une petite bourse tombée dans une ruelle déserte. Personne ne la réclame. Vous la ramassez, prenez le temps d'en compter le contenu et repartez en sifflotant.",
-          "2": "Cet homme vous a hébergé, mais ses affaires ne vous regardent pas. Vous traversez la place sans un regard pour l'estrade. Un garde, lui, ne vous quitte pas des yeux, et vous préférez ne pas vous attarder.",
+          "2": "Les querelles des nobles ne vous regardent pas. Vous traversez la place sans un regard pour l'estrade. Un garde, lui, ne vous quitte pas des yeux, et vous préférez ne pas vous attarder.",
           "3": "Vous n'aviez jamais vu pendre un homme. Au bruit de la trappe, votre estomac se retourne. Vous courez jusqu'à une ruelle voisine pour y vomir, et la nausée ne vous quitte plus de la journée.",
           "4": "En partant, vous surprenez un rôdeur qui sort d'une maison vide, les bras chargés : tout le village est à la pendaison. Vous le rattrapez en quelques enjambées et le plaquez au sol. Les propriétaires de la maison vous offrent un objet pour vous remercier.",
           "5": "En partant, vous voyez un rôdeur sortir d'une maison vide, les bras chargés : tout le village est à la pendaison. Le temps de réagir, il a disparu dans les galeries sous les remparts. Vous prévenez une villageoise et reprenez votre route.",
@@ -956,19 +956,19 @@
           "0": "Vous jouez des coudes jusqu'à l'estrade et arrachez le nœud du cou du condamné avant que les gardes réagissent. Vous l'entraînez dans les galeries sous les remparts. À l'abri, il vous remercie, vous offre un objet et disparaît dans le noir.",
           "1": "Vous foncez vers l'estrade, mais un garde vous barre le passage d'un coup d'épaule. Vous tombez lourdement sur les pavés. Quand vous vous relevez, la trappe s'est déjà ouverte.",
           "2": "Vous arrachez le nœud du cou du condamné et fuyez avec lui. Des gardes vous rattrapent au pied des remparts. Ils le ramènent vers la potence, vous rouent de coups et repartent avec votre bourse.",
-          "3": "Vous bondissez sur l'estrade, mais un garde reconnaît votre visage : on vous recherche dans tout le pays. Vous êtes maîtrisé avant d'avoir atteint la corde. Le seigneur ordonne qu'on vous pende aux côtés de votre ancien hôte.",
+          "3": "Vous bondissez sur l'estrade, mais un garde reconnaît votre visage : on vous recherche dans tout le pays. Vous êtes maîtrisé avant d'avoir atteint la corde. Le noble ordonne qu'on vous pende aux côtés du condamné.",
           "4": "Vous dégainez et foncez vers la potence, en écartant deux gardes sans ralentir. Votre lame tranche la corde à l'instant où la trappe s'ouvre. Vous fuyez avec le condamné, qui vous offre son bien le plus précieux. Dans la cohue, vous avez perdu votre bourse.",
           "5": "Vous sautez sur le dos de votre monture et foncez vers la potence. Vous arrachez le nœud du cou du condamné, le hissez derrière vous et quittez la place au galop. Il descend un peu plus loin, à l'abri des ruines, en vous remerciant.",
-          "6": "Vous arrachez le condamné à l'estrade et prenez la fuite. En vous retournant, vous voyez votre Paresseux resté au pied de la potence, une épée pointée sur lui. Vous vous rendez. Le condamné est pendu, et le seigneur vous inflige une lourde amende."
+          "6": "Vous arrachez le condamné à l'estrade et prenez la fuite. En vous retournant, vous voyez votre Paresseux resté au pied de la potence, une épée pointée sur lui. Vous vous rendez. Le condamné est pendu, et le noble vous inflige une lourde amende."
         }
       },
       "tell": {
         "text": "Dénoncer les complices du condamné.",
         "outcomes": {
-          "0": "Vous désignez aux gardes les proches du condamné qui se parlent à voix basse. Deux d'entre eux sont saisis et traînés vers la tour. Un sergent vous lance quelques pièces. Autour de vous, les villageois détournent le regard.",
+          "0": "Vous désignez aux gardes les proches du condamné qui se parlent à voix basse. Deux d'entre eux sont saisis et emmenés par les gardes. Un sergent vous lance quelques pièces. Autour de vous, les villageois détournent le regard.",
           "1": "Vous désignez les complices aux gardes. La panique gagne aussitôt la place, et les accusés s'enfuient vers les galeries sous les remparts. Dans la bousculade, votre tête heurte un mur, et vous restez un moment hébété.",
-          "2": "Les gardes vous prennent au mot et arrêtent sans discuter les hommes que vous désignez. Le sergent vous remet un objet au nom du seigneur. En partant, vous croisez le regard de ceux que vous avez livrés, et vous ne l'oublierez pas de sitôt.",
-          "3": "Vous dénoncez les complices, qui vous accusent aussitôt d'être des leurs. Des villageois confirment vous avoir vu dormir chez le condamné. Les gardes vous trouvent une mine de brigand et n'ont aucun mal à les croire : ils vous rouent de coups avec les autres.",
+          "2": "Les gardes vous prennent au mot et arrêtent sans discuter les hommes que vous désignez. Le sergent vous remet un objet au nom du noble. En partant, vous croisez le regard de ceux que vous avez livrés, et vous ne l'oublierez pas de sitôt.",
+          "3": "Vous dénoncez les complices, qui vous accusent aussitôt d'être des leurs. Les gardes vous trouvent une mine de brigand et n'ont aucun mal à les croire : ils vous rouent de coups avec les autres.",
           "4": "Vous grimpez sur un tonneau pour désigner les complices. Au premier geste, vous perdez l'équilibre et tombez dans la boue. Les villageois éclatent de rire et vous chassent de la place sans vous laisser dire un mot.",
           "5": "Vous désignez les complices aux gardes. La panique gagne la place, et les accusés s'enfuient vers les galeries. Dans la bousculade, on vous marche sur les pieds et vous recevez quelques coups de coude."
         }
