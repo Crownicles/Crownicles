@@ -37,6 +37,7 @@ Le français (`Lang/fr`) est la référence. Depuis l'abandon de Crowdin (#5181)
   - Évite les mots à double sens : *régimes* se lit d'abord comme une diète, écris *bananes*.
   - Évite les négations alambiquées comme *sans que vous ayez vu*.
 - **Des réactions plausibles.** Si une scène ne sert qu'à justifier un gain, simplifie-la.
+- **La physique tient.** Les tailles, les poids, les forces et les durées doivent rester vraisemblables, et la solution doit être à la mesure du problème. Un obstacle hors norme ne se règle pas avec des gestes ordinaires ; un obstacle ordinaire n'appelle pas d'exploit. Demande-toi aussi quelle est la solution évidente (passer par-dessus, creuser, faire le tour) : si elle marcherait mieux que les choix proposés, l'intro doit dire pourquoi elle est impossible. Event 1 : un chêne au tronc de *deux mètres de diamètre*, qu'on *coupait* sans outil et dont on *cassait les branches*, sortait le lecteur du jeu. C'est devenu un grand chêne dont la ramure forme un mur de branches brisées *trop haut et trop serré pour passer par-dessus*, et le choix *Dégager le passage* ouvre une brèche dans les branches.
 - **Montrer la condition, ne pas la nommer.**
   - Pas de *Votre agilité vous permet de…*, de *votre réputation*, de *votre aura*.
   - Un joueur rapide rattrape le voleur ; un joueur au karma bas est reconnu et on se méfie de lui.
@@ -311,6 +312,7 @@ Avant de rendre un texte, vérifie chaque point :
 8. Le joueur ne fait que ce que son choix annonce (quand il ne répond pas, son personnage est libre).
 9. Chaque issue reste vraie avec ce que l'intro dit des choses, des lieux et des personnages.
 10. Chaque issue se comprend lue seule, juste après l'intro et le libellé du choix.
+11. La physique tient : tailles, poids, forces et durées vraisemblables, et une solution à la mesure du problème.
 
 ## Events validés par le propriétaire
 
@@ -337,6 +339,7 @@ Les 21 events déjà réécrits (1, 2, 10 à 20, 30, 39, 46, 56, 69, 71, 76, 89)
 - **Event 26, prémisse changée (le propriétaire)** : l'original était trop faible pour être rapiécé ; on garde les possibilités et leur idée, et on change la situation. Voir « Fidélité à l'original ».
 - **Event 26, scène répétée (le propriétaire)** : une pendaison qui revient à chaque passage, une bourse que « personne ne réclame » et des propriétaires qui remercient alors que tout le village est à la pendaison. Voir « Une scène qui revient doit pouvoir revenir » et « L'intro fixe l'état des choses ».
 - **Event 26, intro confuse (le propriétaire)** : termes du lore jetés sans explication, faction qui agit contre ses propres buts, seigneur installé dans une ville en ruine, passé commun inventé. Voir « Lore ».
+- **Event 1, la physique (relecture d'un joueur)** : un chêne géant réglé par des gestes ordinaires, et un paquet « là depuis longtemps » dans un arbre tombé récemment. Voir « La physique tient » et « L'intro fixe l'état des choses ».
 - **Event 71, la bourse aux noyaux** : une ruse sans auteur crédible, découverte trop tard. Voir « Une ruse tient debout des deux côtés ».
 - **Event 3, issues enchaînées (Gabriel)** : les issues d'un même choix s'appuyaient les unes sur les autres (*La pierre ripe*, *Le vacarme*), alors que le joueur n'en lit qu'une. Voir « Chaque issue se lit seule ».
 - **Event 3 (le propriétaire)** : une issue contredisait l'état posé par l'intro (un coffret enfoui depuis longtemps, mais tombé d'une charrette le matin même). Voir « L'intro fixe l'état des choses ».

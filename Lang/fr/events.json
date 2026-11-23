@@ -1,14 +1,14 @@
 {
   "1": {
-    "text": "Dans la pénombre de la Forêt Du Vieillard, un chêne déraciné barre le sentier. Son tronc fait bien deux mètres de diamètre, ses branches emmêlées forment un mur, et la terre encore fraîche sur ses racines montre que sa chute est récente.",
+    "text": "Dans la pénombre de la Forêt Du Vieillard, un grand chêne déraciné s'est abattu en travers du sentier. Sa ramure forme un mur de branches brisées, trop haut et trop serré pour passer par-dessus, et la terre encore fraîche sur ses racines montre que sa chute est récente.",
     "possibilities": {
       "cutTree": {
-        "text": "Couper l'arbre.",
+        "text": "Dégager le passage.",
         "outcomes": {
-          "0": "Faute d'outil, vous arrachez et brisez une à une les branches qui bloquent le sentier. Après de longs efforts, vous ouvrez enfin une brèche dans la ramure et reprenez votre route, les bras couverts d'éclats de bois.",
-          "1": "En taillant dans le tronc, vous découvrez qu'il est creux. Sous les feuilles mortes, un vieux paquet attend là depuis longtemps, et personne n'est venu le reprendre. Vous le glissez dans votre sac et finissez de dégager le passage.",
-          "2": "Vos coups rebondissent sur le bois dur du chêne. Vous vous acharnez sur les branches jusqu'à ouvrir un passage, mais vous êtes à bout de forces : à peine de l'autre côté, vous vous endormez au pied d'un arbre.",
-          "3": "Vous taillez dans les branches à grands coups d'arme. Très vite, une brèche s'ouvre dans le mur de feuillage, assez large pour passer, et vous reprenez votre route sans avoir perdu de temps."
+          "0": "Faute d'outil, vous vous attaquez aux branches les plus fines : vous les tordez et les arrachez une à une. Après de longs efforts, une brèche s'ouvre dans la ramure, et vous passez de l'autre côté, les bras couverts d'éclats de bois.",
+          "1": "En cherchant où ouvrir une brèche, vous remarquez que le vieux chêne était creux. Dans la cavité que sa chute a fendue, un paquet enveloppé de cuir attendait depuis des années, caché là par quelqu'un qui n'est jamais revenu le chercher. Vous le glissez dans votre sac, puis vous frayez un passage dans les branches.",
+          "2": "Les branches sont plus solides qu'elles n'en ont l'air : vous tirez, vous tordez, vous recommencez. Quand vous passez enfin de l'autre côté, vous êtes à bout de forces, et vous vous endormez au pied d'un arbre.",
+          "3": "Vous frappez les branches à grands coups d'arme, et elles cèdent l'une après l'autre. Une brèche s'ouvre vite dans la ramure, assez large pour passer, et vous reprenez votre route sans avoir perdu de temps."
         }
       },
       "turnBack": {
