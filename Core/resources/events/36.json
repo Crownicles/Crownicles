@@ -79,7 +79,7 @@
               "min": 100000
             },
             "speed": {
-              "max": 349
+              "max": 134
             }
           },
           "money": -150,
@@ -93,7 +93,7 @@
               "min": 100000
             },
             "speed": {
-              "min": 350
+              "min": 135
             }
           },
           "mapTypesDestination": [
@@ -195,7 +195,7 @@
         "2": {
           "requirements": {
             "speed": {
-              "min": 350
+              "min": 500
             }
           },
           "money": 400,
@@ -204,8 +204,8 @@
         "3": {
           "requirements": {
             "speed": {
-              "min": 41,
-              "max": 349
+              "min": 136,
+              "max": 499
             }
           },
           "effect": "confounded",
@@ -215,7 +215,7 @@
         "4": {
           "requirements": {
             "speed": {
-              "max": 40
+              "max": 135
             }
           },
           "effect": "hurt",

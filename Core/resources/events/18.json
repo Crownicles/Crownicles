@@ -14,7 +14,7 @@
         "2": {
           "requirements": {
             "speed": {
-              "max": 40
+              "max": 10
             }
           },
           "effect": "hurt",
@@ -23,8 +23,8 @@
         "3": {
           "requirements": {
             "speed": {
-              "min": 41,
-              "max": 349
+              "min": 11,
+              "max": 134
             }
           },
           "health": -10
@@ -32,7 +32,7 @@
         "4": {
           "requirements": {
             "speed": {
-              "min": 350
+              "min": 135
             }
           },
           "randomItem": {},
@@ -58,7 +58,7 @@
         "0": {
           "requirements": {
             "attack": {
-              "max": 230
+              "max": 600
             }
           },
           "effect": "occupied",
@@ -67,8 +67,8 @@
         "1": {
           "requirements": {
             "attack": {
-              "min": 231,
-              "max": 599
+              "min": 601,
+              "max": 779
             }
           },
           "giveMaterials": {
@@ -85,7 +85,7 @@
         "2": {
           "requirements": {
             "attack": {
-              "min": 600
+              "min": 780
             }
           },
           "giveMaterials": {

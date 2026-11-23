@@ -45,7 +45,7 @@
         "6": {
           "requirements": {
             "attack": {
-              "min": 600
+              "min": 700
             }
           },
           "money": 120
@@ -79,7 +79,7 @@
         "1": {
           "requirements": {
             "level": {
-              "min": 120
+              "min": 130
             }
           },
           "randomItem": {},

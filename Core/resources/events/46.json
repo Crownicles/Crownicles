@@ -76,7 +76,7 @@
         "0": {
           "requirements": {
             "level": {
-              "max": 55
+              "max": 30
             }
           },
           "effect": "occupied",
@@ -94,7 +94,7 @@
         "3": {
           "requirements": {
             "speed": {
-              "min": 500
+              "min": 350
             }
           },
           "money": 420,
@@ -103,7 +103,7 @@
         "4": {
           "requirements": {
             "level": {
-              "min": 130
+              "min": 96
             }
           },
           "money": 300
@@ -111,8 +111,8 @@
         "5": {
           "requirements": {
             "level": {
-              "min": 56,
-              "max": 129
+              "min": 31,
+              "max": 95
             }
           },
           "money": 100
@@ -154,7 +154,7 @@
         "3": {
           "requirements": {
             "attack": {
-              "min": 700
+              "min": 780
             }
           },
           "health": -10,
@@ -218,7 +218,7 @@
         "5": {
           "requirements": {
             "speed": {
-              "min": 350
+              "min": 135
             }
           },
           "effect": "occupied",

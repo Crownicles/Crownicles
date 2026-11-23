@@ -70,7 +70,7 @@
         "2": {
           "requirements": {
             "speed": {
-              "min": 350
+              "min": 135
             }
           },
           "effect": "occupied",
@@ -114,7 +114,7 @@
         "2": {
           "requirements": {
             "attack": {
-              "min": 600
+              "min": 700
             }
           },
           "health": -5
@@ -122,7 +122,7 @@
         "3": {
           "requirements": {
             "speed": {
-              "min": 350
+              "min": 500
             }
           },
           "effect": "occupied",
@@ -159,7 +159,7 @@
         "2": {
           "requirements": {
             "speed": {
-              "min": 350
+              "min": 135
             }
           },
           "effect": "occupied",

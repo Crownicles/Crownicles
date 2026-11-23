@@ -194,7 +194,7 @@
         "2": {
           "requirements": {
             "speed": {
-              "max": 40
+              "max": 350
             }
           },
           "health": -12,
@@ -204,7 +204,7 @@
         "3": {
           "requirements": {
             "speed": {
-              "min": 350
+              "min": 560
             }
           },
           "money": 450,

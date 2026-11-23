@@ -16,7 +16,7 @@
         "2": {
           "requirements": {
             "level": {
-              "max": 55
+              "max": 30
             }
           },
           "money": -180
@@ -60,7 +60,7 @@
         "1": {
           "requirements": {
             "level": {
-              "max": 55
+              "max": 96
             }
           },
           "health": -30,
@@ -85,7 +85,7 @@
         "4": {
           "requirements": {
             "defense": {
-              "min": 520
+              "min": 740
             }
           },
           "health": -5
@@ -103,7 +103,7 @@
         "6": {
           "requirements": {
             "defense": {
-              "max": 519
+              "max": 739
             }
           },
           "health": -15
@@ -151,7 +151,7 @@
         "5": {
           "requirements": {
             "speed": {
-              "min": 350
+              "min": 135
             }
           },
           "health": 8,
@@ -171,7 +171,7 @@
         "0": {
           "requirements": {
             "speed": {
-              "min": 350
+              "min": 560
             }
           },
           "condition": {
@@ -209,7 +209,7 @@
         "2": {
           "requirements": {
             "level": {
-              "max": 55
+              "max": 30
             }
           },
           "health": -100,
@@ -219,7 +219,7 @@
         "3": {
           "requirements": {
             "level": {
-              "min": 120
+              "min": 96
             }
           },
           "health": 8,
@@ -242,8 +242,8 @@
         "6": {
           "requirements": {
             "level": {
-              "min": 56,
-              "max": 119
+              "min": 31,
+              "max": 95
             }
           },
           "health": -40,

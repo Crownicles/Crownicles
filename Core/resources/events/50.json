@@ -40,7 +40,7 @@
         "5": {
           "requirements": {
             "attack": {
-              "min": 780
+              "min": 700
             }
           },
           "money": -50,
@@ -210,7 +210,7 @@
               "min": 100000
             },
             "attack": {
-              "max": 699
+              "max": 439
             }
           },
           "forceLeaveCity": true,
@@ -233,7 +233,7 @@
               "min": 100000
             },
             "attack": {
-              "min": 700
+              "min": 440
             }
           },
           "forceLeaveCity": true,
@@ -286,7 +286,7 @@
         "2": {
           "requirements": {
             "speed": {
-              "max": 40
+              "max": 135
             }
           },
           "health": -15,
@@ -296,8 +296,8 @@
         "3": {
           "requirements": {
             "speed": {
-              "min": 41,
-              "max": 349
+              "min": 136,
+              "max": 499
             }
           },
           "health": -5,
@@ -306,7 +306,7 @@
         "4": {
           "requirements": {
             "speed": {
-              "min": 350
+              "min": 500
             }
           },
           "health": 15,
@@ -361,7 +361,7 @@
         "9": {
           "requirements": {
             "defense": {
-              "min": 740
+              "min": 860
             }
           },
           "effect": "occupied",

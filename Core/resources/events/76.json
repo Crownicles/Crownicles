@@ -76,7 +76,7 @@
         "3": {
           "requirements": {
             "level": {
-              "min": 120
+              "min": 130
             }
           },
           "money": 35,
@@ -119,7 +119,7 @@
         "2": {
           "requirements": {
             "level": {
-              "min": 120
+              "min": 96
             }
           },
           "money": 120,

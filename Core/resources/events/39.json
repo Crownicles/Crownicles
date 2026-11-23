@@ -70,7 +70,7 @@
         "6": {
           "requirements": {
             "attack": {
-              "min": 231,
+              "min": 441,
               "max": 699
             }
           },
@@ -164,7 +164,7 @@
         "2": {
           "requirements": {
             "speed": {
-              "min": 350
+              "min": 560
             }
           },
           "money": 180,
@@ -200,8 +200,8 @@
         "6": {
           "requirements": {
             "speed": {
-              "min": 41,
-              "max": 349
+              "min": 351,
+              "max": 559
             }
           },
           "money": 50,
@@ -276,7 +276,7 @@
         "1": {
           "requirements": {
             "speed": {
-              "min": 350
+              "min": 135
             }
           },
           "randomItem": {},

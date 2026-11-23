@@ -133,7 +133,7 @@
         "6": {
           "requirements": {
             "level": {
-              "max": 55
+              "max": 30
             }
           },
           "effect": "occupied",
@@ -217,7 +217,7 @@
         "5": {
           "requirements": {
             "attack": {
-              "min": 231,
+              "min": 441,
               "max": 699
             }
           },
@@ -246,7 +246,7 @@
         "0": {
           "requirements": {
             "speed": {
-              "max": 40
+              "max": 135
             }
           },
           "effect": "jailed",
@@ -291,7 +291,7 @@
         "6": {
           "requirements": {
             "speed": {
-              "min": 41,
+              "min": 136,
               "max": 499
             }
           },

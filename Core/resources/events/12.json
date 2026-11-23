@@ -30,7 +30,7 @@
         "3": {
           "requirements": {
             "level": {
-              "min": 120
+              "min": 96
             }
           },
           "randomItem": {}
@@ -64,7 +64,7 @@
         "0": {
           "requirements": {
             "attack": {
-              "max": 230
+              "max": 440
             }
           },
           "health": -25,
@@ -73,8 +73,8 @@
         "1": {
           "requirements": {
             "attack": {
-              "min": 231,
-              "max": 599
+              "min": 441,
+              "max": 699
             }
           },
           "health": -15,
@@ -83,7 +83,7 @@
         "2": {
           "requirements": {
             "attack": {
-              "min": 600
+              "min": 700
             }
           },
           "health": 5
@@ -122,7 +122,7 @@
         "0": {
           "requirements": {
             "speed": {
-              "max": 40
+              "max": 10
             }
           },
           "effect": "occupied",
@@ -131,8 +131,8 @@
         "1": {
           "requirements": {
             "speed": {
-              "min": 41,
-              "max": 349
+              "min": 11,
+              "max": 134
             }
           },
           "effect": "occupied",
@@ -141,7 +141,7 @@
         "2": {
           "requirements": {
             "speed": {
-              "min": 350
+              "min": 135
             }
           },
           "effect": "occupied",

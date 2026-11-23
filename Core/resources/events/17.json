@@ -17,7 +17,7 @@
         "2": {
           "requirements": {
             "level": {
-              "max": 55
+              "max": 30
             }
           },
           "health": -15,
@@ -303,7 +303,7 @@
         "3": {
           "requirements": {
             "attack": {
-              "max": 230
+              "max": 440
             }
           },
           "health": -20,
@@ -324,8 +324,8 @@
         "0": {
           "requirements": {
             "level": {
-              "min": 56,
-              "max": 119
+              "min": 31,
+              "max": 95
             }
           },
           "effect": "starving"
@@ -336,14 +336,14 @@
         "2": {
           "requirements": {
             "level": {
-              "min": 120
+              "min": 96
             }
           }
         },
         "3": {
           "requirements": {
             "level": {
-              "max": 55
+              "max": 30
             }
           },
           "health": -5,

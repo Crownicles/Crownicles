@@ -14,7 +14,7 @@
         "2": {
           "requirements": {
             "defense": {
-              "max": 180
+              "max": 340
             }
           },
           "effect": "hurt",
@@ -23,8 +23,8 @@
         "3": {
           "requirements": {
             "defense": {
-              "min": 181,
-              "max": 519
+              "min": 341,
+              "max": 739
             }
           },
           "effect": "confounded",
@@ -152,7 +152,7 @@
         "5": {
           "requirements": {
             "attack": {
-              "min": 600
+              "min": 780
             }
           },
           "effect": "occupied",
@@ -171,7 +171,7 @@
         "1": {
           "requirements": {
             "speed": {
-              "max": 40
+              "max": 10
             }
           },
           "effect": "freezing",
@@ -180,7 +180,7 @@
         "2": {
           "requirements": {
             "level": {
-              "min": 120
+              "min": 130
             }
           },
           "effect": "occupied",

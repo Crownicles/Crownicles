@@ -6,7 +6,7 @@
         "1": {
           "requirements": {
             "attack": {
-              "max": 230
+              "max": 440
             }
           },
           "effect": "hurt",
@@ -16,8 +16,8 @@
         "2": {
           "requirements": {
             "attack": {
-              "min": 231,
-              "max": 599
+              "min": 441,
+              "max": 699
             }
           },
           "effect": "confounded",
@@ -27,7 +27,7 @@
         "3": {
           "requirements": {
             "attack": {
-              "min": 600
+              "min": 700
             }
           },
           "money": 120
@@ -59,10 +59,10 @@
         "7": {
           "requirements": {
             "level": {
-              "min": 120
+              "min": 130
             },
             "attack": {
-              "min": 600
+              "min": 700
             }
           },
           "money": 250,
@@ -182,7 +182,7 @@
         "2": {
           "requirements": {
             "level": {
-              "max": 55
+              "max": 96
             }
           },
           "effect": "hurt",
@@ -191,8 +191,8 @@
         "3": {
           "requirements": {
             "level": {
-              "min": 56,
-              "max": 119
+              "min": 97,
+              "max": 129
             }
           },
           "health": -10
@@ -200,7 +200,7 @@
         "4": {
           "requirements": {
             "level": {
-              "min": 120
+              "min": 130
             }
           }
         },
@@ -240,7 +240,7 @@
         "3": {
           "requirements": {
             "level": {
-              "min": 120
+              "min": 96
             }
           },
           "effect": "occupied",

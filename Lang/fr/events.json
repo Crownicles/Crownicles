@@ -113,7 +113,7 @@
         "text": "Suivre les conseils de l'inconnue.",
         "outcomes": {
           "0": "L'inconnue disait vrai. Le chemin de l'ouest longe les collines à l'écart des grottes, et vous traversez le Bois Hurlant sans croiser personne.",
-          "1": "C'était un piège. Au premier virage, des brigands surgissent des fourrés. Vous vous défendez à peine. Ils vous rouent de coups, vident votre bourse et vous laissent évanoui au pied d'un arbre.",
+          "1": "C'était un piège. Au premier virage, des brigands surgissent des fourrés. Ils sont trop nombreux pour vous : ils vous rouent de coups, vident votre bourse et vous laissent évanoui au pied d'un arbre.",
           "2": "C'était un piège. Des brigands surgissent des fourrés. Vous en repoussez deux, mais les autres vous entourent et une lame vous entaille le bras. Vous leur jetez votre bourse et filez sans demander votre reste.",
           "3": "C'était un piège. Des brigands surgissent des fourrés, mais ils le regrettent vite. Après quelques coups bien placés, toute la bande détale vers les grottes. L'un d'eux a perdu sa bourse dans sa fuite.",
           "4": "Des brigands surgissent des fourrés, l'arme au poing. Leur chef vous dévisage, puis leur fait signe de ranger leurs lames : il vous a reconnu. Entre gens du métier, on ne se dépouille pas. Ils vous laissent passer.",
@@ -664,7 +664,7 @@
           "0": "Mieux vaut ne pas manger une bête trouvée morte dont on ne sait rien. Vous passez à côté du renard sans vous arrêter et reprenez la route d'un bon pas, le ventre vide.",
           "1": "Au moment où vous passez près du renard, son corps est pris d'un violent spasme. Surpris, vous reculez d'un bond et heurtez de plein dos le poteau indicateur. Le choc vous coupe le souffle.",
           "2": "Au moment où vous passez près du renard, son corps est pris d'un spasme. Vous reculez d'un bond et vous cognez contre le poteau indicateur. Le choc est rude, et votre épaule vous lance.",
-          "3": "Au moment où vous passez près du renard, son corps est pris d'un spasme. Vous reculez et heurtez le poteau indicateur, mais votre armure épaisse prend presque tout le choc. Le poteau, lui, penche un peu plus qu'avant.",
+          "3": "Au moment où vous passez près du renard, son corps est pris d'un spasme. Vous reculez et heurtez le poteau indicateur, mais vous sentez à peine le choc. Le poteau, lui, penche un peu plus qu'avant.",
           "4": "Votre renard s'arrête net devant la dépouille et la renifle longuement. Il semble ne pas vouloir la quitter. Après plusieurs appels sans effet, vous le prenez dans vos bras pour reprendre la route.",
           "5": "Vous contournez le poteau indicateur en gardant vos distances avec le renard. Au carrefour, vous prenez le premier chemin venu, le ventre vide mais l'esprit tranquille.",
           "6": "Une charrette s'arrête au carrefour au moment où vous passez. Le cocher jette un regard au renard, puis à votre mine affamée, et vous tend une pomme de sa réserve. Vous la croquez en reprenant la route."
@@ -1472,7 +1472,7 @@
         "outcomes": {
           "0": "Vous laissez l'aubergiste à ses mélanges et vous glissez entre les tables. Vous faites les poches de trois clients sans peine, mais le quatrième sent votre main et crie au voleur. Vous filez par la porte avant que la salle ne se lève.",
           "1": "Vous vous glissez entre les tables et faites les poches de trois clients. Le quatrième vous attrape le poignet et appelle la garde. Vous passez une journée au cachot, et vous devez rendre ce que vous avez pris, avec un dédommagement.",
-          "2": "Vous glissez la main dans la poche d'un pêcheur, mais vos gestes sont trop lents : il se retourne et vous saisit le bras. Furieux, il vous envoie au tapis d'un coup de poing, sous les rires de la salle.",
+          "2": "Vous glissez la main dans la poche d'un pêcheur, mais vos gestes ne sont pas assez vifs : il se retourne et vous saisit le bras. Furieux, il vous envoie au tapis d'un coup de poing, sous les rires de la salle.",
           "3": "Vous passez de table en table d'un pas léger. Une bourse ici, une autre là : personne ne sent rien. Quand vous ressortez de l'auberge, vos poches tintent, et l'aubergiste cherche toujours son cobaye.",
           "4": "Vous cherchez une victime quand un marin vous reconnaît : il a entendu dire que vous étiez honnête. Sans méfiance, il vous confie sa bourse le temps d'un bras de fer avec un pêcheur. Quand il se retourne, vainqueur, vous êtes déjà loin.",
           "5": "Un pêcheur vous a reconnu dès votre entrée et a fait passer le mot. À chaque table où vous approchez, les bourses sont déjà sous la main de leur propriétaire. Agacés de vous voir rôder, deux marins vous empoignent et vous jettent dehors.",

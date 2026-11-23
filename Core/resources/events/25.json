@@ -13,7 +13,7 @@
         "2": {
           "requirements": {
             "level": {
-              "max": 55
+              "max": 30
             }
           },
           "karma": -2,
@@ -51,7 +51,7 @@
         "1": {
           "requirements": {
             "attack": {
-              "min": 600
+              "min": 700
             }
           },
           "karma": 4
@@ -59,7 +59,7 @@
         "2": {
           "requirements": {
             "attack": {
-              "max": 230
+              "max": 440
             }
           },
           "effect": "hurt",
@@ -104,8 +104,8 @@
         "6": {
           "requirements": {
             "attack": {
-              "min": 231,
-              "max": 599
+              "min": 441,
+              "max": 699
             }
           },
           "karma": 2,

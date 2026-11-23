@@ -150,7 +150,7 @@
         "1": {
           "requirements": {
             "attack": {
-              "min": 600
+              "min": 440
             }
           },
           "karma": 2,
@@ -198,7 +198,7 @@
         "1": {
           "requirements": {
             "defense": {
-              "max": 180
+              "max": 60
             }
           },
           "health": -20
@@ -206,8 +206,8 @@
         "2": {
           "requirements": {
             "defense": {
-              "min": 181,
-              "max": 519
+              "min": 61,
+              "max": 339
             }
           },
           "health": -10
@@ -215,7 +215,7 @@
         "3": {
           "requirements": {
             "defense": {
-              "min": 520
+              "min": 340
             }
           },
           "health": -3

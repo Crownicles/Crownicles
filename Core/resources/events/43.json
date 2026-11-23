@@ -68,7 +68,7 @@
         "7": {
           "requirements": {
             "attack": {
-              "min": 780
+              "min": 700
             }
           },
           "money": -100,
@@ -128,7 +128,7 @@
         "3": {
           "requirements": {
             "defense": {
-              "max": 180
+              "max": 340
             }
           },
           "effect": "confounded",
@@ -137,8 +137,8 @@
         "4": {
           "requirements": {
             "defense": {
-              "min": 181,
-              "max": 519
+              "min": 341,
+              "max": 739
             }
           },
           "health": -5
@@ -146,14 +146,14 @@
         "5": {
           "requirements": {
             "defense": {
-              "min": 520
+              "min": 740
             }
           }
         },
         "6": {
           "requirements": {
             "speed": {
-              "min": 500
+              "min": 560
             }
           },
           "effect": "confounded",

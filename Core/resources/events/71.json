@@ -58,7 +58,7 @@
         "3": {
           "requirements": {
             "level": {
-              "max": 55
+              "max": 96
             }
           },
           "effect": "occupied",
@@ -103,7 +103,7 @@
         "3": {
           "requirements": {
             "speed": {
-              "min": 350
+              "min": 135
             }
           },
           "karma": 2
@@ -147,7 +147,7 @@
         "3": {
           "requirements": {
             "attack": {
-              "min": 700
+              "min": 600
             }
           },
           "money": 525,
@@ -195,7 +195,7 @@
         "1": {
           "requirements": {
             "attack": {
-              "min": 700
+              "min": 780
             }
           },
           "effect": "occupied",

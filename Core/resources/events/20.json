@@ -9,7 +9,7 @@
         "1": {
           "requirements": {
             "attack": {
-              "max": 230
+              "max": 440
             }
           },
           "health": -35,
@@ -19,8 +19,8 @@
         "2": {
           "requirements": {
             "attack": {
-              "min": 231,
-              "max": 599
+              "min": 441,
+              "max": 699
             }
           },
           "health": -15,
@@ -29,7 +29,7 @@
         "3": {
           "requirements": {
             "attack": {
-              "min": 600
+              "min": 700
             }
           },
           "money": 60,
@@ -62,7 +62,7 @@
         "0": {
           "requirements": {
             "attack": {
-              "max": 230
+              "max": 600
             }
           },
           "health": -10,
@@ -71,8 +71,8 @@
         "1": {
           "requirements": {
             "attack": {
-              "min": 231,
-              "max": 599
+              "min": 601,
+              "max": 779
             }
           },
           "effect": "occupied",
@@ -82,7 +82,7 @@
         "2": {
           "requirements": {
             "attack": {
-              "min": 600
+              "min": 780
             }
           },
           "money": 50,
@@ -118,7 +118,7 @@
         "1": {
           "requirements": {
             "defense": {
-              "max": 180
+              "max": 340
             }
           },
           "health": -55,
@@ -128,8 +128,8 @@
         "2": {
           "requirements": {
             "defense": {
-              "min": 181,
-              "max": 519
+              "min": 341,
+              "max": 739
             }
           },
           "health": -20,
@@ -138,7 +138,7 @@
         "3": {
           "requirements": {
             "attack": {
-              "min": 600
+              "min": 700
             }
           },
           "randomItem": {},
@@ -219,7 +219,7 @@
         "0": {
           "requirements": {
             "level": {
-              "max": 55
+              "max": 30
             }
           },
           "money": -250,
@@ -231,8 +231,8 @@
         "1": {
           "requirements": {
             "level": {
-              "min": 56,
-              "max": 119
+              "min": 31,
+              "max": 95
             }
           },
           "money": -100,
@@ -244,7 +244,7 @@
         "2": {
           "requirements": {
             "level": {
-              "min": 120
+              "min": 96
             }
           },
           "money": -40,

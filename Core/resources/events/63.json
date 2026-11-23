@@ -169,7 +169,7 @@
         "3": {
           "requirements": {
             "speed": {
-              "max": 349
+              "max": 134
             }
           },
           "effect": "jailed",
@@ -178,7 +178,7 @@
         "4": {
           "requirements": {
             "speed": {
-              "min": 350
+              "min": 135
             }
           },
           "effect": "occupied",
