@@ -11,7 +11,7 @@
         },
         "2": {
           "effect": "occupied",
-          "lostTime": 45,
+          "lostTime": 25,
           "randomItem": {}
         },
         "3": {
@@ -21,8 +21,8 @@
             }
           },
           "effect": "occupied",
-          "lostTime": 15,
-          "money": 600,
+          "lostTime": 30,
+          "money": 300,
           "karma": 5
         },
         "4": {
@@ -34,7 +34,7 @@
           },
           "effect": "confounded",
           "health": -12,
-          "money": 250,
+          "money": 100,
           "karma": 5
         },
         "5": {
@@ -58,7 +58,7 @@
             }
           },
           "fight": {
-            "monster": "mercenary",
+            "monster": "corruptGuard",
             "level": 40,
             "won": {
               "money": 150,
@@ -79,7 +79,7 @@
             }
           },
           "fight": {
-            "monster": "mercenary",
+            "monster": "corruptGuard",
             "level": 100,
             "won": {
               "money": 350,
@@ -110,30 +110,12 @@
         },
         "10": {
           "requirements": {
-            "karma": {
-              "max": -30
-            }
-          },
-          "money": 200,
-          "karma": -3
-        },
-        "11": {
-          "requirements": {
             "defense": {
               "min": 740
             }
           },
           "effect": "confounded",
           "health": -10
-        },
-        "12": {
-          "requirements": {
-            "badges": [
-              "top_glory"
-            ]
-          },
-          "money": 150,
-          "randomItem": {}
         }
       }
     },
@@ -155,50 +137,12 @@
         },
         "3": {
           "requirements": {
-            "speed": {
-              "max": 40
-            }
-          },
-          "forceLeaveCity": true,
-          "effect": "confounded",
-          "health": -25
-        },
-        "4": {
-          "requirements": {
-            "speed": {
-              "min": 350
-            }
-          },
-          "forceLeaveCity": true,
-          "money": 100
-        },
-        "5": {
-          "requirements": {
-            "karma": {
-              "min": 50
-            }
-          },
-          "forceLeaveCity": true,
-          "health": 10
-        },
-        "6": {
-          "requirements": {
             "level": {
               "max": 30
             }
           },
           "forceLeaveCity": true,
           "effect": "scared"
-        },
-        "7": {
-          "requirements": {
-            "petTags": [
-              "nocturnal"
-            ]
-          },
-          "forceLeaveCity": true,
-          "effect": "occupied",
-          "lostTime": 20
         }
       }
     },
@@ -223,6 +167,11 @@
           "karma": -2
         },
         "3": {
+          "requirements": {
+            "speed": {
+              "max": 349
+            }
+          },
           "effect": "jailed",
           "karma": -2
         },
@@ -271,8 +220,10 @@
               "min": 130
             }
           },
+          "effect": "occupied",
+          "lostTime": 120,
           "money": 400,
-          "karma": -8
+          "karma": -3
         },
         "9": {
           "requirements": {
@@ -289,13 +240,11 @@
         "10": {
           "requirements": {
             "petTags": [
-              "intimidating"
+              "keenNose"
             ]
           },
           "effect": "occupied",
-          "lostTime": 60,
-          "money": 200,
-          "karma": -3
+          "lostTime": 15
         }
       }
     },
@@ -313,13 +262,13 @@
         "1": {
           "effect": "occupied",
           "lostTime": 60,
-          "money": 300,
+          "money": 200,
           "karma": 5
         },
         "2": {
           "effect": "occupied",
           "lostTime": 60,
-          "money": 450,
+          "money": 200,
           "karma": 3
         },
         "3": {
@@ -333,6 +282,7 @@
               "max": -30
             }
           },
+          "forceLeaveCity": true,
           "effect": "occupied",
           "lostTime": 20
         },
@@ -348,17 +298,6 @@
         },
         "6": {
           "requirements": {
-            "level": {
-              "min": 130
-            }
-          },
-          "effect": "occupied",
-          "lostTime": 60,
-          "money": 500,
-          "karma": 3
-        },
-        "7": {
-          "requirements": {
             "money": {
               "min": 100000
             }
@@ -370,7 +309,7 @@
             "moneyUsage"
           ]
         },
-        "8": {
+        "7": {
           "requirements": {
             "validPetTypeIds": [
               1,
@@ -380,7 +319,7 @@
           "money": 150,
           "karma": 2
         },
-        "9": {
+        "8": {
           "requirements": {
             "level": {
               "max": 30
@@ -424,15 +363,6 @@
         },
         "4": {
           "requirements": {
-            "karma": {
-              "max": -30
-            }
-          },
-          "money": 150,
-          "karma": -3
-        },
-        "5": {
-          "requirements": {
             "petTags": [
               "keenNose"
             ]
@@ -441,7 +371,7 @@
           "lostTime": 30,
           "randomItem": {}
         },
-        "6": {
+        "5": {
           "requirements": {
             "level": {
               "max": 30
@@ -449,7 +379,7 @@
           },
           "effect": "scared"
         },
-        "7": {
+        "6": {
           "requirements": {
             "money": {
               "min": 100000

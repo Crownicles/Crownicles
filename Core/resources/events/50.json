@@ -145,11 +145,15 @@
           "health": 10
         },
         "3": {
-          "effect": "occupied",
-          "health": 10,
-          "lostTime": 60
+          "effect": "sleeping",
+          "health": 10
         },
         "4": {
+          "requirements": {
+            "money": {
+              "max": 99999
+            }
+          },
           "effect": "sleeping",
           "money": -50
         },
@@ -165,24 +169,20 @@
         "6": {
           "requirements": {
             "petTags": [
-              "intimidating"
+              "keenNose"
             ]
           },
           "effect": "occupied",
           "health": 10,
-          "lostTime": 60
+          "lostTime": 45
         },
         "7": {
           "requirements": {
-            "validPetTypeIds": [
-              24
+            "petTags": [
+              "aquatic"
             ]
           },
-          "health": 10,
-          "money": -50,
-          "tags": [
-            "moneyUsage"
-          ]
+          "money": 100
         },
         "8": {
           "requirements": {
@@ -207,7 +207,10 @@
         "2": {
           "requirements": {
             "money": {
-              "min": 50000
+              "min": 100000
+            },
+            "attack": {
+              "max": 699
             }
           },
           "forceLeaveCity": true,
@@ -216,7 +219,7 @@
         "3": {
           "requirements": {
             "money": {
-              "min": 50000
+              "min": 100000
             },
             "petTags": [
               "intimidating"
@@ -227,7 +230,7 @@
         "4": {
           "requirements": {
             "money": {
-              "min": 50000
+              "min": 100000
             },
             "attack": {
               "min": 700
@@ -243,8 +246,7 @@
               "min": 80
             }
           },
-          "forceLeaveCity": true,
-          "health": 10
+          "forceLeaveCity": true
         },
         "6": {
           "requirements": {
@@ -252,7 +254,9 @@
               "max": -30
             }
           },
-          "forceLeaveCity": true
+          "forceLeaveCity": true,
+          "effect": "occupied",
+          "lostTime": 15
         },
         "7": {
           "requirements": {
@@ -337,7 +341,7 @@
               "max": -30
             }
           },
-          "health": -10,
+          "health": -8,
           "effect": "confounded",
           "karma": -2
         },
@@ -381,10 +385,11 @@
         "3": {
           "requirements": {
             "petTags": [
-              "flying"
+              "nocturnal"
             ]
           },
-          "health": 10
+          "effect": "occupied",
+          "lostTime": 150
         }
       }
     }

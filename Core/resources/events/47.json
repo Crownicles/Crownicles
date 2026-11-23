@@ -10,7 +10,8 @@
               "max": 349
             }
           },
-          "effect": "jailed"
+          "effect": "occupied",
+          "lostTime": 180
         },
         "3": {
           "effect": "sleeping",
@@ -38,7 +39,7 @@
             }
           },
           "randomItem": {},
-          "karma": -8
+          "karma": -10
         },
         "3": {
           "money": -150
@@ -125,7 +126,7 @@
               "min": 350
             }
           },
-          "money": 400,
+          "money": 300,
           "effect": "occupied",
           "lostTime": 60,
           "karma": 5
@@ -136,7 +137,7 @@
               "max": -30
             }
           },
-          "money": 350,
+          "money": 300,
           "karma": 3
         },
         "6": {
@@ -167,7 +168,7 @@
             "monster": "mercenary",
             "level": 40,
             "won": {
-              "money": 200,
+              "money": 300,
               "experience": 40
             },
             "lost": {
@@ -189,7 +190,7 @@
             "monster": "mercenary",
             "level": 100,
             "won": {
-              "money": 400,
+              "money": 300,
               "experience": 100,
               "randomItem": {}
             },
@@ -211,22 +212,13 @@
         "10": {
           "requirements": {
             "petTags": [
-              "intimidating"
+              "heavy"
             ]
           },
           "money": 300,
           "karma": 5
         },
         "11": {
-          "requirements": {
-            "level": {
-              "max": 30
-            }
-          },
-          "health": -8,
-          "karma": 1
-        },
-        "12": {
           "requirements": {
             "attack": {
               "min": 231,
@@ -237,7 +229,7 @@
           "effect": "confounded",
           "karma": 2
         },
-        "13": {
+        "12": {
           "requirements": {
             "attack": {
               "min": 600

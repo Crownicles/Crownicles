@@ -56,18 +56,19 @@
               "min": 50
             }
           },
-          "health": 15,
+          "health": 10,
           "mapTypesDestination": [
             "ro"
           ]
         },
         "4": {
           "requirements": {
-            "petTags": [
-              "keenNose"
-            ]
+            "level": {
+              "min": 130
+            }
           },
-          "health": 5,
+          "effect": "occupied",
+          "lostTime": 15,
           "mapTypesDestination": [
             "ro"
           ]
@@ -95,17 +96,6 @@
               "min": 350
             }
           },
-          "mapTypesDestination": [
-            "ro"
-          ]
-        },
-        "7": {
-          "requirements": {
-            "level": {
-              "max": 30
-            }
-          },
-          "health": 10,
           "mapTypesDestination": [
             "ro"
           ]
@@ -180,12 +170,12 @@
         "7": {
           "requirements": {
             "petTags": [
-              "intimidating"
+              "mount"
             ]
           },
           "forceStayInCity": true,
           "effect": "occupied",
-          "health": 5,
+          "health": 25,
           "lostTime": 60
         }
       }
@@ -194,7 +184,7 @@
       "outcomes": {
         "0": {
           "money": 500,
-          "karma": -8
+          "karma": -10
         },
         "1": {
           "effect": "occupied",
@@ -209,7 +199,7 @@
             }
           },
           "money": 400,
-          "karma": -8
+          "karma": -10
         },
         "3": {
           "requirements": {
@@ -251,12 +241,12 @@
         },
         "7": {
           "requirements": {
-            "validPetTypeIds": [
-              24
+            "petTags": [
+              "heavy"
             ]
           },
-          "money": 350,
-          "karma": -8
+          "money": 450,
+          "karma": -10
         },
         "8": {
           "requirements": {
@@ -319,9 +309,8 @@
               "min": 780
             }
           },
-          "effect": "occupied",
-          "lostTime": 20,
-          "karma": -6
+          "health": -5,
+          "karma": -5
         }
       }
     },
@@ -402,6 +391,14 @@
           }
         },
         "8": {
+          "requirements": {
+            "money": {
+              "max": 20000
+            },
+            "karma": {
+              "min": 0
+            }
+          },
           "consumeMaterials": {
             "ids": [
               67

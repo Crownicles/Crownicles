@@ -10,7 +10,7 @@
         },
         "1": {
           "effect": "sick",
-          "money": 250,
+          "money": 100,
           "tags": [
             "drinkAlcohol"
           ]
@@ -53,7 +53,7 @@
               "min": 70
             }
           },
-          "money": 60,
+          "money": 80,
           "effect": "occupied",
           "lostTime": 15,
           "tags": [
@@ -66,7 +66,7 @@
               "master_chef"
             ]
           },
-          "money": 150,
+          "money": 200,
           "effect": "occupied",
           "lostTime": 20,
           "tags": [
@@ -128,9 +128,7 @@
             "moneyUsage"
           ]
         },
-        "1": {
-          "karma": -2
-        },
+        "1": {},
         "2": {
           "tags": [
             "drinkAlcohol"
@@ -142,10 +140,7 @@
               "min": 50
             }
           },
-          "health": 10,
-          "tags": [
-            "drinkAlcohol"
-          ]
+          "health": 10
         },
         "4": {
           "requirements": {
@@ -185,7 +180,7 @@
     "steal": {
       "outcomes": {
         "0": {
-          "money": 500,
+          "money": 300,
           "karma": -8
         },
         "1": {
@@ -212,7 +207,7 @@
               "min": 350
             }
           },
-          "money": 700,
+          "money": 450,
           "karma": -10
         },
         "4": {
@@ -221,7 +216,7 @@
               "min": 50
             }
           },
-          "money": 300,
+          "money": 200,
           "karma": -12
         },
         "5": {
@@ -241,7 +236,7 @@
               93
             ]
           },
-          "money": 300,
+          "money": 150,
           "karma": -6
         },
         "7": {
@@ -256,10 +251,10 @@
           },
           "karma": -8,
           "fight": {
-            "monster": "mercenary",
+            "monster": "bandit",
             "level": 40,
             "won": {
-              "money": 200,
+              "money": 350,
               "experience": 40
             },
             "lost": {
@@ -279,10 +274,10 @@
           },
           "karma": -8,
           "fight": {
-            "monster": "mercenary",
+            "monster": "bandit",
             "level": 100,
             "won": {
-              "money": 400,
+              "money": 500,
               "experience": 80
             },
             "lost": {
@@ -304,6 +299,24 @@
           "tags": [
             "moneyUsage"
           ]
+        },
+        "10": {
+          "requirements": {
+            "petTags": [
+              "flying"
+            ]
+          },
+          "money": 200,
+          "karma": -8
+        },
+        "11": {
+          "requirements": {
+            "petTags": [
+              "intimidating"
+            ]
+          },
+          "money": 200,
+          "karma": -10
         }
       }
     },
@@ -335,6 +348,13 @@
           "effect": "occupied",
           "lostTime": 30,
           "health": 10
+        },
+        "5": {
+          "requirements": {
+            "petTags": [
+              "heavy"
+            ]
+          }
         }
       }
     }

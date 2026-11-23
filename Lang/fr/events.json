@@ -1432,22 +1432,22 @@
     "text": "À votre arrivée au village, des passants vous reconnaissent et vous abordent. Ils se rappellent parfaitement de l'aide que vous leur aviez apportée et insistent pour vous remercier en vous offrant un cadeau. Ils vous demandent ce qui vous ferait le plus plaisir."
   },
   "35": {
-    "text": "À Mergagnan, vous entrez dans l'auberge Au Coin du Feu, où flotte une odeur de poisson grillé. Derrière le comptoir, l'aubergiste aligne des chopes de mélanges de sa façon, au rhum, aux algues ou aux herbes des jardins de la ville. Ses habitués n'y touchent plus. En vous voyant entrer, il vous fait signe : il cherche quelqu'un pour goûter ses nouvelles boissons.",
+    "text": "À Mergagnan, vous entrez dans l'auberge Au Coin du Feu, pleine de marins et de pêcheurs. Derrière le comptoir, l'aubergiste aligne des chopes de mélanges de son invention, au rhum, aux algues ou aux herbes des jardins de la ville. Ses habitués n'y touchent plus. Dès qu'il vous aperçoit, il vous fait signe d'approcher : il cherche quelqu'un pour goûter ses nouvelles boissons.",
     "possibilities": {
       "test": {
         "text": "Servir de cobaye.",
         "outcomes": {
           "0": "Vous acceptez et buvez le mélange épais qu'il vous tend. Il a un goût de miel et d'épices, et une douce chaleur se répand en vous : vous vous sentez requinqué. Ravi de votre mine, l'aubergiste inscrit la recette à la craie sur son ardoise.",
-          "1": "Vous videz d'un trait la chope de liquide verdâtre qu'il vous tend. Quelques secondes plus tard, un goût d'algue pourrie vous remonte dans la gorge, et vous rendez tout sur le plancher. Confus, l'aubergiste vous dédommage d'une poignée de pièces, mais la nausée ne vous lâche pas de sitôt.",
+          "1": "Vous videz d'un trait la chope de liquide verdâtre qu'il vous tend. Quelques secondes plus tard, un goût d'algue pourrie vous remonte dans la gorge, et vous rendez tout sur le plancher. Gêné, l'aubergiste vous dédommage d'une poignée de pièces, mais la nausée ne vous lâche pas de sitôt.",
           "2": "Vous buvez la chope qu'il vous tend. Le mélange laisse un arrière-goût pas piqué des hannetons, entre le poivre et le goudron. Vous donnez vos impressions à l'aubergiste, qui les note avec soin et vous remercie.",
-          "3": "L'aubergiste sort de sous le comptoir une petite fiole : un alchimiste des marais, qui lui achète des algues à crédit, le paie en potions de sa fabrication. Vous en buvez une gorgée. Aussitôt, les flammes de l'âtre dansent en couleurs et le plancher tangue comme un pont de navire. Il vous faut un moment pour retrouver vos esprits.",
-          "4": "Vous goûtez les chopes l'une après l'autre pour donner votre avis sur chacune. Peu habitué aux alcools forts des marins, vous sentez la salle tourner dès la troisième. Vous finissez par chanter à tue-tête avec les pêcheurs.",
-          "5": "Vous goûtez chaque mélange en connaisseur, comme quelqu'un qui a bu dans toutes les auberges du pays. Vous reconnaissez le rhum, la menthe des jardins et le sel des algues. Impressionné, l'aubergiste sort de sa réserve une fiole qu'il gardait pour les grandes occasions et vous l'offre.",
-          "6": "Une gorgée vous suffit pour deviner ce qui cloche : trop d'algue, pas assez de miel. Vous corrigez la recette derrière le comptoir avec l'aubergiste. Le résultat est si bon que les habitués en redemandent, et il vous glisse quelques pièces.",
-          "7": "L'aubergiste vous reconnaît : on parle de votre cuisine jusque sur le port. Il vous fait goûter ses mélanges un à un et note chacun de vos conseils comme un trésor. Pour vous remercier, il vous laisse une belle poignée de pièces.",
-          "8": "L'aubergiste vous reconnaît et se ravise : on lui a dit que vous partiez souvent sans payer. Il vous fait goûter ses mélanges, mais vous fait régler chaque chope d'avance.",
-          "9": "Au moment où vous portez la chope à vos lèvres, votre familier se penche dessus, et l'alcool s'embrase d'une flamme bleue. Les marins applaudissent. L'aubergiste tient sa nouvelle boisson : il vous en sert une, flambée, et vous laisse quelques pièces.",
-          "10": "Vous avalez le mélange, si fort que vous frappez le comptoir du poing pour le faire passer. La planche se fend net. L'aubergiste regarde la fente, puis vous, et vous lui laissez quelques pièces pour la réparation.",
+          "3": "L'aubergiste sort de sous le comptoir une petite fiole qu'il n'a jamais osé goûter : un alchimiste des marais la lui a laissée pour payer sa chambre. Vous en buvez une gorgée. Aussitôt, les flammes de l'âtre dansent en couleurs et le plancher tangue comme le pont d'un navire. Il vous faut un bon moment pour retrouver vos esprits.",
+          "4": "Vous goûtez les chopes l'une après l'autre. Peu habitué aux alcools forts des marins, vous voyez double dès la troisième, et vous donnez votre avis aux deux aubergistes à la fois.",
+          "5": "Vos voyages vous ont mené dans bien des auberges, et vous goûtez chaque mélange en connaisseur. Vous reconnaissez le rhum, la menthe des jardins et le sel des algues. Impressionné, l'aubergiste sort de sa réserve une fiole qu'il gardait pour les grandes occasions et vous l'offre.",
+          "6": "Une gorgée vous suffit pour deviner ce qui cloche : trop d'algue, pas assez de miel. Vous corrigez la recette avec l'aubergiste, derrière le comptoir. Le résultat est si bon que les habitués en redemandent, et l'aubergiste, ravi, vous glisse quelques pièces.",
+          "7": "L'aubergiste vous reconnaît : on parle de votre cuisine jusque sur le port. À votre première grimace, il vide la chope dans un seau et vous demande plutôt une recette pour sa carte. Vous lui dictez celle de votre meilleure sauce pour le poisson, et il vous la paie d'une belle bourse.",
+          "8": "L'aubergiste vous reconnaît : on lui a dit que vous partiez souvent sans payer. Il vous fait quand même goûter ses mélanges, mais vous fait régler chaque chope d'avance.",
+          "9": "Au moment où vous portez la chope à vos lèvres, votre familier y approche la tête, et l'alcool s'embrase d'une flamme bleue. Les marins applaudissent, et l'aubergiste tient enfin sa nouvelle boisson : il vous paie l'idée de quelques pièces.",
+          "10": "Vous avalez le mélange qu'il vous tend. Il est si fort que vous frappez le comptoir du poing pour le faire passer, et la planche se fend net. L'aubergiste regarde la fente, puis vous : vous lui laissez quelques pièces pour la réparation.",
           "11": "Avant que vous ne buviez, votre familier renifle la chope et recule en éternuant. Méfiant, vous la reposez. Pour vous rassurer, l'aubergiste la goûte lui-même, devient tout pâle et file vers l'arrière-cour."
         }
       },
@@ -1455,52 +1455,55 @@
         "text": "Refuser sa proposition.",
         "outcomes": {
           "0": "Boire des mélanges inconnus ne vous dit rien, et vous déclinez poliment. Vous commandez plutôt une bonne pinte de bière, que vous videz tranquillement près du feu en discutant avec des habitués.",
-          "1": "Vous demandez à l'aubergiste s'il vous prend pour un gougnafier, prêt à boire n'importe quelle cochonnerie. Vexé, il vous montre la porte. Pour vous venger, vous jetez une bûche humide dans l'âtre en sortant, et la fumée envahit toute la salle.",
+          "1": "Vous déclinez poliment. Au bout du comptoir, un vieux marin lance qu'il faut être un gougnafier pour boire ces cochonneries. Vexé, l'aubergiste vide une chope dans l'âtre pour prouver la force de son mélange. Le feu s'éteint d'un coup dans un nuage de fumée noire, et toute la salle sort en toussant, vous compris.",
           "2": "Vous expliquez à l'aubergiste que vous n'avez aucune envie de servir de cobaye. Il vous rassure : il a juste mélangé deux alcools et quelques herbes sans danger. Convaincu, vous buvez une gorgée et lui donnez votre avis.",
-          "3": "Vous refusez poliment. L'aubergiste n'insiste pas : on lui a dit du bien de vous. Il range ses mélanges et vous sert à la place une chope de sa meilleure bière, offerte par la maison. Vous la buvez près du feu et reprenez des forces.",
+          "3": "Vous refusez poliment. L'aubergiste vous reconnaît : on lui a dit du bien de vous. Plutôt que d'insister, il vous sert un bol de chaudrée de palourdes offert par la maison, et vous reprenez des forces près du feu.",
           "4": "Vous refusez, et l'aubergiste ne s'en plaint pas : il vient de vous reconnaître. Autour de vous, les habitués posent la main sur leur bourse. Vous ne vous attardez pas.",
-          "5": "Pendant que vous refusez, votre familier se dresse contre le comptoir et plonge le groin dans une chope. Il la vide et rote bruyamment. L'aubergiste note qu'au moins un client a aimé, puis vous fait payer la chope.",
-          "6": "Vous refusez ses mélanges et commandez une bière. En payant, vous laissez voir une bourse bien pleine. Aussitôt, les marins lèvent leur chope à votre santé, et l'aubergiste vous annonce le prix de la tournée générale. Vous n'osez pas refuser."
+          "5": "Pendant que vous refusez, votre familier se dresse contre le comptoir et plonge le groin dans une chope. Il la vide et rote bruyamment. Amusé, l'aubergiste constate qu'au moins un client aime ses mélanges, puis vous fait payer la chope.",
+          "6": "Vous refusez ses mélanges et commandez une bière. En payant, vous laissez voir une bourse bien pleine. Aussitôt, un marin lance que la tournée est pour vous, et toute la salle lève sa chope à votre santé. Vous n'osez plus dire non."
         }
       },
       "steal": {
         "text": "Faire les poches des clients.",
         "outcomes": {
-          "0": "Vous laissez l'aubergiste à ses mélanges et vous glissez entre les tables. Vous faites les poches de trois clients sans souci, mais le quatrième sent votre main et crie au voleur. Vous filez par la porte avant que la salle ne se lève.",
+          "0": "Vous laissez l'aubergiste à ses mélanges et vous glissez entre les tables. Vous faites les poches de trois clients sans peine, mais le quatrième sent votre main et crie au voleur. Vous filez par la porte avant que la salle ne se lève.",
           "1": "Vous vous glissez entre les tables et faites les poches de trois clients. Le quatrième vous attrape le poignet et appelle la garde. Vous passez une journée au cachot, et vous devez rendre ce que vous avez pris, avec un dédommagement.",
-          "2": "Vous glissez la main dans la poche d'un pêcheur, mais vos gestes sont trop lents : il se retourne et vous saisit le bras. Furieux, il vous envoie au tapis d'un coup de poing, puis les habitués vous jettent dehors.",
+          "2": "Vous glissez la main dans la poche d'un pêcheur, mais vos gestes sont trop lents : il se retourne et vous saisit le bras. Furieux, il vous envoie au tapis d'un coup de poing, sous les rires de la salle.",
           "3": "Vous passez de table en table d'un pas léger. Une bourse ici, une autre là : personne ne sent rien. Quand vous ressortez de l'auberge, vos poches tintent, et l'aubergiste cherche toujours son cobaye.",
-          "4": "Vous cherchez une poche à faire quand un marin vous reconnaît : on lui a dit du bien de vous. Sans méfiance, il vous confie sa bourse le temps de sortir prendre l'air. Quand il revient, vous êtes loin.",
-          "5": "L'aubergiste vous a reconnu dès votre entrée et a fait passer le mot. À chaque table où vous approchez, les bourses sont déjà sous la main de leur propriétaire. Agacés de vous voir rôder, deux pêcheurs vous empoignent et vous jettent sur les pavés du quai.",
+          "4": "Vous cherchez une victime quand un marin vous reconnaît : il a entendu dire que vous étiez honnête. Sans méfiance, il vous confie sa bourse le temps d'un bras de fer avec un pêcheur. Quand il se retourne, vainqueur, vous êtes déjà loin.",
+          "5": "Un pêcheur vous a reconnu dès votre entrée et a fait passer le mot. À chaque table où vous approchez, les bourses sont déjà sous la main de leur propriétaire. Agacés de vous voir rôder, deux marins vous empoignent et vous jettent dehors.",
           "6": "Vous occupez l'aubergiste avec des questions sur ses mélanges. Pendant ce temps, votre familier se faufile sous les tables et revient avec une bourse, qu'il dépose à vos pieds. Personne n'a rien vu.",
-          "7": "Vous faites les poches de deux clients sans souci. Le troisième est un mercenaire, qui vous attrape le poignet. Il vous traîne dehors, sur le quai, et tire son épée pour vous apprendre à voler.",
-          "8": "Vous vous glissez entre les tables, mais la bourse que vous visez appartient à un mercenaire couvert de cicatrices. Il vous saisit le bras, vous traîne sur le quai et dégaine. Autour de vous, les marins forment déjà un cercle.",
-          "9": "Vous visez la bourse d'un mercenaire, qui vous attrape le poignet et vous traîne dehors. Épuisé, vous tenez à peine debout. Il vous roue de coups, reprend son bien et vide aussi vos poches."
+          "7": "Vous glissez la main dans la poche d'un client accoudé au comptoir, et vous sentez au même instant une main dans la vôtre. Vous vous dévisagez, pris tous les deux sur le fait : c'est un bandit qui détrousse les marins du port. Aucun de vous ne veut lâcher la bourse de l'autre, et vous vous retrouvez dehors, prêts à vous battre.",
+          "8": "Vous repérez la bourse la plus lourde de la salle, à la ceinture d'un homme qui boit seul. Au moment où vous la décrochez, il vous saisit le poignet sans même se retourner. C'est un bandit : cette bourse, il vient de la voler à un marchand du port, et il n'a pas l'intention de se la faire voler à son tour. Un couteau à la main, il vous fait signe de le suivre dehors.",
+          "9": "Vous glissez la main dans la poche d'un client, mais c'est un bandit, plus vif que vous, qui vous attrape le poignet. Épuisé, vous n'avez pas la force de vous dégager. Il vous traîne dehors, vous roue de coups et repart avec votre bourse.",
+          "10": "Sur un signe de votre part, votre familier s'envole et tourne au-dessus des tables. Tous les clients lèvent la tête pour le suivre des yeux, et vous en profitez pour vider deux bourses. Vous le rappelez et ressortez, les poches lourdes.",
+          "11": "Un client sent votre main dans sa poche et vous attrape le poignet. Mais il aperçoit votre familier, qui le fixe depuis la porte, et vous lâche aussitôt. Personne dans la salle n'ose crier au voleur, et vous ressortez tranquillement avec sa bourse."
         },
         "fights": {
           "7": {
-            "won": "Le mercenaire finit par lâcher son épée et lever les mains. Vous gardez les bourses et quittez le quai avant que la garde n'arrive.",
-            "lost": "Le mercenaire vous met à terre et vous plaque contre un tonneau. Il reprend sa bourse, prend aussi la vôtre pour la peine, et vous laisse sur les pavés."
+            "won": "Le bandit finit par lever les mains et s'enfuit vers les quais, sans sa bourse. Elle est bien lourde : il avait déjà fait les poches de la moitié de la salle.",
+            "lost": "Le bandit vous envoie rouler sur les pavés. Le temps de vous relever, il a disparu, et votre bourse avec lui."
           },
           "8": {
-            "won": "Le mercenaire pose un genou à terre, à bout de souffle. Les marins sifflent d'admiration. Vous gardez sa bourse et vous éclipsez avant que quelqu'un n'appelle la garde.",
-            "lost": "Le mercenaire vous envoie rouler sur les pavés, sous les rires des marins. Il récupère sa bourse, vide la vôtre et retourne finir sa bière."
+            "won": "Le bandit lâche son couteau et s'enfuit vers les quais, les poches vides. Vous gardez la bourse, volée deux fois dans la même journée.",
+            "lost": "Le bandit vous laisse à terre, sonné, la lèvre fendue. Il raccroche sa bourse à sa ceinture, y ajoute la vôtre et retourne boire au comptoir."
           }
         }
       },
       "end": {
         "outcomes": {
           "0": "Sans répondre, vous tournez les talons et ressortez de l'auberge. Derrière vous, l'aubergiste cherche déjà un autre volontaire.",
-          "1": "Sans répondre, vous vous laissez tomber sur un banc près de l'âtre. La chaleur du feu et les chants des marins ont raison de vous, et vous vous endormez la tête sur la table.",
-          "2": "Faute de réponse, l'aubergiste pose une chope devant vous. Distrait, vous la videz d'un trait. Le mélange est bien plus fort qu'il n'en a l'air, et la salle se met vite à tourner.",
+          "1": "Sans répondre, vous vous laissez tomber à une table près de l'âtre. La chaleur du feu et les chants des marins ont raison de vous, et vous vous endormez la tête sur les bras.",
+          "2": "Faute de réponse, l'aubergiste pose une chope devant vous. Distrait, vous la videz d'un trait. Le mélange est bien plus fort qu'il n'en a l'air, et vous finissez debout sur un banc à chanter avec les marins.",
           "3": "Vous ne répondez pas et restez planté au milieu de la salle à observer les clients. Un pêcheur vous reconnaît et prévient les autres à voix basse. Sous tous ces regards, vous préférez ressortir.",
-          "4": "Vous ignorez l'aubergiste et prenez place parmi les marins, près du feu. Ils parlent des traversées vers les îles, et vous racontez à votre tour quelques-unes de vos routes. Pour vous remercier, ils partagent avec vous un poisson grillé."
+          "4": "Vous ignorez l'aubergiste et prenez place parmi les marins, près du feu. Ils parlent des traversées vers les îles, et vous racontez à votre tour quelques-unes de vos routes. Pour vous remercier, ils partagent avec vous un poisson grillé.",
+          "5": "Sans répondre, vous avancez vers le feu. Derrière vous, votre familier pose une patte sur le seuil, et les planches craquent sous son poids. Affolé, l'aubergiste oublie ses mélanges et vous raccompagne dehors avant que son plancher ne cède."
         }
       }
     }
   },
   "36": {
-    "text": "Sur la place de Boug-Coton, face à l'Auberge du Seigneur et à ses chambres hors de prix, un vieil artisan tient une petite bijouterie. On vient de loin pour ses colliers. Penché sur son établi, il garde sa caisse à portée de main. Un passant vous apprend que les villageois ouvrent volontiers leur porte aux voyageurs qui ne peuvent pas s'offrir l'auberge.",
+    "text": "Sur la place de Boug-Coton, face à la luxueuse Auberge du Seigneur, un vieil artisan tient une petite bijouterie. On vient de loin pour ses colliers. Penché sur son établi, il garde sa caisse à portée de main. Un passant vous apprend que, dans ce village paisible, on ouvre volontiers sa porte aux voyageurs.",
     "possibilities": {
       "goInn": {
         "text": "Accepter l'hospitalité d'un villageois.",
@@ -1508,52 +1511,52 @@
           "0": "Un fermier vous ouvre sa porte et vous sert un bon repas. Il vous installe ensuite dans le calme de sa grange, où vous faites une longue sieste dans le foin.",
           "1": "Une villageoise n'a pas de lit à vous offrir, mais elle partage volontiers sa soupe avec vous. Vous la remerciez chaleureusement avant de retourner sur la place.",
           "2": "Vous frappez à plusieurs portes, mais chaque maison loge déjà des marchands de passage. Vous finissez par vous reposer contre le mur d'une grange, le ventre vide, et vous vous relevez transi et courbaturé.",
-          "3": "Une famille vous reconnaît : on lui a dit du bien de vous. Elle vous sert sa plus belle volaille et vous laisse le meilleur lit de la maison pour une longue sieste. Vous repartez en pleine forme.",
-          "4": "Une vieille femme vous reconnaît et fait passer le mot de porte en porte. Méfiants, les villageois verrouillent tous leur porte. Vous restez sur la place, le ventre vide, à regarder les nobles entrer à l'auberge.",
+          "3": "Une famille vous reconnaît : on parle de vos bonnes actions jusqu'ici. Elle vous sert sa plus belle volaille et vous laisse le meilleur lit de la maison pour une longue sieste. Vous vous relevez en pleine forme.",
+          "4": "Une vieille femme vous reconnaît et fait passer le mot de porte en porte. Méfiants, les villageois verrouillent tous leur porte. Vous restez sur la place, affamé, à regarder les nobles entrer à l'auberge.",
           "5": "Votre hôte vous laisse l'aider aux fourneaux. Vous relevez son ragoût de quelques herbes du jardin, et toute la famille en reprend deux fois. Rassasié, vous faites une longue sieste dans la grange.",
           "6": "Un villageois remarque votre bourse bien remplie. Il vous offre le gîte et le couvert, puis vous présente une note digne de l'Auberge du Seigneur. Vous payez, reposé mais un peu vexé.",
-          "7": "Les villageois reculent devant votre familier. Seul un vieux berger accepte de vous loger, à condition que la bête reste dehors. Elle tourne autour de la grange en grondant, et vous ne fermez presque pas l'œil."
+          "7": "Le garçon d'écurie de l'Auberge du Seigneur vient admirer votre familier. Il vous installe tous les deux dans l'écurie de l'auberge, à côté des chevaux des nobles. Votre familier plonge aussitôt le museau dans le foin, et vous vous assoupissez dans la paille fraîche."
         }
       },
       "talkJeweler": {
         "text": "Discuter avec le bijoutier.",
         "outcomes": {
           "0": "Vous admirez le travail du vieil artisan, et la conversation s'engage. Il vous montre ses outils, vous raconte ses débuts, et vous finissez par rire ensemble. En gage d'amitié, il vous offre un objet qu'il gardait sous son comptoir.",
-          "1": "Vous tentez de marchander un collier. Le vieil homme vous écoute longtemps et sourit, mais il ne cède pas un sou. Vous prenez congé, convaincu qu'il ne baissera jamais ses prix.",
-          "2": "Ravi d'avoir de la compagnie, le bijoutier vous parle de ses clients : les seigneurs de Boug-Coton lui achètent des bagues pour leurs dames et oublient souvent de les payer. Quand vous parvenez à partir, la place s'est vidée.",
-          "3": "Le bijoutier remarque votre bourse bien garnie et sort de sous son comptoir ses plus beaux bijoux. Vous marchandez un moment, puis vous vous laissez convaincre par un objet finement travaillé.",
+          "1": "Vous tentez de marchander un collier. Le vieil homme vous écoute longtemps en souriant, mais il ne baisse pas son prix d'un sou. Vous finissez par prendre congé, les mains vides.",
+          "2": "Ravi d'avoir de la compagnie, le bijoutier vous parle de ses clients : les seigneurs de Boug-Coton lui achètent des bagues pour leurs dames et oublient souvent de les payer. Vous mettez un bon moment à prendre congé.",
+          "3": "Le bijoutier remarque votre bourse bien garnie et sort de sa réserve ses plus beaux bijoux. Vous marchandez un moment, puis vous vous laissez convaincre par un objet finement travaillé.",
           "4": "Le bijoutier jette un coup d'œil à votre bourse presque vide et comprend vite que vous n'achèterez rien. Poli, il vous montre tout de même quelques colliers, puis retourne à son établi.",
-          "5": "À peine entré, vous voyez le vieil homme poser la main sur sa caisse : il vous a reconnu. Il appelle son garde, qui vous raccompagne jusqu'à la place sans un mot.",
+          "5": "Le vieil homme vous reconnaît dès que vous entrez. Tout en vous répondant poliment, il range ses colliers un à un sous son comptoir. Quand l'étalage est vide, il vous souhaite une bonne journée.",
           "6": "Le bijoutier vous reconnaît : ses clients lui ont dit du bien de vous. Il vous offre un objet de sa réserve et vous prie seulement de parler de sa boutique sur les routes.",
           "7": "Le bijoutier a entendu parler de vous : vous auriez fait reforger une simple babiole jusqu'à en faire une merveille. Fasciné, il vous interroge sur chaque étape du travail, puis vous offre un objet pour vous remercier.",
-          "8": "En parlant de pierres, vous sortez de votre sac une pierre précieuse. Les yeux du vieil homme s'allument. Il l'examine longuement sous sa loupe, puis vous la rachète à bon prix.",
-          "9": "Pendant que vous discutez, votre corbeau saute sur le comptoir et s'envole avec une bague. Quand vous le rattrapez enfin sur un toit, la bague est tordue par son bec. Vous la rendez au bijoutier et payez la réparation."
+          "8": "Votre bourse est bien légère : pendant que vous parlez de pierres avec le vieil homme, vous sortez de votre sac une pierre précieuse et la lui proposez. Ses yeux s'allument. Il l'examine longuement sous sa loupe, puis vous la rachète à bon prix.",
+          "9": "Pendant que vous discutez, votre corbeau saute sur le comptoir, attrape une bague dans son bec et s'envole pour se percher sur un toit. Il vous faut un moment pour le faire redescendre, et la bague revient tordue. Vous la rendez au bijoutier et lui payez la réparation."
         }
       },
       "stealJeweler": {
         "text": "Voler le bijoutier.",
         "outcomes": {
-          "0": "Vous attendez que le vieil homme passe dans son arrière-boutique. La place est calme, et personne ne vous regarde. Vous videz la caisse en quelques gestes et vous éclipsez discrètement.",
-          "1": "Vous entrez dans la bijouterie et plongez la main dans la caisse. Mais le garde que le bijoutier paie pour surveiller sa boutique sort de l'arrière-boutique et vous assomme d'un coup sec. Vous vous réveillez des heures plus tard dans une ruelle, les mains vides.",
-          "2": "Vous raflez la caisse sous le nez du bijoutier et filez. Son garde jaillit de l'arrière-boutique, mais vous avez déjà traversé la place et disparu entre les maisons.",
-          "3": "Vous saisissez la caisse, mais le garde du bijoutier surgit de l'arrière-boutique. Vous la lâchez pour courir et lui échappez de justesse, après vous être cogné à l'encadrement de la porte. Vous repartez étourdi, les mains vides.",
-          "4": "Vous tendez la main vers la caisse, mais le garde du bijoutier vous attrape par le col avant que vous ayez fait trois pas. Il vous roue de coups, puis vous jette sur la place sous les yeux des villageois.",
-          "5": "Le bijoutier vous reconnaît dès que vous passez la porte et ferme sa caisse à clef. Son garde ne vous lâche plus des yeux. Vous ressortez sans avoir rien pu tenter.",
-          "6": "Le vieil homme vous reconnaît et, confiant, vous laisse seul devant la caisse le temps d'aller chercher un collier dans l'arrière-boutique. Vous la videz sans le moindre effort. Il cherche encore quand vous disparaissez au coin de la place.",
-          "7": "Vous occupez le bijoutier avec mille questions sur ses colliers. Pendant ce temps, votre singe se glisse derrière le comptoir et plonge les mains dans la caisse. Vous ressortez tranquillement, votre familier sur l'épaule et les poches pleines.",
-          "8": "Vous plongez la main dans la caisse, mais le garde du bijoutier sort de l'arrière-boutique, l'épée au clair. C'est un mercenaire, payé pour ce genre de visite, et il vous barre la porte.",
-          "9": "Vous plongez la main dans la caisse, mais le garde du bijoutier vous barre déjà la porte. C'est un vieux mercenaire couvert de cicatrices, qui a vu passer plus d'un voleur. Il tire son épée sans se presser.",
-          "10": "Vous saisissez la caisse, mais le garde du bijoutier vous barre la porte. Épuisé, vous n'avez pas la force de lui tenir tête. Il vous frappe du plat de son épée jusqu'à ce que vous lâchiez tout, puis vous jette dehors.",
-          "11": "Le garde du bijoutier vous attrape le bras au-dessus de la caisse. Vous le repoussez d'une seule bourrade, si fort qu'il s'écrase dans l'étalage. Les colliers volent partout et tout le village accourt. Vous filez les mains vides."
+          "0": "Vous attendez que le vieil homme passe dans son arrière-boutique. La place est calme, et personne ne vous regarde. Vous videz la caisse en quelques gestes et vous vous éclipsez sans bruit.",
+          "1": "Vous entrez dans la bijouterie et plongez la main dans la caisse. Mais un mercenaire, que le bijoutier paie pour garder sa boutique, sort de l'arrière-boutique et vous assomme d'un coup sec. Vous vous réveillez des heures plus tard dans une ruelle, les mains vides.",
+          "2": "Vous raflez la caisse sous le nez du bijoutier et filez. Le mercenaire qu'il paie pour garder sa boutique jaillit de l'arrière-boutique, mais vous avez déjà traversé la place et disparu entre les maisons.",
+          "3": "Vous saisissez la caisse, mais un mercenaire surgit de l'arrière-boutique : le bijoutier le paie pour garder sa boutique. Vous lâchez tout et filez, mais vous vous cognez à l'encadrement de la porte. Vous lui échappez de justesse, étourdi et les mains vides.",
+          "4": "Vous saisissez la caisse, mais un mercenaire jaillit de l'arrière-boutique : le bijoutier le paie pour garder sa boutique. Vous n'avez pas fait trois pas qu'il vous attrape par le col. Il vous roue de coups, puis vous jette sur la place sous les yeux des villageois.",
+          "5": "Le bijoutier vous reconnaît dès que vous passez la porte et ferme sa caisse à clef. Il appelle le mercenaire qu'il paie pour garder sa boutique, et l'homme ne vous lâche plus des yeux. Vous ressortez sans avoir rien pu tenter.",
+          "6": "Le vieil homme vous reconnaît et vous accueille avec un grand sourire : on lui a vanté votre honnêteté. Confiant, il vous laisse seul le temps d'aller chercher un collier dans l'arrière-boutique. Vous videz la caisse sans le moindre effort. Il cherche encore le collier quand vous disparaissez au coin de la place.",
+          "7": "Vous saisissez la caisse et courez vers la porte. Derrière vous, un mercenaire que le bijoutier paie pour garder sa boutique jaillit de l'arrière-boutique. Mais votre familier, trop gros pour entrer, vous attendait dehors : il se couche lourdement en travers du seuil, et le mercenaire reste coincé à l'intérieur. Vous disparaissez avec la caisse.",
+          "8": "Vous plongez la main dans la caisse, mais un mercenaire sort de l'arrière-boutique : le bijoutier le paie pour garder sa boutique. La main sur la poignée de son épée, il vous barre la porte.",
+          "9": "Vous plongez la main dans la caisse. Quand vous vous retournez, un vieux mercenaire aux larges épaules, sorti sans bruit de l'arrière-boutique, vous barre la porte. Le bijoutier le paie pour garder sa boutique, et il a vu passer plus d'un voleur. Il tire son épée sans se presser.",
+          "10": "Vous saisissez la caisse, mais un mercenaire, que le bijoutier paie pour garder sa boutique, sort de l'arrière-boutique et vous barre la porte. Épuisé, vous n'avez pas la force de lui tenir tête. Il vous frappe du plat de son épée jusqu'à ce que vous lâchiez tout, puis vous jette dehors.",
+          "11": "La caisse est vissée au comptoir. Vous tirez d'un coup sec, et la moitié du comptoir vient avec elle dans un fracas de bois et de colliers. Le bruit fait sortir de l'arrière-boutique le mercenaire que le bijoutier paie pour garder sa boutique, et les voisins accourent. Vous lâchez tout et filez, une écharde plantée dans la paume."
         },
         "fights": {
           "8": {
-            "won": "Le mercenaire finit par rouler au sol, sonné. Vous ramassez la caisse et quittez la bijouterie avant que le vieil homme ait fini d'appeler à l'aide.",
-            "lost": "Le mercenaire vous met à terre et vous traîne dehors par le col. Vous restez un moment assis dans la poussière de la place, sous le regard des villageois."
+            "won": "Le mercenaire qui garde la bijouterie finit par rouler au sol, sonné. Vous emportez la caisse et quittez la boutique avant que le vieil homme ait fini d'appeler à l'aide.",
+            "lost": "Le mercenaire qui garde la bijouterie vous met à terre et vous traîne dehors par le col. Vous vous relevez dans la poussière de la place, sous le regard des villageois."
           },
           "9": {
-            "won": "Le vieux mercenaire pare longtemps vos coups, mais il finit par heurter l'établi et s'effondre. Vous emportez la caisse sous les yeux du bijoutier, trop effrayé pour vous retenir.",
-            "lost": "Le vieux mercenaire vous envoie hors de la boutique d'un coup d'épaule. Vous vous relevez couvert de bleus, sous les rires des clients de l'Auberge du Seigneur."
+            "won": "Le vieux mercenaire qui garde la bijouterie pare longtemps vos coups, mais il finit par heurter l'établi et s'effondre. Vous emportez la caisse sous les yeux du bijoutier, trop effrayé pour vous retenir.",
+            "lost": "Le vieux mercenaire qui garde la bijouterie vous envoie dehors d'un coup d'épaule. Vous vous relevez couvert de bleus, sous les rires des clients de l'Auberge du Seigneur."
           }
         }
       },
@@ -1562,20 +1565,19 @@
         "outcomes": {
           "0": "Vous quittez la place sans vous attarder. À la sortie du village, la boulangère vous tend un morceau de pain encore chaud pour la route, et vous le mangez en marchant.",
           "1": "Ni l'auberge ni les bijoux ne sont pour vous. Vous traversez Boug-Coton sans ralentir et reprenez la route.",
-          "2": "Vous traversez la place sous des regards méfiants : on vous a reconnu. Les volets se ferment sur votre passage, et le garde du bijoutier vous suit des yeux jusqu'à la sortie du village.",
-          "3": "À la sortie du village, la boulangère vous reconnaît : on lui a dit du bien de vous. Elle vous offre une tourte encore tiède, que vous mangez au bord du chemin.",
-          "4": "À la sortie du village, votre familier s'arrête net devant le four de la boulangère, le nez en l'air. Amusée, elle lui lance un croûton et vous tend un morceau de pain pour la route.",
+          "2": "Sur la place, les conversations s'arrêtent sur votre passage : on vous a reconnu. Devant l'Auberge du Seigneur, deux nobles glissent leur bourse sous leur manteau. Vous quittez Boug-Coton dans un silence pesant.",
+          "3": "À la sortie du village, un charretier vous reconnaît et vous salue chaleureusement : il a entendu parler de vous. Il vous fait monter à l'arrière de sa charrette pour un bout de chemin, et vous reposez vos jambes sur ses sacs de grain.",
+          "4": "L'apprenti du forgeron lâche son soufflet en vous voyant passer : votre allure de vétéran l'impressionne. Il vous suit jusqu'à la sortie du village en vous posant mille questions sur vos combats, et vous mettez un moment à vous en défaire.",
           "5": "En sortant du village, un gamin vous bouscule et s'excuse en riant. Un peu plus loin, votre bourse vous semble plus légère : il avait vu qu'elle était bien remplie.",
-          "6": "Un gamin vous bouscule à la sortie du village, et vous sentez sa main dans votre bourse. Vous le rattrapez en trois enjambées. Penaud, il vous rend tout et file sans demander son reste.",
-          "7": "Vous quittez le village. La boulangère vous trouve bien maigre pour la route : elle vous tend du pain et un morceau de fromage."
+          "6": "Un gamin vous bouscule à la sortie du village, et vous sentez sa main dans votre bourse. Vous le rattrapez en trois enjambées. Penaud, il vous rend tout et file sans demander son reste."
         }
       },
       "end": {
         "outcomes": {
           "0": "Vous attendez longtemps sur la place, sans trop savoir quoi faire. Peu à peu, des marchands s'installent : c'est jour de marché, et les pommes ne coûtent presque rien. Vous en achetez quelques-unes et les savourez sur place.",
-          "1": "Vous attendez un moment sur la place, puis vous rendez compte qu'il n'y a rien de bien intéressant à faire ici.",
+          "1": "Vous attendez un moment sur la place, puis vous vous rendez compte qu'il n'y a rien de bien intéressant à faire ici.",
           "2": "Vous vous asseyez sur un banc de la place pour regarder le vieil artisan travailler. Le tintement régulier de ses outils finit par vous endormir.",
-          "3": "Vous restez longtemps planté devant la bijouterie, les yeux sur la caisse. Le garde du bijoutier finit par sortir et vous prie de circuler. Vous vous éloignez sous les regards des villageois."
+          "3": "Vous restez un moment planté devant la bijouterie, les yeux sur la caisse. Un mercenaire, que le bijoutier paie pour garder sa boutique, finit par sortir : il vous a reconnu. Il vous prie de circuler, et vous vous éloignez sous le regard des villageois."
         }
       }
     }
@@ -1872,44 +1874,44 @@
     "text": "Au détour d'un chemin, une jeune femme apparaît. Vous ne saisissez d'abord pas très bien ce qu'elle dit mais finissez par comprendre qu'elle a besoin d'aide pour l'exploration d'une grotte."
   },
   "43": {
-    "text": "Sur le Grand Axe, la route des brigands qui contourne le Mont Célestrum par le nord, vous marchez de nuit sous une lune claire. Un peu plus tôt, vous avez dépassé un relais de la Garde, où quelques soldats veillent sur la route. Devant vous se dresse une silhouette grande et vêtue de noir, à la peau pâle. Un liquide sombre coule de l'une de ses mains. Elle ne vous a pas encore vu.",
+    "text": "Sur le Grand Axe, la route des brigands qui contourne le Mont Célestrum par le nord, vous marchez de nuit sous une lune claire. Un peu plus tôt, vous avez dépassé un relais de la Garde, où veillent quelques soldats. Devant vous, au bord du chemin, se tient une grande silhouette vêtue de noir. Sa peau est pâle, et un liquide sombre coule de l'une de ses mains. Elle ne vous a pas encore vu.",
     "possibilities": {
       "continue": {
         "text": "Continuer votre route.",
         "outcomes": {
           "0": "Vous poursuivez votre route et arrivez à la hauteur de la silhouette : ce n'est qu'un chasseur de l'Étendue qui relève ses collets. Le liquide qui coule de sa main est le sang d'un lièvre tout juste pris. Vous vous saluez d'un signe de tête, puis vous reprenez votre chemin.",
-          "1": "En arrivant à sa hauteur, vous découvrez un chasseur de l'Étendue qui relève ses collets, la main rouge du sang d'un lièvre. Il accepte volontiers votre aide, puis vous invite dans sa cabane, à quelques pas de la route. Après un gigot grillé devant le feu, vous dormez sur son lit. À l'aube, vous le remerciez en lui laissant quelques pièces.",
-          "2": "En arrivant à sa hauteur, vous découvrez un chasseur de l'Étendue qui relève ses collets, la main rouge du sang d'un lièvre. Vous l'aidez, et il vous invite à manger et à dormir dans sa cabane, au bord de la route. À l'aube, vous voulez le payer, mais il jette un œil à votre bourse presque vide et refuse vos pièces d'un geste.",
-          "3": "Vous poursuivez votre route jusqu'à la silhouette : un chasseur qui relève ses collets, la main rouge de sang. Sous la lune, il reconnaît votre visage, que les gens du Grand Axe n'aiment pas croiser. Méfiant, il pose la main sur son couteau et vous fait signe de passer votre chemin. Il ne vous quitte pas des yeux jusqu'à ce que vous disparaissiez dans la nuit.",
-          "4": "La silhouette n'est qu'un chasseur de l'Étendue qui relève ses collets. Quand il vous reconnaît, il vous sourit : les gens de la route parlent bien de vous. Il vous prévient que des brigands guettent plus loin sur le Grand Axe, et vous montre un sentier qui file à travers champs vers l'Étendue.",
-          "5": "Vous rejoignez la silhouette : un chasseur qui relève ses collets, la main rouge du sang d'un lièvre. Pendant que vous le saluez, votre familier fouille les herbes du talus et s'arrête net devant un collet que le chasseur cherchait encore, un lapin pris dedans. Ravi, l'homme vous glisse quelques pièces.",
-          "6": "La silhouette est un chasseur qui relève ses collets. Vous l'aidez, et il vous invite dans sa cabane, au bord de la route. Le voyant sur le point de brûler son gigot, vous vous chargez de la cuisson : feu doux, herbes du talus, jus versé au bon moment. Après ce festin, il refuse vos pièces et vous laisse son lit jusqu'à l'aube.",
-          "7": "La silhouette est un chasseur qui relève ses collets. Il vous demande un coup de main pour ouvrir un piège à mâchoires grippé. Vous tirez d'un coup sec, et le ressort casse net. Le chasseur contemple son piège en morceaux, et vous lui laissez quelques pièces pour le remplacer."
+          "1": "Vous poursuivez votre route jusqu'à la silhouette : un chasseur de l'Étendue qui relève ses collets. Il vous déconseille de marcher seul de nuit sur le Grand Axe et vous offre le gîte dans sa cabane, à quelques pas de là. Après un gigot de chevreuil grillé devant le feu, vous dormez sur son lit. À l'aube, vous le remerciez en lui laissant quelques pièces.",
+          "2": "En arrivant à la hauteur de la silhouette, vous découvrez un chasseur de l'Étendue qui relève ses collets. Il vous déconseille de marcher seul de nuit sur le Grand Axe, puis vous nourrit et vous héberge dans sa cabane, à quelques pas de là. À l'aube, vous voulez le payer, mais il jette un œil à votre bourse presque vide et refuse vos pièces d'un geste.",
+          "3": "Vous continuez d'avancer : la silhouette n'est qu'un chasseur qui relève ses collets. Sous la lune, il reconnaît votre visage, que les gens du Grand Axe n'aiment pas croiser. Méfiant, il pose la main sur son couteau et vous suit des yeux jusqu'à ce que vous ayez disparu dans la nuit.",
+          "4": "Vous poursuivez votre route : la silhouette n'est qu'un chasseur de l'Étendue qui relève ses collets. Il vous reconnaît et vous sourit, car on dit du bien de vous sur cette route. Il vous prévient que des brigands guettent plus loin sur le Grand Axe et vous montre un sentier qui coupe à travers champs vers l'Étendue. Vous le prenez sans attendre.",
+          "5": "Vous rejoignez la silhouette : un chasseur qui relève ses collets, la main rouge du sang d'un lièvre. Pendant que vous le saluez, votre familier flaire les herbes du talus et s'arrête net devant un collet que le chasseur ne retrouvait plus dans le noir, un lièvre pris dedans. Ravi, l'homme vous glisse quelques pièces.",
+          "6": "Vous continuez votre chemin jusqu'à la silhouette : un chasseur qui relève ses collets. Inquiet de vous voir seul de nuit sur le Grand Axe, il vous offre le gîte dans sa cabane. Le voyant sur le point de brûler son gigot, vous vous chargez de la cuisson : feu doux, herbes du talus, jus versé au bon moment. Ravi du festin, il refuse vos pièces et vous laisse son lit jusqu'à l'aube.",
+          "7": "En passant près de la silhouette, vous découvrez un chasseur qui relève ses collets. Il vous demande un coup de main pour ouvrir un piège à mâchoires grippé par la rouille. Vous tirez d'un coup sec, si fort que le ressort casse net. Le chasseur ramasse en soupirant les morceaux de son meilleur piège, et vous lui laissez quelques pièces pour le remplacer."
         }
       },
       "fight": {
         "text": "Affronter la créature.",
         "outcomes": {
-          "0": "Vous foncez sur la silhouette en hurlant. L'homme se retourne et lève les mains pour vous arrêter : c'est un chasseur qui vérifie ses collets, pas une créature de la nuit, et le sang sur sa main est celui d'un lièvre. Vous vous excusez en hâte et repartez.",
+          "0": "Vous foncez sur la silhouette en hurlant. L'homme se retourne et lève les mains pour vous arrêter : c'est un chasseur qui relève ses collets, pas une créature de la nuit, et le sang sur sa main est celui d'un lièvre. Vous vous excusez en hâte et repartez.",
           "1": "Vous chargez en hurlant, mais à quelques pas, vous comprenez votre erreur : c'est un chasseur qui relève ses collets, blême de peur. Confus, vous l'aidez à finir sa tournée pour vous faire pardonner.",
-          "2": "Vous dégainez votre arme et avancez sur la silhouette. L'homme se retourne, encoche une flèche et vous ordonne de ne pas faire un pas de plus. Vous rangez votre arme en expliquant que, de loin, vous l'aviez pris pour un démon. Le chasseur baisse son arc, et vous reprenez la route, penaud.",
-          "3": "Vous foncez sur la silhouette en hurlant. Surpris, l'homme se retourne et décoche une flèche avant que vous ayez dit un mot. Sans bonne armure, vous la recevez dans le bras. Le tireur n'est qu'un chasseur qui relève ses collets : il se confond en excuses et bande votre plaie, mais vous repartez étourdi.",
-          "4": "Vous chargez en hurlant. L'homme se retourne et décoche une flèche, qui vous écorche la joue. Vous comprenez vite qu'il n'est qu'un chasseur qui relève ses collets, et lui que vous n'êtes pas un brigand. Vous repartez en vous tamponnant la joue.",
+          "2": "Vous brandissez votre arme et avancez sur la silhouette. L'homme se retourne, son arc tendu vers vous, et vous ordonne de ne pas faire un pas de plus. Vous rangez votre arme en expliquant que, de loin, vous l'aviez pris pour un monstre. Le chasseur baisse son arc, et vous reprenez la route, penaud.",
+          "3": "Vous foncez sur la silhouette en hurlant. Surpris, l'homme se retourne et décoche une flèche avant que vous ayez pu vous expliquer. Sans bonne armure, vous ne pouvez rien contre la flèche, qui vous entaille le bras. Le tireur n'est qu'un chasseur qui relève ses collets : il se confond en excuses et bande votre plaie, mais vous repartez étourdi.",
+          "4": "Vous chargez en hurlant. L'homme se retourne et décoche une flèche, qui vous écorche la joue. Vous comprenez vite qu'il n'est qu'un chasseur qui relève ses collets, et lui, que vous n'êtes pas un brigand. Vous repartez en vous tamponnant la joue.",
           "5": "Vous foncez en hurlant. L'homme se retourne et décoche une flèche, qui ricoche sur votre armure. Vous voilà face à face : un chasseur blême, son arc à la main, et vous, essoufflé. Vous comprenez votre erreur, vous vous excusez et reprenez la route.",
           "6": "Vous foncez sur la silhouette si vite que vous ne pouvez plus vous arrêter. Vous la percutez de plein fouet, et vous roulez tous les deux dans le fossé. Quand vous vous relevez, étourdi, un chasseur furieux ramasse ses collets en vous maudissant.",
-          "7": "Vous chargez en hurlant. L'homme se retourne et, sous la lune, il vous reconnaît : c'est un chasseur de l'Étendue, et les gens de la route parlent bien de vous. Il éclate de rire devant votre méprise et partage avec vous le lièvre qu'il vient de prendre, grillé au bord de la route.",
-          "8": "Vous foncez en hurlant vers la silhouette. L'homme se retourne : ce n'est qu'un chasseur. Mais votre cri affole le sanglier pris dans l'un de ses collets, à quelques pas. La bête arrache le collet et charge droit sur vous.",
-          "9": "Vous chargez en hurlant, et l'homme qui se retourne n'est qu'un chasseur. Mais votre cri affole un énorme sanglier pris dans un collet, au bord du fossé. Fou de rage, il arrache le piège et fonce sur vous.",
-          "10": "Vous foncez en hurlant, mais vos jambes vous portent à peine. L'homme se retourne : ce n'est qu'un chasseur. Votre cri affole un sanglier pris dans l'un de ses collets, tout près. Il arrache le piège et vous renverse avant que vous puissiez lever les bras. Le chasseur le fait fuir à coups de flèches, puis bande votre cuisse entaillée."
+          "7": "Vous chargez en hurlant. L'homme se retourne : c'est un chasseur de l'Étendue. Sous la lune, il vous reconnaît, car on lui a souvent dit du bien de vous, et il éclate de rire devant votre méprise. Il partage avec vous le lièvre qu'il vient de prendre, grillé au bord de la route.",
+          "8": "Vous foncez en hurlant vers la silhouette. L'homme se retourne : c'est un chasseur. À quelques pas de lui, un sanglier est pris dans l'un de ses collets. Affolée par votre cri, la bête arrache le piquet du collet et charge droit sur vous.",
+          "9": "Vous chargez en hurlant. L'homme qui se retourne n'est qu'un chasseur, mais à quelques pas de lui, un énorme sanglier se débat dans l'un de ses collets. Votre cri achève de rendre la bête folle : elle arrache le piquet et fonce sur vous, défenses en avant.",
+          "10": "Vous vous élancez en hurlant, mais, à bout de forces, vous n'avancez qu'en titubant. L'homme se retourne : c'est un chasseur. Près de lui, un sanglier pris dans un collet arrache le piquet, affolé par votre cri, et vous renverse avant que vous ayez pu lever les bras. Le chasseur le fait fuir à coups de flèches, puis bande votre cuisse entaillée."
         },
         "fights": {
           "8": {
-            "won": "Le sanglier s'écroule dans le fossé. Le chasseur, qui avait reculé contre un arbre, vous aide à le hisser sur la route. Ravi de cette prise, il vous donne quelques pièces.",
-            "lost": "Le sanglier vous renverse d'un coup de tête et file dans les champs, le collet toujours à la patte. Le chasseur vous aide à vous relever en pestant contre sa prise perdue."
+            "won": "Le sanglier finit par rouler dans le fossé et ne se relève plus. Le chasseur, qui n'aurait jamais osé l'approcher seul, vous paie votre part de la bête.",
+            "lost": "D'un coup de boutoir, le sanglier vous envoie rouler dans l'herbe, puis file à travers champs, le collet toujours à la patte. Le chasseur vous aide à vous relever en pestant contre sa prise perdue."
           },
           "9": {
-            "won": "Le sanglier finit par s'effondrer. Le chasseur n'en revient pas : une bête pareille le nourrira pendant des semaines. Il vous donne une bonne bourse pour votre peine.",
-            "lost": "Le sanglier vous projette dans le fossé et disparaît dans la nuit avec le collet. Le chasseur vous tire de là, couvert de boue et de bleus."
+            "won": "L'énorme sanglier s'effondre enfin à vos pieds. Le chasseur n'en revient pas : une bête pareille nourrira sa famille pendant des semaines. Il vous donne une bonne bourse pour votre peine.",
+            "lost": "Le sanglier vous projette dans le fossé et disparaît dans la nuit, le collet traînant derrière lui. Vous en ressortez couvert de boue et de bleus, aidé par le chasseur."
           }
         }
       },
@@ -1918,34 +1920,33 @@
         "outcomes": {
           "0": "Vous reculez sans bruit. Une fois assez loin, vous courez à toutes jambes et repartez par où vous êtes venu, sans vous retourner.",
           "1": "Vous reculez tout doucement, mais une brindille craque sous votre pied. Pris de panique, vous partez en courant, trébuchez et vous écorchez les genoux sur les cailloux. Vous vous relevez aussitôt et filez par où vous êtes venu.",
-          "2": "Vous faites demi-tour, mais votre familier lève le nez, attiré par une odeur, et file droit vers la silhouette. Quand vous le rattrapez, il est assis aux pieds d'un chasseur qui relève ses collets et lui tend un bout de lièvre. Un peu gêné, vous récupérez votre familier et reprenez votre route.",
-          "3": "Vous faites demi-tour, mais votre familier, lui, gronde vers la silhouette. Elle se retourne, découvre la bête sous la lune et détale à travers champs. Vous voilà seul sur la route, sans plus de raison de rebrousser chemin.",
-          "4": "Vous rebroussez chemin en courant, le cœur battant, et vous vous cachez dans un fossé. Vous y restez plus longtemps que prévu, à guetter le moindre bruit, avant d'oser reprendre la route.",
-          "5": "Vous faites demi-tour en courant, et votre lourde bourse tinte à chaque pas. Un brigand tapi dans le fossé l'entend. Il vous fait un croche-pied, arrache une poignée de pièces à votre bourse et disparaît dans le noir. Vous repartez par où vous êtes venu, plus léger."
+          "2": "Vous faites demi-tour, mais votre familier lève le nez, flaire l'air et file droit vers la silhouette. Quand vous le rattrapez, il renifle le sac d'un chasseur qui relève ses collets, et l'homme, amusé, lui tend un bout de lièvre. Un peu gêné, vous récupérez votre familier et passez votre chemin devant le chasseur, sans plus songer à faire demi-tour.",
+          "3": "Vous faites demi-tour, mais votre familier, lui, s'avance vers la silhouette. Elle se retourne, découvre la bête sous la lune et détale à travers champs en abandonnant un lièvre et quelques collets : ce n'était qu'un chasseur. Vous voilà seul sur la route, sans plus aucune raison de rebrousser chemin.",
+          "4": "Peu habitué aux routes de nuit, vous repartez par où vous êtes venu, mais chaque buisson vous semble cacher une autre créature. Vous avancez à pas comptés en guettant le moindre bruit, et le trajet vous prend plus longtemps que prévu.",
+          "5": "Vous faites demi-tour en courant, et votre lourde bourse tinte à chaque pas. Un brigand tapi dans le fossé entend ce bruit. Il vous fait un croche-pied, arrache une poignée de pièces à votre bourse et disparaît dans le noir. Vous repartez par où vous êtes venu, plus léger."
         }
       },
       "shelter": {
         "text": "S'abriter au relais de la Garde.",
         "outcomes": {
-          "0": "Vous rebroussez chemin jusqu'au relais de la Garde et frappez à la porte, encore tremblant. Le soldat de garde vous fait entrer sans poser de questions. On vous sert une soupe chaude, puis on vous laisse une couchette. Vous vous endormez au son des contes de la veillée.",
-          "1": "Vous courez jusqu'au relais de la Garde et frappez. Personne ne répond : les soldats sont partis en patrouille. Craignant d'avoir été suivi, vous entrez, barrez la porte derrière vous et vous endormez sur un banc.",
-          "2": "Vous partez vers le relais de la Garde, mais dans le noir, tous les buissons se ressemblent et vous ne le retrouvez pas. Vous décidez alors de vous éloigner le plus possible de la silhouette, et vous marchez jusqu'à ne plus la voir.",
-          "3": "Au relais de la Garde, un vieux sergent écoute votre récit avec intérêt. Selon lui, ce pourrait être une bête échappée des îles, qui affleurent chaque semaine près des côtes. Il vous raconte ensuite toutes les histoires d'îles qu'il connaît, et vous l'écoutez pendant des heures.",
-          "4": "Vous arrivez au relais de la Garde et frappez. Par la lucarne, le soldat de garde reconnaît votre visage, celui qu'on décrit dans tous les postes de la route, et refuse d'ouvrir. Vous passez des heures adossé à la porte, à guetter la nuit, jusqu'à ce que l'aube se lève.",
-          "5": "Au relais de la Garde, le sergent vous reconnaît : on parle de vous en bien sur toutes les routes. Il envoie deux soldats voir la créature. Ils reviennent en riant : ce n'est qu'un chasseur qui relève ses collets. Le sergent vous offre tout de même un repas chaud et un lit.",
-          "6": "Au relais de la Garde, le sergent jauge vos cicatrices et votre allure de vétéran. Plutôt que de vous offrir un lit, il vous propose de mener sa patrouille de nuit. La créature n'est qu'un chasseur, mais vous faites fuir deux brigands embusqués plus loin. Le sergent vous paie pour la ronde.",
-          "7": "Au relais de la Garde, le soldat de garde entend tinter votre bourse avant même d'ouvrir. Il vous fait payer le droit d'entrer de nuit, une règle qu'il semble inventer sur place. Vous payez, puis dormez enfin à l'abri.",
-          "8": "Au relais de la Garde, les soldats acceptent de vous abriter, mais pas votre familier : sa vue les a fait reculer jusqu'au mur. Vous passez la nuit avec lui dans l'écurie, sur la paille."
+          "0": "Vous retournez au relais de la Garde et frappez à la porte, encore tremblant. Le soldat de garde vous fait entrer sans poser de questions. On vous sert une soupe chaude, puis on vous laisse une couchette. Vous vous endormez au son des contes de la veillée.",
+          "1": "Vous courez jusqu'au relais de la Garde et frappez. Personne ne répond, mais la porte n'est pas verrouillée : les soldats sont partis en patrouille. Craignant d'avoir été suivi, vous entrez, refermez la porte derrière vous et vous endormez sur un banc.",
+          "2": "Pour gagner du temps, vous coupez à travers champs vers le relais de la Garde. Mais dans le noir, toutes les haies se ressemblent, et vous ne le retrouvez pas. Vous errez un moment, jusqu'à être sûr d'avoir laissé la silhouette loin derrière vous.",
+          "3": "Au relais de la Garde, un vieux sergent écoute votre récit avec intérêt. Selon lui, ce pourrait être une bête échappée des îles qui dérivent chaque semaine jusqu'aux côtes. Il vous raconte ensuite toutes les histoires d'îles qu'il connaît, et vous l'écoutez pendant des heures.",
+          "4": "Vous arrivez au relais de la Garde et frappez. Par la fenêtre, le soldat de garde vous dévisage et vous reconnaît : dans les postes de la route, on ne dit pas de bien de vous. Il refuse d'ouvrir. Vous passez des heures adossé à la porte, l'oreille aux aguets, avant d'oser reprendre la route.",
+          "5": "Au relais de la Garde, le sergent vous reconnaît : on cite votre nom en exemple dans tous les postes de la route. Il envoie deux soldats voir la créature. Ils reviennent en riant : ce n'est qu'un chasseur qui relève ses collets. Le sergent vous offre tout de même un repas chaud et un lit.",
+          "6": "Au relais de la Garde, le sergent remarque vos cicatrices et votre allure de vétéran. Plutôt que de vous offrir un lit, il vous propose de mener sa patrouille de nuit. La créature n'est qu'un chasseur, mais plus loin, vous faites fuir deux brigands embusqués au bord de la route. Le sergent vous paie pour la ronde.",
+          "7": "Au relais de la Garde, le soldat qui vous ouvre remarque votre bourse bien garnie. Il vous fait payer le droit d'entrer de nuit, une règle qu'il semble inventer sur place. Vous payez, puis dormez enfin à l'abri.",
+          "8": "Vous montez sur votre familier, qui vous ramène au relais de la Garde en un rien de temps. Les soldats, qui l'ont entendu arriver dans la nuit, ouvrent la porte l'arme à la main, puis la rangent en riant. Ils lui font une place à l'abri du vent et vous laissent une couchette près du feu."
         }
       },
       "end": {
         "outcomes": {
-          "0": "Vous laissez la silhouette à ses affaires et passez au large. Un peu plus loin, un éclat brille dans le fossé : un objet perdu par un voyageur que les brigands ont dû détrousser. Vous le rangez dans votre sac.",
+          "0": "Vous laissez la silhouette à ses affaires et passez au large. Un peu plus loin, un éclat brille dans le fossé : un objet sans doute tombé du sac d'un voyageur détroussé par les brigands. Vous le ramassez.",
           "1": "Pris de peur, vous quittez la route et faites un détour par les champs pour éviter la créature.",
-          "2": "Vous partez en courant sans regarder ce que c'était. Dans le noir, votre pied heurte une pierre, et vous tombez sur les bras, tout écorché.",
-          "3": "Trop effrayé pour bouger, vous vous tapissez dans le fossé en attendant que la créature s'en aille. Elle prend son temps. À force de guetter, vous finissez par vous endormir dans l'herbe.",
-          "4": "Pendant que vous hésitez, votre familier, à l'aise dans la nuit, file vers la silhouette. Le temps de le rattraper, il tourne déjà autour d'un chasseur qui relève ses collets. L'homme éclate de rire, et chacun reprend sa route.",
-          "5": "Vous détalez sans regarder ce que c'était, si vite que vous ne voyez pas le virage. Vous filez droit dans le fossé et vous relevez étourdi, couvert de boue."
+          "2": "Vous partez en courant à travers champs, sans regarder ce que c'était. Dans le noir, vous foncez droit dans une haie de ronces et en ressortez les bras tout écorchés.",
+          "3": "Vous n'avez encore jamais rien croisé de tel. Trop effrayé pour bouger, vous vous tapissez dans le fossé en attendant que la créature s'en aille. Elle prend son temps, et à force de guetter, vous finissez par vous endormir dans l'herbe.",
+          "4": "Pendant que vous hésitez, votre familier, à son aise dans la nuit, s'engage dans les champs. Vous le suivez : il trouve son chemin sans peine dans le noir, et vous contournez la silhouette de loin avant de retrouver la route."
         }
       }
     }
@@ -2119,28 +2120,27 @@
         "text": "Chasser le seigneur.",
         "outcomes": {
           "0": "Avec les villageois, vous bloquez l'entrée du donjon et attendez que le seigneur cède. Les heures passent sans un bruit. Puis ses mercenaires sortent en hurlant, et les paysans s'enfuient avec leurs fourches. Resté seul, vous filez à votre tour par les ruelles.",
-          "1": "Vous menez les villageois jusqu'au donjon et vous jetez sur le premier mercenaire. Mais derrière vous, personne ne suit : les paysans ont pris peur. Le mercenaire vous envoie au sol d'un coup de poing et vous prend votre bourse.",
+          "1": "Vous menez les villageois jusqu'au donjon et vous jetez sur le premier mercenaire. Mais derrière vous, personne ne suit : les paysans ont pris peur. Le mercenaire vous envoie au sol d'un coup de poing et vous fait les poches.",
           "2": "Vous préparez l'attaque du donjon avec les villageois. Mais l'un d'eux court tout raconter au seigneur, contre une remise sur son impôt. Les mercenaires vous tombent dessus avant l'heure, et vous leur échappez de justesse, couvert de bleus.",
           "3": "Votre allure de chevalier vous ouvre les portes du donjon : le seigneur croit que vous venez le servir. Quand vous le sommez de quitter Ville Forte, ses mercenaires tirent l'épée. Vous esquivez un premier coup, mais un second vous ouvre le flanc, et l'on vous jette dehors.",
-          "4": "Vous attendez avec les villageois au pied du donjon. Quand le seigneur tente une sortie avec ses mercenaires, un paysan donne l'alerte, et vous êtes sur eux avant qu'ils aient fait dix pas. Le seigneur s'enfuit par les galeries, et le village vous remet la bourse promise.",
-          "5": "Vous vous présentez au donjon comme une lame à louer. Le seigneur reconnaît quelqu'un de votre espèce et vous prend à son service. Le soir même, vous ouvrez la porte du donjon aux villageois. Votre nouveau maître s'enfuit en chemise par les galeries, et le village vous paie, sans vous quitter des yeux.",
-          "6": "Vous allez trouver les mercenaires du seigneur. Ils attendent leur solde depuis des semaines, et votre bourse bien garnie les intéresse. Contre une partie de son contenu, ils mettent leur maître à la porte. Les villageois vous offrent un objet en remerciement.",
-          "7": "Vous menez les villageois jusqu'au donjon. Le plus grand des mercenaires sort seul à votre rencontre et fait signe aux autres de rester en arrière. Il tire son épée : il compte régler l'affaire avec vous seul.",
-          "8": "Vous menez les villageois jusqu'au donjon. Le chef des mercenaires vous attend devant la porte, un vieux soldat couvert de cicatrices. Il a vu venir l'attroupement et préfère régler l'affaire en duel, sous les yeux de tous.",
-          "9": "Vous menez les villageois jusqu'au donjon, mais vous tenez à peine debout. Le premier mercenaire vous renverse d'une bourrade et vous roue de coups devant tout le village, qui n'ose pas bouger.",
-          "10": "Votre familier vous suit jusqu'au donjon. À sa vue, les mercenaires reculent, puis s'enfuient par les remparts sans réclamer leur solde. Resté seul, le seigneur rassemble ses affaires et quitte la ville en hâte. Le village vous remet la bourse promise.",
-          "11": "Les mercenaires voient arriver un aventurier qui débute à peine et éclatent de rire. L'un d'eux vous attrape par le col et vous renvoie au village d'un coup de pied.",
-          "12": "Vous menez l'assaut sur le donjon et vous jetez sur le premier mercenaire. Vous échangez quelques coups, mais ses compagnons accourent et les villageois reculent. Vous battez en retraite avec eux, la lèvre fendue.",
-          "13": "Vous menez l'assaut sur le donjon et envoyez le premier mercenaire rouler dans la poussière. Les villageois reprennent courage et envahissent les ruines. Le seigneur s'enfuit par les galeries, et le village vous remet la bourse promise."
+          "4": "Vous guettez avec les villageois au pied du donjon. Au bout d'une heure, le seigneur tente une sortie avec ses mercenaires, mais vous êtes sur lui avant qu'il ait fait dix pas. Ses hommes n'insistent pas, et il quitte Ville Forte sous les huées. Le village vous remet la bourse promise.",
+          "5": "Vous vous présentez au donjon comme une épée à louer. Le seigneur a entendu parler de vos méfaits et vous engage sur-le-champ. Dès qu'il a le dos tourné, vous ouvrez la porte du donjon aux villageois. Votre nouveau maître s'enfuit en chemise par les galeries, et le village vous paie, sans vous quitter des yeux.",
+          "6": "Vous allez trouver les mercenaires du seigneur. Ils attendent leur solde depuis des semaines, et votre bourse bien garnie les intéresse. Contre une partie de son contenu, ils mettent leur maître à la porte. Vous laissez au village l'argent qu'il avait réuni, et les villageois vous offrent un objet en remerciement.",
+          "7": "Vous menez les villageois jusqu'au donjon. Un mercenaire du seigneur, le plus grand de la bande, sort à votre rencontre et fait signe aux autres de rester en arrière. Il tire son épée et vous attend.",
+          "8": "Vous menez les villageois jusqu'au donjon. Le chef des mercenaires du seigneur vous attend devant la porte, un vieux soldat couvert de cicatrices. Il a vu venir l'attroupement et préfère régler l'affaire en duel, sous les yeux de tous.",
+          "9": "Vous menez les villageois jusqu'au donjon, mais vous tenez à peine debout. Un mercenaire du seigneur vous renverse d'une bourrade et vous roue de coups. Les villageois finissent par vous tirer de là et vous ramènent chez vos hôtes, couvert de bleus.",
+          "10": "Vous menez votre familier jusqu'à la porte barricadée du donjon. Il pousse de tout son poids : le vieux bois craque, et la porte s'abat dans la cour. Les villageois s'engouffrent dans la brèche, et le seigneur et ses mercenaires, débordés, quittent les ruines sans demander leur reste. Le village vous remet la bourse promise.",
+          "11": "Vous menez l'assaut sur le donjon et vous jetez sur le premier mercenaire. Vous échangez quelques coups, mais ses compagnons accourent et les villageois reculent. Vous battez en retraite avec eux, la lèvre fendue.",
+          "12": "Vous menez l'assaut sur le donjon et envoyez le premier mercenaire rouler dans la poussière. Les villageois prennent courage et envahissent les ruines. Le seigneur s'enfuit par les galeries, et le village vous remet la bourse promise."
         },
         "fights": {
           "7": {
-            "won": "Le mercenaire finit dans la poussière. Ses compagnons jugent que leur solde ne vaut pas ce risque et s'en vont, et le seigneur file derrière eux. Le village vous remet la bourse promise.",
-            "lost": "Le mercenaire vous envoie au sol, et les villageois se dispersent aussitôt. Vous quittez la place sous les rires des hommes du seigneur."
+            "won": "Le mercenaire du seigneur finit dans la poussière. Ses compagnons jugent que leur solde ne vaut pas ce risque et s'en vont, et leur maître file derrière eux. Le village vous remet la bourse promise.",
+            "lost": "Le mercenaire du seigneur vous envoie au sol, et les villageois se dispersent aussitôt. Vous vous relevez sous les rires de ses compagnons."
           },
           "8": {
-            "won": "Le vieux soldat pose un genou à terre et rengaine. Il n'a jamais promis de mourir pour ce seigneur : il emmène ses hommes, et leur maître s'enfuit par les galeries. Le village vous remet la bourse promise, et le père y ajoute un objet de famille.",
-            "lost": "Le vieux soldat vous renverse d'un coup d'épaule et vous laisse repartir. Découragés, les villageois rentrent chez eux payer leur impôt."
+            "won": "Le chef des mercenaires recule et rengaine. Il n'a jamais promis de mourir pour ce seigneur : il emmène ses hommes, et leur maître, resté seul, plie bagage. Le village vous remet la bourse promise, et votre hôte y ajoute un objet.",
+            "lost": "Le chef des mercenaires vous renverse d'un coup d'épaule et vous laisse repartir. Découragés, les villageois rentrent chez eux payer leur impôt."
           }
         }
       },
@@ -2149,13 +2149,13 @@
         "outcomes": {
           "0": "Vous montez au donjon et racontez tout au seigneur. Il vous remercie d'un signe de tête et envoie ses mercenaires chez la famille qui vous a nourri. Vous quittez Ville Forte sans vous retourner.",
           "1": "Vous proposez au seigneur le nom du meneur contre une belle somme. Il accepte, et ses mercenaires vont arrêter le père de famille. En redescendant du donjon, vous ouvrez la bourse qu'il vous a remise : elle ne contient que quelques pièces.",
-          "2": "Vous proposez au seigneur le nom du meneur contre une belle somme. Une fois le père de famille arrêté, le seigneur refuse de payer et tire l'épée. Mal lui en prend : le duel est vite réglé. Sa bourse est bien maigre, mais vous la gardez.",
-          "3": "Les mercenaires qui gardent le donjon refusent de vous laisser passer. Vous insistez, c'est important, mais ils posent la main sur leur épée. Vous redescendez en pestant.",
-          "4": "En montant au donjon, vous croisez le fils de vos hôtes. Il devine où vous allez et donne l'alerte. Tout le village vous tombe dessus à coups de bâton, et sans bonne armure, vous encaissez chaque coup.",
-          "5": "En montant au donjon, vous croisez le fils de vos hôtes. Il devine où vous allez et donne l'alerte. Le village vous tombe dessus à coups de bâton : vous parez les premiers, puis finissez à terre, le souffle coupé.",
-          "6": "En montant au donjon, vous croisez le fils de vos hôtes. Il devine où vous allez et donne l'alerte. Les coups de bâton du village glissent sur votre armure, mais avec tout le monde à vos trousses, vous renoncez au donjon et quittez Ville Forte.",
-          "7": "Le seigneur vous écoute, puis éclate de rire : on lui a dit du bien de vous, et il ne croit pas un instant que vous trahissiez vos hôtes. Persuadé qu'on veut l'attirer dans un piège, il vous fait jeter dehors.",
-          "8": "Le seigneur reconnaît votre visage et vous écoute avec intérêt. Il paie bien les gens de votre espèce : vous repartez avec une bourse correcte, pendant que ses mercenaires descendent au village.",
+          "2": "Vous proposez au seigneur le nom du meneur contre une belle somme. Une fois le père de famille arrêté, le seigneur refuse de payer et tire l'épée. Mal lui en prend : vous le désarmez en deux coups et lui prenez sa bourse, pendant que ses mercenaires regardent ailleurs. Elle est bien maigre.",
+          "3": "Les mercenaires qui gardent le donjon refusent de vous laisser passer. Vous insistez, mais ils posent la main sur leur épée, et vous redescendez en pestant.",
+          "4": "En montant au donjon, vous croisez le fils de vos hôtes. Il sait que personne ne monte là-haut sans affaire avec le seigneur, et il donne l'alerte. Tout le village vous tombe dessus à coups de bâton, et sans bonne armure, vous encaissez chaque coup.",
+          "5": "En montant au donjon, vous croisez le fils de vos hôtes. Il sait que personne ne monte là-haut sans affaire avec le seigneur, et il donne l'alerte. Le village vous tombe dessus à coups de bâton : vous tenez bon un moment, puis finissez à terre, le souffle coupé.",
+          "6": "En montant au donjon, vous croisez le fils de vos hôtes. Il sait que personne ne monte là-haut sans affaire avec le seigneur, et il donne l'alerte. Les coups de bâton du village glissent presque tous sur votre armure, mais avec tout le monde à vos trousses, vous renoncez au donjon et quittez Ville Forte.",
+          "7": "Le seigneur vous écoute, puis éclate de rire : dans tout le pays, on vous dit honnête et serviable. Il ne croit pas un instant que vous trahissiez vos hôtes et, persuadé qu'on veut l'attirer dans un piège, vous fait jeter dehors.",
+          "8": "Le seigneur sait qui vous êtes et vous écoute avec intérêt. Il paie bien les gens de votre espèce : vous repartez avec une bourse bien remplie, pendant que ses mercenaires descendent au village.",
           "9": "Le seigneur reconnaît en vous un combattant célèbre et vous propose de commander ses mercenaires. Vous déclinez, mais il vous remercie du renseignement et vous offre un objet tiré de ses coffres."
         }
       },
@@ -2164,12 +2164,12 @@
         "outcomes": {
           "0": "Ce n'est pas votre combat. Vous déclinez poliment, remerciez la famille pour la soupe et reprenez la route.",
           "1": "Vous expliquez que vous êtes trop épuisé pour vous battre. La famille vous laisse dormir dans la grange. Reposé, vous repartez avant l'aube sans réveiller personne.",
-          "2": "La famille vous laisse dormir dans la grange. Par vieille habitude, vous fouillez les lieux pendant la nuit, puis filez avant l'aube avec un objet trouvé dans un coffre.",
-          "3": "Vous invoquez la fatigue pour passer la nuit dans la grange, puis filez dans le noir. Dans votre hâte, votre bourse s'accroche à une planche, et une partie de vos pièces roule entre les pavés.",
-          "4": "En quittant la ville, vous croisez deux mercenaires du seigneur. Votre bourse bien garnie ne leur échappe pas : la main sur l'épée, ils réclament un droit de passage. Vous payez pour éviter les ennuis.",
-          "5": "Pour ne pas décevoir la famille, vous attendez la nuit pour partir sans bruit. Mais votre lourde armure cliquette dans l'escalier et réveille toute la maison. Il vous faut un moment pour rassurer tout le monde avant de reprendre la route.",
+          "2": "Vous déclinez, mais la famille vous laisse dormir dans la grange. Par vieille habitude, vous fouillez les lieux pendant la nuit, puis filez avant l'aube avec un objet trouvé dans un coffre.",
+          "3": "Pour ne pas avoir à refuser en face, vous invoquez la fatigue pour dormir dans la grange, et filez en pleine nuit. Dans votre hâte, votre bourse s'accroche à une planche, et une partie de vos pièces roule entre les pavés.",
+          "4": "En quittant la ville, vous croisez deux mercenaires du seigneur. Le tintement de votre bourse ne leur échappe pas : la main sur l'épée, ils réclament un droit de passage. Vous payez pour éviter les ennuis.",
+          "5": "Pour ne pas décevoir la famille, vous attendez la nuit pour partir sans bruit. Mais votre lourde armure cliquette au moindre pas et réveille toute la maison. Il vous faut un moment pour rassurer tout le monde avant de reprendre la route.",
           "6": "Vous déclinez l'offre et descendez à la Chope Sanglante, loin de ces histoires. Entre les trophées de monstres et l'odeur de bière, personne ne vient vous parler du seigneur.",
-          "7": "Vous déclinez l'offre, mais les enfants de la maison se sont attroupés autour de votre familier et refusent de le lâcher. Le temps de le récupérer, vous avez perdu un moment.",
+          "7": "Vous déclinez l'offre. Mais les enfants de la maison ont découvert votre familier : ils se pressent autour de lui et vous posent question sur question. Le temps de répondre à toutes, vous avez perdu un moment.",
           "8": "Vous déclinez l'offre. Le père ne vous en veut pas : on lui a dit du bien de vous, et il vous glisse un morceau de pain pour la route. Vous le mangez en marchant."
         }
       },
@@ -2177,9 +2177,9 @@
         "outcomes": {
           "0": "Vous réfléchissez à l'offre sans y répondre. Le père insiste, puis renonce, et vous repartez sans un mot, songeur.",
           "1": "Vous ne répondez rien. Dès que le père a le dos tourné, vous quittez Ville Forte : vous ne tenez pas à avoir des ennuis avec ce seigneur.",
-          "2": "Vous réfléchissez sans répondre. Mais un mercenaire du seigneur écoutait derrière la porte, et il vous prend pour le combattant que le village a payé. Vos protestations ne vous évitent pas une journée enfermé dans une cave du donjon.",
+          "2": "Vous réfléchissez sans répondre, quand un mercenaire du seigneur entre réclamer l'impôt. Il sait que le village cherche un combattant contre son maître : méfiant, il vous emmène au donjon avant que vous ayez pu vous lever. On vous garde des heures dans une cave, puis on vous relâche.",
           "3": "Pendant que le père parle, vos paupières se ferment. Vous vous endormez le nez dans votre soupe, et la famille n'ose pas vous réveiller.",
-          "4": "Vous réfléchissez sans répondre. Un mercenaire du seigneur écoutait derrière la porte et entre pour vous saisir, mais vous sautez par la fenêtre et disparaissez dans les ruines avant qu'il ait fait un pas."
+          "4": "Vous réfléchissez sans répondre, quand un mercenaire du seigneur entre réclamer l'impôt. Il sait que le village cherche un combattant contre son maître, et il veut vous emmener au donjon. Vous ne lui en laissez pas le temps : d'un bond, vous passez par la fenêtre et disparaissez dans les ruines."
         }
       }
     }
@@ -2286,56 +2286,56 @@
     "text": "Vous avez trouvé une fontaine !"
   },
   "50": {
-    "text": "Au Village Coco, la chaleur du désert vous écrase. Vous vous laissez tomber à l'ombre d'un cocotier, au bord de la source que se disputent les nobles de la Vallée des Rois, et vos yeux se ferment déjà. Au-dessus de vous, des récolteurs grimpent aux troncs, une corde autour de la taille, et font tomber les noix de coco qui se vendent à prix d'or dans tout le royaume.",
+    "text": "Écrasé par la chaleur du désert, vous somnolez à l'ombre d'un cocotier du Village Coco, près de la source où les nobles de la Vallée des Rois viennent chercher la fraîcheur. Au-dessus de vous, des récolteurs grimpent aux troncs et font tomber les noix de coco, qui se vendent à prix d'or dans tout le royaume.",
     "possibilities": {
       "ask": {
         "text": "Aborder les récolteurs.",
         "outcomes": {
           "0": "Vous interpellez un récolteur au pied de son arbre. Il vous vend une noix tout juste tombée et la fend d'un coup de machette. Le jus est frais, la chair tendre, et la chaleur vous pèse déjà moins.",
-          "1": "Sans lâcher son tronc, un récolteur vous explique qu'on reconnaît une noix mûre au bruit qu'elle fait quand on la secoue. Il n'a pas le temps d'en dire plus : les nobles attendent leur récolte. Vous le remerciez et retournez à votre ombre.",
-          "2": "À votre approche, les récolteurs échangent un regard et descendent de leurs arbres. Ils ont reconnu votre visage et se rangent devant leurs paniers sans un mot. Vous retournez à votre ombre.",
-          "3": "Le chef des récolteurs vous reconnaît : on lui a dit du bien de vous. Il vous fait asseoir avec son équipe et vous offre une noix fraîche, qu'il refuse de vous faire payer.",
+          "1": "Accroché à son tronc, un récolteur vous explique qu'on reconnaît une noix mûre au bruit qu'elle fait quand on la secoue. Il n'a pas le temps d'en dire plus : la récolte part ce soir pour les marchés du royaume. Vous le remerciez et retournez à votre ombre.",
+          "2": "À votre approche, les récolteurs échangent un regard et descendent de leurs arbres. Ils vous ont reconnu, et ils se rangent devant leurs paniers sans un mot. Vous retournez à votre ombre.",
+          "3": "Le chef des récolteurs vous reconnaît : on lui a dit du bien de vous. Il vous fait asseoir à l'ombre avec son équipe et vous offre une noix fraîche, qu'il refuse de vous faire payer.",
           "4": "Vous demandez à un récolteur comment on cuisine la chair de coco. Il voit vite que vous vous y connaissez, et vous échangez des recettes à l'ombre. Ravi, il vous cède une noix à moitié prix et vous l'ouvre lui-même.",
-          "5": "Un récolteur vous vend une noix et vous prête sa machette pour l'ouvrir. Vous frappez de toutes vos forces : la coque vole en éclats et le jus vous éclabousse jusqu'aux sourcils. Les récolteurs éclatent de rire. Vous avez payé une noix pour rien.",
-          "6": "Votre bourse tinte pendant que vous approchez. L'homme qui vous répond n'a pas les mains d'un récolteur, et deux compères se glissent déjà dans votre dos. L'un d'eux vous saisit le bras : vous vous dégagez d'un coup d'épaule et leur faites face.",
-          "7": "Au son de votre bourse, trois hommes en tenue de récolteur descendent de leurs arbres et vous entourent. Ce ne sont pas des gens du village, et leurs machettes ne visent pas les noix. Vous reculez contre un tronc et vous préparez à vous battre.",
-          "8": "Votre bourse tinte pendant que vous approchez. L'homme qui vous répond n'est pas du village, et ses compères vous attrapent par-derrière. Trop épuisé pour vous défendre, vous êtes roué de coups et dépouillé. Vous reprenez péniblement vos esprits dans le sable."
+          "5": "Un récolteur vous vend une noix et vous prête sa machette pour l'ouvrir. Vous frappez bien trop fort : la coque vole en éclats, et le jus vous éclabousse jusqu'aux sourcils. Les récolteurs éclatent de rire. Vous avez payé une noix pour rien.",
+          "6": "Votre bourse bien remplie tinte pendant que vous approchez. Un homme en tenue de récolteur vous propose ses plus belles noix, un peu à l'écart, derrière les palmiers. Une fois hors de vue, il tire un couteau : c'est un bandit, et il en veut à votre bourse. Vous vous mettez en garde.",
+          "7": "Votre bourse bien remplie tinte pendant que vous approchez. Un homme en tenue de récolteur vous entraîne derrière les palmiers pour vous montrer sa récolte. Là, il tire une longue lame et se met en garde avec l'aisance d'un habitué : c'est un bandit, et votre bourse l'intéresse bien plus que ses noix.",
+          "8": "Votre bourse bien remplie tinte pendant que vous approchez. Un homme en tenue de récolteur vous entraîne derrière les palmiers pour vous montrer ses noix, puis tire un couteau. Trop épuisé pour vous défendre, vous encaissez ses coups pendant qu'il se sert dans votre bourse. Vous reprenez péniblement vos esprits dans le sable."
         },
         "fights": {
           "6": {
-            "won": "Après une courte lutte, les voleurs détalent entre les palmiers. Les vrais récolteurs, descendus de leurs arbres pour voir la bagarre, vous offrent quelques pièces pour avoir chassé ces rôdeurs de leur palmeraie.",
-            "lost": "Les voleurs ont le dessus. Ils vous laissent dans le sable, la bourse allégée, et disparaissent entre les palmiers avant que les récolteurs aient pu descendre de leurs arbres."
+            "won": "Le bandit finit par lâcher son couteau et s'enfuit vers le désert. Dans sa fuite, il laisse tomber une bourse volée à un autre voyageur.",
+            "lost": "Le bandit vous envoie dans le sable d'un coup d'épaule. Le temps de vous relever, il s'est servi dans votre bourse et a disparu entre les palmiers."
           },
           "7": {
-            "won": "Le dernier voleur lâche sa machette et s'enfuit vers le désert. Le chef des récolteurs, qui se méfiait de ces trois-là depuis des jours, vous remercie avec une belle bourse et un objet confisqué à l'un d'eux.",
-            "lost": "Les trois hommes finissent par vous mettre à terre. Ils arrachent votre bourse et s'enfuient vers le désert, pendant que des récolteurs vous aident à vous relever."
+            "won": "Le bandit finit à genoux dans le sable et lâche sa lame. Sous sa tunique de récolteur, vous trouvez le produit de ses vols : une bourse bien remplie et un objet de valeur.",
+            "lost": "Le bandit vous met à terre du plat de sa lame. Il se sert dans votre bourse sans se presser, puis disparaît entre les palmiers."
           }
         }
       },
       "nap": {
         "text": "Continuer votre sieste.",
         "outcomes": {
-          "0": "Vous vous rendormez. Un craquement au-dessus de vous, et une noix de coco s'écrase sur votre crâne. Des récolteurs accourent pour arrêter le sang et vous allongent à l'ombre, où vous mettez des heures à vous remettre.",
-          "1": "Vous vous rendormez, mais une noix de coco se détache et vous frappe l'épaule avant de rouler dans le sable. Vous voilà bien réveillé, étourdi et le bras endolori.",
-          "2": "Vous vous rendormez. Une noix de coco se détache et rebondit sur votre armure avec un bruit sourd. Un récolteur descend en s'excusant, vous l'ouvre et vous la laisse pour se faire pardonner.",
-          "3": "Vous vous rendormez et dormez plus longtemps que prévu. À votre réveil, le soleil descend derrière les palmes et l'air s'est enfin rafraîchi. Vous vous relevez, reposé.",
-          "4": "Vous sombrez dans un lourd sommeil, et une main légère en profite pour fouiller vos poches. Vous ne découvrirez qu'au réveil qu'il vous manque quelques pièces.",
-          "5": "Votre bourse bien garnie n'a pas échappé aux rôdeurs de l'oasis. Pendant votre lourd sommeil, une main légère en prend une bonne part. Vous ne vous en rendrez compte qu'au réveil.",
-          "6": "Vous vous rendormez, votre familier allongé près de vous. Quand un rôdeur s'approche de votre sac, votre familier relève la tête et le fixe : l'homme s'éloigne en hâte. Vous dormez jusqu'au soir et vous relevez reposé.",
-          "7": "Pendant que vous somnolez, votre singe grimpe au cocotier et redescend avec une noix, qu'il vous laisse tomber sur le ventre. Un récolteur arrive, furieux, et vous fait payer sa noix. Vous la buvez quand même.",
-          "8": "Peu habitué au désert, vous vous rendormez sans prendre garde au soleil qui tourne. Quand vous rouvrez les yeux, l'ombre du cocotier est loin, et vous cuisez en plein soleil, la tête lourde et la peau rougie."
+          "0": "Vous vous rendormez. Dans un craquement, une noix de coco se détache et s'écrase sur votre crâne. Des récolteurs descendent en hâte arrêter le sang et vous allongent à l'ombre, où vous mettez des heures à vous remettre.",
+          "1": "Vous vous rendormez, mais une noix de coco se détache et vous heurte l'épaule avant de rouler dans le sable. Réveillé en sursaut, vous vous redressez, étourdi et le bras endolori.",
+          "2": "Vous vous rendormez. Une noix de coco se détache et rebondit sur votre armure avec un bruit sourd. Un récolteur descend en s'excusant, ouvre la noix et vous la laisse pour se faire pardonner.",
+          "3": "Vous vous rendormez profondément. À votre réveil, des heures plus tard, le soleil se couche derrière les palmes et l'air s'est enfin rafraîchi. Vous vous relevez, reposé.",
+          "4": "Vous sombrez dans un lourd sommeil. À votre réveil, vos poches sont plus légères : quelqu'un les a fouillées pendant que vous dormiez.",
+          "5": "Vous dormez à poings fermés, votre bourse bien remplie à la ceinture, et un rôdeur la remarque. À votre réveil, il y manque une belle poignée de pièces.",
+          "6": "Vous vous rendormez, votre familier couché près de vous. Il relève soudain la tête, renifle l'air, puis vous pousse du museau jusqu'à ce que vous ouvriez les yeux : un inconnu est penché sur votre sac. Surpris, l'homme s'éloigne en hâte, et vous finissez votre sieste la main sur votre bourse.",
+          "7": "Pendant votre sieste, votre familier se glisse dans la source pour se rafraîchir. Il en remonte avec une bague d'or accrochée à lui. Un noble qui se baignait là la reconnaît aussitôt : il l'avait perdue au fond de l'eau. Ravi, il vous réveille et vous donne une bourse pour la peine.",
+          "8": "Peu habitué au désert, vous vous rendormez sans prendre garde au soleil qui tourne. Quand vous rouvrez les yeux, l'ombre du cocotier s'est déplacée, et vous cuisez en plein soleil, la tête lourde et la peau rougie."
         }
       },
       "leave": {
         "text": "Quitter le village.",
         "outcomes": {
-          "0": "Vous vous accordez encore un moment à l'ombre et buvez longuement à la source. Puis vous quittez le Village Coco, sans la moindre trace de fatigue.",
+          "0": "Votre courte sieste vous a fait du bien. Vous reprenez la route et quittez le Village Coco sans la moindre trace de fatigue.",
           "1": "Sans un regard pour les récolteurs, vous secouez le sable de vos habits et laissez le Village Coco derrière vous.",
-          "2": "Votre bourse tinte quand vous vous relevez. À la sortie du village, trois gaillards qui traînaient près des paniers de noix vous barrent le chemin et réclament un droit de passage. Vous payez pour qu'on vous laisse tranquille.",
-          "3": "Votre bourse tinte quand vous vous relevez. À la sortie du village, trois gaillards vous barrent le chemin pour réclamer un droit de passage, puis ils aperçoivent votre familier. Ils s'écartent en hâte, et vous passez.",
-          "4": "Votre bourse tinte quand vous vous relevez. À la sortie du village, trois gaillards vous barrent le chemin et réclament un droit de passage. Le premier qui tend la main se retrouve dans le sable, et les deux autres détalent en abandonnant un panier de noix volées. Les récolteurs, qui ont tout vu, vous remercient de quelques pièces.",
-          "5": "Au moment où vous partez, un récolteur vous reconnaît : on lui a dit du bien de vous. Il descend de son arbre et vous tend une noix pour la route. Vous la buvez en quittant le Village Coco.",
-          "6": "Les récolteurs vous ont reconnu. Ils ne quittent pas leurs paniers des yeux jusqu'à ce que vous ayez passé la dernière maison du village.",
+          "2": "Votre bourse bien remplie tinte quand vous vous relevez. Trois gaillards qui traînaient près des paniers de noix l'ont entendue : à la sortie du village, ils vous barrent le chemin et réclament un droit de passage. Vous payez pour qu'on vous laisse tranquille.",
+          "3": "Votre bourse bien remplie tinte quand vous vous relevez. Trois gaillards qui traînaient près des paniers de noix l'ont entendue : à la sortie du village, ils vous barrent le chemin et réclament un droit de passage. Votre familier s'avance vers eux, et ils s'écartent en hâte.",
+          "4": "Votre bourse bien remplie tinte quand vous vous relevez. À la sortie du village, trois gaillards vous barrent le chemin et réclament un droit de passage. D'une bourrade, vous envoyez le premier dans le sable, et les deux autres détalent en lâchant un panier de noix volé aux récolteurs. Vous le leur rendez, et ils vous remercient de quelques pièces.",
+          "5": "Au moment où vous partez, un récolteur vous reconnaît : on lui a dit du bien de vous. Il vous déconseille la grande sortie, où des gaillards rackettent les voyageurs, et vous montre un sentier entre les palmiers. Vous quittez le Village Coco sans encombre.",
+          "6": "Deux récolteurs vous reconnaissent au moment où vous partez. Méfiants, ils vous rattrapent à la sortie du village et fouillent votre sac, au cas où une noix s'y serait glissée. Ils ne trouvent rien et vous laissent partir.",
           "7": "Habitué aux routes du désert, vous trempez un linge dans la source et le nouez sur votre tête avant de partir. La chaleur du chemin vous pèse bien moins."
         }
       },
@@ -2343,13 +2343,13 @@
         "text": "Cueillir une noix de coco.",
         "outcomes": {
           "0": "Vous choisissez un cocotier à l'écart des récolteurs, grimpez jusqu'aux palmes et détachez une noix. En bas, vous la fendez sur une pierre et buvez son jus à l'ombre. Personne ne vous a vu.",
-          "1": "Vous grimpez à un cocotier, mais à mi-hauteur, un récolteur vous repère. Il vous fait redescendre et exige que vous payiez la noix au prix des marchés du royaume. Vous payez à contrecœur, et vous la buvez quand même.",
-          "2": "Vous grimpez à un cocotier, mais le tronc est lisse et brûlant. À mi-hauteur, vos mains glissent, et vous retombez lourdement dans le sable. Les récolteurs rient en vous aidant à vous relever, les côtes douloureuses.",
+          "1": "Vous venez de détacher une noix quand un récolteur vous repère. Il vous attend au pied du tronc et exige que vous la payiez au prix des marchés du royaume. Vous payez à contrecœur, puis buvez la noix la plus chère de votre vie.",
+          "2": "Vous grimpez lentement, et le tronc brûlant vous glisse entre les mains. À mi-hauteur, vous lâchez prise et retombez lourdement dans le sable. Vous vous relevez les côtes douloureuses, sous les rires des récolteurs.",
           "3": "Vous grimpez à un cocotier sans trop de mal, mais le haut du tronc est plus lisse. Vous glissez jusqu'en bas en vous écorchant les mains et les genoux, sans la moindre noix.",
-          "4": "Vous filez au sommet d'un cocotier en quelques bonds, détachez deux noix et redescendez avant qu'un récolteur ait levé la tête. Vous buvez l'une à l'ombre et vendez l'autre à un voyageur assoiffé.",
+          "4": "Vous grimpez au sommet d'un cocotier en un rien de temps, détachez deux noix et redescendez avant qu'un récolteur ait levé la tête. Vous buvez l'une à l'ombre et vendez l'autre à un voyageur assoiffé.",
           "5": "Votre singe vous devance : il grimpe au cocotier, détache une noix et vous la lance. Amusés, les récolteurs proposent de le prendre dans leur équipe. Vous déclinez et buvez votre noix.",
           "6": "Avant que vous ayez touché le tronc, votre familier s'y appuie pour se gratter. Le cocotier ploie, et une pluie de noix s'abat dans le sable. Les récolteurs accourent et vous font payer toutes celles qui se sont fendues. Vous en buvez une pour vous consoler.",
-          "7": "Un récolteur vous reconnaît avant même que vous touchiez le tronc. Il siffle, et ses compagnons vous chassent de la palmeraie à coups de manche de machette.",
+          "7": "Vous redescendez du cocotier, une noix sous le bras, quand un récolteur vous reconnaît et donne l'alerte. Ses compagnons vous tirent par les chevilles, et vous tombez lourdement dans le sable. Ils reprennent leur noix et vous chassent de la palmeraie.",
           "8": "Vous sortez une corde de votre sac et la nouez autour du tronc et de votre taille, comme les récolteurs. Vous montez sans effort, détachez une noix et redescendez la boire à l'ombre.",
           "9": "Vous empoignez le tronc d'un cocotier, mais le poids de votre armure vous tire en arrière à chaque prise. Après plusieurs essais, vous renoncez, trempé de sueur, sous les rires des récolteurs."
         }
@@ -2359,7 +2359,7 @@
           "0": "Vous regardez un moment les récolteurs grimper aux troncs sous le soleil. Les noix tombent une à une dans le sable, et vous en oubliez un peu la chaleur.",
           "1": "Une noix de coco tombe dans le sable, juste à côté de vous. Vous la ramassez et la retournez entre vos mains, jusqu'à ce qu'un récolteur descende la reprendre avec un signe de tête.",
           "2": "Accablé par la chaleur, vous vous levez et plongez tout habillé dans la source. Les nobles qui s'y rafraîchissaient appellent leurs gardes, qui vous en font sortir aussitôt. Vous séchez un moment au soleil, penaud.",
-          "3": "Votre familier s'envole et se perche dans les palmes, au milieu des récolteurs. Amusé, l'un d'eux le laisse faire, puis vous lance une noix en redescendant. Vous la buvez à l'ombre."
+          "3": "Quand vous faites mine de repartir, votre familier, qui ne vit d'habitude que la nuit, se blottit contre le tronc du cocotier et refuse de quitter l'ombre tant que le soleil tape. Vous attendez avec lui des heures, jusqu'à ce que l'air fraîchisse enfin."
         }
       }
     }
@@ -2822,33 +2822,31 @@
     "text": "Un paysan vous hèle au devant de sa ferme située aux abords de l'Étendue. Celle-ci est constituée de pâturages, d'un vignoble et d'un champ de blé. L'air rembruni, il vous salue et vous explique qu'il a perdu sa fourche préférée. Il vous implore de l'aider à la retrouver tout en vous promettant une large récompense."
   },
   "63": {
-    "text": "À Boug-Coton, à deux pas de l'Auberge du Seigneur, les villageois parlent à voix basse : à la nuit tombée, des silhouettes en robe noire se glissent dans la cave d'une vieille grange. On dit qu'elles y offrent des sacrifices à un démon, et personne n'ose aller voir. Ce soir encore, de la lumière passe sous la porte.",
+    "text": "À Boug-Coton, à deux pas de l'Auberge du Seigneur, les villageois parlent à voix basse : chaque nuit, des silhouettes en robe noire descendent dans la cave d'une vieille grange, et l'on y entend des cris étranges. On dit qu'elles y offrent des sacrifices à un démon, et personne n'ose aller voir. Ce soir encore, de la lumière passe sous la porte de la grange.",
     "possibilities": {
       "faceThem": {
         "text": "Affronter les silhouettes.",
         "outcomes": {
-          "0": "Vous dévalez l'escalier de la cave en criant. En bas, une dizaine de villageois en robe noire entourent deux coqs qui se battent : la rumeur du démon tient les curieux loin de leurs paris. Paniqués, ils vous bousculent tous ensemble pour atteindre la sortie, et vous restez au sol, sonné.",
-          "1": "La cave est vide. Des abats pourris et du sang de porc couvrent le sol, et une fumée rouge monte d'un brasero, de quoi faire fuir n'importe quel curieux. Ça marche : l'odeur vous prend à la gorge, et vous remontez vomir dans la cour. Le malaise ne vous quitte plus pendant des heures.",
-          "2": "Vous descendez dans la cave, prêt à frapper, mais il n'y a personne. Des démons de bois grossièrement taillés entourent des torches éteintes, les crocs peints en rouge. Vous fouillez un moment et trouvez, derrière l'un d'eux, un coffret oublié avec un objet à l'intérieur.",
-          "3": "Vous enfoncez la porte de la cave, arme au clair. Trois silhouettes en robe noire tiennent ligoté sur une chaise le garçon d'écurie de l'Auberge du Seigneur : il les a vues descendre, et elles veulent l'effrayer pour qu'il se taise. À votre vue, elles s'enfuient par un tunnel. Le garçon court chercher l'aubergiste, son maître, qui vous remet une bourse bien remplie.",
-          "4": "Vous enfoncez la porte de la cave. Trois silhouettes en robe noire tiennent ligoté le garçon d'écurie de l'Auberge du Seigneur : il les a vues descendre, et elles veulent l'effrayer pour qu'il se taise. Vous empoignez la plus proche. Après une courte bagarre, toutes filent par un tunnel. Le visage tuméfié, vous détachez le garçon, et l'aubergiste, son maître, vous remercie de quelques pièces.",
-          "5": "Vous enfoncez la porte de la cave. Trois silhouettes en robe noire tiennent un garçon d'écurie ligoté pour l'effrayer : il les a vues descendre. Vous foncez sur elles, mais elles vous jettent à terre et vous frappent. Le vacarme réveille la ferme voisine, et elles filent par un tunnel. Le garçon, enfin libre, vous aide à vous relever.",
-          "6": "Au pied de l'escalier, une seule silhouette vous attend. Sous sa robe noire, c'est un mercenaire payé pour garder la réunion. Pendant que les autres filent par un tunnel, il tire son épée et vous barre le passage.",
-          "7": "Les silhouettes s'écartent, et la plus grande ôte sa robe noire : un mercenaire couvert de cicatrices, engagé pour garder la réunion. Pendant que les autres filent par un tunnel, il vous jauge, puis vous fait signe d'approcher, l'épée à la main.",
-          "8": "Vous dévalez l'escalier de la cave, mais la route vous a vidé de vos forces. Les silhouettes en robe noire se jettent sur vous, vous rouent de coups et vous traînent dehors, dans la boue de la cour.",
-          "9": "Votre familier descend le premier dans la cave. À sa vue, les silhouettes en robe noire hurlent que le démon est venu les chercher et s'enfuient par un tunnel en abandonnant tout, jusqu'à une bourse posée sur la table. Pour des gens qui ont inventé ce démon, elles y croient bien vite.",
-          "10": "Vous descendez dans la cave. Les silhouettes en robe noire vous dévisagent, puis se détendent : avec votre mine, vous devez être l'homme de main qu'elles attendaient. L'une d'elles vous tend une bourse d'avance. Vous l'empochez et remontez l'escalier avant que le vrai arrive.",
-          "11": "Vous descendez dans la cave d'un pas lourd. Mais sous le poids de votre armure, les vieilles marches de l'escalier cèdent, et vous dégringolez au milieu des silhouettes. Le temps de vous relever, étourdi, elles ont toutes filé par un tunnel.",
-          "12": "Vous descendez dans la cave. Les silhouettes en robe noire reconnaissent aussitôt le combattant dont la gloire fait parler toutes les auberges, et aucune ne veut vous affronter. Elles filent par un tunnel en laissant derrière elles un coffret, dont vous gardez le contenu."
+          "0": "Vous dévalez l'escalier de la cave en criant. En bas, une dizaine de villageois en robe noire parient sur deux coqs qui se battent, sous l'œil d'un démon de bois. Paniqués, ils vous bousculent tous ensemble pour remonter l'escalier, et vous restez au sol, sonné.",
+          "1": "Vous ouvrez la porte de la cave d'un coup de pied, mais les silhouettes ont déjà filé. Des abats pourris et du sang de porc couvrent le sol, et une fumée rouge monte d'un brasero, de quoi faire fuir n'importe quel curieux. Ça marche : l'odeur vous prend à la gorge, et vous remontez vomir dehors. Vous en restez barbouillé pendant des heures.",
+          "2": "Vous descendez dans la cave, prêt à frapper, mais les silhouettes ont filé en vous entendant. Il ne reste que leurs torches et des démons de bois aux crocs peints en rouge. Après un moment de fouille, vous trouvez derrière l'un d'eux un coffret oublié dans la fuite. Une main grise est peinte sur son couvercle, et un objet vous attend à l'intérieur.",
+          "3": "Vous enfoncez la porte de la cave. Trois silhouettes en robe noire terrorisent un villageois ligoté devant un démon de bois : elles font ainsi taire tous ceux qui parlent trop de la grange. À votre vue, elles détalent vers un tunnel, mais vous empoignez la plus lente. Vous détachez le villageois et livrez votre prise à la Garde, qui vous verse une prime.",
+          "4": "Vous enfoncez la porte de la cave. Trois silhouettes en robe noire terrorisent un villageois ligoté devant un démon de bois : elles font ainsi taire tous ceux qui parlent trop de la grange. Vous empoignez la plus proche, et après une courte bagarre, toutes filent par un tunnel. La lèvre fendue, vous détachez le villageois, qui vous remercie de quelques pièces.",
+          "5": "Vous enfoncez la porte de la cave. Trois silhouettes en robe noire terrorisent un villageois ligoté devant un démon de bois : elles font ainsi taire tous ceux qui parlent trop de la grange. Vous foncez sur elles, mais elles vous jettent à terre et vous rouent de coups. Le vacarme ameute les voisins : les silhouettes filent par un tunnel, et l'on détache le villageois avant de vous relever.",
+          "6": "Vous descendez dans la cave, mais au pied de l'escalier, un homme vous barre le passage, un bouclier au bras. Sous sa robe noire entrouverte, vous reconnaissez l'uniforme des gardes des seigneurs de Boug-Coton : les silhouettes le paient pour veiller sur leur réunion. Pendant qu'elles filent par un tunnel, il lève son bouclier et marche sur vous.",
+          "7": "À votre arrivée dans la cave, les silhouettes s'écartent devant un homme qui ôte sa robe noire. Dessous, il porte l'uniforme des gardes des seigneurs de Boug-Coton : elles le paient pour veiller sur leur réunion. À son bouclier cabossé, on devine qu'il en a vu d'autres. Pendant que les silhouettes filent par un tunnel, il vous fait signe d'approcher.",
+          "8": "Vous dévalez l'escalier de la cave, mais vos derniers combats vous ont laissé sans forces. Un homme au bouclier vous arrête net, et les silhouettes en robe noire vous rouent de coups avant de vous jeter dehors, dans la boue.",
+          "9": "Vous descendez dans la cave, votre familier sur les talons. À sa vue, les silhouettes en robe noire hurlent que le démon est venu les chercher et s'enfuient par un tunnel, en abandonnant jusqu'à une bourse posée sur une table. Elles croient bien vite au démon qu'elles ont inventé.",
+          "10": "Vous descendez dans la cave d'un pas lourd. Mais sous le poids de votre armure, les vieilles marches de l'escalier cèdent, et vous dégringolez au milieu des silhouettes. Le temps de vous relever, étourdi, elles ont toutes filé par un tunnel."
         },
         "fights": {
           "6": {
-            "won": "Le mercenaire finit par jeter son épée : on ne le paie pas assez pour mourir dans une cave. Il vous lance la bourse de ses gages et disparaît à son tour dans le tunnel.",
-            "lost": "Le mercenaire vous désarme et vous pousse dans l'escalier. Quand vous vous relevez, la cave est vide, et le tunnel silencieux."
+            "won": "Le garde finit par baisser son bouclier : on ne le paie pas assez pour se faire rosser dans une cave. Il vous tend la bourse de ses gages pour que vous oubliiez son visage, puis file à son tour par le tunnel.",
+            "lost": "Le garde vous plaque contre le mur d'un coup de bouclier, puis vous pousse dans l'escalier. Quand vous vous relevez, la cave est vide, et le tunnel silencieux."
           },
           "7": {
-            "won": "Le mercenaire pose un genou à terre et vous tend son épée. Dans sa fuite, la réunion a laissé derrière elle un coffret, et vous repartez avec ce qu'il contient, en plus d'une belle bourse.",
-            "lost": "D'un dernier coup, le mercenaire vous envoie contre les tonneaux. Il ramasse sa robe et rejoint les autres dans le tunnel, sans se presser."
+            "won": "Le garde finit par s'effondrer au pied de l'escalier. Dans leur fuite, les silhouettes ont laissé derrière elles la bourse de ses gages et un coffret : vous emportez les deux.",
+            "lost": "D'un dernier coup de bouclier, le garde vous envoie contre les tonneaux. Il ramasse sa robe et rejoint les autres dans le tunnel, sans se presser."
           }
         }
       },
@@ -2856,56 +2854,50 @@
         "text": "Quitter Boug-Coton.",
         "outcomes": {
           "0": "Les histoires de démon ne vous regardent pas. Vous quittez Boug-Coton sans un regard pour la grange, et derrière vous, les villageois ferment leurs volets.",
-          "1": "Pressé de quitter Boug-Coton, vous prenez la route à grandes enjambées dans la nuit. Vous ne voyez pas le fossé au bord du chemin, et vous y tombez tête la première.",
-          "2": "Vous quittez Boug-Coton sans vous retourner. À la sortie du village, une source jaillit de la roche. Vous vous asseyez sous le filet d'eau fraîche et y restez une heure, à laisser filer la fatigue du voyage.",
-          "3": "Vous quittez Boug-Coton, mais deux silhouettes en robe noire vous ont vu écouter les villageois. Elles vous rattrapent sans peine sur la route, vous jettent dans le fossé et vous conseillent de ne plus poser de questions. Vous mettez un moment à vous relever.",
-          "4": "En quittant Boug-Coton, vous entendez des pas derrière vous : deux silhouettes en robe noire, qui vous ont vu écouter les villageois, vous suivent. Vous partez en courant et les semez en quelques foulées. Dans sa course, l'une d'elles a perdu une bourse, que vous ramassez sans vous arrêter.",
-          "5": "Au moment où vous quittez Boug-Coton, une vieille villageoise vous reconnaît et vous rattrape. Elle ne vous demande rien : elle sait qu'un voyageur seul ne peut rien contre un démon. Elle vous glisse un morceau de pain pour la route.",
-          "6": "Les histoires de démon vous ont glacé le sang. Vous quittez Boug-Coton au pas de course, et le cri d'une chouette suffit à vous faire détaler. Il vous faut un moment pour retrouver votre calme.",
-          "7": "Vous quittez Boug-Coton, mais votre familier s'arrête à la sortie du village et fixe la grange, immobile. Rien ne le décide à repartir. Vous revenez le chercher, et il vous faut un moment pour l'emmener."
+          "1": "Vous quittez Boug-Coton à grandes enjambées dans la nuit. Des pas résonnent derrière vous : vous pressez l'allure, ne voyez pas le fossé au bord du chemin et y tombez tête la première. Quand vous vous relevez, étourdi, les pas se sont éloignés vers la grange.",
+          "2": "Vous quittez Boug-Coton sans vous retourner. Au bord de la route, une source jaillit de la roche. Vous vous asseyez pour boire et vous rafraîchir, et la fatigue du voyage s'en va : vous restez là plus longtemps que prévu.",
+          "3": "Les histoires de démon vous ont glacé le sang. Vous quittez Boug-Coton en pressant le pas, et le cri d'une chouette suffit à vous faire détaler. Il vous faut un moment pour retrouver votre calme."
         }
       },
       "helpThem": {
         "text": "Rejoindre les silhouettes.",
         "outcomes": {
-          "0": "Vous descendez dans la cave proposer vos services. Sous les robes noires, des villageois parient sur des combats de coqs, à l'abri des curieux que la rumeur éloigne. Ravis d'avoir un nouveau parieur, ils vous font une place. Vous misez sur le coq rouge, qui perd, et votre bourse s'allège.",
-          "1": "Vous descendez dans la cave proposer vos services. Sous les robes noires, des villageois parient sur des combats de coqs, à l'abri des curieux que la rumeur éloigne. Ils vous font une place. Vous misez sur le coq bleu, qui l'emporte, et vous laissez les parieurs à leurs jeux, la bourse plus lourde.",
-          "2": "Vous proposez vos services aux silhouettes en robe noire. Elles vous font d'abord passer une épreuve : réciter des formules devant un démon de paille couvert de sang de porc. Des heures plus tard, on vous promet de vous faire signe. Vous comprenez trop tard que ce rituel ne sert qu'à effrayer les curieux, et vous partez, furieux.",
-          "3": "Vous rejoignez les silhouettes en robe noire, qui vous font réciter des formules devant un démon de paille. Soudain, des bottes résonnent dans la grange : la Garde. Vos nouveaux amis filent par un tunnel et le referment derrière eux. On vous arrête seul, en robe noire, au milieu du sang de porc.",
-          "4": "Vous rejoignez les silhouettes en robe noire, quand des bottes résonnent dans la grange : la Garde. Vos nouveaux amis filent par un tunnel, et vous vous y glissez avant qu'ils le referment. Il débouche dans les caves de l'Auberge du Seigneur. Vous ôtez votre robe et ressortez sur la place comme si de rien n'était.",
+          "0": "Vous descendez dans la cave proposer vos services. Sous les robes noires, des villageois parient sur des combats de coqs, et l'on vous fait une place. Vous misez sur le coq rouge, qui perd, et votre bourse s'allège.",
+          "1": "Vous rejoignez les silhouettes dans la cave. Sous les robes noires, des villageois parient sur des combats de coqs, et personne ne remarque ceux qui passent sans parier vers une porte au fond. Vous misez sur le coq bleu, qui l'emporte, et repartez la bourse plus lourde, sans poser de questions.",
+          "2": "Les silhouettes en robe noire acceptent de vous prendre à l'essai. Pendant des heures, vous récitez des formules sans queue ni tête devant un démon de bois couvert de sang de porc. Puis on vous renvoie, sans un mot sur la suite. Vous comprenez trop tard que l'épreuve ne sert qu'à décourager les curieux.",
+          "3": "On vous prête une robe noire, et vous pariez avec les silhouettes sur un combat de coqs, quand des bottes résonnent dans la grange : la Garde. Vos nouveaux amis filent par un tunnel et en referment la porte derrière eux. On vous arrête seul, en robe noire, au milieu des plumes.",
+          "4": "On vous prête une robe noire, et vous pariez avec les silhouettes sur un combat de coqs, quand des bottes résonnent dans la grange : la Garde. Vos nouveaux amis filent par un tunnel, et vous vous y glissez avant qu'ils en referment la porte. Il débouche dans les caves de l'Auberge du Seigneur. Vous ôtez votre robe et ressortez sur la place comme si de rien n'était.",
           "5": "Les silhouettes en robe noire vous reconnaissent : on parle de vous dans toutes les auberges, et pas en bien. Ravies d'un tel renfort, elles vous confient une bourse et une mission : raconter aux clients de l'Auberge du Seigneur qu'on a entendu hurler le démon. Vous vous en acquittez de bon cœur.",
           "6": "Les silhouettes en robe noire vous reconnaissent : un aventurier bien trop honnête pour leurs affaires. Elles ne croient pas un mot de votre offre. Deux d'entre elles vous raccompagnent jusqu'à la porte de la grange et la referment derrière vous.",
           "7": "Les silhouettes en robe noire jaugent le débutant que vous êtes, puis vous mettent au travail : vous répandez du sang de porc dans toute la cave pour effrayer les curieux. Le travail fini, on vous paie de quelques pièces et on vous renvoie, l'odeur collée à vos vêtements.",
-          "8": "Les silhouettes en robe noire connaissent votre nom, et leur chef baisse sa capuche. Ce sont des membres de la Main Grise, qui veut que la couronne se transmette de nouveau par le sang, et ils cherchent un certain Grand Livre. Le chef vous verse une avance pour garder l'œil ouvert. Vous empochez l'or sans rien promettre.",
+          "8": "Les silhouettes en robe noire remarquent vos cicatrices de vieux routier et vous proposent un travail : garder une porte au fond de la cave pendant leur réunion. Des heures durant, vous montez la garde sans rien entendre de ce qui se dit derrière. Quand la porte se rouvre, on vous paie largement et l'on vous prie de partir.",
           "9": "Les silhouettes en robe noire entendent votre bourse tinter avant même que vous ouvriez la bouche. Pour rejoindre leur cause, il faut d'abord la soutenir : elles vous réclament une grosse contribution. Vous payez, et l'on vous promet de vous faire signe. Personne ne vous fait signe.",
-          "10": "Les silhouettes en robe noire n'ont d'yeux que pour votre familier. Elles le promènent à la lueur des torches devant les fenêtres de la grange, pour que tout le village croie voir le démon. Dans les maisons, on barricade les portes. Ravies, elles vous paient pour le prêt."
+          "10": "Les silhouettes en robe noire vous font descendre dans la cave. Mais votre familier flaire les abats qu'elles y répandent pour effrayer les curieux, et se jette dessus. Le temps de l'en arracher, il a dévoré la moitié de leur décor. Furieuses, elles vous mettent dehors."
         }
       },
       "warnEveryone": {
         "text": "Alerter le village.",
         "outcomes": {
           "0": "Sans même aller voir, vous courez de maison en maison en criant qu'un démon va frapper. Tout Boug-Coton sort dans la nuit, et les nobles de l'Auberge du Seigneur s'enfuient sans payer. Au bout de quelques heures, rien ne s'est passé. Furieux, l'aubergiste vous réclame leur note, et les villageois veillent à ce que vous la payiez.",
-          "1": "Avant d'alerter qui que ce soit, vous jetez un œil par le soupirail de la cave. Des silhouettes en robe noire tiennent ligotée une servante qui les a vues descendre. Vous courez prévenir la Garde. Les soldats descendent, les silhouettes filent par un tunnel, et la servante est libérée. Le sergent recueille longuement votre témoignage, puis vous remet une bourse.",
-          "2": "Vous rassemblez les villageois sur la place, torches à la main, pour aller voir la grange. Soudain, un grondement monte du sol : sous la grange, une galerie des vieilles caves vient de s'effondrer. Les gens s'affolent, et vous aidez à calmer la foule. Quand tout s'apaise, on fait une collecte pour vous remercier d'avoir sorti tout le monde à temps.",
+          "1": "Avant d'alerter qui que ce soit, vous jetez un œil par la petite fenêtre de la cave. Des silhouettes en robe noire terrorisent un villageois ligoté : elles font ainsi taire tous ceux qui parlent trop de la grange. Vous courez prévenir la Garde, qui le libère. Le sergent prend longuement votre témoignage, puis vous remet une bourse.",
+          "2": "Vous rassemblez les villageois sur la place, torches à la main, pour marcher sur la grange. Soudain, un grondement monte du sol : sous la grange, une galerie des vieilles caves vient de s'effondrer. La foule s'affole, et vous aidez à la calmer. Persuadés d'avoir échappé de peu au démon, les villageois font une collecte pour vous remercier.",
           "3": "Vous allez de porte en porte pour mettre en garde les villageois. Mais la rumeur court depuis des années, et personne ne veut d'ennuis : on vous écoute poliment, puis on vous ferme la porte au nez. Après des heures d'efforts, vous renoncez.",
-          "4": "Vous allez de porte en porte pour mettre en garde les villageois, mais ils vous reconnaissent et connaissent le tour : on fait fuir les gens, puis on vide leurs maisons. Méfiants, ils ferment leurs volets, et un garde vous suit pas à pas jusqu'au bout du village.",
+          "4": "Vous allez de porte en porte pour mettre en garde les villageois, mais ils vous reconnaissent et connaissent le tour : on fait fuir les gens, puis on vide leurs maisons. Méfiants, ils ferment leurs volets, et un homme de la Garde vous suit pas à pas jusqu'à la sortie du village.",
           "5": "Vous alertez les villageois, qui vous reconnaissent et vous croient sur parole. Une dizaine d'hommes prennent des fourches et vous suivent jusqu'à la grange. Les silhouettes en robe noire n'attendent pas l'assaut et filent par un tunnel. Pour vous remercier, l'aubergiste vous offre une chambre à l'Auberge du Seigneur.",
-          "6": "Vous allez prévenir la Garde, et votre nom suffit : le sergent vous confie ses hommes. Les silhouettes ont fui par un tunnel, mais dans la cave, vous trouvez des lettres scellées d'une main grise. C'est le signe de la Main Grise, une société secrète qui veut que la couronne se transmette de nouveau par le sang. Le sergent emporte les lettres et vous verse une prime.",
-          "7": "Pour qu'on vous écoute, vous offrez une tournée à toute l'Auberge du Seigneur. On boit à votre santé, puis à celle du démon, puis à celle du roi. À la fin de la soirée, personne n'a bougé, sauf vous, qui ne tenez plus debout.",
-          "8": "Vous allez de porte en porte, et votre chien aboie à chaque seuil. Tout le village se réveille. Dans la grange, les silhouettes en robe noire entendent le vacarme et filent par un tunnel avant qu'on arrive. Les villageois ne trouvent qu'une cave vide, mais vous remercient de quelques pièces.",
-          "9": "Vous courez prévenir les villageois, mais une vieille femme éclate de rire : on raconte cette histoire pour faire peur aux enfants. Elle vous fait asseoir et vous sert un bol de soupe. Vous repartez rassasié, pas tout à fait convaincu."
+          "6": "Pour qu'on vous écoute, vous offrez une tournée à toute l'Auberge du Seigneur. On boit à votre santé, puis à celle du démon, puis à celle du roi. À la fin de la soirée, personne n'est allé voir la grange, et vous ne tenez plus debout.",
+          "7": "Vous allez de porte en porte, et votre chien aboie à chaque seuil. Tout le village se réveille. Dans la grange, les silhouettes en robe noire entendent le vacarme et filent par un tunnel avant qu'on arrive. Les villageois ne trouvent que des torches encore chaudes. Persuadés que votre chien a chassé le démon, ils vous remercient de quelques pièces.",
+          "8": "Vous courez prévenir les villageois, mais une vieille femme rit de votre mine affolée d'aventurier débutant : cette histoire sert surtout à faire peur aux enfants. Elle vous fait asseoir et vous sert un bol de soupe. Vous repartez rassasié, pas tout à fait convaincu."
         }
       },
       "end": {
         "outcomes": {
           "0": "Vous vous adossez à un arbre au bord du village, l'œil sur la grange. Des heures passent : une lumière, des murmures, quelques ombres qui vont et viennent, mais pas le moindre démon. Passé minuit, vous partez en haussant les épaules.",
-          "1": "Vous surveillez la grange depuis une fenêtre de l'Auberge du Seigneur, une bière à la main, puis une deuxième, puis une troisième. Vous vous réveillez dehors, sur le pavé : les valets vous y ont déposé, et votre bourse a payé la note.",
-          "2": "Vous prenez une chambre à l'Auberge du Seigneur. En pleine nuit, des silhouettes en robe noire montent des caves et entrent chez vous : quelqu'un vous a vu écouter les villageois. Un coup vous assomme. Au réveil, votre bourse est plus légère, et un bout de tissu noir est noué à la poignée de la porte, en guise d'avertissement.",
-          "3": "Tant qu'à être à Boug-Coton, vous laissez les démons à leurs affaires et faites un tour à la boutique générale. Après un moment à fouiller les étals, vous en ressortez avec un objet.",
-          "4": "Une silhouette en robe noire vient s'asseoir près de vous, dans l'ombre. On lui a parlé de vous, et ce qu'on en dit lui plaît. Elle vous glisse une bourse d'avance pour un travail dont elle vous parlera plus tard, puis disparaît vers la grange.",
-          "5": "Votre familier flaire une piste derrière l'Auberge du Seigneur et s'arrête devant une trappe cachée sous la paille. Elle donne sur un passage qui file vers la grange. Vous n'osez pas aller plus loin, mais au pied de l'échelle, vous ramassez un objet tombé d'une poche.",
-          "6": "Vous attendez la suite en regardant la grange, et le sommeil finit par vous gagner. Vous vous réveillez en sursaut : une silhouette en robe noire est penchée sur vous. Elle éclate de rire devant votre frayeur et s'éloigne. Votre cœur met un moment à se calmer.",
-          "7": "Vous prenez la chambre de luxe de l'Auberge du Seigneur, fermez la porte à double tour et dormez comme un loir. Démon ou pas, le lit est excellent."
+          "1": "Vous surveillez la grange depuis une fenêtre de l'Auberge du Seigneur, en vidant bière sur bière. Vous vous réveillez dehors, sur le pavé : les valets vous y ont déposé, et votre bourse a payé la note.",
+          "2": "Vous prenez une chambre à l'Auberge du Seigneur. En pleine nuit, des bruits montent des caves, et vous descendez voir. Des silhouettes en robe noire sortent d'un passage creusé dans la roche. L'une d'elles vous aperçoit, et un coup de bâton vous assomme. Au réveil, votre bourse est plus légère.",
+          "3": "Tant qu'à être à Boug-Coton, vous laissez les démons à leurs affaires et faites un tour à la boutique générale avant qu'elle ferme. Après un moment à fouiller les étals, vous en ressortez avec un objet.",
+          "4": "Votre familier flaire une piste derrière l'Auberge du Seigneur et s'arrête devant une trappe cachée sous la paille. Dessous, un passage file vers la grange. Vous n'osez pas y descendre, mais vous ramassez un objet tombé sur la première marche.",
+          "5": "Vous attendez la suite en regardant la grange, et le sommeil finit par vous gagner. Vous vous réveillez en sursaut : une silhouette en robe noire est penchée sur vous. Elle éclate de rire devant votre frayeur de novice et s'éloigne. Votre cœur met un moment à se calmer.",
+          "6": "Vous prenez la chambre de luxe de l'Auberge du Seigneur, fermez la porte à double tour et dormez comme un loir. Démon ou pas, le lit est excellent."
         }
       }
     }
