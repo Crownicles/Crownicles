@@ -312,6 +312,14 @@ Avant de rendre un texte, vérifie chaque point :
 9. Chaque issue reste vraie avec ce que l'intro dit des choses, des lieux et des personnages.
 10. Chaque issue se comprend lue seule, juste après l'intro et le libellé du choix.
 
+## Events validés par le propriétaire
+
+`reviewed.json` liste les events que le propriétaire a relus et validés comme vraiment bien retravaillés, avec la date et une empreinte de leurs textes et de leurs mécaniques. Le comparateur (Crownicles/Tools) les marque « ✅ relu », ou « ⚠️ modifié depuis la relecture » quand l'event a changé ensuite.
+
+- Marquer un event sur demande du propriétaire seulement : `node .github/skills/write-event-texts/scripts/review.mjs <ids>`. Retirer la marque : `--remove <ids>`.
+- Un event validé sert de référence : on ne le retouche que sur une demande précise. Après une retouche validée, on le marque à nouveau.
+- `review.mjs --check` liste les events validés modifiés depuis leur relecture.
+
 ## Journal des retours du propriétaire
 
 Les 21 events déjà réécrits (1, 2, 10 à 20, 30, 39, 46, 56, 69, 71, 76, 89) servent de jeu de référence pour réécrire les autres plus vite. Chaque fois que le propriétaire fait corriger l'un d'eux, on en tire la règle générale, on l'ajoute à la bonne section de ce skill avec un exemple avant/après, et on la note ici en une ligne.
