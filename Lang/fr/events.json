@@ -50,7 +50,7 @@
           "5": "Le poisson tire fort et vous entraîne vers le bord du ponton. Vous dérapez sur les planches mouillées et vous rattrapez de justesse à un poteau, les genoux écorchés. Le temps de vous relever, la ligne a cassé.",
           "6": "Vous empoignez la canne et tirez d'un coup sec, de toutes vos forces. La canne se brise net entre vos mains, et le poisson file avec la ligne. Le pêcheur contemple les morceaux, puis vous les tend sans un mot. Vous lui laissez quelques pièces pour la remplacer.",
           "7": "Pendant que vous tirez sur la ligne, votre familier se laisse glisser dans le lac et file tourner autour du gros poisson. Affolé, celui-ci fonce droit vers le ponton, et vous le sortez de l'eau sans peine. Le pêcheur vous paie bien, puis jette un regard gourmand sur votre familier. Vous le repêchez en vitesse et repartez sans traîner.",
-          "8": "Votre familier plonge du ponton et file sous l'eau. Il prend le gros poisson en chasse et le rabat contre le ponton, où le pêcheur n'a plus qu'à le hisser hors de l'eau. Un peu vexé de se faire voler la vedette, le vieil homme vous paie quand même.",
+          "8": "Votre familier plonge du ponton et file sous l'eau. Il ressort un instant plus tard, le gros poisson entre les dents, et le dépose sur les planches avant même que le pêcheur ait repris sa canne. Un peu vexé de se faire voler la vedette, le vieil homme vous paie quand même.",
           "9": "Votre familier entre dans l'eau jusqu'au ventre et, d'un coup de patte, envoie le gros poisson sur le ponton, comme un saumon. Partagé entre la joie et la peur, le pêcheur vous tend une bourse sans quitter votre familier des yeux.",
           "10": "Votre poulpe se glisse dans le lac, enroule ses bras autour du gros poisson et le hisse jusqu'au ponton. Le pêcheur n'a jamais vu ça. Il vous paie bien, en gardant tout de même ses distances avec votre familier.",
           "11": "Votre dauphin pousse le gros poisson du museau jusqu'au ponton, puis fait un bond hors de l'eau. Sur la rive, les familles applaudissent. Ravi, le pêcheur vous laisse une part de sa prise et quelques pièces.",
@@ -88,7 +88,7 @@
           "2": "Le pêcheur perd l'équilibre et s'agrippe à vous. Vous tombez ensemble dans le lac et regagnez le ponton à grand-peine, couverts de vase et d'écorchures.",
           "3": "Le pêcheur remonte seul sur le ponton, furieux. Il vous a reconnu. Devant les familles venues voir l'incident, il exige une lourde compensation, et vous payez sans discuter pour éviter que l'affaire tourne mal.",
           "4": "Le pêcheur s'écarte au dernier moment, et c'est vous que votre élan envoie dans l'eau froide du lac. Le vieil homme vous tend sa canne pour vous aider à remonter, trempé, frigorifié et humilié.",
-          "5": "Vous poussez le pêcheur dans le lac. Sa ligne s'enroule autour de ses jambes, mais votre familier plonge aussitôt et la tranche d'un coup de dents. Le vieil homme regagne le ponton, trempé mais indemne, et ne sait plus s'il doit vous maudire ou remercier votre familier."
+          "5": "Vous poussez le pêcheur dans le lac. Votre familier plonge aussitôt et le ramène jusqu'au ponton avant que vous ayez fait un geste. Trempé mais indemne, le vieil homme ne sait plus s'il doit vous maudire ou remercier votre familier."
         }
       },
       "skip": {
@@ -1020,7 +1020,7 @@
           "0": "Tous les regards sont tournés vers l'estrade. Vous glissez la main dans les besaces de quelques voyageurs, puis vous vous éclipsez derrière un pan de rempart. Parmi votre butin, un objet semble avoir de la valeur.",
           "1": "Un villageois vous attrape le poignet : ici, on connaît le tour, et quelqu'un surveille toujours la foule pendant la pièce. Il vous roue de coups devant les voyageurs, puis vous chasse de la place, le visage en sang.",
           "2": "Un villageois qui surveille la foule vous saisit au col. D'une seule poussée, vous l'envoyez rouler dans la poussière. Vous filez les mains vides et attendez derrière un mur que la place se calme.",
-          "3": "Un voyageur surprend votre geste et vous menace de ses poings. Vous reculez en levant les mains, l'air penaud. Pendant ce temps, votre Singe s'est glissé dans son dos, et il revient avec sa bourse sans que l'homme s'en aperçoive.",
+          "3": "Un voyageur surprend votre geste et vous menace de ses poings. Vous reculez en levant les mains, l'air penaud. Pendant ce temps, votre Singe a grimpé sur son épaule, et il en redescend avec sa bourse sans que l'homme s'en aperçoive.",
           "4": "Un voyageur vous surprend et crie au voleur. Vous prenez votre air le plus innocent et parlez d'une méprise. Les villageois se souviennent de vous comme d'un voyageur honnête et haussent les épaules. Vous repartez les mains vides.",
           "5": "Un voyageur vous surprend et crie au voleur. Les villageois reconnaissent votre visage, qu'on décrit dans toutes les auberges du pays. Ils vous rouent de coups jusqu'à ce que le crieur les arrête : il ne veut pas de vrai sang pendant le spectacle.",
           "6": "Un villageois qui surveille la foule vous saisit au col. Vous vous dégagez après une courte lutte, la lèvre fendue, et disparaissez derrière les maisons, les mains vides."
@@ -1034,7 +1034,7 @@
           "2": "Vous arrivez à l'estrade bien après la trappe. Le condamné se balance au bout de sa corde et vous fait un clin d'œil. La foule rit de votre héroïsme tardif, et vous repartez rouge de honte.",
           "3": "Le crieur vous reconnaît et vous désigne à la foule : voilà un vrai bandit, qui mériterait la corde bien plus que l'acteur. Les rires redoublent, et l'on vous chasse de la place sous une pluie de trognons de pommes.",
           "4": "Vous fendez la foule et tranchez la corde d'un coup de lame avant même que la trappe s'ouvre. Le paysan, privé de son grand final, fait la moue, mais le crieur, ravi du spectacle, vous laisse une belle part de la quête.",
-          "5": "Vous sautez sur le dos de votre monture et fendez la foule jusqu'à l'estrade. Le condamné fait glisser sa corde par-dessus sa tête et saute derrière vous. Vous faites le tour de la potence sous les vivats : la foule croit que cela fait partie de la pièce. Le crieur vous supplie de revenir.",
+          "5": "Vous sautez sur le dos de votre monture et traversez la place au galop. Vous hissez le condamné derrière vous et faites le tour de la potence sous les vivats : la foule croit que cela fait partie de la pièce. Le crieur vous supplie de revenir.",
           "6": "Pendant que vous jouez des coudes vers l'estrade, votre Paresseux grimpe tranquillement le long de la potence. Quand vous arrivez enfin, il pend tête en bas à côté du condamné, accroché par les pattes. La foule hurle de rire devant ce second pendu, et le crieur vous laisse une part de la quête pour le numéro."
         }
       },
@@ -3733,7 +3733,7 @@
           "1": "Pressé, vous coupez à travers le champ pour gagner du temps. Votre pied se pose sur une chose dure cachée dans l'herbe : les dents de la fourche. Vous repartez en boitant, le pied entaillé.",
           "2": "Vous coupez à travers le champ, et votre pied se pose sur les dents de la fourche, cachée dans l'herbe. Elles ripent sur le métal de votre armure. Vous ramassez l'outil et le rendez au paysan, qui vous remercie de quelques pièces.",
           "3": "Le paysan vous reconnaît : on lui a dit du bien de vous. Vous ne vous arrêtez pas, mais il vous lance une pomme de son panier avec un grand signe. Vous la croquez en reprenant votre route.",
-          "4": "Votre familier prend son envol au-dessus du champ, puis se met à tourner au-dessus d'un même endroit. Vous allez voir : un manche de bois dépasse des blés, c'est la fourche. Vous la rapportez au paysan, qui vous remercie de quelques pièces."
+          "4": "Votre familier prend son envol au-dessus du champ, puis se pose sur un manche de bois qui dépasse des blés : la fourche. Vous la rapportez au paysan, qui vous remercie de quelques pièces."
         }
       },
       "makeFork": {

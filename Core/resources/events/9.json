@@ -110,13 +110,7 @@
         "0": {
           "consumeMaterials": [
             {
-              "ids": [
-                2,
-                18,
-                58,
-                84,
-                88
-              ],
+              "type": "wood",
               "quantity": 1
             },
             {
