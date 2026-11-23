@@ -101,9 +101,7 @@
           "karma": -2
         },
         "5": {
-          "effect": "occupied",
-          "lostTime": 10,
-          "karma": -1
+          "karma": -2
         }
       }
     },
