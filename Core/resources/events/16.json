@@ -57,6 +57,55 @@
           "lostTime": 20,
           "money": 150,
           "karma": -3
+        },
+        "6": {
+          "requirements": {
+            "level": {
+              "min": 20,
+              "max": 79
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "fight": {
+            "monster": "skeleton",
+            "level": 40,
+            "won": {
+              "money": 100,
+              "experience": 30,
+              "randomItem": {}
+            },
+            "lost": {
+              "health": -25
+            }
+          }
+        },
+        "7": {
+          "requirements": {
+            "level": {
+              "min": 80
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "fight": {
+            "monster": "skeleton",
+            "level": 100,
+            "won": {
+              "money": 200,
+              "experience": 80,
+              "randomItem": {
+                "rarity": {
+                  "min": 3
+                }
+              }
+            },
+            "lost": {
+              "health": -30
+            }
+          }
         }
       }
     },

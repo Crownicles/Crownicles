@@ -94,6 +94,52 @@
             }
           },
           "health": 35
+        },
+        "6": {
+          "requirements": {
+            "level": {
+              "min": 20,
+              "max": 79
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "fight": {
+            "monster": "boar",
+            "level": 40,
+            "won": {
+              "money": 80,
+              "health": 25,
+              "experience": 30
+            },
+            "lost": {
+              "health": -20
+            }
+          }
+        },
+        "7": {
+          "requirements": {
+            "level": {
+              "min": 80
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "fight": {
+            "monster": "boar",
+            "level": 100,
+            "won": {
+              "money": 200,
+              "health": 40,
+              "experience": 80
+            },
+            "lost": {
+              "health": -30,
+              "effect": "hurt"
+            }
+          }
         }
       }
     },

@@ -1,0 +1,46 @@
+{
+  "baseEnergyValue": 115,
+  "attackRatio": 65,
+  "defenseRatio": 45,
+  "speedRatio": 95,
+  "breath": 4,
+  "maxBreath": 10,
+  "breathRegen": 3,
+  "rewardFactor": 0.2,
+  "materialLoot": [
+    16,
+    81,
+    49,
+    42,
+    85,
+    47
+  ],
+  "attacks": [
+    {
+      "id": "quickAttack",
+      "minLevel": 0,
+      "weight": 5
+    },
+    {
+      "id": "simpleAttack",
+      "minLevel": 0,
+      "weight": 4
+    },
+    {
+      "id": "concentration",
+      "minLevel": 0,
+      "weight": 2
+    },
+    {
+      "id": "powerfulAttack",
+      "minLevel": 40,
+      "weight": 2
+    },
+    {
+      "id": "piercingAttack",
+      "minLevel": 80,
+      "weight": 2
+    }
+  ],
+  "maps": []
+}

@@ -55,7 +55,19 @@
           "10": "Votre poulpe se glisse dans le lac, enroule ses bras autour du gros poisson et le hisse jusqu'au ponton. Le pêcheur n'a jamais vu ça. Il vous paie bien, en gardant tout de même ses distances avec votre familier.",
           "11": "Votre dauphin pousse le gros poisson du museau jusqu'au ponton, puis fait un bond hors de l'eau. Sur la rive, les familles applaudissent. Ravi, le pêcheur vous laisse une part de sa prise et quelques pièces.",
           "12": "Vous sortez ensemble un poisson superbe. À peine est-il sur le ponton que votre chat bondit dessus et file avec dans les roseaux. Le pêcheur reste bouche bée. Vous le dédommagez de quelques pièces pendant que votre chat dévore sa prise.",
-          "13": "Votre familier se glisse dans le lac pour vous aider. En un instant, l'eau se vide : le gros poisson file au large, et les familles plient bagage en criant. Le pêcheur ramasse sa canne et vous prie poliment de partir avec votre bestiole."
+          "13": "Votre familier se glisse dans le lac pour vous aider. En un instant, l'eau se vide : le gros poisson file au large, et les familles plient bagage en criant. Le pêcheur ramasse sa canne et vous prie poliment de partir avec votre bestiole.",
+          "14": "Vous tirez ensemble, et le poisson jaillit soudain de l'eau. Il retombe sur le ponton, énorme. Au lieu de se débattre, il se dresse sur sa queue et fonce sur vous, la gueule grande ouverte.",
+          "15": "La ligne se tend, et un poisson plus grand qu'une barque bondit hors du lac. Le ponton ploie sous son poids quand il retombe. Il fixe sur vous un œil rond et furieux, puis s'avance en claquant des mâchoires."
+        },
+        "fights": {
+          "14": {
+            "won": "Le poisson géant finit par s'immobiliser sur les planches. Le pêcheur n'en revient pas : il vous paie largement et part montrer sa prise à toutes les familles de la rive.",
+            "lost": "D'un coup de queue, le poisson vous envoie dans le lac, puis replonge à son tour. Vous remontez sur le ponton trempé et couvert d'écailles, sous les rires des familles."
+          },
+          "15": {
+            "won": "Le monstre du lac s'effondre enfin sur les planches. En le vidant, le pêcheur trouve dans son ventre un objet avalé il y a bien longtemps, qu'il vous laisse avec une belle somme.",
+            "lost": "Le poisson vous balaie du ponton d'un coup de queue et regagne les profondeurs. Vous nagez jusqu'à la rive, sonné, pendant que le pêcheur contemple sa canne brisée."
+          }
         }
       },
       "advice": {
@@ -408,7 +420,19 @@
           "2": "Dans la grande salle, un morceau du plafond se détache juste au-dessus de vous. Rien ne vous protège vraiment : les pierres vous frappent de plein fouet. Vous ressortez du château en boitant, couvert de poussière et de sang.",
           "3": "Dans la grande salle, un morceau du plafond se détache juste au-dessus de vous. Vous vous protégez la tête de vos bras, mais une pierre vous entaille l'épaule. Vous ressortez du château en vous tenant le bras.",
           "4": "Un escalier effondré descend vers les caves. Vous attachez une corde à un pilier et vous laissez glisser dans le noir. En bas, un coffre a échappé aux pillards. Vous en tirez un bel objet, puis remontez à la force des bras en laissant la corde nouée au pilier.",
-          "5": "Des voix montent d'une salle : des brigands ont fait du château leur repaire. Leur chef vous reconnaît et vous invite à leur feu comme un vieux camarade. Vous acceptez votre part de leur dernier butin sans poser de questions."
+          "5": "Des voix montent d'une salle : des brigands ont fait du château leur repaire. Leur chef vous reconnaît et vous invite à leur feu comme un vieux camarade. Vous acceptez votre part de leur dernier butin sans poser de questions.",
+          "6": "Au fond de la grande salle, un squelette en armure rouillée se dresse lentement de son trône. Ses orbites vides se tournent vers vous, et il lève une épée ébréchée : le seigneur du château défend encore ses murs.",
+          "7": "Dans la salle du trône, une silhouette couronnée se dresse au milieu des ossements. Le vieux seigneur du château n'a jamais quitté ses murs, et il tire de son fourreau une épée presque aussi grande que lui."
+        },
+        "fights": {
+          "6": {
+            "won": "Le squelette s'effondre en un tas d'os et de ferraille. Sous son trône, vous trouvez la cassette qu'il gardait encore, avec un objet qui a traversé les années sans une trace de rouille.",
+            "lost": "Les coups du squelette vous rejettent hors de la salle. Il ne vous poursuit pas et retourne s'asseoir sur son trône. Vous quittez le château en vous tenant les côtes."
+          },
+          "7": {
+            "won": "Le seigneur squelette tombe en poussière, sa couronne roule à vos pieds. Derrière le trône, son trésor attend encore : vous en emportez le plus bel objet.",
+            "lost": "Le seigneur squelette vous chasse de sa salle à grands coups d'épée. Vous dévalez l'escalier et ne reprenez votre souffle qu'une fois dehors."
+          }
         }
       },
       "walkAround": {
@@ -472,7 +496,19 @@
           "2": "Vous poursuivez un sanglier à travers les fourrés. Acculé, il fait soudain volte-face et vous charge. Vous n'avez pas le temps de l'éviter, et ses défenses vous labourent la jambe. Gravement blessé, vous devez vous soigner longuement.",
           "3": "Vous poursuivez un sanglier à travers les fourrés. Acculé, il fait volte-face et vous charge. Vous encaissez le plus gros du choc, mais une défense vous entaille la cuisse. La bête s'enfuit, et vous repartez en boitant.",
           "4": "Votre familier flaire une piste et file dans les fourrés avant vous. Il revient un moment plus tard en traînant un lièvre bien gras. Vous le faites rôtir et partagez le repas avec lui. Vous repartez tous les deux rassasiés.",
-          "5": "Vous débusquez un faisan et l'abattez d'une pierre. Vous le plumez, le farcissez d'herbes cueillies en chemin et le faites rôtir lentement sur la braise, jusqu'à ce que la peau dore et croustille. Vous vous régalez, et repartez en pleine forme."
+          "5": "Vous débusquez un faisan et l'abattez d'une pierre. Vous le plumez, le farcissez d'herbes cueillies en chemin et le faites rôtir lentement sur la braise, jusqu'à ce que la peau dore et croustille. Vous vous régalez, et repartez en pleine forme.",
+          "6": "Vous débusquez un sanglier dans les fourrés. Au lieu de fuir, il gratte la terre, baisse la tête et fonce droit sur vous.",
+          "7": "Dans les fourrés vous attend un vieux mâle énorme, couvert de cicatrices, aux défenses longues comme des dagues. Il en a chassé plus d'un de son territoire, et il charge sans attendre."
+        },
+        "fights": {
+          "6": {
+            "won": "Le sanglier s'écroule enfin. Vous en faites rôtir un cuissot sur un feu de branches et emportez le reste, que vous vendez au premier voyageur croisé.",
+            "lost": "Le sanglier vous renverse et vous piétine avant de retourner dans les fourrés. Vous restez un moment à terre, le ventre toujours vide et le corps couvert de bleus."
+          },
+          "7": {
+            "won": "Le vieux sanglier tombe enfin. Vous festoyez sur place, et ses défenses énormes, vendues au premier marchand venu, vous rapportent une jolie somme.",
+            "lost": "Le vieux sanglier vous projette contre un arbre et retourne dans les fourrés. Vous repartez en boitant, sans repas et avec une belle entaille à la cuisse."
+          }
         }
       },
       "mushrooms": {
@@ -721,7 +757,20 @@
           "1": "Au dernier moment, le garde se retourne et dégaine. Ses coups vous atteignent de plein fouet, et vous vous effondrez, blessé. Il s'enfuit, et la femme a disparu dans la confusion.",
           "2": "Au dernier moment, le garde se retourne et riposte. Vous encaissez le plus gros, mais une entaille au bras vous fait lâcher prise. Il s'enfuit, et la femme a disparu dans la confusion.",
           "3": "Profitant de la surprise, vous assommez le garde d'un seul coup. Un objet de valeur tombe de sa ceinture, sans doute le fruit d'un autre vol. La femme récupère sa bourse et vous laisse l'objet.",
-          "4": "Vous ceinturez le garde, et des passants qui vous ont reconnu vous prêtent main-forte. Une patrouille arrive et emmène le garde. Le sergent vous remet une récompense pour votre aide."
+          "4": "Vous ceinturez le garde, et des passants qui vous ont reconnu vous prêtent main-forte. Une patrouille arrive et emmène le garde. Le sergent vous remet une récompense pour votre aide.",
+          "5": "Le garde se retourne avant que vous l'atteigniez et dégaine. La femme se recroqueville contre le mur pendant qu'il se met en garde face à vous : il n'a aucune intention de vous laisser repartir.",
+          "6": "Le garde pare votre coup sans même se retourner tout à fait. Il a des années de métier derrière lui, et il dégaine avec un sourire mauvais : il compte bien vous faire payer votre audace.",
+          "7": "Vous vous jetez sur le garde, mais la route vous a vidé de vos forces. Il vous repousse sans peine et vous frappe jusqu'à ce que vous restiez à terre. Quand vous vous relevez, la femme a disparu, et votre bourse aussi."
+        },
+        "fights": {
+          "5": {
+            "won": "Le garde finit à terre, son épée à vos pieds. La femme récupère sa bourse, et vous trouvez dans la sienne le produit de ses autres fausses taxes. Vous le gardez : il ne viendra pas le réclamer.",
+            "lost": "Le garde vous envoie au sol d'un coup de pommeau. Il fouille vos poches en guise d'amende et s'éloigne, la bourse de la femme toujours à la ceinture."
+          },
+          "6": {
+            "won": "Le vieux garde pose enfin un genou à terre. La femme reprend sa bourse et file. Sur le garde, vous trouvez un objet de valeur, sans doute volé à un autre passant, et assez de pièces pour payer votre peine.",
+            "lost": "Le garde vous met à terre avec l'aisance d'un vétéran. Il se sert dans votre bourse, vous menace de la prison si vous parlez de lui, et repart d'un pas tranquille."
+          }
         }
       },
       "negotiateBribe": {
@@ -922,7 +971,20 @@
           "2": "Un soldat vous surprend penché sur un corps, votre Chat noir à vos pieds. Il recule, fait un signe contre le mauvais œil et crie à la sorcellerie. Ses camarades accourent. Une pierre vous atteint à la tempe, et vous restez un moment caché dans les hautes herbes.",
           "3": "Un soldat vous attrape par l'épaule et exige que vous vidiez vos poches. Vous vous dégagez d'un coup sec et filez entre les corps, les poches déjà pleines. Il renonce vite à vous suivre.",
           "4": "Vous retournez un corps sans vérifier s'il respire. L'homme ouvre les yeux et gémit. Confus, vous bredouillez une excuse, bandez sa blessure avec un morceau de tissu tiré de votre sac et appelez les soldats.",
-          "5": "Un soldat vous interpelle. Vous restez calme et lui expliquez que vous cherchez un ami. Au même moment, votre Singe surgit de sous un cadavre, une bague brillante entre les doigts. Le soldat dégaine, et vous prenez la fuite les mains vides."
+          "5": "Un soldat vous interpelle. Vous restez calme et lui expliquez que vous cherchez un ami. Au même moment, votre Singe surgit de sous un cadavre, une bague brillante entre les doigts. Le soldat dégaine, et vous prenez la fuite les mains vides.",
+          "6": "Vous retournez un brigand pour fouiller sa ceinture. Il n'était pas mort : il ouvre les yeux, tire un couteau de sa botte et se relève d'un bond, bien décidé à garder ce qu'il a.",
+          "7": "Sous un tas de corps, un homme vous attrape la cheville. C'est le chef de la bande, caché parmi ses hommes tombés en attendant la nuit. Il se relève, épée en main : vous ne repartirez pas avec son butin.",
+          "8": "Vous vous penchez sur un brigand qui n'était pas mort. Il vous saute à la gorge, et vous êtes trop épuisé pour lui résister. Il vous laisse étendu parmi les corps, la bourse vide, et il vous faut un long moment pour vous relever."
+        },
+        "fights": {
+          "6": {
+            "won": "Le brigand retombe dans l'herbe, pour de bon cette fois. Sa ceinture était bien garnie : la part du butin qu'il comptait emporter en filant à la nuit tombée.",
+            "lost": "Le brigand vous envoie rouler entre les corps, prend votre bourse en plus de la sienne et file vers les collines avant que les mercenaires comprennent ce qui se passe."
+          },
+          "7": {
+            "won": "Le chef des brigands s'effondre parmi ses hommes. Dans sa besace, vous trouvez le plus beau du butin de la bande, qu'il comptait emporter seul.",
+            "lost": "Le chef des brigands vous laisse étendu parmi les corps, prend votre bourse et disparaît dans les hautes herbes. Les mercenaires ne remarquent rien."
+          }
         }
       },
       "end": {
@@ -1543,7 +1605,20 @@
           "3": "Price vous a reconnu avant même que vous leviez la main. Avec un sourire las, il détache une bourse et vous la lance. À l'intérieur, quelques pièces et beaucoup de jetons de plomb : il la garde exprès pour les voleurs de votre genre.",
           "4": "Pendant que vous occupez Price avec vos questions, votre singe se glisse jusqu'à sa ceinture et revient avec sa bourse. Price ne remarque rien et vous quitte sur une poignée de main. Un peu plus loin, vous comptez le butin.",
           "5": "Price vous surprend la main sur sa bourse et vous frappe aux côtes. Votre armure encaisse le plus gros du coup. Price secoue sa main endolorie et n'insiste pas. Vous repartez avec un bleu, et sans une pièce de plus.",
-          "6": "Vous attrapez la bourse de Price en passant, mais il sent le geste et se retourne. Vous filez dans la foule du port, et il renonce à vous suivre. Dans votre course, la bourse s'est ouverte : il n'y reste que quelques pièces."
+          "6": "Vous attrapez la bourse de Price en passant, mais il sent le geste et se retourne. Vous filez dans la foule du port, et il renonce à vous suivre. Dans votre course, la bourse s'est ouverte : il n'y reste que quelques pièces.",
+          "7": "Price vous attrape le poignet au moment où vos doigts frôlent sa bourse. Il recule d'un pas et dégaine : sur le port, on ne vole pas un mercenaire sans en payer le prix.",
+          "8": "Price saisit votre main sur sa bourse. Il vous a reconnu : battre un aventurier de votre réputation ferait grimper ses tarifs. Il dégaine, et les marins s'écartent pour faire cercle autour de vous.",
+          "9": "Price vous surprend la main sur sa bourse. Trop épuisé pour fuir, vous encaissez sa colère jusqu'au bout : il vous laisse sur les pavés du port, la bourse vide et les côtes en feu."
+        },
+        "fights": {
+          "7": {
+            "won": "Price finit assis sur les pavés, le souffle court. Beau joueur, il vous lance sa bourse : un voleur capable de le battre a bien gagné son salaire.",
+            "lost": "Price vous envoie au sol du plat de son épée. Il se sert dans votre bourse pour le dérangement et retourne chercher du travail sur le port."
+          },
+          "8": {
+            "won": "Price met un genou à terre sous les huées des marins. Il vous tend sa bourse et vous serre la main : il préfère perdre contre vous que contre un inconnu.",
+            "lost": "Price vous met à terre sous les acclamations des marins. Votre défaite fera grimper ses tarifs, et votre bourse paie la tournée qu'il offre au port."
+          }
         }
       },
       "follow": {

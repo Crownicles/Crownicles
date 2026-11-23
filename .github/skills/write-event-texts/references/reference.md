@@ -121,7 +121,8 @@ Une issue peut déclencher un combat :
 }
 ```
 
-- `monster` : un fichier de `Core/resources/monsters`. Les monstres sans île (`"maps": []`) sont réservés aux events : `bandit` (détrousseur rapide).
+- `monster` : un fichier de `Core/resources/monsters`. Les monstres sans île (`"maps": []`) sont réservés aux events : `bandit` (détrousseur rapide), `corruptGuard` (garde corrompu, bouclier), `mercenary` (épée à louer), `boar` (sanglier), `giantFish` (poisson géant). Les monstres des îles servent aussi quand la scène s'y prête (`skeleton` dans le château en ruine de l'event 16).
+- Repères : niveau 40 pour les joueurs de niveau 20 à 79, niveau 100 au-delà (events 10, 11, 16, 17, 20, 25, 39).
 - `level` : fixe. Un monstre au niveau du joueur est un vrai combat ; 20 niveaux de moins, une formalité. Borne `level` dans `requirements` pour que le combat reste à la mesure des joueurs qui le reçoivent.
 - `won` / `lost` : `money`, `health`, `experience`, `effect` + `lostTime`, `randomItem`. Un nul compte comme une victoire (l'adversaire renonce). Un combat perdu vide déjà l'énergie du joueur : la perte reste modérée.
 - `energyPercent.min` d'au moins 1 est obligatoire (validateur et tests) : sans énergie, le joueur perdrait d'office.

@@ -181,6 +181,65 @@
             ]
           },
           "karma": -5
+        },
+        "6": {
+          "requirements": {
+            "level": {
+              "min": 20,
+              "max": 79
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "karma": -10,
+          "fight": {
+            "monster": "bandit",
+            "level": 40,
+            "won": {
+              "money": 200,
+              "experience": 30
+            },
+            "lost": {
+              "money": -150,
+              "health": -15
+            }
+          }
+        },
+        "7": {
+          "requirements": {
+            "level": {
+              "min": 80
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "karma": -10,
+          "fight": {
+            "monster": "bandit",
+            "level": 100,
+            "won": {
+              "money": 400,
+              "experience": 80,
+              "randomItem": {}
+            },
+            "lost": {
+              "money": -300,
+              "health": -20
+            }
+          }
+        },
+        "8": {
+          "requirements": {
+            "energyPercent": {
+              "max": 15
+            }
+          },
+          "karma": -5,
+          "effect": "hurt",
+          "health": -30,
+          "money": -150
         }
       }
     },

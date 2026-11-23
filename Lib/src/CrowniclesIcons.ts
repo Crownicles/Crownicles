@@ -1718,6 +1718,10 @@ export const CrowniclesIcons: {
 	},
 	monsters: {
 		bandit: "🥷",
+		giantFish: "🐟",
+		boar: "🐗",
+		mercenary: "🤺",
+		corruptGuard: "💂",
 		spider: "🕷️",
 		slimyMutant: "🦠",
 		skeleton: "💀",

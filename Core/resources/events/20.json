@@ -152,6 +152,65 @@
           },
           "money": 100,
           "karma": 5
+        },
+        "5": {
+          "requirements": {
+            "level": {
+              "min": 20,
+              "max": 79
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "karma": 5,
+          "fight": {
+            "monster": "corruptGuard",
+            "level": 40,
+            "won": {
+              "money": 150,
+              "experience": 40
+            },
+            "lost": {
+              "money": -120,
+              "health": -20
+            }
+          }
+        },
+        "6": {
+          "requirements": {
+            "level": {
+              "min": 80
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "karma": 5,
+          "fight": {
+            "monster": "corruptGuard",
+            "level": 100,
+            "won": {
+              "money": 300,
+              "experience": 90,
+              "randomItem": {}
+            },
+            "lost": {
+              "money": -250,
+              "health": -25
+            }
+          }
+        },
+        "7": {
+          "requirements": {
+            "energyPercent": {
+              "max": 15
+            }
+          },
+          "karma": 5,
+          "effect": "hurt",
+          "health": -40,
+          "money": -150
         }
       }
     },

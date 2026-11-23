@@ -127,6 +127,52 @@
             ]
           },
           "karma": 1
+        },
+        "14": {
+          "requirements": {
+            "level": {
+              "min": 20,
+              "max": 79
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "karma": 2,
+          "fight": {
+            "monster": "giantFish",
+            "level": 40,
+            "won": {
+              "money": 150,
+              "experience": 30
+            },
+            "lost": {
+              "health": -15
+            }
+          }
+        },
+        "15": {
+          "requirements": {
+            "level": {
+              "min": 80
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "karma": 2,
+          "fight": {
+            "monster": "giantFish",
+            "level": 100,
+            "won": {
+              "money": 300,
+              "experience": 80,
+              "randomItem": {}
+            },
+            "lost": {
+              "health": -25
+            }
+          }
         }
       }
     },

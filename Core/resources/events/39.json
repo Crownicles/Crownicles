@@ -206,6 +206,64 @@
           },
           "money": 50,
           "karma": -5
+        },
+        "7": {
+          "requirements": {
+            "level": {
+              "min": 20,
+              "max": 79
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "karma": -5,
+          "fight": {
+            "monster": "mercenary",
+            "level": 40,
+            "won": {
+              "money": 150,
+              "experience": 30
+            },
+            "lost": {
+              "money": -150,
+              "health": -15
+            }
+          }
+        },
+        "8": {
+          "requirements": {
+            "level": {
+              "min": 80
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "karma": -5,
+          "fight": {
+            "monster": "mercenary",
+            "level": 100,
+            "won": {
+              "money": 300,
+              "experience": 80
+            },
+            "lost": {
+              "money": -300,
+              "health": -20
+            }
+          }
+        },
+        "9": {
+          "requirements": {
+            "energyPercent": {
+              "max": 15
+            }
+          },
+          "karma": -5,
+          "effect": "hurt",
+          "health": -30,
+          "money": -100
         }
       }
     },

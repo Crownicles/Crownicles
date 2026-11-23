@@ -1712,6 +1712,22 @@
     "8": "$t(commands:report.city.shops.materialMerchant.label)"
   },
   "monsters": {
+    "giantFish": {
+      "name": "Poisson géant",
+      "description": "Un poisson si énorme qu'aucune ligne ne le retient. Hors de l'eau, il ne se débat pas : il se dresse sur sa queue, mord tout ce qui passe à portée et crache l'eau du lac au visage des pêcheurs."
+    },
+    "boar": {
+      "name": "Sanglier",
+      "description": "Un sanglier massif aux défenses acérées. Il fuit tant qu'il le peut, mais une fois acculé, il charge tête baissée et ne lâche plus prise."
+    },
+    "mercenary": {
+      "name": "Mercenaire",
+      "description": "Une épée à louer, rompue à tous les combats. Il se bat vite et proprement, prend le temps de jauger son adversaire, et ne frappe jamais plus fort qu'on ne le paie."
+    },
+    "corruptGuard": {
+      "name": "Garde corrompu",
+      "description": "Un garde qui se sert de l'uniforme de la cité pour racketter les passants. Bien armé et protégé par son bouclier, il frappe fort et compte sur sa position pour qu'on ne le dénonce jamais."
+    },
     "bandit": {
       "name": "Bandit",
       "description": "Un détrousseur de grand chemin qui guette les voyageurs isolés. Rapide et sans scrupules, il préfère frapper par surprise et fuir avec la bourse que livrer un combat loyal."
