@@ -253,6 +253,16 @@ L'échelle est calée sur les 130 joueurs réguliers en production, c'est-à-dir
   - Exemple, event 10 (aider le pêcheur) : attaque faible, vous tombez à l'eau et vous blessez ; moyenne, vous dérapez sur les planches et vous écorchez les genoux ; forte, vous remontez une prise rare.
   - Exemple, event 2 (ignorer le chien) : défense faible -25 PV, moyenne -12, forte -3.
   - Un malus réservé aux plus faibles, sans palier moyen, reste possible si le cas général est traité par ailleurs (event 10 : seul un joueur faible peut tomber à l'eau).
+- **La difficulté change d'un event à l'autre.** Si tous les events coupent aux mêmes valeurs, le joueur passe d'un coup de « ne réussit rien » à « réussit tout » quand il franchit l'attaque 600 ou la défense 520. Chaque épreuve a sa difficulté, tirée de la scène : écarter un chien n'est pas traverser un torrent. Choisis pour chaque épreuve un des quatre paliers ci-dessous (bornes incluses), et varie-les d'un event à l'autre ; le palier standard ne doit pas être celui de tous les events.
+
+  | Difficulté | Exemple de scène | Échec (lourd) | Moyen | Réussite | `attack` | `defense` | `speed` | `level` |
+  |---|---|---|---|---|---|---|---|---|
+  | facile | écarter un chien, attraper une noix | 10 % les plus faibles | | la moitié des joueurs | 90 / 91-439 / 440 | 60 / 61-339 / 340 | 10 / 11-134 / 135 | 30 / 31-95 / 96 |
+  | standard | aider à tirer une ligne | le premier quart | | le dernier quart | 230 / 231-599 / 600 | 180 / 181-519 / 520 | 40 / 41-349 / 350 | 55 / 56-119 / 120 |
+  | difficile | traverser un torrent, maîtriser un garde | la moitié des joueurs | | le premier dixième | 440 / 441-699 / 700 | 340 / 341-739 / 740 | 135 / 136-499 / 500 | 96 / 97-129 / 130 |
+  | très difficile | soulever une poutre de pont-levis, battre un vétéran | les trois quarts | | les 5 % meilleurs | 600 / 601-779 / 780 | 520 / 521-859 / 860 | 350 / 351-559 / 560 | 120 / 121-139 / 140 |
+
+  Le mot du texte suit le palier : l'échec d'une épreuve facile est celui d'un débutant, la réussite d'une épreuve très difficile celle d'un joueur exceptionnel. Le validateur avertit quand toutes les épreuves d'un event sont au palier standard.
 - **De la variété dans les seuils.** Les joueurs réguliers sont nombreux tout en haut, avec un creux autour du niveau 80 : ne mets pas tous les seuils tout en haut. Quelques issues vraiment réservées aux meilleurs, qu'on découvre tard, c'est voulu ; mais chaque event a aussi des issues pour les joueurs faibles et moyens.
 - **Un niveau 60 est encore le début du jeu.**
 - **Classes et familiers.** Une condition sur une seule classe ou un seul type de familier peut ne toucher que 1 à 2 % des joueurs : c'est voulu. Des issues rares, avec une part de joueurs concernés très variable, rendent l'event plus riche.
@@ -342,6 +352,7 @@ Les 21 events déjà réécrits (1, 2, 10 à 20, 30, 39, 46, 56, 69, 71, 76, 89)
 - **Event 26, scène répétée (le propriétaire)** : une pendaison qui revient à chaque passage, une bourse que « personne ne réclame » et des propriétaires qui remercient alors que tout le village est à la pendaison. Voir « Une scène qui revient doit pouvoir revenir » et « L'intro fixe l'état des choses ».
 - **Event 26, intro confuse (le propriétaire)** : termes du lore jetés sans explication, faction qui agit contre ses propres buts, seigneur installé dans une ville en ruine, passé commun inventé. Voir « Lore ».
 - **Event 2, ton uniforme (le propriétaire)** : trop de morsures, rien de mignon ni de drôle. Voir « Varier le ton ».
+- **Paliers tous identiques (le propriétaire)** : tous les events coupaient aux mêmes valeurs, et le joueur passait d'un coup de ne rien réussir à tout réussir. Voir « La difficulté change d'un event à l'autre ».
 - **Events validés figés (le propriétaire)** : un event relu ne se réécrit plus ; seules les erreurs objectives s'y corrigent, au plus près (les corrections de physique des events 9, 10 et 26 ont été gardées). Voir « Events validés par le propriétaire ».
 - **Event 1, le campement (le propriétaire)** : quatre faits empilés en une issue et un personnage qui laisse son sac pour aller voir des bruits. Voir « Une péripétie par issue ».
 - **Event 1, la physique (relecture d'un joueur)** : un chêne géant réglé par des gestes ordinaires, et un paquet « là depuis longtemps » dans un arbre tombé récemment. Voir « La physique tient » et « L'intro fixe l'état des choses ».

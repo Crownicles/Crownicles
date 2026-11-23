@@ -345,6 +345,28 @@ function checkOutcomeFight(report, path, x, texts, monsters) {
 	}
 }
 
+const STANDARD_TIER_BOUNDS = {
+	attack: [230, 231, 599, 600],
+	defense: [180, 181, 519, 520],
+	speed: [40, 41, 349, 350]
+};
+
+/**
+ * Warn when every stat check of the event uses the standard tiers: the difficulty must change from an event to another
+ * @param {Report} report
+ * @param {any} dp data possibilities
+ */
+function checkTierVariety(report, dp) {
+	const bounds = entriesOf(dp).flatMap(([, possibility]) => entriesOf(get(possibility, "outcomes", {})))
+		.flatMap(([, x]) => Object.keys(STANDARD_TIER_BOUNDS).flatMap(stat => {
+			const range = get(getOrEmpty(x, "requirements"), stat);
+			return range === null ? [] : [get(range, "min"), get(range, "max")].filter(bound => bound !== null).map(bound => [stat, bound]);
+		}));
+	if (bounds.length >= 2 && bounds.every(([stat, bound]) => STANDARD_TIER_BOUNDS[stat].includes(bound))) {
+		report.warnings.push("every stat check uses the standard tiers: pick the difficulty of each check (easy, standard, hard, very hard) so that it changes from an event to another");
+	}
+}
+
 /**
  * Whether two sets hold the same elements
  * @param {Set<unknown>} a
@@ -454,6 +476,7 @@ function checkData(report, inp, out, game) {
 			report.errors.push(coverageError);
 		}
 	}
+	checkTierVariety(report, dp);
 	const fightingChoices = entriesOf(dp).filter(([, possibility]) => entriesOf(get(possibility, "outcomes", {})).some(([, x]) => get(x, "fight") !== null));
 	if (fightingChoices.length > 1) {
 		report.warnings.push(`${fightingChoices.length} choices lead to a fight (at most 1 per event)`);

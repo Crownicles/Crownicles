@@ -36,6 +36,7 @@ Autres repères :
 - **51 % des joueurs ont un familier.** Un type précis (Chien, Perroquet, Singe…) concerne 0 à 2 % des joueurs : c'est voulu aussi, une part de joueurs concernés très variable d'une issue à l'autre est une bonne chose. Les plus fréquents chez les joueurs : Fantôme (100), Tigre (56), Vampire (101), Jack-o'-lantern (99), Licorne (63), Stitch (66), Bœuf (8), Lion (57), Caniche (2), Porc (9), T-Rex (65), Rongeur (5), Alien (70), Chat noir (4), Chauve-souris (27), Loup (28), Serpent (15), Léopard (60).
 - **Le karma n'existe pas encore en production : tout le monde partira de 0.** Une issue rapporte en général 1 à 5 points. Les seuils de karma restent ceux des events déjà réécrits (`min` 0, 50, 80 ou 100, `max` -30 ou -50) : ces issues se débloquent avec le temps.
 - Les seuils de niveau et de statistiques suivent l'échelle ci-dessus et correspondent au texte.
+- **Chaque épreuve a sa difficulté** (facile, standard, difficile, très difficile) et ses paliers changent d'un event à l'autre : tableau dans `SKILL.md`, section « La difficulté change d'un event à l'autre ». Les paliers s'appuient sur les déciles mesurés : 10 % (attaque 90, défense 60, vitesse 10, niveau 30), 25 % (230, 180, 40, 55), médiane (440, 340, 135, 96), 75 % (600, 520, 350, 120), 90 % (700, 740, 500, 130), 95 % (780, 860, 560, 140).
 
 ## Cuisine, matériaux et équipement
 
