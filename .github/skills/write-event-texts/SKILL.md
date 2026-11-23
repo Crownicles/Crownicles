@@ -57,6 +57,7 @@ Le français (`Lang/fr`) est la référence. Depuis l'abandon de Crowdin (#5181)
 - **La réaction suit la condition.** Un chien intimidé par votre familier s'éloigne *en hâte*, pas *sans hâte*.
 - **Pas de répétition en cascade.** *Puis d'autres histoires, puis d'autres encore* : une de trop. Deux *puis* au plus par phrase.
 - **L'humour de l'original se garde**, et une chute qui brise le quatrième mur est bienvenue : l'issue qui s'ouvre sur *Mais pourquoi avoir fait cela ?* après avoir poussé le pêcheur.
+- **Varier le ton.** Un event où toutes les issues ont la même couleur (morsures, blessures, pièces trouvées) devient lisse. Glisse une ou deux issues mignonnes et une ou deux drôles parmi les autres, sans en faire le cas général. Event 2, le chien des ruines : il y avait surtout des morsures ; on y a ajouté des chiots coincés sous une planche, le chien qui s'endort sur vos pieds, celui qui se roule sur le dos quand vous grondez comme lui, et celui qui file avec votre repas.
 - **Un brin d'absurde va bien au jeu**, surtout dans les issues rares : le requin qui se glisse dans le lac pour aider le pêcheur et vide d'un coup l'eau et le pique-nique (event 10). La situation reste logique, c'est la conséquence qui surprend.
 - **Une tournure naturelle.** *Les familles accourues* sonne bizarre ; *les familles venues voir l'incident* se lit sans buter.
 - **On ne lit pas dans la tête d'un animal.** Le narrateur interprète ce qu'il voit : *Il semble vouloir que vous le suiviez*, pas *Il veut que vous le suiviez*.
@@ -340,6 +341,7 @@ Les 21 events déjà réécrits (1, 2, 10 à 20, 30, 39, 46, 56, 69, 71, 76, 89)
 - **Event 26, prémisse changée (le propriétaire)** : l'original était trop faible pour être rapiécé ; on garde les possibilités et leur idée, et on change la situation. Voir « Fidélité à l'original ».
 - **Event 26, scène répétée (le propriétaire)** : une pendaison qui revient à chaque passage, une bourse que « personne ne réclame » et des propriétaires qui remercient alors que tout le village est à la pendaison. Voir « Une scène qui revient doit pouvoir revenir » et « L'intro fixe l'état des choses ».
 - **Event 26, intro confuse (le propriétaire)** : termes du lore jetés sans explication, faction qui agit contre ses propres buts, seigneur installé dans une ville en ruine, passé commun inventé. Voir « Lore ».
+- **Event 2, ton uniforme (le propriétaire)** : trop de morsures, rien de mignon ni de drôle. Voir « Varier le ton ».
 - **Events validés figés (le propriétaire)** : un event relu ne se réécrit plus ; seules les erreurs objectives s'y corrigent, au plus près (les corrections de physique des events 9, 10 et 26 ont été gardées). Voir « Events validés par le propriétaire ».
 - **Event 1, le campement (le propriétaire)** : quatre faits empilés en une issue et un personnage qui laisse son sac pour aller voir des bruits. Voir « Une péripétie par issue ».
 - **Event 1, la physique (relecture d'un joueur)** : un chêne géant réglé par des gestes ordinaires, et un paquet « là depuis longtemps » dans un arbre tombé récemment. Voir « La physique tient » et « L'intro fixe l'état des choses ».

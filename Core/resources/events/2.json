@@ -50,6 +50,11 @@
           "health": -8,
           "effect": "confounded",
           "money": 60
+        },
+        "5": {
+          "effect": "occupied",
+          "lostTime": 20,
+          "karma": 3
         }
       }
     },
@@ -94,6 +99,11 @@
             ]
           },
           "karma": -2
+        },
+        "5": {
+          "effect": "occupied",
+          "lostTime": 10,
+          "karma": -1
         }
       }
     },
@@ -149,7 +159,10 @@
           }
         },
         "6": {},
-        "7": {}
+        "7": {},
+        "8": {
+          "effect": "starving"
+        }
       }
     },
     "end": {
@@ -176,7 +189,12 @@
           },
           "randomItem": {}
         },
-        "3": {}
+        "3": {},
+        "4": {
+          "effect": "occupied",
+          "lostTime": 30,
+          "karma": 1
+        }
       }
     }
   },

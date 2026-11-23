@@ -496,7 +496,8 @@ export const CrowniclesIcons: {
 				0: "🐶",
 				1: "🩸",
 				2: "🐾",
-				3: "🐕"
+				3: "🐕",
+				4: "💤"
 			},
 			followDog: "🐕",
 			intimidateDog: "😠",

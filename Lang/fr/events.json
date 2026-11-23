@@ -690,7 +690,8 @@
           "1": "Vous suivez le chien de poutre en poutre jusqu'aux caves effondrées de l'auberge. Entre les dalles brillent quelques vieilles pièces. L'animal vous regarde les ramasser, puis disparaît dans les décombres.",
           "2": "Vous avez assez couru les routes pour comprendre ce chien : il connaît ces ruines par cœur. Vous le suivez sans hésiter jusqu'à l'ancienne réserve, où un coffre dort sous les gravats, avec quelques pièces et un objet de valeur.",
           "3": "Le chien tacheté et votre compagnon se flairent, puis filent ensemble dans un concert d'aboiements. Ils s'arrêtent dans les décombres de la salle commune et grattent sous une dalle descellée, jusqu'à dégager un magot que l'ancien aubergiste y avait caché.",
-          "4": "Vous filez derrière le chien sans le lâcher d'une semelle. Dans votre élan, vous ne voyez pas la marche effondrée de la cave : vous trébuchez et dévalez les dernières marches sur le dos. Étourdi, vous ramassez quelques pièces qui brillaient entre les dalles."
+          "4": "Vous filez derrière le chien sans le lâcher d'une semelle. Dans votre élan, vous ne voyez pas la marche effondrée de la cave : vous trébuchez et dévalez les dernières marches sur le dos. Étourdi, vous ramassez quelques pièces qui brillaient entre les dalles.",
+          "5": "Le chien vous mène au fond de l'auberge, devant une planche tombée en travers d'un recoin. Derrière, ça gémit : ses petits sont coincés. Vous soulevez la planche, et trois chiots se ruent sur le chien tacheté, puis sur vos mains, qu'ils couvrent de coups de langue. Vous mettez un moment à vous en défaire."
         }
       },
       "intimidateDog": {
@@ -700,7 +701,8 @@
           "1": "Vous criez et agitez les bras, sans grand effet. Agacé, le chien vous mord la jambe, puis s'enfuit en aboyant vers les chambres écroulées. La blessure est douloureuse, et votre fierté n'en sort pas indemne.",
           "2": "Vous dégainez votre arme et faites un pas vers lui. Le chien recule, oreilles basses et queue entre les pattes, puis disparaît entre les poutres de la salle commune. Plus rien ne vous retient ici.",
           "3": "Le chien détale sous vos cris, et un mendiant sort des décombres où il s'abritait. Il vous reconnaît, blêmit et vous jette les quelques pièces de sa bourse avant de s'enfuir. Vous les ramassez et reprenez votre route.",
-          "4": "Sur le seuil brisé de l'auberge, votre familier vient se placer à vos côtés. Le chien le regarde, recule, puis s'éloigne en hâte vers les vestiges de l'écurie."
+          "4": "Sur le seuil brisé de l'auberge, votre familier vient se placer à vos côtés. Le chien le regarde, recule, puis s'éloigne en hâte vers les vestiges de l'écurie.",
+          "5": "Vous vous accroupissez et grondez en montrant les dents, comme un chien. Le chien penche la tête, puis se roule sur le dos, les pattes en l'air : vous parlez visiblement sa langue, et il réclame des caresses. Vous lui grattez le ventre un moment avant de reprendre la route."
         }
       },
       "skip": {
@@ -713,7 +715,8 @@
           "4": "Vous pressez le pas pour le distancer, mais vos pieds se prennent dans les pavés ébréchés. Vous tombez lourdement et vous relevez couvert de contusions, tandis que le chien s'éloigne en aboyant.",
           "5": "D'un battement d'ailes, votre compagnon survole les ruines et entraîne le chien à sa suite. Vous en profitez pour poursuivre votre chemin le long de la Grande Rue, fier de votre familier.",
           "6": "Vous passez sans un regard. Le chien vous suit un moment en gémissant, puis renonce et retourne vers les ruines de l'auberge.",
-          "7": "Vous continuez votre route le long des pavés brisés. Le chien aboie encore deux ou trois fois dans votre dos, puis disparaît dans les décombres."
+          "7": "Vous continuez votre route le long des pavés brisés. Le chien aboie encore deux ou trois fois dans votre dos, puis disparaît dans les décombres.",
+          "8": "Vous passez sans un regard, et le chien vous suit à pas de loup. Un peu plus loin, vous le voyez filer vers les ruines, votre repas dans la gueule : il l'a tiré de votre sac entrouvert. Vous voilà le ventre vide pour la route."
         }
       },
       "end": {
@@ -721,7 +724,8 @@
           "0": "Vous restez planté là, et le chien s'impatiente. Il finit par vous mordre les mollets. Vous le repoussez avec peine avant qu'il ne vous blesse davantage.",
           "1": "Vous ne bougez pas, et le chien finit par perdre patience. Sans bonne armure pour vous protéger, vous ne pouvez rien contre ses crocs : il vous mord profondément au bras, puis s'enfuit et vous laisse ensanglanté sur les pavés.",
           "2": "Gêné, votre chien regarde l'autre s'agiter, puis file le rejoindre. Vous les écoutez jouer d'une oreille, jusqu'à ce qu'un concert d'aboiements vous tire de vos pensées : en grattant l'herbe, ils ont déterré un vieil objet.",
-          "3": "Vous restez planté là sans bouger. Le chien vous fixe un long moment en gémissant, puis, faute de réponse, repart seul vers les ruines de l'auberge."
+          "3": "Vous restez planté là sans bouger. Le chien vous fixe un long moment en gémissant, puis, faute de réponse, repart seul vers les ruines de l'auberge.",
+          "4": "Vous restez planté là sans bouger. Le chien finit par renoncer à vous entraîner : il se couche sur vos pieds avec un long soupir et s'endort. Vous n'osez plus bouger, et il vous faut un bon moment pour vous dégager sans le réveiller."
         }
       }
     }
