@@ -138,7 +138,7 @@
       "questionStranger": {
         "text": "Interroger l'inconnue.",
         "outcomes": {
-          "0": "Il vous faut un bon moment pour la faire se contredire : le chemin de l'ouest devient un sentier, puis une piste, puis plus rien. Elle rabat les voyageurs vers un guet-apens. Vous la laissez plantée là et reprenez votre route.",
+          "0": "Vous lui demandez par où passe ce chemin de l'ouest et ce qu'on y trouve. Elle hésite, se contredit, puis prétexte une course urgente et disparaît entre les arbres. Son conseil ne vous inspire plus confiance : vous reprenez votre route sans le suivre.",
           "1": "L'inconnue baisse son capuchon : on dit du bien de vous à Claire de Ville. Gênée, elle avoue qu'on la paie pour envoyer les voyageurs vers l'ouest. Elle vous guide par un sentier sûr et partage son pain avec vous.",
           "2": "L'inconnue vous dévisage, puis se détend : elle vous a reconnu, vous êtes de la même espèce. Elle avoue qu'elle rabat les voyageurs vers une bande de brigands du bois. Pour que vous ne chassiez pas sur ses terres, elle vous glisse une part de la dernière prise.",
           "3": "Vos questions sont précises : quel gué, quelle grotte, quel signal. Elle finit par avouer qu'elle renseigne à la fois la garde de Claire de Ville et les brigands, selon qui paie. Pour acheter votre silence, elle vous remet un objet.",
