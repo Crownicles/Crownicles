@@ -79,7 +79,9 @@
           "forceStayInCity": true,
           "effect": "occupied",
           "lostTime": 30,
-          "randomItem": {}
+          "randomItem": {
+            "category": 0
+          }
         },
         "4": {
           "requirements": {
@@ -89,7 +91,9 @@
           },
           "forceStayInCity": true,
           "money": -100,
-          "randomItem": {},
+          "randomItem": {
+            "category": 0
+          },
           "tags": [
             "moneyUsage"
           ]

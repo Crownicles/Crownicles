@@ -900,7 +900,7 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 44 | Lors de votre long périple, vous vous retrouvez au bord d'une large rivière. Ne pouvant la traverser, vous décidez de la longer jusqu'à trou |
 | 45 | En arrivant aux abords d'un village animé, vous entendez un groupe de personnes parler d'un sanctuaire qui serait hanté. Curieux que vous êt |
 | 46 | À Boug-Coton, devant l'Auberge du Seigneur, Pérotin, le ménestrel le plus célèbre du pays, paie sa note en chansons. On dit qu'avec sa mando |
-| 47 | Vous arrivez à bout de forces à Ville Forte, où une famille de paysans vous sert une soupe. Le père vous demande une faveur : un petit noble |
+| 47 | Au bout d'une longue route, vous arrivez affamé à Ville Forte, où une famille de paysans vous sert une soupe. Le père vous demande une faveu |
 | 48 | Vous êtes à la recherche d'un artéfact. Vous le convoitez car celui-ci, d'après les légendes, offrirait richesse et pouvoir à son possesseur |
 | 49 | Après vous être baladé plusieurs minutes sur la plage vous croisez une étrange petite créature, c'est un bernard-l'hermite ! Il semble s'êtr |
 | 50 | Écrasé par la chaleur du désert, vous somnolez à l'ombre d'un cocotier du Village Coco, près de la source où les nobles de la Vallée des Roi |
@@ -928,7 +928,7 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 73 | Cheminant avec nonchalance sur la Route des Merveilles, vous vous approchez d'un petit groupe de personnes en demi-cercle autour d'un homme |
 | 74 | Alors que vous déambulez sans but précis, vos narines sont soudainement assaillies par une intense odeur iodée. Une étrange femme vêtue d'un |
 | 75 | Sur la Plage Sentinelle, à l'écart du port de Mergagnan, un navire aux voiles noires et rapiécées est amarré près des rochers. On y chante à |
-| 76 | Après des heures de marche dans la Forêt Célestrum, vous trouvez une maison en ruine au bord d'une rivière. Un cri en sort. Vous frappez à l |
+| 76 | Après des heures de marche dans la Forêt Célestrum, vous trouvez une maison délabrée au bord d'une rivière. Un cri en sort. Vous frappez à l |
 | 77 | En progressant dans un sentier sinueux de la Forêt Celestrum, vous entendez soudain des éclats de voix provenant d'une clairière proche. Int |
 | 78 | Vous progressez sur la route grimpante quand soudain un épais brouillard monte de la Rivière aux Crabes, dont vous apercevez encore vaguemen |
 | 79 | Sur la route grimpante, vous entendez un tintement de clochettes qui se rapproche. Bientôt apparaît un large troupeau de chèvres mené par un |

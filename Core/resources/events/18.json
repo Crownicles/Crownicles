@@ -199,7 +199,9 @@
               95
             ]
           },
-          "randomItem": {}
+          "randomItem": {
+            "category": 3
+          }
         },
         "2": {
           "requirements": {

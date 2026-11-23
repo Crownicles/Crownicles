@@ -5,7 +5,9 @@
         "0": {
           "effect": "occupied",
           "lostTime": 60,
-          "randomItem": {}
+          "randomItem": {
+            "category": 0
+          }
         },
         "1": {
           "effect": "occupied",
@@ -40,7 +42,8 @@
           "randomItem": {
             "rarity": {
               "min": 3
-            }
+            },
+            "category": 0
           }
         },
         "5": {
@@ -131,7 +134,9 @@
             ],
             "quantity": 2
           },
-          "randomItem": {}
+          "randomItem": {
+            "category": 0
+          }
         },
         "3": {
           "requirements": {
@@ -163,7 +168,8 @@
           "randomItem": {
             "rarity": {
               "min": 3
-            }
+            },
+            "category": 0
           }
         },
         "6": {
@@ -172,7 +178,9 @@
               "sentimental_crafter"
             ]
           },
-          "randomItem": {}
+          "randomItem": {
+            "category": 3
+          }
         }
       }
     },
