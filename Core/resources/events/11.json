@@ -252,9 +252,7 @@
             "petTags": [
               "flying"
             ]
-          },
-          "effect": "occupied",
-          "lostTime": 90
+          }
         }
       }
     },
