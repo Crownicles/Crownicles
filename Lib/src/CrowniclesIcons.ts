@@ -379,7 +379,7 @@ export const CrowniclesIcons: {
 	events: {
 		1: {
 			cutTree: "🪓",
-			end: { 0: "🪓" },
+			end: { 0: "💤" },
 			otherWay: "🗺️",
 			turnBack: "↩️"
 		},
