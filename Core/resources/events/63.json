@@ -1,5 +1,395 @@
 {
   "possibilities": {
+    "faceThem": {
+      "outcomes": {
+        "0": {
+          "effect": "confounded",
+          "health": -20
+        },
+        "1": {
+          "effect": "sick"
+        },
+        "2": {
+          "effect": "occupied",
+          "lostTime": 45,
+          "randomItem": {}
+        },
+        "3": {
+          "requirements": {
+            "attack": {
+              "min": 600
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 15,
+          "money": 600,
+          "karma": 5
+        },
+        "4": {
+          "requirements": {
+            "attack": {
+              "min": 231,
+              "max": 599
+            }
+          },
+          "effect": "confounded",
+          "health": -12,
+          "money": 250,
+          "karma": 5
+        },
+        "5": {
+          "requirements": {
+            "attack": {
+              "max": 230
+            }
+          },
+          "effect": "confounded",
+          "health": -25,
+          "karma": 5
+        },
+        "6": {
+          "requirements": {
+            "level": {
+              "min": 20,
+              "max": 79
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "fight": {
+            "monster": "mercenary",
+            "level": 40,
+            "won": {
+              "money": 150,
+              "experience": 40
+            },
+            "lost": {
+              "health": -15
+            }
+          }
+        },
+        "7": {
+          "requirements": {
+            "level": {
+              "min": 80
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "fight": {
+            "monster": "mercenary",
+            "level": 100,
+            "won": {
+              "money": 350,
+              "experience": 100,
+              "randomItem": {}
+            },
+            "lost": {
+              "health": -20
+            }
+          }
+        },
+        "8": {
+          "requirements": {
+            "energyPercent": {
+              "max": 15
+            }
+          },
+          "effect": "hurt",
+          "health": -35
+        },
+        "9": {
+          "requirements": {
+            "petTags": [
+              "intimidating"
+            ]
+          },
+          "money": 250
+        },
+        "10": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "money": 200,
+          "karma": -3
+        },
+        "11": {
+          "requirements": {
+            "defense": {
+              "min": 740
+            }
+          },
+          "effect": "confounded",
+          "health": -10
+        },
+        "12": {
+          "requirements": {
+            "badges": [
+              "top_glory"
+            ]
+          },
+          "money": 150,
+          "randomItem": {}
+        }
+      }
+    },
+    "goAway": {
+      "outcomes": {
+        "0": {
+          "forceLeaveCity": true
+        },
+        "1": {
+          "forceLeaveCity": true,
+          "effect": "confounded",
+          "health": -15
+        },
+        "2": {
+          "forceLeaveCity": true,
+          "effect": "occupied",
+          "health": 50,
+          "lostTime": 60
+        },
+        "3": {
+          "requirements": {
+            "speed": {
+              "max": 40
+            }
+          },
+          "forceLeaveCity": true,
+          "effect": "confounded",
+          "health": -25
+        },
+        "4": {
+          "requirements": {
+            "speed": {
+              "min": 350
+            }
+          },
+          "forceLeaveCity": true,
+          "money": 100
+        },
+        "5": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "forceLeaveCity": true,
+          "health": 10
+        },
+        "6": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "forceLeaveCity": true,
+          "effect": "scared"
+        },
+        "7": {
+          "requirements": {
+            "petTags": [
+              "nocturnal"
+            ]
+          },
+          "forceLeaveCity": true,
+          "effect": "occupied",
+          "lostTime": 20
+        }
+      }
+    },
+    "helpThem": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 30,
+          "money": -165,
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 30,
+          "money": 165
+        },
+        "2": {
+          "effect": "occupied",
+          "lostTime": 180,
+          "karma": -2
+        },
+        "3": {
+          "effect": "jailed",
+          "karma": -2
+        },
+        "4": {
+          "requirements": {
+            "speed": {
+              "min": 350
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 30,
+          "karma": -2
+        },
+        "5": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 30,
+          "money": 250,
+          "karma": -5
+        },
+        "6": {
+          "requirements": {
+            "karma": {
+              "min": 80
+            }
+          }
+        },
+        "7": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 60,
+          "money": 40,
+          "karma": -2
+        },
+        "8": {
+          "requirements": {
+            "level": {
+              "min": 130
+            }
+          },
+          "money": 400,
+          "karma": -8
+        },
+        "9": {
+          "requirements": {
+            "money": {
+              "min": 100000
+            }
+          },
+          "money": -300,
+          "karma": -3,
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "10": {
+          "requirements": {
+            "petTags": [
+              "intimidating"
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 60,
+          "money": 200,
+          "karma": -3
+        }
+      }
+    },
+    "warnEveryone": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 120,
+          "money": -250,
+          "karma": -2,
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 60,
+          "money": 300,
+          "karma": 5
+        },
+        "2": {
+          "effect": "occupied",
+          "lostTime": 60,
+          "money": 450,
+          "karma": 3
+        },
+        "3": {
+          "effect": "occupied",
+          "lostTime": 120,
+          "karma": 1
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 20
+        },
+        "5": {
+          "requirements": {
+            "karma": {
+              "min": 80
+            }
+          },
+          "forceStayInCity": true,
+          "health": 30,
+          "karma": 3
+        },
+        "6": {
+          "requirements": {
+            "level": {
+              "min": 130
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 60,
+          "money": 500,
+          "karma": 3
+        },
+        "7": {
+          "requirements": {
+            "money": {
+              "min": 100000
+            }
+          },
+          "effect": "drunk",
+          "money": -200,
+          "tags": [
+            "drinkAlcohol",
+            "moneyUsage"
+          ]
+        },
+        "8": {
+          "requirements": {
+            "validPetTypeIds": [
+              1,
+              2
+            ]
+          },
+          "money": 150,
+          "karma": 2
+        },
+        "9": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "health": 10
+        }
+      }
+    },
     "end": {
       "outcomes": {
         "0": {
@@ -16,7 +406,8 @@
           ]
         },
         "2": {
-          "health": -30,
+          "effect": "confounded",
+          "health": -25,
           "money": -100,
           "tags": [
             "moneyUsage"
@@ -30,92 +421,46 @@
           "tags": [
             "moneyUsage"
           ]
-        }
-      }
-    },
-    "faceThem": {
-      "outcomes": {
-        "0": {
-          "effect": "confounded",
-          "health": -20
         },
-        "1": {
-          "effect": "sick"
+        "4": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "money": 150,
+          "karma": -3
         },
-        "2": {
-          "effect": "occupied",
-          "lostTime": 15,
-          "money": 600
-        },
-        "3": {
-          "effect": "occupied",
-          "lostTime": 45,
-          "randomItem": {}
-        }
-      }
-    },
-    "goAway": {
-      "outcomes": {
-        "0": {},
-        "1": {
-          "effect": "confounded",
-          "health": -20
-        },
-        "2": {
-          "effect": "injured",
-          "health": -45
-        },
-        "3": {
-          "effect": "occupied",
-          "health": 50,
-          "lostTime": 60
-        }
-      }
-    },
-    "helpThem": {
-      "outcomes": {
-        "0": {
+        "5": {
+          "requirements": {
+            "petTags": [
+              "keenNose"
+            ]
+          },
           "effect": "occupied",
           "lostTime": 30,
-          "money": -165,
+          "randomItem": {}
+        },
+        "6": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "effect": "scared"
+        },
+        "7": {
+          "requirements": {
+            "money": {
+              "min": 100000
+            }
+          },
+          "effect": "sleeping",
+          "health": 40,
+          "money": -150,
           "tags": [
             "moneyUsage"
           ]
-        },
-        "1": {
-          "effect": "occupied",
-          "health": 15,
-          "lostTime": 30,
-          "money": 165
-        },
-        "2": {
-          "effect": "occupied",
-          "lostTime": 180
-        },
-        "3": {
-          "effect": "jailed"
-        }
-      }
-    },
-    "warnEveryone": {
-      "outcomes": {
-        "0": {
-          "health": -45,
-          "money": -250
-        },
-        "1": {
-          "effect": "occupied",
-          "lostTime": 180,
-          "money": 300
-        },
-        "2": {
-          "effect": "occupied",
-          "lostTime": 60,
-          "money": 450
-        },
-        "3": {
-          "effect": "occupied",
-          "lostTime": 120
         }
       }
     }

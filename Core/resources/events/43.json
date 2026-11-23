@@ -4,10 +4,74 @@
       "outcomes": {
         "0": {},
         "1": {
+          "requirements": {
+            "money": {
+              "min": 5001
+            }
+          },
           "effect": "occupied",
           "health": 30,
           "lostTime": 210,
           "money": -200,
+          "karma": 2,
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "2": {
+          "requirements": {
+            "money": {
+              "max": 5000
+            }
+          },
+          "effect": "occupied",
+          "health": 30,
+          "lostTime": 210,
+          "karma": 2
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          }
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "mapTypesDestination": [
+            "pl"
+          ]
+        },
+        "5": {
+          "requirements": {
+            "petTags": [
+              "keenNose"
+            ]
+          },
+          "money": 80
+        },
+        "6": {
+          "requirements": {
+            "cookingLevel": {
+              "min": 70
+            }
+          },
+          "effect": "occupied",
+          "health": 40,
+          "lostTime": 210,
+          "karma": 2
+        },
+        "7": {
+          "requirements": {
+            "attack": {
+              "min": 780
+            }
+          },
+          "money": -100,
           "tags": [
             "moneyUsage"
           ]
@@ -27,6 +91,32 @@
           "effect": "occupied",
           "health": -5,
           "lostTime": 10
+        },
+        "3": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "effect": "sleeping"
+        },
+        "4": {
+          "requirements": {
+            "petTags": [
+              "nocturnal"
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 15
+        },
+        "5": {
+          "requirements": {
+            "speed": {
+              "min": 500
+            }
+          },
+          "effect": "confounded",
+          "health": -8
         }
       }
     },
@@ -37,14 +127,165 @@
           "effect": "occupied",
           "lostTime": 30
         },
-        "2": {}
+        "2": {
+          "requirements": {
+            "attack": {
+              "min": 600
+            }
+          }
+        },
+        "3": {
+          "requirements": {
+            "defense": {
+              "max": 180
+            }
+          },
+          "effect": "confounded",
+          "health": -12
+        },
+        "4": {
+          "requirements": {
+            "defense": {
+              "min": 181,
+              "max": 519
+            }
+          },
+          "health": -5
+        },
+        "5": {
+          "requirements": {
+            "defense": {
+              "min": 520
+            }
+          }
+        },
+        "6": {
+          "requirements": {
+            "speed": {
+              "min": 500
+            }
+          },
+          "effect": "confounded",
+          "health": -8
+        },
+        "7": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "effect": "occupied",
+          "health": 15,
+          "lostTime": 30
+        },
+        "8": {
+          "requirements": {
+            "level": {
+              "min": 20,
+              "max": 79
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "fight": {
+            "monster": "boar",
+            "level": 40,
+            "won": {
+              "money": 120,
+              "experience": 30
+            },
+            "lost": {
+              "health": -15
+            }
+          }
+        },
+        "9": {
+          "requirements": {
+            "level": {
+              "min": 80
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "fight": {
+            "monster": "boar",
+            "level": 100,
+            "won": {
+              "money": 250,
+              "experience": 80
+            },
+            "lost": {
+              "health": -25
+            }
+          }
+        },
+        "10": {
+          "requirements": {
+            "energyPercent": {
+              "max": 15
+            }
+          },
+          "effect": "hurt",
+          "health": -25
+        }
       }
     },
     "goBack": {
       "outcomes": {
-        "0": {},
+        "0": {
+          "goBackToPreviousMap": true,
+          "mapTypesDestination": [
+            "ro",
+            "pl"
+          ]
+        },
         "1": {
-          "health": -5
+          "health": -5,
+          "goBackToPreviousMap": true,
+          "mapTypesDestination": [
+            "ro",
+            "pl"
+          ]
+        },
+        "2": {
+          "requirements": {
+            "petTags": [
+              "keenNose"
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 20
+        },
+        "3": {
+          "requirements": {
+            "petTags": [
+              "intimidating"
+            ]
+          }
+        },
+        "4": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 60
+        },
+        "5": {
+          "requirements": {
+            "money": {
+              "min": 100000
+            }
+          },
+          "money": -300,
+          "goBackToPreviousMap": true,
+          "mapTypesDestination": [
+            "ro",
+            "pl"
+          ]
         }
       }
     },
@@ -60,6 +301,54 @@
         "3": {
           "effect": "occupied",
           "lostTime": 90
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 120
+        },
+        "5": {
+          "requirements": {
+            "karma": {
+              "min": 80
+            }
+          },
+          "effect": "sleeping",
+          "health": 20
+        },
+        "6": {
+          "requirements": {
+            "level": {
+              "min": 130
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 90,
+          "money": 150
+        },
+        "7": {
+          "requirements": {
+            "money": {
+              "min": 100000
+            }
+          },
+          "effect": "sleeping",
+          "money": -100,
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "8": {
+          "requirements": {
+            "petTags": [
+              "intimidating"
+            ]
+          },
+          "effect": "sleeping"
         }
       }
     }

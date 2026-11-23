@@ -656,14 +656,22 @@ export const CrowniclesIcons: {
 		},
 		35: {
 			deny: "❌",
-			end: { 0: "🚶" },
+			end: {
+				0: "🚶",
+				1: "😴",
+				2: "🥴",
+				3: "👀",
+				4: "🐟"
+			},
 			steal: "💰",
 			test: "🍺"
 		},
 		36: {
 			end: {
 				0: "🚶",
-				1: "🚶"
+				1: "🚶",
+				2: "💤",
+				3: "👀"
 			},
 			goAway: "🚶",
 			goInn: "🏡",
@@ -742,7 +750,10 @@ export const CrowniclesIcons: {
 			end: {
 				0: "🚶",
 				1: "🚶",
-				2: "🚶"
+				2: "🚶",
+				3: "😴",
+				4: "🐾",
+				5: "💨"
 			},
 			fight: "⚔️",
 			goBack: "⬇️",
@@ -783,7 +794,9 @@ export const CrowniclesIcons: {
 			end: {
 				0: "🚶",
 				1: "🏃",
-				2: "🕵️"
+				2: "🕵️",
+				3: "😴",
+				4: "🪟"
 			},
 			goAway: "🚶",
 			help: "⚔️",
@@ -817,9 +830,12 @@ export const CrowniclesIcons: {
 		},
 		50: {
 			ask: "🗣️",
+			climb: "🌴",
 			end: {
 				0: "☀️",
-				1: "🥥"
+				1: "🥥",
+				2: "💦",
+				3: "🪶"
 			},
 			leave: "🚶",
 			nap: "😴"
@@ -940,10 +956,14 @@ export const CrowniclesIcons: {
 		},
 		63: {
 			end: {
-				0: "🎆",
+				0: "🌙",
 				1: "🍺",
 				2: "🗯️",
-				3: "💡"
+				3: "💡",
+				4: "🤝",
+				5: "🐾",
+				6: "😱",
+				7: "🛏️"
 			},
 			faceThem: "⚔️",
 			goAway: "🏃",

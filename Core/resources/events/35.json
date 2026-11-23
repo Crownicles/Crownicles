@@ -1,40 +1,5 @@
 {
   "possibilities": {
-    "deny": {
-      "outcomes": {
-        "0": {
-          "effect": "occupied",
-          "lostTime": 30,
-          "money": -50,
-          "tags": [
-            "drinkAlcohol",
-            "moneyUsage"
-          ]
-        },
-        "1": {},
-        "2": {
-          "tags": [
-            "drinkAlcohol"
-          ]
-        }
-      }
-    },
-    "end": {
-      "outcomes": {
-        "0": {}
-      }
-    },
-    "steal": {
-      "outcomes": {
-        "0": {
-          "money": 1000
-        },
-        "1": {
-          "effect": "jailed",
-          "money": -200
-        }
-      }
-    },
     "test": {
       "outcomes": {
         "0": {
@@ -54,6 +19,322 @@
           "tags": [
             "drinkAlcohol"
           ]
+        },
+        "3": {
+          "effect": "confounded"
+        },
+        "4": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "effect": "drunk",
+          "tags": [
+            "drinkAlcohol"
+          ]
+        },
+        "5": {
+          "requirements": {
+            "level": {
+              "min": 130
+            }
+          },
+          "randomItem": {
+            "category": 2
+          },
+          "tags": [
+            "drinkAlcohol"
+          ]
+        },
+        "6": {
+          "requirements": {
+            "cookingLevel": {
+              "min": 70
+            }
+          },
+          "money": 60,
+          "effect": "occupied",
+          "lostTime": 15,
+          "tags": [
+            "drinkAlcohol"
+          ]
+        },
+        "7": {
+          "requirements": {
+            "badges": [
+              "master_chef"
+            ]
+          },
+          "money": 150,
+          "effect": "occupied",
+          "lostTime": 20,
+          "tags": [
+            "drinkAlcohol"
+          ]
+        },
+        "8": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "money": -40,
+          "tags": [
+            "drinkAlcohol",
+            "moneyUsage"
+          ]
+        },
+        "9": {
+          "requirements": {
+            "petTags": [
+              "fire"
+            ]
+          },
+          "money": 80,
+          "tags": [
+            "drinkAlcohol"
+          ]
+        },
+        "10": {
+          "requirements": {
+            "attack": {
+              "min": 780
+            }
+          },
+          "money": -30,
+          "tags": [
+            "drinkAlcohol",
+            "moneyUsage"
+          ]
+        },
+        "11": {
+          "requirements": {
+            "petTags": [
+              "keenNose"
+            ]
+          }
+        }
+      }
+    },
+    "deny": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 30,
+          "money": -50,
+          "tags": [
+            "drinkAlcohol",
+            "moneyUsage"
+          ]
+        },
+        "1": {
+          "karma": -2
+        },
+        "2": {
+          "tags": [
+            "drinkAlcohol"
+          ]
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "health": 10,
+          "tags": [
+            "drinkAlcohol"
+          ]
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          }
+        },
+        "5": {
+          "requirements": {
+            "validPetTypeIds": [
+              9,
+              29
+            ]
+          },
+          "money": -20,
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "6": {
+          "requirements": {
+            "money": {
+              "min": 100000
+            }
+          },
+          "money": -150,
+          "effect": "occupied",
+          "lostTime": 30,
+          "tags": [
+            "drinkAlcohol",
+            "moneyUsage"
+          ]
+        }
+      }
+    },
+    "steal": {
+      "outcomes": {
+        "0": {
+          "money": 500,
+          "karma": -8
+        },
+        "1": {
+          "effect": "jailed",
+          "money": -200,
+          "karma": -8,
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "2": {
+          "requirements": {
+            "speed": {
+              "max": 40
+            }
+          },
+          "health": -12,
+          "effect": "confounded",
+          "karma": -5
+        },
+        "3": {
+          "requirements": {
+            "speed": {
+              "min": 350
+            }
+          },
+          "money": 700,
+          "karma": -10
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "money": 300,
+          "karma": -12
+        },
+        "5": {
+          "requirements": {
+            "karma": {
+              "max": -50
+            }
+          },
+          "health": -10,
+          "effect": "confounded",
+          "karma": -3
+        },
+        "6": {
+          "requirements": {
+            "validPetTypeIds": [
+              35,
+              93
+            ]
+          },
+          "money": 300,
+          "karma": -6
+        },
+        "7": {
+          "requirements": {
+            "level": {
+              "min": 20,
+              "max": 79
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "karma": -8,
+          "fight": {
+            "monster": "mercenary",
+            "level": 40,
+            "won": {
+              "money": 200,
+              "experience": 40
+            },
+            "lost": {
+              "money": -150,
+              "health": -15
+            }
+          }
+        },
+        "8": {
+          "requirements": {
+            "level": {
+              "min": 80
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "karma": -8,
+          "fight": {
+            "monster": "mercenary",
+            "level": 100,
+            "won": {
+              "money": 400,
+              "experience": 80
+            },
+            "lost": {
+              "money": -250,
+              "health": -25
+            }
+          }
+        },
+        "9": {
+          "requirements": {
+            "energyPercent": {
+              "max": 15
+            }
+          },
+          "health": -30,
+          "effect": "hurt",
+          "money": -200,
+          "karma": -8,
+          "tags": [
+            "moneyUsage"
+          ]
+        }
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {},
+        "1": {
+          "effect": "sleeping"
+        },
+        "2": {
+          "effect": "drunk",
+          "tags": [
+            "drinkAlcohol"
+          ]
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          }
+        },
+        "4": {
+          "requirements": {
+            "level": {
+              "min": 120
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 30,
+          "health": 10
         }
       }
     }

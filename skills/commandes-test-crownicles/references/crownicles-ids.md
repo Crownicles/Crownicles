@@ -888,22 +888,22 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 32 | Vous continuez votre chemin tranquillement dans une forêt, lorsque vous entendez un cri. La voix semble être celle d'un homme. Vous décidez |
 | 33 | Vous arrivez dans une ferme où se déroule un grand festin. Les gens paraissent accueillants. |
 | 34 | À votre arrivée au village, des passants vous reconnaissent et vous abordent. Ils se rappellent parfaitement de l'aide que vous leur aviez a |
-| 35 | Vous entrez à l'auberge Au Coin du Feu, et l'aubergiste vous interpelle depuis son comptoir : il aimerait vous faire goûter de nouvelles boi |
-| 36 | Au cours de votre très long périple, vous arrivez à Boug-Coton, un petit village fort charmant. Sur la place, deux enseignes attirent votre |
+| 35 | À Mergagnan, vous entrez dans l'auberge Au Coin du Feu, où flotte une odeur de poisson grillé. Derrière le comptoir, l'aubergiste aligne des |
+| 36 | Sur la place de Boug-Coton, face à l'Auberge du Seigneur et à ses chambres hors de prix, un vieil artisan tient une petite bijouterie. On vi |
 | 37 | Vous marchez tranquillement sur la route grimpante, le temps est clair et le chemin de pierre en bon état. Vous pensez aux différentes desti |
 | 38 | Faisant route, vous croisez un marchand itinérant, qui vous interpelle. Il dit avoir des objets qui pourraient vous intéresser, et ce à des |
 | 39 | À Mergagnan, sur le port où sèchent les filets, à deux pas de la Plage Sentinelle, un mercenaire nommé Price vous aborde. L'épée au côté et |
 | 40 | Vous vous enfoncez dans une forêt sombre, et apercevez la silhouette d'un homme au loin. Vous décidez de vous approcher et comprenez que c'e |
 | 41 | Alors que vous continuez votre chemin, vous arrivez à une ville. Juste après, un groupe d'homme arrive vers vous et vous attrape, puis vous |
 | 42 | Au détour d'un chemin, une jeune femme apparaît. Vous ne saisissez d'abord pas très bien ce qu'elle dit mais finissez par comprendre qu'elle |
-| 43 | Vous marchez en pleine nuit sur le Grand Axe. Il fait sombre mais la lune est claire. Vous apercevez devant vous un être éclairé par la lumi |
+| 43 | Sur le Grand Axe, la route des brigands qui contourne le Mont Célestrum par le nord, vous marchez de nuit sous une lune claire. Un peu plus |
 | 44 | Lors de votre long périple, vous vous retrouvez au bord d'une large rivière. Ne pouvant la traverser, vous décidez de la longer jusqu'à trou |
 | 45 | En arrivant aux abords d'un village animé, vous entendez un groupe de personnes parler d'un sanctuaire qui serait hanté. Curieux que vous êt |
 | 46 | À Boug-Coton, devant l'Auberge du Seigneur, Pérotin, le ménestrel le plus célèbre du pays, paie sa note en chansons. On dit qu'avec sa mando |
-| 47 | Vous êtes tellement épuisé que vous avez du mal à marcher. C'est alors que vous apercevez les remparts effondrés de Ville Forte, vous êtes s |
+| 47 | Vous arrivez à bout de forces à Ville Forte, où une famille de paysans vous sert une soupe. Le père vous demande une faveur : un petit noble |
 | 48 | Vous êtes à la recherche d'un artéfact. Vous le convoitez car celui-ci, d'après les légendes, offrirait richesse et pouvoir à son possesseur |
 | 49 | Après vous être baladé plusieurs minutes sur la plage vous croisez une étrange petite créature, c'est un bernard-l'hermite ! Il semble s'êtr |
-| 50 | Lors de votre périple, vous atteignez le Village Coco. Il fait très chaud et vous avez besoin de vous reposer : vous faites donc une halte d |
+| 50 | Au Village Coco, la chaleur du désert vous écrase. Vous vous laissez tomber à l'ombre d'un cocotier, au bord de la source que se disputent l |
 | 51 | Alors que vous atteignez le pied du Mont Célestrum, vous repérez un escalier tortueux, taillé dans le flanc gauche du Mont. En vous en rappr |
 | 52 | Alors que vous faites étape à Boug-Coton, vous êtes interpellé par des enfants vous demandant de jouer avec eux. |
 | 53 | Alors que vous passez au bord du lac Mirage, vous remarquez un homme vous faisant signe d'un peu plus loin. Intrigué, vous décidez de le rej |
@@ -915,7 +915,7 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 60 | Vous êtes amené dans la grande salle de réception du château où vous rencontrez rapidement le roi. On vous explique la nature du concours qu |
 | 61 | Bonjour et bienvenue sur Crownicles ! Le roi est à la recherche d'un noble chevalier pour marier sa fille et vous av |
 | 62 | Un paysan vous hèle au devant de sa ferme située aux abords de l'Étendue. Celle-ci est constituée de pâturages, d'un vignoble et d'un champ |
-| 63 | Au bout d'un certain temps, vous arrivez enfin dans le village de Boug-Coton où une rumeur court que des créatures maléfiques sont à l'œuvre |
+| 63 | À Boug-Coton, à deux pas de l'Auberge du Seigneur, les villageois parlent à voix basse : à la nuit tombée, des silhouettes en robe noire se |
 | 64 | À peine arrivé à votre destination, un messager s'arrête essoufflé devant vous et vous tend une missive. Vous lisez avec attention le conten |
 | 65 | Vous arrivez dans la salle de reception du château du Roi, comme de nombreux autres aventuriers d'ailleurs. Au milieu de la salle se tient u |
 | 66 | Après une brève traversée, le capitaine amarre son navire à ce qui semble être un ponton. Vous êtes bien trop absorbé dans votre contemplati |

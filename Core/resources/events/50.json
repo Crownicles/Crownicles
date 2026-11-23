@@ -9,20 +9,190 @@
             "moneyUsage"
           ]
         },
-        "1": {
-          "health": -15,
-          "money": -100
+        "1": {},
+        "2": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          }
         },
-        "2": {}
+        "3": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "health": 15
+        },
+        "4": {
+          "requirements": {
+            "cookingLevel": {
+              "min": 70
+            }
+          },
+          "health": 15,
+          "money": -25,
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "5": {
+          "requirements": {
+            "attack": {
+              "min": 780
+            }
+          },
+          "money": -50,
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "6": {
+          "requirements": {
+            "level": {
+              "min": 20,
+              "max": 79
+            },
+            "money": {
+              "min": 100000
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "fight": {
+            "monster": "bandit",
+            "level": 40,
+            "won": {
+              "money": 150,
+              "experience": 40
+            },
+            "lost": {
+              "money": -150,
+              "health": -15
+            }
+          }
+        },
+        "7": {
+          "requirements": {
+            "level": {
+              "min": 80
+            },
+            "money": {
+              "min": 100000
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "fight": {
+            "monster": "bandit",
+            "level": 100,
+            "won": {
+              "money": 300,
+              "experience": 80,
+              "randomItem": {}
+            },
+            "lost": {
+              "money": -300,
+              "health": -25
+            }
+          }
+        },
+        "8": {
+          "requirements": {
+            "money": {
+              "min": 100000
+            },
+            "energyPercent": {
+              "max": 15
+            }
+          },
+          "health": -25,
+          "money": -200,
+          "effect": "hurt"
+        }
       }
     },
-    "end": {
+    "nap": {
       "outcomes": {
         "0": {
-          "effect": "occupied",
-          "lostTime": 10
+          "requirements": {
+            "defense": {
+              "max": 180
+            }
+          },
+          "effect": "hurt",
+          "health": -30
         },
-        "1": {}
+        "1": {
+          "requirements": {
+            "defense": {
+              "min": 181,
+              "max": 519
+            }
+          },
+          "effect": "confounded",
+          "health": -12
+        },
+        "2": {
+          "requirements": {
+            "defense": {
+              "min": 520
+            }
+          },
+          "health": 10
+        },
+        "3": {
+          "effect": "occupied",
+          "health": 10,
+          "lostTime": 60
+        },
+        "4": {
+          "effect": "sleeping",
+          "money": -50
+        },
+        "5": {
+          "requirements": {
+            "money": {
+              "min": 100000
+            }
+          },
+          "effect": "sleeping",
+          "money": -250
+        },
+        "6": {
+          "requirements": {
+            "petTags": [
+              "intimidating"
+            ]
+          },
+          "effect": "occupied",
+          "health": 10,
+          "lostTime": 60
+        },
+        "7": {
+          "requirements": {
+            "validPetTypeIds": [
+              24
+            ]
+          },
+          "health": 10,
+          "money": -50,
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "8": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "effect": "confounded",
+          "health": -8
+        }
       }
     },
     "leave": {
@@ -32,28 +202,189 @@
           "health": 10
         },
         "1": {
+          "forceLeaveCity": true
+        },
+        "2": {
+          "requirements": {
+            "money": {
+              "min": 50000
+            }
+          },
           "forceLeaveCity": true,
           "money": -100
         },
-        "2": {
+        "3": {
+          "requirements": {
+            "money": {
+              "min": 50000
+            },
+            "petTags": [
+              "intimidating"
+            ]
+          },
           "forceLeaveCity": true
+        },
+        "4": {
+          "requirements": {
+            "money": {
+              "min": 50000
+            },
+            "attack": {
+              "min": 700
+            }
+          },
+          "forceLeaveCity": true,
+          "money": 80,
+          "karma": 2
+        },
+        "5": {
+          "requirements": {
+            "karma": {
+              "min": 80
+            }
+          },
+          "forceLeaveCity": true,
+          "health": 10
+        },
+        "6": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "forceLeaveCity": true
+        },
+        "7": {
+          "requirements": {
+            "level": {
+              "min": 130
+            }
+          },
+          "forceLeaveCity": true,
+          "health": 15
         }
       }
     },
-    "nap": {
+    "climb": {
       "outcomes": {
         "0": {
-          "effect": "hurt",
-          "health": -30
+          "health": 15,
+          "karma": -2
         },
         "1": {
-          "effect": "occupied",
           "health": 10,
-          "lostTime": 60
+          "money": -100,
+          "karma": -2,
+          "tags": [
+            "moneyUsage"
+          ]
         },
         "2": {
-          "effect": "sleeping",
-          "money": -50
+          "requirements": {
+            "speed": {
+              "max": 40
+            }
+          },
+          "health": -15,
+          "effect": "confounded",
+          "karma": -1
+        },
+        "3": {
+          "requirements": {
+            "speed": {
+              "min": 41,
+              "max": 349
+            }
+          },
+          "health": -5,
+          "karma": -1
+        },
+        "4": {
+          "requirements": {
+            "speed": {
+              "min": 350
+            }
+          },
+          "health": 15,
+          "money": 60,
+          "karma": -3
+        },
+        "5": {
+          "requirements": {
+            "validPetTypeIds": [
+              24
+            ]
+          },
+          "health": 15,
+          "karma": -1
+        },
+        "6": {
+          "requirements": {
+            "petTags": [
+              "heavy"
+            ]
+          },
+          "health": 10,
+          "money": -150,
+          "karma": -2,
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "7": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "health": -10,
+          "effect": "confounded",
+          "karma": -2
+        },
+        "8": {
+          "requirements": {
+            "materials": {
+              "ids": [
+                12,
+                47,
+                49
+              ]
+            }
+          },
+          "health": 15,
+          "karma": -2
+        },
+        "9": {
+          "requirements": {
+            "defense": {
+              "min": 740
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 20,
+          "karma": -1
+        }
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 10
+        },
+        "1": {},
+        "2": {
+          "effect": "occupied",
+          "lostTime": 20,
+          "karma": -1
+        },
+        "3": {
+          "requirements": {
+            "petTags": [
+              "flying"
+            ]
+          },
+          "health": 10
         }
       }
     }
