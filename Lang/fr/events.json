@@ -107,7 +107,7 @@
     }
   },
   "11": {
-    "text": "À l'orée du Bois Hurlant, dont les collines cachent des grottes à brigands, une femme encapuchonnée vous aborde. Elle vous déconseille le sentier principal et vous indique un chemin par l'ouest, plus court et plus sûr selon elle. Elle parle vite et évite votre regard.",
+    "text": "À l'orée du Bois Hurlant, où des brigands se cachent dans les grottes des collines, une femme encapuchonnée vous aborde. Elle vous déconseille le sentier principal et vous indique un chemin par l'ouest, plus court et plus sûr selon elle. Elle parle vite et évite votre regard.",
     "possibilities": {
       "followHint": {
         "text": "Suivre les conseils de l'inconnue.",
