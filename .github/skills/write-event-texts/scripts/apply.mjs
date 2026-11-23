@@ -3,6 +3,9 @@
  *
  * Usage:
  *   node apply.mjs [event id ...] [--work <dir>]   (default: every <work>/out/<id>.json)
+ *   node apply.mjs <event id ...> --allow-reviewed   also rewrite events the owner reviewed (only on his explicit request)
+ *
+ * The events listed in reviewed.json are frozen: they are skipped, or refused when named, unless --allow-reviewed.
  *
  * Writes, for each event:
  * - its texts in Lang/fr/events.json,
@@ -174,13 +177,20 @@ function main(argv) {
 	const { values: options, positionals } = parseArgs({
 		args: argv,
 		allowPositionals: true,
-		options: { work: { type: "string" } }
+		options: { work: { type: "string" }, "allow-reviewed": { type: "boolean" } }
 	});
 	const outDirectory = join(workDirectory(options.work), "out");
+	const reviewed = new Set(Object.keys(readJson(join(REPO_ROOT, ".github/skills/write-event-texts/reviewed.json"))));
+	const frozen = positionals.filter(id => reviewed.has(id));
+	if (frozen.length > 0 && !options["allow-reviewed"]) {
+		console.error(`reviewed by the owner, not rewritten: ${frozen.join(", ")} (--allow-reviewed only on his explicit request)`);
+		return 1;
+	}
 	const ids = positionals.length > 0
 		? positionals
 		: readdirSync(outDirectory).filter(file => !file.startsWith(".") && file.endsWith(".json"))
 			.map(file => file.slice(0, -".json".length))
+			.filter(id => !reviewed.has(id))
 			.sort();
 	const langPath = join(REPO_ROOT, "Lang/fr/events.json");
 	const lang = readJson(langPath);

@@ -320,7 +320,7 @@ Avant de rendre un texte, vérifie chaque point :
 `reviewed.json` liste les events que le propriétaire a relus et validés comme vraiment bien retravaillés, avec la date et une empreinte de leurs textes et de leurs mécaniques. Le comparateur (Crownicles/Tools) les marque « ✅ relu », ou « ⚠️ modifié depuis la relecture » quand l'event a changé ensuite.
 
 - Marquer un event sur demande du propriétaire seulement : `node .github/skills/write-event-texts/scripts/review.mjs <ids>`. Retirer la marque : `--remove <ids>`.
-- Un event validé sert de référence : on ne le retouche que sur une demande précise. Après une retouche validée, on le marque à nouveau.
+- **Un event validé est figé : on n'y touche plus.** Même pendant une passe sur tous les events (physique, style, familiers…), il est exclu. Seule une demande explicite du propriétaire sur cet event précis le rouvre ; après la retouche, on le marque à nouveau. `apply.mjs` refuse d'écrire un event validé, sauf avec `--allow-reviewed`, réservé à ce cas.
 - `review.mjs --check` liste les events validés modifiés depuis leur relecture.
 
 ## Journal des retours du propriétaire
@@ -340,6 +340,7 @@ Les 21 events déjà réécrits (1, 2, 10 à 20, 30, 39, 46, 56, 69, 71, 76, 89)
 - **Event 26, prémisse changée (le propriétaire)** : l'original était trop faible pour être rapiécé ; on garde les possibilités et leur idée, et on change la situation. Voir « Fidélité à l'original ».
 - **Event 26, scène répétée (le propriétaire)** : une pendaison qui revient à chaque passage, une bourse que « personne ne réclame » et des propriétaires qui remercient alors que tout le village est à la pendaison. Voir « Une scène qui revient doit pouvoir revenir » et « L'intro fixe l'état des choses ».
 - **Event 26, intro confuse (le propriétaire)** : termes du lore jetés sans explication, faction qui agit contre ses propres buts, seigneur installé dans une ville en ruine, passé commun inventé. Voir « Lore ».
+- **Events validés figés (le propriétaire)** : une passe de physique avait retouché les events 9, 10 et 26 déjà validés. Un event relu ne se touche plus. Voir « Events validés par le propriétaire ».
 - **Event 1, le campement (le propriétaire)** : quatre faits empilés en une issue et un personnage qui laisse son sac pour aller voir des bruits. Voir « Une péripétie par issue ».
 - **Event 1, la physique (relecture d'un joueur)** : un chêne géant réglé par des gestes ordinaires, et un paquet « là depuis longtemps » dans un arbre tombé récemment. Voir « La physique tient » et « L'intro fixe l'état des choses ».
 - **Event 71, la bourse aux noyaux** : une ruse sans auteur crédible, découverte trop tard. Voir « Une ruse tient debout des deux côtés ».
