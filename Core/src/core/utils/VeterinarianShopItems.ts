@@ -92,6 +92,7 @@ async function buildPetInformationPacket(pet: PetEntity, player: Player, lovePoi
 		force: petModel.force,
 		speed: petModel.speed,
 		feedDelay: (petModel.feedDelay ?? 1) * PetConstants.BREED_COOLDOWN,
+		tags: Object.values(PetConstants.TAGS).filter(tag => petModel.hasTag(tag)),
 		fightAssistIds: getPetBehaviors(petModel.id).map(behavior => behavior.id),
 		ageCategory: PetUtils.getAgeCategory(pet.id),
 		likedExpeditionTypes,

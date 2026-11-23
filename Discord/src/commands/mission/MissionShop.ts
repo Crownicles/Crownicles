@@ -27,7 +27,9 @@ import { Badge } from "../../../../Lib/src/types/Badge";
 import {
 	asMilliseconds, millisecondsToMinutes
 } from "../../../../Lib/src/utils/TimeUtils";
-import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import {
+	PetConstants, PetTag
+} from "../../../../Lib/src/constants/PetConstants";
 import { Language } from "../../../../Lib/src/Language";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { ExpeditionLocationType } from "../../../../Lib/src/constants/ExpeditionConstants";
@@ -111,6 +113,19 @@ function buildExpeditionSection(packet: CommandMissionShopPetInformation, lng: L
 	});
 }
 
+/**
+ * Build the line listing the abilities of the pet (flying, keen nose…), empty when it has none
+ */
+function buildAbilitiesSection(tags: PetTag[], lng: Language): string {
+	if (tags.length === 0) {
+		return "";
+	}
+	return i18n.t("commands:shop.shopItems.lovePointsValue.abilities", {
+		lng,
+		abilities: tags.map(tag => i18n.t(`models:petTags.${tag}`, { lng })).join(", ")
+	});
+}
+
 type FightEffectComments = {
 	commentOnFightEffect: string;
 	secondFightEffect: string;
@@ -158,6 +173,7 @@ export async function handleLovePointsValueShopItem(packet: CommandMissionShopPe
 		speed: packet.speed,
 		feedDelay: i18n.formatDuration(millisecondsToMinutes(asMilliseconds(packet.feedDelay)), lng),
 		nextFeed: PetUtils.getFeedCooldownDisplay(packet.nextFeed, lng),
+		abilitiesSection: buildAbilitiesSection(packet.tags, lng),
 		...buildFightEffectComments(packet.fightAssistIds, lng),
 		commentOnResult: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.advice.${packet.loveLevel}`, lng),
 		expeditionSection,

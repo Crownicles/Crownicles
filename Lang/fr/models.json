@@ -1520,6 +1520,16 @@
       "prefix": "du"
     }
   },
+  "petTags": {
+    "flying": "vole",
+    "aquatic": "à l'aise dans l'eau",
+    "nocturnal": "voit dans le noir",
+    "fire": "maîtrise le feu",
+    "keenNose": "a du flair",
+    "mount": "peut vous porter",
+    "heavy": "très lourd",
+    "intimidating": "impressionnant"
+  },
   "biomes": {
     "forest": "Forêt",
     "mountain": "Montagne",

@@ -1520,6 +1520,16 @@
       "prefix": "of the"
     }
   },
+  "petTags": {
+    "flying": "can fly",
+    "aquatic": "at home in water",
+    "nocturnal": "sees in the dark",
+    "fire": "masters fire",
+    "keenNose": "keen nose",
+    "mount": "can carry a rider",
+    "heavy": "very heavy",
+    "intimidating": "intimidating"
+  },
   "biomes": {
     "forest": "Forest",
     "mountain": "Mountain",

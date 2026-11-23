@@ -2680,7 +2680,8 @@ export const CrowniclesIcons: {
 		age: "👶",
 		force: "💪",
 		speed: "🚀",
-		feedDelay: "⏳"
+		feedDelay: "⏳",
+		abilities: "🐾"
 	},
 	equipCommand: {
 		equipped: "🗡️",
