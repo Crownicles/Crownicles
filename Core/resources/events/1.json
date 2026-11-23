@@ -107,8 +107,7 @@
       "outcomes": {
         "0": {
           "money": -300,
-          "effect": "occupied",
-          "lostTime": 60
+          "effect": "sleeping"
         }
       }
     }
