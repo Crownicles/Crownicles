@@ -46,6 +46,7 @@ Le français (`Lang/fr`) est la référence. Depuis l'abandon de Crowdin (#5181)
   - Un « ! » au plus par texte. Pas de points de suspension en fin d'introduction.
 - **Pas de morale finale** (*Après tout, la mort fait partie du cycle naturel*).
 - **Des enchaînements logiques.** Chaque phrase découle de la précédente.
+- **Le joueur sait où il finit.** Après une traversée, une chute ou une fuite, le texte dit où le joueur se retrouve : *l'autre rive*, *la rive que vous veniez de quitter*, *hors du trou*. Event 12 : *vous vous hissez de l'autre côté* (du trou, ou de la rivière ?) et *vous regagnez la berge* (laquelle ?) laissaient deviner si le joueur avait traversé. *De l'autre côté* suffit quand l'obstacle est unique et nommé juste avant (un tronc en travers du chemin).
 - **Pas de détail parasite.** Une phrase qui n'a ni cause dans ce qui précède ni conséquence dans ce qui suit se supprime. Event 71 : après un repas et une bonne nuit, *Au réveil, vous secouez un scorpion hors de votre botte* tombait de nulle part.
 - **L'intro fixe l'état des choses, et aucune issue ne le contredit.** Ce que l'intro dit d'un objet, d'un lieu ou d'un personnage (son âge, son état, depuis quand il est là) vaut pour toutes les issues. Relis chaque issue en te demandant si elle reste vraie avec l'intro. Event 3 : le coffret est à demi enfoui dans le sable, ses ferrures sont rouillées, il est donc là depuis longtemps. Une issue où l'on craint que son propriétaire le cherche, ou où il est tombé de la charrette d'un marchand le matin même, ne tient pas. Le marchand reconnaît plutôt les ferrures de l'échoppe en ruine de son père.
   - Faux : *Malgré vos efforts conjugués, le courant emporte la ligne. Le pêcheur vous remercie chaleureusement pour votre tentative et partage quelques pièces.* Le gain tombe comme un cheveu sur la soupe.
@@ -53,7 +54,7 @@ Le français (`Lang/fr`) est la référence. Depuis l'abandon de Crowdin (#5181)
 - **Des sentiments à la mesure du résultat.** Si le joueur n'a servi à rien, il n'est pas *heureux d'avoir tenté d'aider* : *Vous repartez avec un léger sourire.* suffit.
 - **Le verbe décrit ce qu'on voit.** Pas de personnification gratuite : la terre fraîche *montre* que l'arbre est tombé récemment, elle ne le *dit* pas.
 - **Une réaction a sa raison.** Un mot avant l'action suffit à la motiver : *Agacé, le chien vous mord* ; *Méfiants, ses hommes fouillent votre sac*.
-- **Un mot de contraste quand l'issue bascule** : *Votre radeau vous semble solide. Mais à mi-parcours, le courant le disloque.* ; *Des brigands surgissent, mais ils le regrettent vite.*
+- **Un mot de contraste quand l'issue bascule** : *Votre radeau flotte bien, mais à mi-parcours, le courant le disloque.* ; *Des brigands surgissent, mais ils le regrettent vite.*
 - **La réaction suit la condition.** Un chien intimidé par votre familier s'éloigne *en hâte*, pas *sans hâte*.
 - **Pas de répétition en cascade.** *Puis d'autres histoires, puis d'autres encore* : une de trop. Deux *puis* au plus par phrase.
 - **L'humour de l'original se garde**, et une chute qui brise le quatrième mur est bienvenue : l'issue qui s'ouvre sur *Mais pourquoi avoir fait cela ?* après avoir poussé le pêcheur.
@@ -81,6 +82,9 @@ Le français (`Lang/fr`) est la référence. Depuis l'abandon de Crowdin (#5181)
 | *puis vous fait reconduire sans que vous ayez vu le duc* | Fait hésiter | *… et vous fait reconduire. Vous n'aurez pas vu le duc.* |
 | *Le duc remarque vos cicatrices*, avec `level: {min: 60}` | Le texte décrit un vétéran, le seuil un débutant | Le seuil « vétéran » de l'échelle (`level` `min` 130) |
 | *le courant disloque votre radeau. Vous regagnez la berge à la nage, gelé* (event 12) | Quelle berge ? On ne sait pas si le joueur a traversé, et la nage dans un torrent paraît facile alors qu'elle coûte 25 PV | *Agrippé à une branche, vous luttez contre les remous et atteignez à grand-peine l'autre rive* |
+| *Vous testez chaque planche, comme la route vous l'a appris* (event 12) | Formule toute faite, qui sonne écrite | *Habitué des vieux ponts, vous testez chaque planche* |
+| *Le courant vous roule contre les rochers* (event 12) | Verbe mal employé : on roule *sur* quelque chose, ou un courant vous roule *dans* l'eau | *Il vous emporte loin en aval et vous projette contre les rochers* |
+| *Le vent se lève et le sable remplace les cailloux : le chemin débouche sur la plage* (event 12) | Détail parasite (le vent) et tournure littéraire | *Bientôt, vos pieds s'enfoncent dans le sable, et vous arrivez sur la plage* |
 
 ## Structure d'un event
 
@@ -182,12 +186,14 @@ Si l'une n'a pas de réponse dans le texte, l'issue ne tient pas.
 - **Gradue la conséquence, jamais une prémisse douteuse.** Avant de découper une issue en paliers, vérifie que sa situation de départ est plausible pour tous les joueurs : les paliers la multiplient et en font la norme.
 - **Un choix prudent reste prudent.** Refuser, décliner, passer son chemin : la majorité de ses issues se passent bien. Un malus y reste rare et vient du monde, pas d'un personnage qui surréagit.
 - **Quand le joueur ne répond pas (`end`), son personnage fait ce qu'il veut.** Le joueur n'a rien choisi : c'est le personnage qui prend la main. On privilégie l'inaction et la rêverie (il hésite, regarde, s'assoupit, et le monde agit autour de lui), mais ce n'est pas obligatoire : il peut aussi agir librement (monter un campement, partir en chasse au trésor, se méfier d'un piège, pousser quelqu'un). Ce qu'il fait reste plausible dans la scène, et les réactions des autres restent à la mesure de ses actes. C'est la possibilité où l'on a le plus de liberté.
+  - Les autres personnages, eux, agissent selon ce que l'intro dit d'eux. Event 11 : l'inconnue qui rabat les voyageurs vers un guet-apens passait des heures à raconter des histoires au joueur muet, puis se vexait de son silence. Une rabatteuse ne perd pas son temps avec un voyageur qui se méfie : elle se trouble et s'éloigne, ou rejoint ses complices, que le joueur peut suivre.
 - **Un personnage garde la même attitude envers un même profil dans tout l'event.** Si l'équipage traite un joueur au karma bas comme l'un des siens quand il accepte, il ne le canarde pas quand il refuse.
 
 ### Combien et lesquelles
 
 - **Par possibilité :** au moins 3 issues, dont au moins une sans condition. Le cas général tient en quelques issues (6 sans condition au plus). Les issues rares, réservées à un familier, un badge, une classe ou un profil particulier, n'ont pas de plafond : ajoutes-en autant que la scène s'y prête (event 10 : la loutre qui plonge, l'ours qui pêche comme au saumon, le chat qui vole la prise).
   - Des paliers complémentaires seuls (vitesse faible / moyenne / forte) ne suffisent pas : un joueur donné retomberait toujours sur la même issue. Ajoute une ou deux issues sans condition pour la variété (event 12, emprunter le pont et traverser à la nage).
+  - **Pas deux fois la même scène.** Deux issues d'un même choix qui ne diffèrent que par la durée ou le montant n'en font qu'une. Event 11 : dans `end`, l'inconnue parlait au joueur dans deux issues, une heure dans l'une, des heures dans l'autre. Garde-en une, ou change ce qui se passe.
 - **Pour tout l'event :**
   - environ 2 à 4 fois plus d'issues que l'original ;
   - environ les trois quarts sont conditionnelles ;
@@ -326,6 +332,7 @@ Avant de rendre un texte, vérifie chaque point :
 9. Chaque issue reste vraie avec ce que l'intro dit des choses, des lieux et des personnages.
 10. Chaque issue se comprend lue seule, juste après l'intro et le libellé du choix.
 11. La physique tient : tailles, poids, forces et durées vraisemblables, et une solution à la mesure du problème.
+12. Quand le joueur se déplace, l'issue dit où il se retrouve, et deux issues d'un même choix ne racontent pas la même scène.
 
 ## Events validés par le propriétaire
 
@@ -339,6 +346,11 @@ Avant de rendre un texte, vérifie chaque point :
 
 Les 21 events déjà réécrits (1, 2, 10 à 20, 30, 39, 46, 56, 69, 71, 76, 89) servent de jeu de référence pour réécrire les autres plus vite. Chaque fois que le propriétaire fait corriger l'un d'eux, on en tire la règle générale, on l'ajoute à la bonne section de ce skill avec un exemple avant/après, et on la note ici en une ligne.
 
+Quand le propriétaire recopie une issue en y changeant quelques mots, sans autre commentaire, c'est la correction qu'il veut : applique-la telle quelle. Si tu vois mieux, propose ta version à part, sans l'appliquer d'office.
+
+- **Event 11, l'inconnue bavarde (le propriétaire)** : dans `end`, une rabatteuse de guet-apens racontait des histoires pendant des heures à un voyageur muet, dans deux issues presque identiques. Voir « Quand le joueur ne répond pas » et « Pas deux fois la même scène ».
+- **Event 12 (le propriétaire)** : *de l'autre côté* et *la berge* sans dire lesquels, formule toute faite, verbe mal employé, détail parasite. Voir « Le joueur sait où il finit » et « Exemples relevés en relecture ».
+- **Familier en expédition (le propriétaire)** : sans talisman de clonage, il ne compte pas pour les conditions de familier, et le joueur est traité comme s'il n'en avait pas. Voir `reference.md`, section « Familiers ».
 - **Event 30** : vocabulaire rare, expressions inventées, décor inutile, phrases alambiquées, réactions peu crédibles, mots ambigus. Voir « Exemples relevés en relecture ».
 - **Seuils** : « fort » veut dire le premier dixième des joueurs réguliers, pas le premier cinquième. Voir « L'échelle des seuils ».
 - **Classes et familiers** : une issue qui ne concerne que 1 à 2 % des joueurs est voulue.
