@@ -393,7 +393,7 @@ export const CrowniclesIcons: {
 		11: {
 			end: {
 				0: "🕑",
-				1: "🕑",
+				1: "👀",
 				2: "🐈‍⬛"
 			},
 			followHint: "🧭",
