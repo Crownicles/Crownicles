@@ -154,7 +154,9 @@
         "1": {
           "forceStayInCity": true,
           "effect": "occupied",
-          "lostTime": 120
+          "lostTime": 120,
+          "health": 10,
+          "karma": 2
         },
         "2": {
           "requirements": {

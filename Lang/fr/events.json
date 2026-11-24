@@ -262,7 +262,7 @@
         "text": "Aller à la Halte des Braves.",
         "outcomes": {
           "0": "Plutôt qu'une chambre, vous prenez un lit au dortoir de la Halte des Braves pour une poignée de pièces. Les chants de la salle montent jusqu'à l'étage, mais à peine allongé, vous tombez de sommeil.",
-          "1": "Une caravane de marchands fête son arrivée à la Halte des Braves. Ils vous invitent à leur table et vous font chanter avec eux jusque tard dans la soirée. Quand la salle se vide enfin, vous ressortez sans avoir pris le moindre repos.",
+          "1": "Une caravane de marchands fête son arrivée à la Halte des Braves. Ils vous invitent à leur table, vous servent à manger et vous font chanter avec eux jusque tard dans la soirée. Ravis, ils promettent de parler de vous sur les routes. Vous ressortez repu, mais sans avoir pris le moindre repos.",
           "2": "L'aubergiste vous reconnaît : on parle de vous en bien dans sa salle. Il refuse votre argent, vous installe dans une belle chambre et vous fait monter un repas chaud. Vous dormez d'une traite.",
           "3": "L'aubergiste vous reconnaît et se crispe. Il accepte de vous louer un lit au dortoir, mais au double du prix : selon lui, votre présence risque de faire fuir ses clients. Trop fatigué pour discuter, vous payez et allez dormir.",
           "4": "Votre T-Rex passe la tête par la porte de la Halte des Braves, et la salle se vide en un instant. Tremblant, l'aubergiste vous offre sa plus belle chambre, à condition que la bête dorme dans la cour. Vous acceptez volontiers.",
