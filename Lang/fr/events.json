@@ -193,7 +193,7 @@
       "swim": {
         "text": "Traverser à la nage.",
         "outcomes": {
-          "0": "Dès les premières brasses, le courant vous arrache à la berge. Il vous roule contre les rochers sur une longue distance. Vous vous hissez enfin hors de l'eau, couvert de bleus, loin de tout sentier connu.",
+          "0": "Dès les premières brasses, le courant vous arrache à la berge. Il vous emporte loin en aval et vous projette contre les rochers. Vous vous hissez enfin hors de l'eau, couvert de bleus, loin de tout sentier connu.",
           "1": "Vous luttez contre le courant à chaque brasse. Il vous emporte plus loin que prévu, et vous vous écorchez les genoux sur les galets en reprenant pied. Vous atteignez l'autre rive trempé et grelottant.",
           "2": "Vous nagez de toutes vos forces en travers du courant. Il vous fait dériver loin vers l'aval, mais vous tenez bon et prenez pied sur l'autre rive. Des pêcheurs qui vous ont vu faire vous installent près de leur feu et partagent leur repas avec vous.",
           "3": "Vous peinez contre le courant quand votre familier plonge à vos côtés. Vous vous agrippez à son aileron, et il vous tire à travers les remous jusqu'à l'autre rive en quelques battements de queue.",
