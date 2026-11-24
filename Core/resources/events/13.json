@@ -20,6 +20,17 @@
           "requirements": {
             "karma": {
               "max": -30
+            },
+            "materials": {
+              "ids": [
+                65,
+                56,
+                3,
+                38
+              ],
+              "quantity": {
+                "max": 0
+              }
             }
           },
           "effect": "occupied",
@@ -34,6 +45,27 @@
               "min": 80
             }
           },
+          "mapTypesDestination": [
+            "ro"
+          ]
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "consumeMaterials": {
+            "ids": [
+              65,
+              56,
+              3,
+              38
+            ],
+            "quantity": 1
+          },
+          "effect": "occupied",
+          "lostTime": 150,
           "mapTypesDestination": [
             "ro"
           ]
