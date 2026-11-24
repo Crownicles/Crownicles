@@ -251,7 +251,7 @@
         "text": "Aller à la forge.",
         "outcomes": {
           "0": "Vous entrez dans la forge et saluez le forgeron. Vous regardez ses lames en échangeant quelques mots avec lui pendant qu'il travaille, puis ressortez.",
-          "1": "Le forgeron vous laisse essayer une épée. Elle est plus lourde que prévu : au premier moulinet, elle vous échappe des mains et brise la fenêtre. Furieux, le forgeron exige d'être remboursé, et vous l'aidez à ramasser les éclats de verre.",
+          "1": "Le forgeron vous laisse essayer une épée. Elle est plus lourde que prévu : au premier moulinet, elle vous entraîne, et sa pointe passe à travers la fenêtre. Furieux, le forgeron exige d'être remboursé, et vous l'aidez à ramasser les éclats de verre.",
           "2": "Le forgeron vous laisse essayer une épée. Vous la maniez correctement, mais un moulinet trop large accroche un casque exposé. Il roule au sol, cabossé. Le forgeron grommelle et vous fait payer la réparation.",
           "3": "Le forgeron vous laisse essayer une épée. Vous enchaînez quelques mouvements nets, et il vous demande de tester d'autres lames pour lui. Vous en essayez toute une rangée. Pour vous remercier, il vous laisse choisir une pièce dans sa réserve.",
           "4": "Le forgeron vous dévisage, puis sourit : des voyageurs lui ont dit du bien de vous. Il sort de sous son comptoir une pièce qu'il ne montre pas à tout le monde, et vous la cède à prix d'ami.",
