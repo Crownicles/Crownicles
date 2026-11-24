@@ -154,6 +154,8 @@ Comme pour le karma, le badge se **montre** : un personnage reconnaît le joueur
 
 Il commence à 0 et n'est pas borné. Une issue le change de -1 à -5 pour une petite faute, de -10 à -20 pour un acte grave, de +1 à +5 pour un geste correct, de +8 à +15 pour un acte vraiment généreux. Une issue conditionnée par le karma montre comment le monde traite le joueur selon sa réputation, sans la nommer : on le reconnaît, on se méfie de lui, on lui fait confiance.
 
+**Presque chaque interaction avec un humain change le karma**, dans le sens de ce que fait le joueur : aider, partager, être aimable (+) ; voler, mentir, menacer, laisser tomber quelqu'un (-). Pas de karma quand le joueur est la victime, subit un accident ou ne fait que croiser quelqu'un. L'intention compte plus que le résultat : aider et échouer rapporte quand même un peu.
+
 ## Classes (`validClassIds`)
 
 0 Recrue, 1 Combattant, 2 Soldat, 3 Fantassin, 4 Ganté, 5 Casqué, 6 Maillé, 7 Tank, 8 Lanceur de pierre, 9 Frondeur, 10 Archer, 11 Canonnier, 12 Écuyer, 13 Cavalier, 14 Piquier, 15 Chevalier, 16 Paladin, 17 Vétéran, 18 Fantassin puissant, 19 Tank impénétrable, 20 Canonnier redoutable, 21 Chevalier valeureux, 22 Paladin lumineux, 23 Vétéran chevronné, 24 Mage mystique

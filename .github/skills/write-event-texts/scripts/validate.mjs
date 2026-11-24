@@ -393,6 +393,26 @@ function isOutcomeCountOff(name, count) {
 const MAX_UNCONDITIONAL_OUTCOMES = 6;
 
 /**
+ * Words naming a person: an outcome where the player deals with someone almost always changes the karma
+ */
+const PERSON = /\b(marchande?s?|gardes?|aubergiste|forgeron|pêcheu(?:r|se)s?|voyageu(?:r|se)s?|inconnue?s?|hommes?|femmes?|enfants?|villageois(?:es?)?|paysan(?:ne)?s?|brigands?|bandits?|capitaine|ermite|vieillard|vieille|duc|princesse|chevaliers?|soldats?|moine|sorcière|mendiant|vagabond|charretier|berger|bergère|bûcheron|chasseurs?|pirates?|équipage|marins?|courtier|passants?|habitants|propriétaires?|cuisinier|clients?|noble|seigneur|sergent|mercenaires?|complices?|gamins?|ivrogne|musicien|barde|spectateurs?|comédiens?|fermiers?|fermière|guérisseu(?:r|se)|alchimiste|messager|pèlerins?|caravaniers?|nomades?|tavernier|serveuse|apprenti|écuyer)\b/iu;
+
+/**
+ * Outcomes whose text names a person but whose data leaves the karma unchanged
+ * @param {Report} report
+ * @param {object} dp data possibilities
+ * @param {object} tp text possibilities
+ */
+function checkKarmaOfPeople(report, dp, tp) {
+	const missing = entriesOf(dp).flatMap(([name, possibility]) => entriesOf(get(possibility, "outcomes", {}))
+		.filter(([outcome, x]) => !get(x, "karma") && PERSON.test(String(get(get(get(tp, name, {}), "outcomes", {}), outcome, ""))))
+		.map(([outcome]) => `${name}.${outcome}`));
+	if (missing.length > 0) {
+		report.warnings.push(`${missing.length} outcomes name a person without changing the karma (almost every interaction with someone does): ${missing.join(", ")}`);
+	}
+}
+
+/**
  * Check the outcome ids of a possibility: same as the texts, numbered 0..n-1, and their count
  * @param {Report} report
  * @param {string} name
@@ -484,6 +504,7 @@ function checkData(report, inp, out, game) {
 		}
 	}
 	checkTierVariety(report, dp);
+	checkKarmaOfPeople(report, dp, tp);
 	const fightingChoices = entriesOf(dp).filter(([, possibility]) => entriesOf(get(possibility, "outcomes", {})).some(([, x]) => get(x, "fight") !== null));
 	if (fightingChoices.length > 1) {
 		report.warnings.push(`${fightingChoices.length} choices lead to a fight (at most 1 per event)`);

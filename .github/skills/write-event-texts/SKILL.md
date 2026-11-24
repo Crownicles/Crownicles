@@ -296,6 +296,12 @@ L'échelle est calée sur les 130 joueurs réguliers en production, c'est-à-dir
   - Il part de 0 et n'est pas encore en production.
   - Les seuils sont `min` 0, 50, 80 ou 100, et `max` -30 ou -50.
   - Une issue le change de ±1 à ±5 pour un petit geste, de -10 à -20 pour un acte grave, et de +8 à +15 pour un acte vraiment généreux.
+  - **Une interaction avec un autre humain touche presque toujours le karma.** Le karma suit ce que le joueur fait aux autres, pas ce qui lui arrive.
+    - Il monte quand le joueur aide, partage, rend service, tient parole ou se montre aimable. Un échange cordial vaut +1.
+    - Il baisse quand le joueur vole, ment, triche, menace, bouscule, se moque ou laisse tomber quelqu'un qui lui demandait de l'aide. Un refus sec vaut -1.
+    - Il ne bouge pas quand le joueur ne fait rien à personne : il est la victime (on le vole, on l'escroque), il subit un accident, ou il ne fait que croiser quelqu'un.
+    - L'intention compte plus que le résultat : un joueur qui aide le pêcheur et tombe à l'eau gagne quand même un peu de karma. Event 13 : les marchands qui l'invitent à leur table promettent de parler de lui sur les routes (+2).
+    - Le validateur avertit des issues qui nomment une personne sans changer le karma ; chacune se tranche à la main.
 
 ## Workflow avec l'atelier
 
