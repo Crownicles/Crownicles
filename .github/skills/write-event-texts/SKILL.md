@@ -142,6 +142,7 @@ Le français (`Lang/fr`) est la référence. Depuis l'abandon de Crowdin (#5181)
   - Pas de forgeron ni de boutique que la ville n'a pas.
   - Mernil est itinérante.
 - **`forceStayInCity`** : seulement dans une ville, et quand rester est naturel. Pas après une fuite.
+- **Quitter la ville : `forceLeaveCity`.** Sans `forceStayInCity` ni `forceLeaveCity`, le joueur voit le menu des destinations, qui lui propose aussi de rester en ville. Une issue où il est chassé, s'enfuit ou raccompagné aux portes le dit et pose `"forceLeaveCity": true` (ou `mapTypesDestination`, qui le fait partir aussi). Event 13 : un joueur recherché qui semait les gardes pouvait aller dormir à la Halte des Braves juste après.
 - **Rebrousser chemin.** Une issue « rebrousser chemin » renvoie le joueur d'où il vient avec `"goBackToPreviousMap": true`, et le texte le dit (*vous repartez par où vous êtes venu*). Le demi-tour est impossible vers une ville ou par un lien à sens unique : l'issue doit donc aussi déclarer `mapTypesDestination` (les types des voisins), utilisé à sa place. Le choix n'est ainsi jamais masqué, contrairement au demi-tour retiré par #4844. Réserve ce texte aux lieux dont aucun voisin n'est une ville ; sinon, écris *vous repartez par la première route venue* et n'utilise que `mapTypesDestination`.
 
 ## Issues conditionnelles
@@ -193,6 +194,7 @@ Si l'une n'a pas de réponse dans le texte, l'issue ne tient pas.
 
 - **Par possibilité :** au moins 3 issues, dont au moins une sans condition. Le cas général tient en quelques issues (6 sans condition au plus). Les issues rares, réservées à un familier, un badge, une classe ou un profil particulier, n'ont pas de plafond : ajoutes-en autant que la scène s'y prête (event 10 : la loutre qui plonge, l'ours qui pêche comme au saumon, le chat qui vole la prise).
   - Des paliers complémentaires seuls (vitesse faible / moyenne / forte) ne suffisent pas : un joueur donné retomberait toujours sur la même issue. Ajoute une ou deux issues sans condition pour la variété (event 12, emprunter le pont et traverser à la nage).
+  - **Pense au joueur le plus courant.** Le karma n'est pas encore en production : pour l'instant, tous les joueurs sont à 0, et les issues de karma ne leur apportent aucune variété. Un joueur au karma 0, sans familier, doit avoir au moins deux issues possibles à chaque choix, quels que soient son niveau et ses statistiques. Event 13 : neuf issues de karma, mais un joueur courant qui proposait son aide aux gardes obtenait toujours le même refus poli. Le validateur avertit d'un tel choix (sauf `end`).
   - **Pas deux fois la même scène.** Deux issues d'un même choix qui ne diffèrent que par la durée ou le montant n'en font qu'une. Event 11 : dans `end`, l'inconnue parlait au joueur dans deux issues, une heure dans l'une, des heures dans l'autre. Garde-en une, ou change ce qui se passe.
 - **Pour tout l'event :**
   - environ 2 à 4 fois plus d'issues que l'original ;
@@ -333,6 +335,9 @@ Avant de rendre un texte, vérifie chaque point :
 10. Chaque issue se comprend lue seule, juste après l'intro et le libellé du choix.
 11. La physique tient : tailles, poids, forces et durées vraisemblables, et une solution à la mesure du problème.
 12. Quand le joueur se déplace, l'issue dit où il se retrouve, et deux issues d'un même choix ne racontent pas la même scène.
+13. Les mécaniques suivent le texte jusqu'au bout : un joueur chassé de la ville part vraiment (`forceLeaveCity`), et le joueur le plus courant (karma 0, sans familier) a au moins deux issues à chaque choix.
+
+Une relecture ne s'arrête pas aux phrases. Relis aussi les mécaniques de chaque issue, ce que voit le joueur le plus courant et le ton de l'ensemble, puis demande-toi si l'event donne envie d'être rejoué.
 
 ## Events validés par le propriétaire
 
@@ -351,6 +356,7 @@ Quand le propriétaire recopie une issue en y changeant quelques mots, sans autr
 - **Event 11, l'inconnue bavarde (le propriétaire)** : dans `end`, une rabatteuse de guet-apens racontait des histoires pendant des heures à un voyageur muet, dans deux issues presque identiques. Voir « Quand le joueur ne répond pas » et « Pas deux fois la même scène ».
 - **Event 12 (le propriétaire)** : *de l'autre côté* et *la berge* sans dire lesquels, formule toute faite, verbe mal employé, détail parasite. Voir « Le joueur sait où il finit » et « Exemples relevés en relecture ».
 - **Familier en expédition (le propriétaire)** : sans talisman de clonage, il ne compte pas pour les conditions de familier, et le joueur est traité comme s'il n'en avait pas. Voir `reference.md`, section « Familiers ».
+- **Event 13, relecture trop légère (le propriétaire)** : une première passe n'avait retouché que des phrases. Restaient un choix qui donnait toujours la même issue au joueur courant (karma 0), des fuites après lesquelles le joueur pouvait rester en ville, et un event porté presque entièrement par le karma, sans issue drôle ni rare. Voir « Pense au joueur le plus courant », « Quitter la ville » et la fin de « Relecture finale ».
 - **Event 30** : vocabulaire rare, expressions inventées, décor inutile, phrases alambiquées, réactions peu crédibles, mots ambigus. Voir « Exemples relevés en relecture ».
 - **Seuils** : « fort » veut dire le premier dixième des joueurs réguliers, pas le premier cinquième. Voir « L'échelle des seuils ».
 - **Classes et familiers** : une issue qui ne concerne que 1 à 2 % des joueurs est voulue.

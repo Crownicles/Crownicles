@@ -241,3 +241,47 @@ export function checkCoverage(name, outs, pets) {
 	}
 	return null;
 }
+
+/**
+ * Dimensions of the most common player: karma 0 (karma is not in production yet), no pet, no class, cooking, badge,
+ * enchantment or upgrade condition met, average money, full health and energy; only the level and fight stats vary
+ * @param {object[]} reqs
+ * @param {Map<number, {rarity: number, tags: string[]}>} pets
+ * @returns {[string, unknown[]][]}
+ */
+function commonPlayerDimensions(reqs, pets) {
+	const fixed = {
+		karma: [0],
+		health: [1000],
+		money: [20_000],
+		class: [0],
+		pet: [null],
+		cooking: [0],
+		weaponLevel: [0],
+		armorLevel: [0],
+		energyPercent: [100],
+		hasMaterials: [true],
+		hasEnchantment: [false],
+		hasWeaponTags: [false],
+		hasBadges: [false]
+	};
+	return coverageDimensions(reqs, pets).map(([key, values]) => [key, fixed[key] ?? values]);
+}
+
+/**
+ * Monotony: the most common player must not always get the same outcome of a possibility
+ * @param {string} name possibility
+ * @param {[string, any][]} outs outcomes of the possibility, with their ids
+ * @param {Map<number, {rarity: number, tags: string[]}>} pets
+ * @returns {string | null} the warning for the first common profile with a single valid outcome
+ */
+export function checkMonotony(name, outs, pets) {
+	const reqs = coverageRequirements(outs.map(([, x]) => x));
+	for (const profile of profilesOf(commonPlayerDimensions(reqs, pets))) {
+		const valid = outs.filter((_, i) => isProfileCovered(reqs[i], profile, pets));
+		if (valid.length === 1) {
+			return `${name}: a karma 0 player without pet always gets the outcome ${valid[0][0]} (level=${profile.level} attack=${profile.attack} defense=${profile.defense} speed=${profile.speed}); add an outcome without condition`;
+		}
+	}
+	return null;
+}

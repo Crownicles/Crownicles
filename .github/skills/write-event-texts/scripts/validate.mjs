@@ -16,7 +16,9 @@ import {
 import {
 	byCodePoint, difference, get, getOrEmpty, need, pyEqual, pyInt, pyRepr, pyStr, truthy
 } from "./python.mjs";
-import { checkCoverage } from "./coverage.mjs";
+import {
+	checkCoverage, checkMonotony
+} from "./coverage.mjs";
 import { checkTexts } from "./texts.mjs";
 import { checkConsistency } from "./consistency.mjs";
 
@@ -474,6 +476,11 @@ function checkData(report, inp, out, game) {
 		const coverageError = checkCoverage(name, entriesOf(outs).map(([, x]) => x), game.pets);
 		if (coverageError) {
 			report.errors.push(coverageError);
+		}
+		// The player picks every possibility but end, where the free character makes the scene vary on its own
+		const monotony = name === "end" ? null : checkMonotony(name, entriesOf(outs), game.pets);
+		if (monotony) {
+			report.warnings.push(monotony);
 		}
 	}
 	checkTierVariety(report, dp);

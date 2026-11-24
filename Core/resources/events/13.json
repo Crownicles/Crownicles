@@ -157,6 +157,16 @@
           "forceStayInCity": true,
           "effect": "sleeping",
           "health": 30
+        },
+        "5": {
+          "requirements": {
+            "cookingLevel": {
+              "min": 70
+            }
+          },
+          "forceStayInCity": true,
+          "effect": "sleeping",
+          "health": 30
         }
       }
     },
@@ -235,6 +245,18 @@
           "tags": [
             "moneyUsage"
           ]
+        },
+        "7": {
+          "requirements": {
+            "petTags": [
+              "keenNose"
+            ]
+          },
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 20,
+          "money": 80,
+          "karma": 1
         }
       }
     },
@@ -256,7 +278,8 @@
             }
           },
           "effect": "occupied",
-          "lostTime": 30
+          "lostTime": 30,
+          "forceLeaveCity": true
         },
         "3": {
           "requirements": {
@@ -294,7 +317,8 @@
           },
           "forceStayInCity": true,
           "effect": "working",
-          "karma": 2
+          "karma": 2,
+          "bonusExperience": 150
         },
         "2": {
           "requirements": {
@@ -317,7 +341,8 @@
             }
           },
           "effect": "occupied",
-          "lostTime": 180
+          "lostTime": 180,
+          "forceLeaveCity": true
         },
         "4": {
           "requirements": {
@@ -330,7 +355,8 @@
             }
           },
           "effect": "feetHurt",
-          "health": -10
+          "health": -10,
+          "forceLeaveCity": true
         },
         "5": {
           "requirements": {
@@ -342,7 +368,20 @@
             }
           },
           "effect": "occupied",
-          "lostTime": 20
+          "lostTime": 20,
+          "forceLeaveCity": true
+        },
+        "6": {
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 45,
+          "karma": 1
+        },
+        "7": {
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 30,
+          "money": 60
         }
       }
     },
@@ -371,6 +410,12 @@
           "forceStayInCity": true,
           "effect": "occupied",
           "lostTime": 40
+        },
+        "3": {
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 30,
+          "money": -15
         }
       }
     }
