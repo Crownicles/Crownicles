@@ -235,7 +235,7 @@
     }
   },
   "13": {
-    "text": "Vous passez les portes de Claire de Ville. La grande cité marchande grouille de monde, mais tout y reste calme : des gardes veillent aux carrefours. Une forge résonne, l'enseigne de la Halte des Braves se balance au vent, et les cris du marché vous parviennent.",
+    "text": "Vous arrivez aux portes de Claire de Ville. Derrière les murailles, la grande cité marchande grouille de monde, mais tout y reste calme : des gardes veillent aux carrefours. Une forge résonne, l'enseigne de la Halte des Braves se balance au vent, et les cris du marché vous parviennent.",
     "possibilities": {
       "goAway": {
         "text": "Repartir.",
