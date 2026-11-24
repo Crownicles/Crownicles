@@ -162,6 +162,8 @@ Il commence à 0 et n'est pas borné. Une issue le change de -1 à -5 pour une p
 
 Voir `Core/resources/pets/<id>.json` (rareté) et `Lang/fr/models.json`, clé `pets` (nom `<id>_male`). Exemples parlants : 1 Chien, 3 Chat, 15 Serpent, 20 Renard, 24 Singe, 28 Loup, 54 Perroquet, 58 Aigle, 64 Dragon, 65 T-Rex, 84 Diplodocus, 91 Gorille, 95 Corbeau.
 
+**Familier en expédition.** Un familier parti en expédition ne compte pas pour les conditions de familier (`validPetTypeIds`, `petTags`, `petRarity`), sauf si le joueur a le talisman de clonage : le joueur est alors traité comme s'il n'avait pas de familier.
+
 **Capacités : la condition `petTags`.** Quand l'issue repose sur une capacité que plusieurs familiers partagent, la condition vise le tag, pas une liste d'ids : `"petTags": ["flying"]`. Le familier doit avoir au moins un des tags listés. Le texte dit alors *votre familier*, et ce qu'il fait convient à chaque animal qui a le tag. Un nouveau familier tagué est pris en compte tout seul. Le joueur voit les tags de son familier chez le vétérinaire (ligne « Aptitudes ») : un nouveau tag demande son libellé dans `Lang/<langue>/models.json`, clé `petTags`.
 
 | Tag | Capacité | Familiers (dans `Core/resources/pets/<id>.json`, champ `tags`) |

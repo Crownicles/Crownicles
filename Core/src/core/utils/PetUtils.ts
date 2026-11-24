@@ -14,7 +14,7 @@ export abstract class PetUtils {
 	/**
 	 * Check if the player's pet is available for use in the given context.
 	 * - Pet is always unavailable if player has no pet or pet is on expedition (unless clone talisman allows it)
-	 * - With clone talisman: pet is available for small events and defense fights while on expedition
+	 * - With clone talisman: pet is available for small events, big events and defense fights while on expedition
 	 * - Without clone talisman: pet is not available while on expedition
 	 *
 	 * @param player - The player to check
@@ -43,9 +43,10 @@ export abstract class PetUtils {
 
 		/*
 		 * Clone talisman is present - check if context allows clone usage
-		 * Clone talisman allows pet in small events and defense fights, but NOT in attack fights
+		 * Clone talisman allows pet in small events, big events and defense fights, but NOT in attack fights
 		 */
 		return context === PetConstants.AVAILABILITY_CONTEXT.SMALL_EVENT
+			|| context === PetConstants.AVAILABILITY_CONTEXT.BIG_EVENT
 			|| context === PetConstants.AVAILABILITY_CONTEXT.DEFENSE_FIGHT;
 	}
 

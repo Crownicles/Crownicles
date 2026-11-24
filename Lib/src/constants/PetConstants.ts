@@ -20,6 +20,7 @@ export abstract class PetConstants {
 	 */
 	static readonly AVAILABILITY_CONTEXT = {
 		SMALL_EVENT: "smallEvent",
+		BIG_EVENT: "bigEvent",
 		ATTACK_FIGHT: "attackFight",
 		DEFENSE_FIGHT: "defenseFight"
 	} as const;

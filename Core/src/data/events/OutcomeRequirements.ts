@@ -1,12 +1,15 @@
 import Player from "../../core/database/game/models/Player";
 import { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
-import { PetEntities } from "../../core/database/game/models/PetEntity";
+import PetEntity, { PetEntities } from "../../core/database/game/models/PetEntity";
+import { PetUtils } from "../../core/utils/PetUtils";
 import {
 	EquippedMainItem, PlayerActiveObjects
 } from "../../core/database/game/models/PlayerActiveObjects";
 import { PetDataController } from "../Pet";
 import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
-import { PetTag } from "../../../../Lib/src/constants/PetConstants";
+import {
+	PetConstants, PetTag
+} from "../../../../Lib/src/constants/PetConstants";
 import { EventOutcomeBadge } from "../../../../Lib/src/types/Badge";
 import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
 import {
@@ -224,14 +227,19 @@ async function isPetTypeValid(validPetTypeIds: number[] | undefined, player: Pla
 		return true;
 	}
 
-	// Check if player has a pet
-	if (!player.petId) {
-		return false;
-	}
-
-	// Get the player's pet and check if its type is in the valid list
-	const petEntity = await PetEntities.getById(player.petId);
+	const petEntity = await getAvailablePetEntity(player);
 	return petEntity !== null && validPetTypeIds.includes(petEntity.typeId);
+}
+
+/**
+ * Get the player's pet if it can take part in a big event: a pet on an expedition only counts with the clone talisman
+ * @param player - The player whose pet is read
+ */
+async function getAvailablePetEntity(player: Player): Promise<PetEntity | null> {
+	if (!player.petId || !await PetUtils.isPetAvailable(player, PetConstants.AVAILABILITY_CONTEXT.BIG_EVENT)) {
+		return null;
+	}
+	return await PetEntities.getById(player.petId);
 }
 
 /**
@@ -247,11 +255,7 @@ async function isPetDataValid(req: OutcomeRequirements, player: Player): Promise
 		return true;
 	}
 
-	if (!player.petId) {
-		return false;
-	}
-
-	const petEntity = await PetEntities.getById(player.petId);
+	const petEntity = await getAvailablePetEntity(player);
 	const petData = petEntity ? PetDataController.instance.getById(petEntity.typeId) : undefined;
 	if (!petData) {
 		return false;

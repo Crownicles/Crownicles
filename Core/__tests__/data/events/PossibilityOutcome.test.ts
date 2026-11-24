@@ -12,6 +12,8 @@ import { PetConstants, PetTag } from "../../../../Lib/src/constants/PetConstants
 import { ItemConstants } from "../../../../Lib/src/constants/ItemConstants";
 import { PlayerBadgesManager } from "../../../src/core/database/game/models/PlayerBadges";
 import { Badge } from "../../../../Lib/src/types/Badge";
+import { PetExpeditions } from "../../../src/core/database/game/models/PetExpedition";
+import { PlayerTalismansManager } from "../../../src/core/database/game/models/PlayerTalismans";
 
 // Mock des dépendances
 vi.mock("../../../src/core/database/game/models/PlayerMissionsInfo");
@@ -21,6 +23,8 @@ vi.mock("../../../src/data/Pet");
 vi.mock("../../../src/core/database/game/models/Material");
 vi.mock("../../../src/data/Material");
 vi.mock("../../../src/core/database/game/models/PlayerBadges");
+vi.mock("../../../src/core/database/game/models/PetExpedition");
+vi.mock("../../../src/core/database/game/models/PlayerTalismans");
 
 describe("PossibilityOutcome Requirements", () => {
 	let mockPlayer: Partial<Player>;
@@ -286,6 +290,40 @@ describe("PossibilityOutcome Requirements", () => {
 		it("should reject a player without a pet", async () => {
 			mockPlayer = { ...mockPlayer, petId: null } as Partial<Player>;
 			expect(await isValid([PetConstants.TAGS.FLYING])).toBe(false);
+		});
+	});
+
+	describe("Pet on an expedition", () => {
+		const isValid = async (requirements: PossibilityOutcome["requirements"]): Promise<boolean> =>
+			(await getValidOutcomesForPlayer({ outcome: { requirements } }, mockPlayer as Player)).length === 1;
+
+		beforeEach(() => {
+			vi.mocked(PetEntities.getById).mockResolvedValue({ typeId: 58 } as any);
+			vi.mocked(PetDataController.instance.getById).mockReturnValue({
+				rarity: 6,
+				hasTag: (tag: string) => tag === PetConstants.TAGS.FLYING
+			} as any);
+			vi.mocked(PetExpeditions.getActiveExpeditionForPlayer).mockResolvedValue({ id: 1 } as any);
+		});
+
+		it("should not count a pet on an expedition without the clone talisman", async () => {
+			vi.mocked(PlayerTalismansManager.getOfPlayer).mockResolvedValue({ hasCloneTalisman: false } as any);
+			expect(await isValid({ validPetTypeIds: [58] })).toBe(false);
+			expect(await isValid({ petTags: [PetConstants.TAGS.FLYING] })).toBe(false);
+			expect(await isValid({ petRarity: { min: 1 } })).toBe(false);
+		});
+
+		it("should count a pet on an expedition with the clone talisman", async () => {
+			vi.mocked(PlayerTalismansManager.getOfPlayer).mockResolvedValue({ hasCloneTalisman: true } as any);
+			expect(await isValid({ validPetTypeIds: [58] })).toBe(true);
+			expect(await isValid({ petTags: [PetConstants.TAGS.FLYING] })).toBe(true);
+			expect(await isValid({ petRarity: { min: 1 } })).toBe(true);
+		});
+
+		it("should count a pet that is not on an expedition", async () => {
+			vi.mocked(PetExpeditions.getActiveExpeditionForPlayer).mockResolvedValue(null);
+			vi.mocked(PlayerTalismansManager.getOfPlayer).mockResolvedValue({ hasCloneTalisman: false } as any);
+			expect(await isValid({ validPetTypeIds: [58] })).toBe(true);
 		});
 	});
 
