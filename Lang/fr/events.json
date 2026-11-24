@@ -240,7 +240,7 @@
       "goAway": {
         "text": "Repartir.",
         "outcomes": {
-          "0": "Vous traversez Claire de Ville sans vous attarder. Les rues sont bien tenues, et la foule s'écarte sans difficulté devant vous. Vous franchissez les portes en un rien de temps et reprenez la première route venue.",
+          "0": "Vous traversez Claire de Ville sans vous attarder. Les rues sont larges et bien tenues, et vous franchissez les portes sans encombre avant de reprendre la première route venue.",
           "1": "Une longue caravane bloque la grande rue, et les gardes font patienter tout le monde. Plutôt que d'attendre, vous faites le tour de la ville par l'extérieur des murailles. Le détour vous prend du temps, puis vous reprenez la route.",
           "2": "À la porte, un garde vous reconnaît et vous fait signe d'approcher. Il fouille votre sac de fond en comble et n'y trouve rien à redire. Il vous laisse enfin partir, sans vous quitter des yeux, et vous reprenez la route.",
           "3": "Un charretier qui a entendu parler de vous en bien vous propose de monter à l'arrière de sa charrette. Il vous fait traverser la ville sans détour et vous dépose aux portes. Vous le remerciez et reprenez la route."
@@ -249,7 +249,7 @@
       "goForge": {
         "text": "Aller à la forge.",
         "outcomes": {
-          "0": "Vous entrez dans la forge et saluez le forgeron. Ses pièces sont solides, mais bien trop chères pour vous. Vous échangez quelques mots avec lui pendant qu'il travaille, puis vous ressortez.",
+          "0": "Vous entrez dans la forge et saluez le forgeron. Ses lames sont solides, mais aucune ne vous tente. Vous échangez quelques mots avec lui pendant qu'il travaille, puis ressortez.",
           "1": "Le forgeron vous laisse essayer une épée. Elle est plus lourde que prévu : au premier moulinet, elle vous échappe des mains et brise la fenêtre. Furieux, le forgeron exige d'être remboursé, et vous l'aidez à ramasser les éclats de verre.",
           "2": "Le forgeron vous laisse essayer une épée. Vous la maniez correctement, mais un moulinet trop large accroche un casque exposé. Il roule au sol, cabossé. Le forgeron grommelle et vous fait payer la réparation.",
           "3": "Le forgeron vous laisse essayer une épée. Vous enchaînez quelques mouvements nets, et il vous demande de tester d'autres lames pour lui. Vous en essayez toute une rangée. Pour vous remercier, il vous laisse choisir une pièce dans sa réserve.",
@@ -260,8 +260,8 @@
       "goInn": {
         "text": "Aller à la Halte des Braves.",
         "outcomes": {
-          "0": "Les chambres de la Halte des Braves sont hors de prix, mais l'aubergiste vous loue un lit au dortoir pour une poignée de pièces. Les chants de la salle montent jusqu'à l'étage, mais à peine allongé, vous tombez de sommeil.",
-          "1": "La Halte des Braves affiche complet : une caravane de marchands a pris tous les lits. Vous attendez longtemps dans la salle bondée qu'une chambre se libère, en vain. Vous ressortez fatigué, sans avoir pu vous reposer.",
+          "0": "Plutôt qu'une chambre, vous prenez un lit au dortoir de la Halte des Braves pour une poignée de pièces. Les chants de la salle montent jusqu'à l'étage, mais à peine allongé, vous tombez de sommeil.",
+          "1": "La Halte des Braves est bondée : une caravane de marchands vient d'arriver. Débordé, l'aubergiste vous fait attendre des heures dans la salle. Vous finissez par ressortir, fatigué, sans avoir pu vous reposer.",
           "2": "L'aubergiste vous reconnaît : on parle de vous en bien dans sa salle. Il refuse votre argent, vous installe dans une belle chambre et vous fait monter un repas chaud. Vous dormez d'une traite.",
           "3": "L'aubergiste vous reconnaît et se crispe. Il accepte de vous louer un lit au dortoir, mais au double du prix : selon lui, votre présence risque de faire fuir ses clients. Trop fatigué pour discuter, vous payez et allez dormir.",
           "4": "Votre T-Rex passe la tête par la porte de la Halte des Braves, et la salle se vide en un instant. Tremblant, l'aubergiste vous offre sa plus belle chambre, à condition que la bête dorme dans la cour. Vous acceptez volontiers."
@@ -274,26 +274,26 @@
           "1": "Vous faites le tour du marché, d'un étal à l'autre. Les marchands crient leurs prix, la foule vous bouscule, et rien ne vous tente vraiment. Vous ressortez les mains vides, après avoir perdu un long moment.",
           "2": "Vous vous attardez devant un étal, la bourse bien en vue. Une main habile en tranche les cordons dans la foule. Le temps de vous retourner, le voleur a disparu entre les charrettes, et les gardes ne retrouvent personne.",
           "3": "Une main se glisse vers votre bourse. Vous attrapez le poignet du voleur avant qu'il ne l'atteigne. La garde l'emmène, et une marchande qu'il venait de dépouiller vous remercie d'une poignée de pièces.",
-          "4": "Les marchands vous reconnaissent et échangent des regards. Les prix grimpent dès que vous approchez d'un étal. Vous finissez par acheter un objet qui vous plaît, en le payant bien plus cher qu'il ne vaut.",
-          "5": "Une vieille marchande vous reconnaît et vous demande de garder son étal le temps d'une course. À son retour, rien ne manque. Pour vous remercier, elle vous laisse choisir un objet parmi sa marchandise.",
-          "6": "Votre bourse rebondie n'échappe pas à un courtier de la Bourse, qui flaire le bon client. Il vous guide vers les meilleurs étals et marchande à votre place. Vous repartez avec un objet de belle facture, payé un prix raisonnable."
+          "4": "Sur votre passage, les marchands échangent des regards entendus, et les prix grimpent dès que vous approchez d'un étal. Vous finissez par acheter un objet qui vous plaît, en le payant bien plus cher qu'il ne vaut.",
+          "5": "Une vieille marchande, qui a entendu dire du bien de vous, vous demande de garder son étal le temps d'une course. À son retour, rien ne manque. Pour vous remercier, elle vous laisse choisir un objet parmi sa marchandise.",
+          "6": "Un courtier de la Bourse entend vos pièces tinter et flaire le bon client. Il vous guide vers les meilleurs étals et marchande à votre place. Vous repartez avec un objet de belle facture, payé un prix raisonnable."
         }
       },
       "seekInformation": {
         "text": "Interroger les habitants.",
         "outcomes": {
-          "0": "Vous interrogez les passants sur les environs. Une marchande pressée vous met en garde contre le Bois Hurlant : des brigands se cachent dans les grottes de ses collines. Vous la remerciez et retenez ses conseils.",
+          "0": "Vous interrogez les passants sur les environs. Une marchande pressée vous met en garde contre le Bois Hurlant : des brigands se cachent dans les grottes de ses collines. Vous la remerciez et retenez l'avertissement.",
           "1": "Un homme vous aborde dans une ruelle et prétend tout savoir des routes de la région. Il se fait payer d'avance. Ses précieux renseignements, vous les entendez ensuite répéter gratuitement à chaque coin de rue.",
           "2": "À votre approche, les conversations s'arrêtent : on vous a reconnu. Personne ne vous répond, et quelqu'un file prévenir la garde. Un garde vient vous poser quelques questions, puis vous laisse aller.",
           "3": "Vous savez quelles questions poser, et à qui. Un vieux charretier vous indique la route la plus sûre pour quitter la ville et les passages où se méfier des brigands. Vous reprenez la route sans attendre.",
-          "4": "Un vieil homme qui a entendu dire du bien de vous vous parle des souterrains creusés sous la ville au temps de sa misère. Il vous confie l'entrée d'une galerie où des aventuriers ont laissé du matériel. Vous y descendez et remontez avec un objet."
+          "4": "Un vieil homme a entendu dire du bien de vous. Il vous parle des souterrains creusés sous la ville quand elle était encore pauvre, et vous confie l'entrée d'une galerie où des aventuriers ont laissé du matériel. Vous y descendez et remontez avec un objet."
         }
       },
       "helpCityGuards": {
         "text": "Proposer votre aide aux gardes.",
         "outcomes": {
           "0": "Les gardes vous remercient poliment, mais Claire de Ville est calme et ils suffisent à la tâche. Ils vous souhaitent un bon séjour et reprennent leur ronde.",
-          "1": "Les gardes sourient devant votre allure de débutant. L'un d'eux, un vieil homme patient, vous emmène tout de même sur sa ronde et vous montre la ville. Il vous confie qu'il tient sa patience de Sir Rowan, qui l'a formé autrefois.",
+          "1": "Les gardes sourient devant votre allure de débutant. L'un d'eux, un vieil homme patient, vous emmène tout de même sur sa ronde et vous montre la ville. Il vous confie qu'il tient sa patience de Sir Rowan, l'ancien capitaine de la Garde royale, qui l'a formé autrefois.",
           "2": "Le capitaine de la garde a entendu parler de vous et vous confie une patrouille avec deux de ses hommes. Vous aidez à séparer des ivrognes devant la Halte des Braves. À la fin du service, il vous remet une bourse pour votre peine.",
           "3": "Un garde compare votre visage à un avis de recherche, puis siffle ses collègues. Vous tentez de fuir, mais ils vous rattrapent au premier carrefour. On vous interroge longuement au poste, puis on vous relâche, faute de preuves.",
           "4": "Un garde compare votre visage à un avis de recherche, puis siffle ses collègues. Vous détalez dans les ruelles et finissez par les semer, mais en sautant un muret, vous vous tordez la cheville.",
@@ -302,8 +302,8 @@
       },
       "end": {
         "outcomes": {
-          "0": "Vous visitez Claire de Ville pendant des heures, d'une rue à l'autre, sans vous presser. Vous vous arrêtez devant les vitrines, écoutez les marchands et regardez passer les caravanes.",
-          "1": "Vous n'avez jamais vu une ville aussi grande. Les rues se ressemblent toutes, et vous vous perdez entre les entrepôts et les hôtels. Vous tournez en rond des heures, jusqu'à ce qu'un passant vous ramène vers le centre.",
+          "0": "Vous visitez Claire de Ville pendant des heures, d'une rue à l'autre, sans vous presser. Vous vous arrêtez devant les échoppes, écoutez les marchands et regardez passer les caravanes.",
+          "1": "Peu habitué aux grandes villes, vous vous perdez entre les entrepôts et les hôtels, dont les rues se ressemblent toutes. Vous tournez en rond des heures, jusqu'à ce qu'un passant vous ramène vers le centre.",
           "2": "Vous connaissez Claire de Ville par cœur. Vous allez droit aux rues qui vous intéressent, saluez quelques visages familiers, puis vous vous installez sur une place pour souffler un moment."
         }
       }
