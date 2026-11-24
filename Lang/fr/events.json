@@ -181,7 +181,7 @@
       "searchBridge": {
         "text": "Emprunter le vieux pont.",
         "outcomes": {
-          "0": "Vous avancez lentement sur le pont, qui ploie à chaque pas. Au milieu, une planche pourrie cède sous votre pied. Vous tombez jusqu'à la taille et vous cognez la tête contre une poutre avant de vous hisser de l'autre côté, sonné.",
+          "0": "Vous avancez lentement sur le pont, qui ploie à chaque pas. Au milieu, une planche pourrie cède sous votre pied. Vous tombez jusqu'à la taille et vous cognez la tête contre une poutre. Sonné, vous vous extirpez du trou et gagnez l'autre rive en titubant.",
           "1": "Vous traversez d'un bon pas en évitant les trous. Près de la rive, une planche craque et votre jambe passe au travers. Vous vous dégagez avec une belle écorchure au mollet et finissez la traversée avec plus de prudence.",
           "2": "Vous traversez au pas de course, sans laisser aux planches le temps de céder. Derrière vous, l'une d'elles tombe dans l'écume. Vous atteignez l'autre rive sans une égratignure.",
           "3": "Vous testez chaque planche avant d'y poser le pied, comme la route vous l'a appris, et traversez sans encombre. Sur l'autre rive, votre œil exercé repère un objet abandonné dans les roseaux. Vous l'emportez.",
