@@ -168,7 +168,7 @@
       },
       "end": {
         "outcomes": {
-          "0": "Vous ne répondez rien, et l'inconnue en profite pour parler. Elle vous raconte d'où le Bois Hurlant tient son nom, puis encore d'autres histoires. Quand vous parvenez à repartir, vous avez perdu plus de temps que prévu.",
+          "0": "Vous la dévisagez sans rien dire. Mal à l'aise, l'inconnue jette un regard vers les fourrés, puis s'éloigne sans insister. Vous restez à l'orée du bois à peser chaque chemin, et quand vous vous décidez enfin, vous avez perdu plus de temps que prévu.",
           "1": "Votre silence semble la vexer. Elle insiste, détaille chaque chemin, chaque grotte et chaque bande qui y vit, et se fâche dès que vous faites mine de partir. Vous n'osez pas la couper, et quand elle vous laisse enfin aller, des heures ont passé.",
           "2": "L'inconnue aperçoit votre chat noir et recule d'un pas. Elle fait un geste pour conjurer le mauvais sort, marmonne qu'elle s'est trompée de voyageur et s'éloigne en hâte. Vous restez un instant seul à l'orée du bois."
         }
