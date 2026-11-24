@@ -80,7 +80,6 @@ Le français (`Lang/fr`) est la référence. Depuis l'abandon de Crowdin (#5181)
 | *Conquis, le duc veut l'acheter ; vous refusez, et il vous paie le spectacle* | Interaction peu crédible | Une seule réaction simple qui justifie le gain |
 | *puis vous fait reconduire sans que vous ayez vu le duc* | Fait hésiter | *… et vous fait reconduire. Vous n'aurez pas vu le duc.* |
 | *Le duc remarque vos cicatrices*, avec `level: {min: 60}` | Le texte décrit un vétéran, le seuil un débutant | Le seuil « vétéran » de l'échelle (`level` `min` 130) |
-| *le courant disloque votre radeau. Vous regagnez la berge à la nage, gelé* (event 12) | Quelle berge ? On ne sait pas si le joueur a traversé, et la nage dans un torrent paraît facile alors qu'elle coûte 25 PV | *Agrippé à une branche, vous luttez contre les remous et atteignez à grand-peine l'autre rive* |
 
 ## Structure d'un event
 
