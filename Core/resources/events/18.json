@@ -44,7 +44,8 @@
           "requirements": {
             "validPetTypeIds": [
               24,
-              90
+              90,
+              91
             ]
           },
           "randomItem": {},
@@ -177,9 +178,8 @@
         },
         "3": {
           "requirements": {
-            "validPetTypeIds": [
-              3,
-              4
+            "petTags": [
+              "climber"
             ]
           },
           "effect": "occupied",
@@ -196,7 +196,8 @@
         "1": {
           "requirements": {
             "validPetTypeIds": [
-              58,
+              54,
+              94,
               95
             ]
           },

@@ -582,17 +582,17 @@
     }
   },
   "18": {
-    "text": "Au détour d'une ruelle de Mergagnan, vous tombez sur un chantier à l'abandon : poutres noircies, échafaudages qui grincent, outils rouillés. Le baron Almerac y faisait bâtir une halle de pierre. Il est mort en laissant des intérêts impayés, les ouvriers sont partis, et jusqu'aux registres sont restés sur place.",
+    "text": "Au détour d'une ruelle de Mergagnan, vous tombez sur un chantier à l'abandon : échafaudages qui grincent, poutres effondrées, outils rouillés. Sur la palissade, un avis délavé des créanciers réclame les dettes du baron Almerac, mort avant d'avoir achevé sa halle de pierre. Par une brèche, vous apercevez des registres oubliés sur une table.",
     "possibilities": {
       "searchScaffolding": {
         "text": "Grimper aux échafaudages.",
         "outcomes": {
-          "0": "Vous grimpez de plancher en plancher jusqu'au sommet des échafaudages. Il n'y a rien à prendre là-haut, mais la vue s'étend sur les toits de Mergagnan jusqu'à la Plage Sentinelle. Vous restez un long moment à la regarder avant de redescendre.",
+          "0": "Vous grimpez de plancher en plancher jusqu'au sommet des échafaudages. Il n'y a rien à prendre là-haut, mais la vue s'étend sur les toits de Mergagnan jusqu'à la Plage Sentinelle. Vous restez un moment à la regarder avant de redescendre.",
           "1": "Du haut des échafaudages, vous repérez quelque chose qui brille dans un tas de gravats, au pied du mur. Vous redescendez le chercher : c'est un objet oublié par les ouvriers, encore en bon état. Vous l'emportez.",
           "2": "À mi-hauteur, un barreau de l'échelle casse sous votre pied. Vous n'avez pas le temps de vous rattraper et tombez lourdement sur les pavés. Le dos meurtri, vous repartez en grimaçant.",
           "3": "Une planche pourrie cède sous votre pied. Vous vous rattrapez de justesse à une poutre, mais le bois rugueux vous écorche les mains. Vous redescendez prudemment, en soufflant sur vos paumes.",
           "4": "Vous montez vite et sans un faux pas jusqu'au dernier plancher, où plus personne ne grimpe depuis le départ des ouvriers. Entre deux poutres, l'un d'eux avait caché une petite bourse et un objet. Vous emportez les deux.",
-          "5": "Votre singe bondit de perche en perche, bien plus vite que vous. Il fouille un recoin hors de votre portée, puis redescend avec un objet oublié par les ouvriers et vous le tend. Il a l'air très fier de lui."
+          "5": "Votre familier bondit de perche en perche, bien plus vite que vous. Il fouille un recoin hors de votre portée, puis redescend avec un objet oublié par les ouvriers et vous le tend. Il a l'air très fier de lui."
         }
       },
       "searchSite": {
@@ -602,7 +602,7 @@
           "1": "En fouillant le chantier, vous trouvez une caisse de ferrures coincée sous une poutre effondrée. Vous soulevez la poutre de quelques doigts et la calez avec une pierre. L'ouverture suffit pour glisser la main dans la caisse et en tirer un morceau de métal.",
           "2": "En fouillant le chantier, vous trouvez une caisse de ferrures coincée sous une poutre effondrée. Vous soulevez un bout de la poutre et la faites basculer sur le côté. Le métal de la caisse est encore bon : vous en emportez une bonne charge.",
           "3": "Vous retournez les caisses et soulevez les bâches moisies une à une. Sous la dernière, un coffre de charpentier a échappé aux pilleurs. Il y reste un objet utile, que vous emportez après une longue fouille.",
-          "4": "Vous plongez la main dans une caisse à outils sans regarder. Une lame de scie rouillée vous entaille profondément la paume. Le sang coule, et il vous faut un bon moment pour bander la plaie.",
+          "4": "Vous plongez la main dans une caisse à outils sans regarder. Une lame de scie rouillée vous entaille profondément la paume. Le sang coule, et il faudra soigner la plaie avant de reprendre la route.",
           "5": "Pendant que vous fouillez, votre castor s'attaque à une pile de poutres tombées. Il ronge et tire le bois avec application. Quand vous revenez, quelques bons morceaux sont empilés à ses pieds. Vous les rangez dans votre sac."
         }
       },
@@ -610,8 +610,8 @@
         "text": "Enquêter sur l'abandon du chantier.",
         "outcomes": {
           "0": "Vous feuilletez les registres restés sur une table. Comptes, salaires, livraisons de pierre : tout s'arrête net à la mort du baron Almerac. Sur les dernières pages, il n'est plus question que d'intérêts impayés à un prêteur dont le nom a été gratté.",
-          "1": "Vous passez un long moment sur les registres, mais l'humidité a effacé la moitié des pages. Les chiffres qui restent se contredisent. Vous refermez le dernier cahier sans en savoir plus sur l'abandon du chantier.",
-          "2": "Une vieille femme vous regarde lire les registres. Elle vous reconnaît et vient vous parler : son fils était maçon ici, et le baron payait mal, puis plus du tout. Elle vous donne un outil qu'il a laissé sur place.",
+          "1": "Vous passez des heures sur les registres, mais l'humidité a effacé la moitié des pages. Les chiffres qui restent se contredisent. Vous refermez le dernier cahier sans en savoir plus sur l'abandon du chantier.",
+          "2": "Une vieille femme vous regarde lire les registres. Elle vous reconnaît et vient vous parler : son fils était maçon ici, et le baron payait mal, puis plus du tout. Contente que quelqu'un s'intéresse enfin à l'affaire, elle vous confie un objet que son fils a laissé sur le chantier.",
           "3": "Un voisin vous surprend penché sur les registres. Il vous reconnaît, vous prend pour un envoyé des créanciers et appelle toute la rue. Vous perdez un moment à vous expliquer avant qu'on vous laisse partir."
         }
       },
@@ -621,7 +621,7 @@
           "0": "Ce chantier ne vous regarde pas. Vous reprenez votre chemin dans les ruelles. Quelques pas plus loin, l'odeur de poisson grillé de l'auberge Au Coin du Feu vous fait déjà oublier les échafaudages.",
           "1": "En longeant le chantier, vous entendez un craquement : une planche tombe de l'échafaudage et se fracasse sur les pavés, à un pas de vous. Le cœur battant, vous faites un détour par une autre ruelle.",
           "2": "Vous longez le chantier quand un habitant vous reconnaît. Il ne vous quitte plus des yeux et vous suit jusqu'au bout de la rue, pour être sûr que vous ne touchez à rien. Vous faites un détour pour vous en débarrasser.",
-          "3": "Au moment de repartir, votre chat file sur une poutre de l'échafaudage. Il s'installe tout en haut et ne semble pas pressé de redescendre. Vous perdez un bon moment à l'attirer jusqu'à vous."
+          "3": "Au moment de repartir, votre familier grimpe sur l'échafaudage. Il s'installe sur la plus haute poutre et ne semble pas pressé de redescendre. Vous perdez un moment à l'attirer jusqu'à vous."
         }
       },
       "end": {
