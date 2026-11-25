@@ -424,14 +424,15 @@
       "enterCastle": {
         "text": "Entrer pour fouiller le château.",
         "outcomes": {
-          "0": "Vous traversez des salles vides et finissez par trouver l'ancienne armurerie. Presque tout y a rouillé, mais un objet a tenu bon. Vous le ramassez et ressortez sans traîner, pressé de quitter ces murs.",
+          "0": "Vous traversez des salles vides et finissez par trouver l'ancienne armurerie. Presque tout y a rouillé, mais une arme a tenu bon. Vous la ramassez et ressortez sans traîner, pressé de quitter ces murs.",
           "1": "À peine entré, vous entendez des pas dans les étages, puis une porte qui grince quelque part au fond. Le château est moins abandonné qu'il n'y paraît. Peu rassuré, vous ressortez aussitôt et reprenez votre route.",
           "2": "Dans la grande salle, un morceau du plafond se détache juste au-dessus de vous. Rien ne vous protège vraiment : les pierres vous frappent de plein fouet. Vous ressortez du château en boitant, couvert de poussière et de sang.",
           "3": "Dans la grande salle, un morceau du plafond se détache juste au-dessus de vous. Vous vous protégez la tête de vos bras, mais une pierre vous entaille l'épaule. Vous ressortez du château en vous tenant le bras.",
           "4": "Un escalier effondré descend vers les caves. Vous attachez une corde à un pilier et vous laissez glisser dans le noir. En bas, un coffre a échappé aux pillards. Vous en tirez un bel objet, puis remontez à la force des bras en laissant la corde nouée au pilier.",
-          "5": "Des voix montent d'une salle : des brigands ont fait du château leur repaire. Leur chef vous reconnaît et vous fait asseoir parmi ses hommes comme un vieux camarade. Vous acceptez votre part de leur dernier butin sans poser de questions.",
+          "5": "Des voix montent d'une salle : des contrebandiers ont fait du château leur entrepôt, à l'abri des regards de la garde. Leur chef vous reconnaît et vous fait asseoir parmi ses hommes comme un vieux camarade. Vous acceptez votre part de leur dernière cargaison sans poser de questions.",
           "6": "Au fond de la grande salle, un squelette en armure rouillée se dresse lentement de son trône. Ses orbites vides se tournent vers vous, et il lève une épée ébréchée : le seigneur du château défend encore ses murs.",
-          "7": "Dans la salle du trône, une silhouette couronnée se dresse au milieu des ossements. Le vieux seigneur du château n'a jamais quitté ses murs, et il tire de son fourreau une épée presque aussi grande que lui."
+          "7": "Dans la salle du trône, un grand squelette en armure se dresse au milieu des ossements de ses gardes. À son heaume ouvragé, vous reconnaissez le vieux seigneur du château, qui n'a jamais quitté ses murs. Il tire de son fourreau une épée presque aussi grande que lui.",
+          "8": "Au fond de la grande salle, un squelette en armure rouillée se dresse de son trône. À bout de forces, vous n'avez pas le cœur de l'affronter et fuyez vers la sortie. Dans votre hâte, une marche effondrée se dérobe sous vous, et vous dévalez l'escalier en vous tordant la cheville."
         },
         "fights": {
           "6": {
@@ -439,7 +440,7 @@
             "lost": "Les coups du squelette vous rejettent hors de la salle. Il ne vous poursuit pas et retourne s'asseoir sur son trône. Vous quittez le château en vous tenant les côtes."
           },
           "7": {
-            "won": "Le seigneur squelette tombe en poussière, sa couronne roule à vos pieds. Derrière le trône, son trésor attend encore : vous en emportez le plus bel objet.",
+            "won": "Le seigneur squelette tombe en poussière, et son heaume roule à vos pieds. Derrière le trône, son trésor attend encore : vous en emportez le plus bel objet.",
             "lost": "Le seigneur squelette vous chasse de sa salle à grands coups d'épée. Vous dévalez l'escalier et ne reprenez votre souffle qu'une fois dehors."
           }
         }
@@ -447,9 +448,9 @@
       "walkAround": {
         "text": "Faire le tour du château.",
         "outcomes": {
-          "0": "Vous faites lentement le tour des remparts. Brèches colmatées, pierres noircies, fossé comblé : le château a connu un siège, il y a bien longtemps. Vous ne trouvez rien d'autre, et ce tour vous a pris un bon moment.",
-          "1": "Le tour des murs ne vous apprend pas grand-chose sur le château. Mais au pied d'une tour éventrée, des pierres tombées ont crevé une cachette dans le mur, et des pièces d'or se sont répandues dans l'herbe. Vous passez un long moment à les ramasser une à une.",
-          "2": "Le long du mur nord, l'herbe haute cache un trou. Vous marchez droit dedans et tombez lourdement au fond. Vous en sortez à grand-peine, la jambe en sang. Il faudra la soigner avant d'aller plus loin.",
+          "0": "Vous faites lentement le tour des remparts. Brèches colmatées, pierres noircies, fossé comblé : le château a connu un siège, il y a bien longtemps. Vous ne trouvez rien d'autre, et ce tour vous prend plus longtemps que prévu.",
+          "1": "Le tour des murs ne vous apprend pas grand-chose sur le château. Mais au pied d'une tour éventrée, des pierres tombées ont crevé une cachette dans le mur, et des pièces d'or se sont répandues dans l'herbe. Les ramasser une à une vous prend plus longtemps que prévu.",
+          "2": "Le long du mur nord, l'herbe haute cache un trou. Vous marchez droit dedans et, trop lent pour vous rattraper, tombez lourdement au fond. Vous en sortez à grand-peine, la jambe en sang. Il faudra la soigner avant d'aller plus loin.",
           "3": "Le long du mur nord, l'herbe haute cache un trou. Votre pied s'y enfonce d'un coup. Vous vous rattrapez de justesse, mais votre cheville se tord, et vous finissez le tour en boitant.",
           "4": "Près des remparts, votre familier flaire quelque chose et se met à gratter la terre avec ardeur. Vous l'aidez à creuser et dégagez un petit coffret enterré, rongé par la rouille. À l'intérieur, quelques pièces d'or attendaient depuis longtemps.",
           "5": "Dans les douves asséchées gisent les restes du pont-levis. Sous une grosse poutre, vous apercevez un coffre écrasé. Vous soulevez un bout de la poutre à la force des bras et la calez sur une pierre, le temps de tirer du coffre un objet resté intact."
@@ -463,7 +464,8 @@
           "2": "Sous le vieux ponton, une forme sombre repose au fond de l'eau. Vous avez fouillé assez de ruines pour reconnaître une barge coulée. Vous plongez plusieurs fois et remontez de l'épave une bourse et un objet.",
           "3": "Votre hippopotame se jette dans la rivière dans une grande gerbe d'eau. Vous le rejoignez, et la baignade vous fait du bien. Il refait surface un peu plus loin, un objet brillant entre les dents, et le laisse tomber à vos pieds.",
           "4": "En aval, la berge se perd dans les vasières où grouillent les crabes. Vous en attrapez une poignée et les faites griller sur un petit feu, avec les herbes de la rive qui relèvent leur goût. Ce repas improvisé vous redonne des forces.",
-          "5": "Au pied du vieux ponton, un objet tombé dans la rivière dépasse de la vase, mais des crabes grouillent tout autour. Plutôt que d'y mettre la main, vous tendez votre arme vers eux. Une goutte verdâtre perle sur le métal, et les crabes s'en écartent en filant de travers. Vous ramassez l'objet sans vous faire pincer."
+          "5": "Au pied du vieux ponton, un objet tombé dans la rivière dépasse de la vase, mais des crabes grouillent tout autour. Plutôt que d'y mettre la main, vous tendez votre arme vers eux. Une goutte verdâtre perle sur le métal, et les crabes s'en écartent en filant de travers. Vous ramassez l'objet sans vous faire pincer.",
+          "6": "En retournant une pierre de la berge, vous dérangez un gros crabe qui vous pince le doigt et ne lâche plus prise. Le temps de vous en défaire, vous avez fait fuir tout ce qui vivait alentour, et vous repartez les mains vides, le doigt tout rouge."
         }
       },
       "skip": {
@@ -472,7 +474,8 @@
           "0": "Vous laissez le château à ses corneilles et continuez à suivre la rivière. Leurs cris vous accompagnent un moment, puis le bruit de l'eau finit par les couvrir.",
           "1": "Sur le chemin qui longe la rivière, vous croisez des poissonniers de Claire de Ville et leurs charrettes. L'un d'eux vous reconnaît et prévient les autres. Ils vous barrent le passage, et vous devez faire un long détour par les vasières.",
           "2": "Sur le chemin qui longe la rivière, vous croisez des poissonniers de Claire de Ville. L'un d'eux vous reconnaît et insiste pour vous offrir un poisson fumé. Vous le mangez en marchant, et la route vous paraît plus courte.",
-          "3": "Au bord des vasières, votre crabe s'arrête net devant les crabes qui grouillent dans la boue. Il semble tenté de les rejoindre. Il vous faut un bon moment pour le récupérer et reprendre la route."
+          "3": "Au bord des vasières, votre crabe s'arrête net devant les crabes qui grouillent dans la boue. Il semble tenté de les rejoindre. Il vous faut un moment pour le récupérer et reprendre la route.",
+          "4": "Sur le chemin qui longe la rivière, la charrette d'un poissonnier de Claire de Ville s'est embourbée. Vous l'aidez à la pousser hors de l'ornière, et il vous remercie de quelques pièces avant de reprendre la route de la ville."
         }
       },
       "end": {
