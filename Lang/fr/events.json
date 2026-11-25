@@ -460,7 +460,7 @@
         "text": "Fouiller les berges près du château.",
         "outcomes": {
           "0": "En longeant la berge, vous tombez sur les restes d'un moulin à eau. En s'effondrant, le plancher a brisé la cassette du meunier, et des pièces se sont coincées entre les dents rouillées des engrenages. Vous passez un bon moment à les extraire avec la pointe d'un bâton.",
-          "1": "Vous vous penchez au bord de l'eau pour fouiller sous les racines. Les pierres sont glissantes : votre pied dérape, et vous ne vous rattrapez pas à temps. Vous basculez dans la rivière, et le courant vous emporte. Vous regagnez la berge quelques mètres plus loin, trempé et transi.",
+          "1": "Vous vous penchez au-dessus de l'eau pour fouiller entre les racines d'un vieux saule. Les pierres de la berge sont glissantes : votre pied dérape, et vous ne vous rattrapez pas à temps. Vous basculez dans la rivière, et le courant vous entraîne. Vous regagnez la berge quelques mètres plus loin, trempé et transi.",
           "2": "Sous le vieux ponton, une forme sombre repose au fond de l'eau. Vous avez fouillé assez de ruines pour reconnaître une barge coulée. Vous plongez plusieurs fois et remontez de l'épave une bourse et un objet.",
           "3": "Votre hippopotame se jette dans la rivière dans une grande gerbe d'eau. Vous le rejoignez, et la baignade vous fait du bien. Il refait surface un peu plus loin, un objet brillant entre les dents, et le laisse tomber à vos pieds.",
           "4": "En aval, la berge se perd dans les vasières où grouillent les crabes. Vous en attrapez une poignée et les faites griller sur un petit feu, avec les herbes de la rive qui relèvent leur goût. Ce repas improvisé vous redonne des forces.",
