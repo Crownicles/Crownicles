@@ -52,14 +52,17 @@ Ces conditions s'ajoutent aux autres dans `requirements`. Elles ne consomment ri
 
 Les tags d'arme sont dans `Core/resources/weapons/<id>.json` (champ `tags`) et `ItemConstants.TAGS`. Même règle que pour les familiers : un tag pour une capacité partagée par plusieurs armes et utile à d'autres events (forcer, couper, tirer de loin), pas pour une arme isolée.
 
-**Repères sur les 130 joueurs réguliers** (mesurés le 21/11/2026) :
+**Repères sur les 130 joueurs réguliers** (mesurés le 21/11/2026 ; la cuisine, sur 145 joueurs le 25/11/2026) :
 
 | Le texte décrit… | Condition | Part des joueurs |
 |---|---|---|
-| quelqu'un qui ne sait pas cuisiner | `cookingLevel` `max` 0 | 47 % |
-| un cuisinier correct | `cookingLevel` `min` 40 | 25 % |
-| un bon cuisinier | `cookingLevel` `min` 70 | 10 % |
+| quelqu'un qui n'a jamais cuisiné | `cookingLevel` `max` 0 | 52 % |
+| un débutant, qui ne distingue pas un champignon comestible d'un vénéneux ni ne sait préparer une bête inhabituelle | `cookingLevel` `max` 30 | 70 % |
+| un cuisinier correct | `cookingLevel` `min` 40 | 23 % |
+| un bon cuisinier | `cookingLevel` `min` 70 | 12 % |
 | un chef | `cookingLevel` `min` 90 | 5 % |
+
+Reconnaître ce qui se mange demande un vrai niveau : quelques recettes ne suffisent pas pour trier des champignons. Une issue où le joueur ne sait pas (lesquels se mangent, comment préparer un renard) vise `max` 30, et celle où il reconnaît commence à 31. `max` 0 ne décrit que celui qui n'a jamais touché à une marmite.
 | un joueur qui a un matériau d'un type donné | `materials` `type` | 75 à 85 % |
 | un joueur qui a un matériau précis | `materials` `ids` | 45 à 80 % selon le matériau (les rares autour de 50 %) |
 | un joueur sans aucun matériau | `materials` `quantity` `max` 0 | 7 % |

@@ -250,7 +250,6 @@
               29
             ]
           },
-          "health": 30,
           "effect": "occupied",
           "lostTime": 20
         }
@@ -264,7 +263,7 @@
         "1": {
           "requirements": {
             "cookingLevel": {
-              "max": 0
+              "max": 30
             }
           },
           "effect": "occupied",
@@ -273,7 +272,7 @@
         "2": {
           "requirements": {
             "cookingLevel": {
-              "max": 0
+              "max": 30
             }
           },
           "health": -40,
@@ -282,7 +281,7 @@
         "3": {
           "requirements": {
             "cookingLevel": {
-              "min": 1,
+              "min": 31,
               "max": 69
             }
           },

@@ -104,7 +104,7 @@
         "1": {
           "requirements": {
             "cookingLevel": {
-              "max": 0
+              "max": 30
             },
             "excludedPetTypeIds": [
               20
@@ -331,7 +331,7 @@
         "2": {
           "requirements": {
             "cookingLevel": {
-              "max": 0
+              "max": 30
             },
             "excludedPetTypeIds": [
               20
