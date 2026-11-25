@@ -1508,6 +1508,16 @@ export class Player extends Model {
 	}
 
 	/**
+	 * Record that the player slept in a bed outside the city menu (a big event outcome), which starts the cooldown shared by every bed
+	 * @param now - When the player went to bed
+	 */
+	public async markBedUsed(now: Date): Promise<void> {
+		await this.mutateLocked(locked => {
+			locked.lastBedUsedAt = now;
+		});
+	}
+
+	/**
 	 * Check if the player has enough energy to join the island or fight
 	 */
 	hasEnoughEnergyToFight(playerActiveObjects: PlayerActiveObjects): boolean {

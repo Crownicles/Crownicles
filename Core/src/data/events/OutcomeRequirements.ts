@@ -2,6 +2,7 @@ import Player from "../../core/database/game/models/Player";
 import { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
 import PetEntity, { PetEntities } from "../../core/database/game/models/PetEntity";
 import { PetUtils } from "../../core/utils/PetUtils";
+import { getNextBedAvailableAt } from "../../core/utils/BedUtils";
 import {
 	EquippedMainItem, PlayerActiveObjects
 } from "../../core/database/game/models/PlayerActiveObjects";
@@ -106,11 +107,15 @@ export type OutcomeRequirements = {
  */
 export async function isOutcomeValidForPlayer(
 	outcome: {
-		requirements?: OutcomeRequirements; consumeMaterials?: OutcomeMaterialConsumption;
+		requirements?: OutcomeRequirements; consumeMaterials?: OutcomeMaterialConsumption; useBed?: boolean;
 	},
 	player: Player,
 	playerActiveObjects: PlayerActiveObjects
 ): Promise<boolean> {
+	if (outcome.useBed && getNextBedAvailableAt(player.lastBedUsedAt, new Date()) !== null) {
+		return false;
+	}
+
 	if (outcome.consumeMaterials && !await areConsumedMaterialsOwned(outcome.consumeMaterials, player)) {
 		return false;
 	}

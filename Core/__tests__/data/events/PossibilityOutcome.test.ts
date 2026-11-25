@@ -14,6 +14,7 @@ import { PlayerBadgesManager } from "../../../src/core/database/game/models/Play
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { PetExpeditions } from "../../../src/core/database/game/models/PetExpedition";
 import { PlayerTalismansManager } from "../../../src/core/database/game/models/PlayerTalismans";
+import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
 
 // Mock des dépendances
 vi.mock("../../../src/core/database/game/models/PlayerMissionsInfo");
@@ -324,6 +325,25 @@ describe("PossibilityOutcome Requirements", () => {
 			vi.mocked(PetExpeditions.getActiveExpeditionForPlayer).mockResolvedValue(null);
 			vi.mocked(PlayerTalismansManager.getOfPlayer).mockResolvedValue({ hasCloneTalisman: false } as any);
 			expect(await isValid({ validPetTypeIds: [58] })).toBe(true);
+		});
+	});
+
+	describe("Bed outcomes", () => {
+		const isBedOutcomeValid = async (lastBedUsedAt: Date | null): Promise<boolean> => {
+			mockPlayer = { ...mockPlayer, lastBedUsedAt } as Partial<Player>;
+			return (await getValidOutcomesForPlayer({ outcome: { useBed: true, effect: "sleeping" } }, mockPlayer as Player)).length === 1;
+		};
+
+		it("should offer the bed to a player who never slept in one", async () => {
+			expect(await isBedOutcomeValid(null)).toBe(true);
+		});
+
+		it("should hide the bed while the bed cooldown runs", async () => {
+			expect(await isBedOutcomeValid(new Date(Date.now() - HomeConstants.BED_COOLDOWN_MS + 60_000))).toBe(false);
+		});
+
+		it("should offer the bed again once the cooldown is over", async () => {
+			expect(await isBedOutcomeValid(new Date(Date.now() - HomeConstants.BED_COOLDOWN_MS - 1))).toBe(true);
 		});
 	});
 

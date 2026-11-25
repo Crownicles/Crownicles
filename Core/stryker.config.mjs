@@ -67,6 +67,7 @@ export default {
 		"src/core/smallEvents/petFood.ts",
 		"src/core/smallEvents/ultimateFoodMerchant.ts",
 		"src/core/smallEvents/witch.ts",
+		"src/core/utils/BedUtils.ts",
 		"src/core/utils/ItemUtils.ts",
 		"src/core/utils/ShopUtils.ts",
 		"src/core/utils/TannerShopItems.ts",

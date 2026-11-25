@@ -419,7 +419,8 @@
           "money": -150,
           "tags": [
             "moneyUsage"
-          ]
+          ],
+          "useBed": true
         }
       }
     }

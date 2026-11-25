@@ -71,7 +71,8 @@
       "outcomes": {
         "0": {
           "effect": "sleeping",
-          "health": 10
+          "health": 10,
+          "useBed": true
         },
         "1": {
           "effect": "occupied",
@@ -93,7 +94,8 @@
             }
           },
           "effect": "sleeping",
-          "health": 25
+          "health": 25,
+          "useBed": true
         },
         "4": {
           "requirements": {
@@ -103,7 +105,8 @@
             ]
           },
           "effect": "sleeping",
-          "health": 20
+          "health": 20,
+          "useBed": true
         },
         "5": {
           "requirements": {

@@ -130,4 +130,44 @@ describe("applyPossibilityOutcome", () => {
 		expect(currentExperience).toBeGreaterThan(initialExperience);
 		expect(currentHealth).toBe(16);
 	});
+
+	it.each([
+		[true, 1],
+		[false, 0]
+	])("persists the bed use only when the outcome puts the player to bed (useBed: %s)", async (useBed, bedSaves) => {
+		const lockedRow = Object.assign(Object.create(Player.prototype) as Player, {
+			lastBedUsedAt: null,
+			save: vi.fn().mockResolvedValue(undefined)
+		});
+		vi.spyOn(Player, "withLocked").mockImplementation(async (_id, mutation) => await mutation(lockedRow as never));
+		const player = Object.create(Player.prototype) as Player;
+		Object.assign(player, {
+			id: 1,
+			level: 10,
+			lastBedUsedAt: null,
+			effectDuration: 0,
+			effectId: "",
+
+			// The bare prototype has no Sequelize attribute setters, so the change tracking a real instance owns is provided here.
+			_changed: new Set<string>(),
+			addEnergy: vi.fn(),
+			addExperience: vi.fn().mockResolvedValue(undefined),
+			addHealth: vi.fn().mockResolvedValue(undefined),
+			addMoney: vi.fn().mockResolvedValue(undefined),
+			addScore: vi.fn().mockResolvedValue(undefined),
+			addTokens: vi.fn().mockResolvedValue(undefined),
+			setLastReportWithEffect: vi.fn().mockResolvedValue(undefined)
+		});
+
+		await applyPossibilityOutcome({
+			eventId: 13,
+			possibilityName: "goInn",
+			outcome: ["0", { effect: "sleeping", useBed }],
+			time: 0
+		}, player, {} as PacketContext, []);
+
+		expect(lockedRow.save).toHaveBeenCalledTimes(bedSaves);
+		expect(player.lastBedUsedAt !== null).toBe(useBed);
+		vi.restoreAllMocks();
+	});
 });

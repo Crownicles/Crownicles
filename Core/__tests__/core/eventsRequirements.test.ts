@@ -33,6 +33,7 @@ interface OutcomeRequirements {
 interface Outcome {
 	requirements?: OutcomeRequirements;
 	consumeMaterials?: { quantity: number } | { quantity: number }[];
+	useBed?: boolean;
 }
 
 interface Possibility {
@@ -148,6 +149,14 @@ function buildDimensions(outcomes: Outcome[]): Dimension[] {
 		constrains: o => o.requirements?.materials !== undefined || o.consumeMaterials !== undefined,
 		accepts: (o, value) => isInRange(o.requirements?.materials?.quantity ?? (o.requirements?.materials ? { min: 1 } : undefined), value as number)
 			&& (!o.consumeMaterials || (value as number) >= [o.consumeMaterials].flat().reduce((sum, filter) => sum + filter.quantity, 0))
+	});
+
+	// A bed outcome disappears while the bed cooldown runs
+	dimensions.push({
+		name: 'bedOnCooldown',
+		values: [false, true],
+		constrains: o => o.useBed === true,
+		accepts: (o, value) => !o.useBed || !(value as boolean)
 	});
 
 	// Asking for a weapon tag only adds outcomes: a weapon with every asked tag, and a weapon with none, bound the profiles

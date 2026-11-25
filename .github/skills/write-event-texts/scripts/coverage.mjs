@@ -17,6 +17,9 @@ function coverageRequirements(outs) {
 			const filters = Array.isArray(x.consumeMaterials) ? x.consumeMaterials : [x.consumeMaterials];
 			requirements.materials = { quantity: { min: filters.reduce((sum, filter) => sum + need(filter, "quantity"), 0) } };
 		}
+		if (x.useBed === true) {
+			requirements.bedAvailable = true;
+		}
 		return requirements;
 	});
 }
@@ -79,7 +82,8 @@ function coverageDimensions(reqs, pets) {
 		["hasMaterials", uses("materials") ? [false, true] : [true]],
 		["hasEnchantment", uses("enchantment") ? [false, true] : [true]],
 		["hasWeaponTags", uses("weaponTags") ? [false, true] : [true]],
-		["hasBadges", uses("badges") ? [false, true] : [true]]
+		["hasBadges", uses("badges") ? [false, true] : [true]],
+		["bedAvailable", uses("bedAvailable") ? [false, true] : [true]]
 	];
 }
 
@@ -109,7 +113,8 @@ function areBelongingsCovered(r, profile) {
 	}
 	return (!Object.hasOwn(r, "enchantment") || profile.hasEnchantment)
 		&& (!Object.hasOwn(r, "weaponTags") || profile.hasWeaponTags)
-		&& (!Object.hasOwn(r, "badges") || profile.hasBadges);
+		&& (!Object.hasOwn(r, "badges") || profile.hasBadges)
+		&& (!Object.hasOwn(r, "bedAvailable") || profile.bedAvailable);
 }
 
 /**
@@ -200,7 +205,7 @@ function isProfileCovered(r, profile, pets) {
 function uncoveredProfileError(name, profile) {
 	const { pet } = profile;
 	return `${name}: no valid outcome for level=${profile.level} karma=${profile.karma} health=${profile.health} attack=${profile.attack} defense=${profile.defense} speed=${profile.speed} money=${profile.money} class=${profile.class} pet=${pet === null ? "None" : `(${pet[0]}, ${pet[1]})`}`
-		+ ` cooking=${profile.cooking} weaponLevel=${profile.weaponLevel} armorLevel=${profile.armorLevel} energy=${profile.energyPercent}% materials=${profile.hasMaterials ? "oui" : "aucun"} enchantment=${profile.hasEnchantment ? "oui" : "aucun"}`;
+		+ ` cooking=${profile.cooking} weaponLevel=${profile.weaponLevel} armorLevel=${profile.armorLevel} energy=${profile.energyPercent}% materials=${profile.hasMaterials ? "oui" : "aucun"} enchantment=${profile.hasEnchantment ? "oui" : "aucun"} bed=${profile.bedAvailable ? "libre" : "en recharge"}`;
 }
 
 /**
@@ -263,7 +268,8 @@ function commonPlayerDimensions(reqs, pets) {
 		hasMaterials: [true],
 		hasEnchantment: [false],
 		hasWeaponTags: [false],
-		hasBadges: [false]
+		hasBadges: [false],
+		bedAvailable: [true]
 	};
 	return coverageDimensions(reqs, pets).map(([key, values]) => [key, fixed[key] ?? values]);
 }

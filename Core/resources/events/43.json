@@ -291,7 +291,8 @@
     "shelter": {
       "outcomes": {
         "0": {
-          "effect": "sleeping"
+          "effect": "sleeping",
+          "useBed": true
         },
         "1": {
           "effect": "sleeping"
@@ -321,7 +322,8 @@
             }
           },
           "effect": "sleeping",
-          "health": 20
+          "health": 20,
+          "useBed": true
         },
         "6": {
           "requirements": {
@@ -353,7 +355,8 @@
             ]
           },
           "effect": "sleeping",
-          "health": 10
+          "health": 10,
+          "useBed": true
         },
         "9": {
           "requirements": {
@@ -366,7 +369,8 @@
           },
           "effect": "sleeping",
           "health": 15,
-          "karma": 1
+          "karma": 1,
+          "useBed": true
         }
       }
     }

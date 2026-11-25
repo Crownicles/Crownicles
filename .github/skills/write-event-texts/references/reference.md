@@ -3,7 +3,7 @@
 ## Champs d'une issue (`Core/resources/events/<id>.json`)
 
 - `requirements` : conditions pour que l'issue puisse tomber (voir plus bas). Sans `requirements`, l'issue est toujours possible.
-- `health` (vie, négatif = blessure), `money` (argent), `fight` (combat contre un monstre, voir « Combats »), `lostTime` (minutes perdues), `karma` (entier, voir plus bas), `effect` (altération), `randomItem` (`{}` = objet au hasard ; `{"rarity": {"min": 3}}` ou `{"category": 0}` possibles), `energy`, `gems`, `tokens`, `bonusExperience`, `bonusPoints`, `randomPet`, `givePet`, `oneshot`, `nextEvent`, `mapTypesDestination` / `mapTypesExcludeDestination` (types des cartes voisines, voir `neighbours[].type` dans ton input), `mapLink`, `goBackToPreviousMap` (demi-tour vers la carte d'où vient le joueur ; exige `mapTypesDestination`, utilisé quand le demi-tour est impossible), `forceStayInCity` / `forceLeaveCity` (villes seulement), `tags` (garde ceux de l'original), `condition` (n'existe qu'avec `canAcceptPet` : garde-le s'il y est), `consumeMaterials` / `giveMaterials` (voir « Cuisine, matériaux et équipement »).
+- `health` (vie, négatif = blessure), `money` (argent), `fight` (combat contre un monstre, voir « Combats »), `lostTime` (minutes perdues), `karma` (entier, voir plus bas), `effect` (altération), `randomItem` (`{}` = objet au hasard ; `{"rarity": {"min": 3}}` ou `{"category": 0}` possibles), `energy`, `gems`, `tokens`, `bonusExperience`, `bonusPoints`, `randomPet`, `givePet`, `oneshot`, `nextEvent`, `mapTypesDestination` / `mapTypesExcludeDestination` (types des cartes voisines, voir `neighbours[].type` dans ton input), `mapLink`, `goBackToPreviousMap` (demi-tour vers la carte d'où vient le joueur ; exige `mapTypesDestination`, utilisé quand le demi-tour est impossible), `forceStayInCity` / `forceLeaveCity` (villes seulement), `tags` (garde ceux de l'original), `condition` (n'existe qu'avec `canAcceptPet` : garde-le s'il y est), `consumeMaterials` / `giveMaterials` (voir « Cuisine, matériaux et équipement »), `useBed` (le joueur dort dans un lit, voir « Dormir dans un lit »).
 
 ## Altérations (`effect`) et leur durée en minutes
 
@@ -150,7 +150,14 @@ Part des 186 joueurs actifs sur 14 jours (mesurée le 22/11/2026) :
 
 Comme pour le karma, le badge se **montre** : un personnage reconnaît le joueur, ou réagit à ce qu'il a fait (*le forgeron reconnaît celui qui a fait perfectionner une babiole sans valeur par le forgeron royal*, *un dresseur a entendu parler de votre familier*). Le texte ne nomme jamais le badge. Choisis un badge en lien avec la scène, et une issue à badge reste un bonus : il faut toujours une autre issue pour les joueurs qui ne l'ont pas.
 
-## Karma
+## Dormir dans un lit (`useBed`)
+
+Tous les lits du jeu partagent une recharge de 24 heures : le lit de la maison, celui de l'appartement et les chambres d'auberge. Une issue où le joueur dort dans un lit (une chambre ou un dortoir d'auberge, le lit ou la paillasse d'un hôte, la couchette d'un poste de garde) pose `"useBed": true`, avec `"effect": "sleeping"`.
+
+- L'issue n'est possible que si le joueur n'a pas dormi dans un lit pendant la recharge, comme une issue qui consomme des matériaux : il faut une autre issue pour le joueur dont le lit est en recharge (le validateur le vérifie).
+- Elle lance la recharge : le joueur ne pourra plus louer de chambre ni dormir chez lui avant 24 heures.
+- Pas de `useBed` quand le joueur s'endort ailleurs que dans un lit (contre un arbre, sur un banc, sous une tente avec une couverture) : ce n'est pas un repos dans un lit.
+
 
 Il commence à 0 et n'est pas borné. Une issue le change de -1 à -5 pour une petite faute, de -10 à -20 pour un acte grave, de +1 à +5 pour un geste correct, de +8 à +15 pour un acte vraiment généreux. Une issue conditionnée par le karma montre comment le monde traite le joueur selon sa réputation, sans la nommer : on le reconnaît, on se méfie de lui, on lui fait confiance.
 

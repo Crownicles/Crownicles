@@ -75,6 +75,7 @@ export default defineConfig([
 					"processLevelUps",
 					"setGloryPoints",
 					"setKarma",
+					"markBedUsed",
 					"setRage",
 					"spendMoney",
 					"useTokens"

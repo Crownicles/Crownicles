@@ -330,6 +330,11 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 	// Effect + lost time
 	const effect = await applyOutcomeEffect(possibilityOutcome.outcome[1], player);
 
+	// Bed
+	if (possibilityOutcome.outcome[1].useBed) {
+		await player.markBedUsed(new Date());
+	}
+
 	// Materials
 	const materials = await applyOutcomeMaterials({
 		consume: possibilityOutcome.outcome[1].consumeMaterials,
@@ -462,6 +467,12 @@ export interface PossibilityOutcome {
 	 * The outcome is only possible when the player owns enough of them.
 	 */
 	consumeMaterials?: OutcomeMaterialConsumption;
+
+	/**
+	 * The player sleeps in a bed (an inn, a host's bed): the outcome is only possible when no bed was used during the cooldown
+	 * shared by the home, the apartment and the inn rooms, and it starts that cooldown
+	 */
+	useBed?: boolean;
 
 	/**
 	 * Give this quantity of one random material matching the filters

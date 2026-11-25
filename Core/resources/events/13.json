@@ -151,7 +151,8 @@
           "money": -70,
           "tags": [
             "moneyUsage"
-          ]
+          ],
+          "useBed": true
         },
         "1": {
           "forceStayInCity": true,
@@ -168,7 +169,8 @@
           },
           "forceStayInCity": true,
           "effect": "sleeping",
-          "health": 30
+          "health": 30,
+          "useBed": true
         },
         "3": {
           "requirements": {
@@ -182,7 +184,8 @@
           "money": -140,
           "tags": [
             "moneyUsage"
-          ]
+          ],
+          "useBed": true
         },
         "4": {
           "requirements": {
@@ -192,7 +195,8 @@
           },
           "forceStayInCity": true,
           "effect": "sleeping",
-          "health": 30
+          "health": 30,
+          "useBed": true
         },
         "5": {
           "requirements": {
@@ -203,7 +207,8 @@
           "forceStayInCity": true,
           "effect": "sleeping",
           "health": 30,
-          "karma": 3
+          "karma": 3,
+          "useBed": true
         },
         "6": {
           "requirements": {
@@ -217,7 +222,8 @@
           "forceStayInCity": true,
           "effect": "sleeping",
           "health": 30,
-          "karma": 1
+          "karma": 1,
+          "useBed": true
         }
       }
     },

@@ -27,7 +27,7 @@ import { checkConsistency } from "./consistency.mjs";
 const OUTCOME_KEYS = new Set([
 	"condition", "requirements", "lostTime", "health", "karma", "effect", "money", "energy", "gems", "tokens", "bonusExperience",
 	"bonusPoints", "randomItem", "randomPet", "givePet", "oneshot", "nextEvent", "mapTypesDestination", "mapTypesExcludeDestination",
-	"mapLink", "goBackToPreviousMap", "forceStayInCity", "forceLeaveCity", "tags", "consumeMaterials", "giveMaterials", "fight"
+	"mapLink", "goBackToPreviousMap", "forceStayInCity", "forceLeaveCity", "tags", "consumeMaterials", "giveMaterials", "fight", "useBed"
 ]);
 const FIGHT_CONSEQUENCE_KEYS = new Set(["money", "health", "experience", "effect", "lostTime", "randomItem"]);
 const REQ_RANGES = ["level", "karma", "health", "attack", "defense", "speed", "energyPercent", "money", "petRarity", "cookingLevel", "weaponLevel", "armorLevel"];
@@ -303,8 +303,11 @@ function checkOutcome(report, path, x, context) {
 	checkOutcomeKeys(report, path, x);
 	checkOutcomeTravel(report, path, x, context);
 	checkOutcomeMaterials(report, path, x, context.materials);
+	if (Object.hasOwn(x, "useBed") && (x.useBed !== true || get(x, "effect") !== "sleeping")) {
+		report.errors.push(`${path}: useBed must be true and go with the sleeping effect (the player sleeps in a bed)`);
+	}
 	const req = getOrEmpty(x, "requirements");
-	if (!truthy(req) && !Object.hasOwn(x, "consumeMaterials")) {
+	if (!truthy(req) && !Object.hasOwn(x, "consumeMaterials") && x.useBed !== true) {
 		return false;
 	}
 	checkRequirementShapes(report, path, req);
@@ -489,7 +492,7 @@ function checkData(report, inp, out, game) {
 			counts.conditional += checkOutcome(report, `data.${name}.${outcome}`, x, context) ? 1 : 0;
 			checkOutcomeFight(report, `data.${name}.${outcome}`, x, get(fightTexts, outcome), game.monsters);
 		}
-		const unconditional = entriesOf(outs).filter(([, x]) => !truthy(getOrEmpty(x, "requirements")) && !Object.hasOwn(x, "consumeMaterials")).length;
+		const unconditional = entriesOf(outs).filter(([, x]) => !truthy(getOrEmpty(x, "requirements")) && !Object.hasOwn(x, "consumeMaterials") && x.useBed !== true).length;
 		if (unconditional > MAX_UNCONDITIONAL_OUTCOMES) {
 			report.warnings.push(`${name}: ${unconditional} outcomes without condition (at most ${MAX_UNCONDITIONAL_OUTCOMES})`);
 		}
