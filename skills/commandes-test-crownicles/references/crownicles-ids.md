@@ -871,7 +871,7 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 15 | Dans une ruelle de Claire de Ville, vous poussez la porte d'une petite boutique. Quelques hommes y discutent tranquillement entre des étals |
 | 16 | Après de longues heures à suivre la Rivière aux Crabes, vous découvrez un vieux château au bord de l'eau. Le lierre couvre ses murs, des cor |
 | 17 | Sur le Grand Axe, qui contourne le Mont Célestrum par le nord, la faim vous force à faire halte. Un grand arbre ploie sous des fruits dorés, |
-| 18 | Au détour d'une ruelle de Mergagnan, vous tombez sur un chantier à l'abandon : échafaudages qui grincent, poutres effondrées, outils rouillé |
+| 18 | Au détour d'une ruelle de Mergagnan, un pan de palissade gît sur les pavés. Derrière, des murs à mi-hauteur disparaissent sous des échafauda |
 | 19 | Au Croisement des Destins, là où se rejoignent les grands chemins de l'ouest, un renard gît au pied du poteau indicateur. Il semble mort dep |
 | 20 | Dans une ruelle de Claire de Ville, un garde aux armes de la cité a acculé une femme contre un mur. Il lui arrache sa bourse en invoquant un |
 | 21 | En continuant votre périple, vous arrivez devant un pont délabré qui, de plus, est au dessus d'un énorme gouffre. |

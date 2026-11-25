@@ -132,7 +132,8 @@
       "outcomes": {
         "0": {
           "effect": "occupied",
-          "lostTime": 45
+          "lostTime": 45,
+          "bonusExperience": 80
         },
         "1": {
           "effect": "occupied",
@@ -147,7 +148,7 @@
           "randomItem": {},
           "effect": "occupied",
           "lostTime": 30,
-          "karma": 1
+          "karma": 3
         },
         "3": {
           "requirements": {
@@ -157,6 +158,11 @@
           },
           "effect": "occupied",
           "lostTime": 30
+        },
+        "4": {
+          "effect": "occupied",
+          "lostTime": 45,
+          "bonusExperience": 80
         }
       }
     },
@@ -201,9 +207,9 @@
               95
             ]
           },
-          "randomItem": {
-            "category": 3
-          }
+          "randomItem": {},
+          "effect": "occupied",
+          "lostTime": 10
         },
         "2": {
           "requirements": {
@@ -213,6 +219,9 @@
           },
           "effect": "confounded",
           "health": -12
+        },
+        "3": {
+          "health": -3
         }
       }
     }
