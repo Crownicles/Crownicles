@@ -620,7 +620,7 @@
       "skip": {
         "text": "Passer votre chemin.",
         "outcomes": {
-          "0": "Ce chantier ne vous regarde pas. Vous reprenez votre chemin dans les ruelles. Quelques pas plus loin, l'odeur de poisson grillé de l'auberge Au Coin du Feu vous fait déjà oublier les échafaudages.",
+          "0": "Ce chantier ne vous concerne pas. Vous reprenez votre chemin dans les ruelles. Quelques pas plus loin, l'odeur de poisson grillé de l'auberge Au Coin du Feu vous fait déjà oublier les échafaudages.",
           "1": "Vous longez la palissade quand un craquement vous fait lever la tête : une planche glisse du haut de l'échafaudage, passe par-dessus la palissade et se fracasse sur les pavés, à un pas de vous. Le cœur battant, vous faites un détour par une autre ruelle.",
           "2": "Au bout de la ruelle, une poissonnière qui vend sa pêche vous reconnaît : on parle de vous dans les auberges, et pas en bien. Elle cache sa recette sous son tablier et appelle ses voisins, qui viennent vous barrer le passage. Vous faites le tour par les quais.",
           "3": "Au moment de repartir, votre familier file par la palissade tombée et grimpe sur l'échafaudage. Il s'installe tout en haut et ne semble pas pressé de redescendre. Il vous faut un bon moment pour le faire revenir."
