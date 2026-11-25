@@ -655,7 +655,7 @@
       "cook": {
         "text": "Faire cuire le renard.",
         "outcomes": {
-          "0": "Vous allumez un petit feu de brindilles et faites rôtir quelques morceaux. La viande est dure et forte en goût, ce n'est pas un festin. Mais elle est chaude, et elle calme votre faim.",
+          "0": "Vous ramassez du bois mort dans les haies qui bordent les chemins, allumez un feu et faites rôtir quelques morceaux sur les braises. La viande est dure et forte en goût, ce n'est pas un festin. Mais elle est chaude, et elle calme votre faim.",
           "1": "Vous n'avez jamais vraiment appris à cuisiner : la viande sort du feu noire dehors et crue dedans. La faim l'emporte, et vous la mangez quand même. Moins d'une heure plus tard, vous êtes plié en deux au bord du chemin.",
           "2": "Vous découpez la bête proprement et laissez la viande cuire à feu doux, le temps qu'il faut. Elle est tendre et bien dorée. Ce repas imprévu vous rend des forces.",
           "3": "Vous frottez la viande d'herbes cueillies au bord du chemin et la faites rôtir lentement. Le renard, d'ordinaire dur et fort en goût, devient un vrai repas. Vous repartez requinqué.",
@@ -978,7 +978,7 @@
           "1": "Vous n'avez pas de temps à perdre. Vous contournez le champ de bataille d'un pas rapide et reprenez votre route. Derrière vous, les soldats continuent leurs recherches.",
           "2": "Peu habitué à ce genre de spectacle, vous pressez le pas en gardant les yeux sur la route. Votre pied se prend dans le bras d'un brigand. Vous tombez lourdement sur un bouclier et vous vous ouvrez le genou.",
           "3": "Vous passez au large des soldats. Plus loin, deux pilleurs fouillent les corps des brigands. Ils vous reconnaissent, vous saluent comme l'un des leurs et vous lancent un objet pris sur un cadavre.",
-          "4": "Vous voulez repartir, mais votre Panda refuse d'avancer. Il tremble devant les corps et s'accroche à votre jambe. Vous vous accroupissez pour le calmer un long moment, puis vous l'entraînez loin du carrefour."
+          "4": "Vous voulez repartir, mais votre panda refuse d'avancer. Il tremble devant les corps et s'accroche à votre jambe. Vous vous accroupissez pour le calmer un long moment, puis vous l'entraînez loin du carrefour."
         }
       },
       "help": {
@@ -1000,10 +1000,10 @@
         "outcomes": {
           "0": "Vous contournez les soldats et vous glissez du côté où sont tombés les brigands. Vous fouillez quelques corps à la hâte et repartez avec une poignée de pièces avant que quiconque vous remarque.",
           "1": "Vous fouillez votre deuxième corps quand une main vous saisit au col. Un soldat vous plaque au sol, se sert dans votre bourse en guise d'amende et vous ordonne de quitter le carrefour au plus vite.",
-          "2": "Un soldat vous surprend penché sur un corps, votre Chat noir à vos pieds. Il recule, fait un signe contre le mauvais œil et crie à la sorcellerie. Ses camarades accourent. Une pierre vous atteint à la tempe, et vous restez un moment caché dans les hautes herbes.",
+          "2": "Un soldat vous surprend penché sur un corps, votre chat noir à vos pieds. Il recule, fait un signe contre le mauvais œil et crie à la sorcellerie. Ses camarades accourent. Une pierre vous atteint à la tempe, et vous restez un moment caché dans les hautes herbes.",
           "3": "Un soldat vous attrape par l'épaule et exige que vous vidiez vos poches. Vous vous dégagez d'un coup sec et filez entre les corps, les poches déjà pleines. Il renonce vite à vous suivre.",
           "4": "Vous retournez un corps sans vérifier s'il respire. L'homme ouvre les yeux et gémit. Confus, vous bredouillez une excuse, bandez sa blessure avec un morceau de tissu tiré de votre sac et appelez les soldats.",
-          "5": "Un soldat vous interpelle. Vous restez calme et lui expliquez que vous cherchez un ami. Au même moment, votre Singe se redresse au milieu des corps, une bague brillante entre les doigts. Le soldat dégaine, et vous prenez la fuite les mains vides.",
+          "5": "Un soldat vous interpelle. Vous restez calme et lui expliquez que vous cherchez un ami. Au même moment, votre singe se redresse au milieu des corps, une bague brillante entre les doigts. Le soldat dégaine, et vous prenez la fuite les mains vides.",
           "6": "Vous retournez un brigand pour fouiller sa ceinture. Il n'était pas mort : il ouvre les yeux, tire un couteau de sa botte et se relève d'un bond, bien décidé à garder ce qu'il a.",
           "7": "Sous un tas de corps, un homme vous attrape la cheville. C'est le chef de la bande, caché parmi ses hommes tombés en attendant la nuit. Il se relève, épée en main : vous ne repartirez pas avec son butin.",
           "8": "Vous vous penchez sur un brigand qui n'était pas mort. Il vous saute à la gorge, et vous êtes trop épuisé pour lui résister. Il vous laisse étendu parmi les corps, la bourse vide, et il vous faut un long moment pour vous relever."
@@ -1024,7 +1024,7 @@
           "0": "Vous restez un moment au bord du champ de bataille à regarder les soldats retourner les corps. Personne ne fait attention à vous. Après une courte hésitation, vous reprenez votre route.",
           "1": "Vous vous asseyez sur une borne pour regarder les soldats. La fatigue du voyage vous rattrape, et vous vous assoupissez, adossé à la pierre. Vous vous réveillez des heures plus tard, quand les soldats sont partis.",
           "2": "Les soldats se rassemblent autour de l'un des leurs, mourant. Votre Chat se faufile entre leurs jambes, se couche contre le blessé et ronronne. L'homme pose la main sur lui et s'éteint avec un sourire. Les soldats vous saluent en silence.",
-          "3": "Pendant que vous restez figé devant ce spectacle, votre Alien s'approche du corps le plus proche et commence à le découper avec un soin étrange. Horrifié, vous l'arrêtez et quittez les lieux avant que les soldats s'en aperçoivent.",
+          "3": "Pendant que vous restez figé devant ce spectacle, votre alien s'approche du corps le plus proche et commence à le découper avec un soin étrange. Horrifié, vous l'arrêtez et quittez les lieux avant que les soldats s'en aperçoivent.",
           "4": "Vous observez les corps sans la moindre émotion. Les soldats vous ont reconnu et ne vous quittent pas des yeux, mais aucun n'ose s'approcher. En partant, vous ramassez tranquillement un objet sur un cadavre.",
           "5": "Vous restez figé devant les corps. Un soldat vous reconnaît et vous appelle par votre nom pour vous demander un coup de main. Vous ne répondez pas. Vos mains tremblent encore quand vous reprenez enfin la route."
         }
@@ -1052,7 +1052,7 @@
           "0": "Tous les regards sont tournés vers l'estrade. Vous glissez la main dans les besaces de quelques voyageurs, puis vous vous éclipsez derrière un pan de rempart. Parmi votre butin, un objet semble avoir de la valeur.",
           "1": "Un villageois vous attrape le poignet : ici, on connaît le tour, et quelqu'un surveille toujours la foule pendant la pièce. Il vous roue de coups devant les voyageurs, puis vous chasse de la place, le visage en sang.",
           "2": "Un villageois qui surveille la foule vous saisit au col. D'une seule poussée, vous l'envoyez rouler dans la poussière. Vous filez les mains vides et attendez derrière un mur que la place se calme.",
-          "3": "Un voyageur surprend votre geste et vous menace de ses poings. Vous reculez en levant les mains, l'air penaud. Pendant ce temps, votre Singe s'est glissé dans son dos, et il revient avec sa bourse sans que l'homme s'en aperçoive.",
+          "3": "Un voyageur surprend votre geste et vous menace de ses poings. Vous reculez en levant les mains, l'air penaud. Pendant ce temps, votre singe s'est glissé dans son dos, et il revient avec sa bourse sans que l'homme s'en aperçoive.",
           "4": "Un voyageur vous surprend et crie au voleur. Vous prenez votre air le plus innocent et parlez d'une méprise. Les villageois se souviennent de vous comme d'un voyageur honnête et haussent les épaules. Vous repartez les mains vides.",
           "5": "Un voyageur vous surprend et crie au voleur. Les villageois reconnaissent votre visage, qu'on décrit dans toutes les auberges du pays. Ils vous rouent de coups jusqu'à ce que le crieur les arrête : il ne veut pas de vrai sang pendant le spectacle.",
           "6": "Un villageois qui surveille la foule vous saisit au col. Vous vous dégagez après une courte lutte, la lèvre fendue, et disparaissez derrière les maisons, les mains vides."
@@ -1067,7 +1067,7 @@
           "3": "Le crieur vous reconnaît et vous désigne à la foule : voilà un vrai bandit, qui mériterait la corde bien plus que l'acteur. Les rires redoublent, et l'on vous chasse de la place sous une pluie de trognons de pommes.",
           "4": "Vous fendez la foule et tranchez la corde d'un coup de lame avant même que la trappe s'ouvre. Le paysan, privé de son grand final, fait la moue, mais le crieur, ravi du spectacle, vous laisse une belle part de la quête.",
           "5": "Vous sautez sur le dos de votre monture et fendez la foule jusqu'à l'estrade. Le condamné fait glisser sa corde par-dessus sa tête et saute derrière vous. Vous faites le tour de la potence sous les vivats : la foule croit que cela fait partie de la pièce. Le crieur vous supplie de revenir.",
-          "6": "Pendant que vous jouez des coudes vers l'estrade, votre Paresseux grimpe tranquillement le long de la potence. Quand vous arrivez enfin, il pend tête en bas à côté du condamné, accroché par les pattes. La foule hurle de rire devant ce second pendu, et le crieur vous laisse une part de la quête pour le numéro."
+          "6": "Pendant que vous jouez des coudes vers l'estrade, votre paresseux grimpe tranquillement le long de la potence. Quand vous arrivez enfin, il pend tête en bas à côté du condamné, accroché par les pattes. La foule hurle de rire devant ce second pendu, et le crieur vous laisse une part de la quête pour le numéro."
         }
       },
       "tell": {

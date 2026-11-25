@@ -110,7 +110,7 @@
           },
           "health": 5,
           "effect": "occupied",
-          "lostTime": 30
+          "lostTime": 45
         },
         "1": {
           "requirements": {
