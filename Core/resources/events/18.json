@@ -217,8 +217,9 @@
               91
             ]
           },
-          "effect": "confounded",
-          "health": -12
+          "money": 40,
+          "effect": "occupied",
+          "lostTime": 20
         },
         "3": {
           "health": -3
