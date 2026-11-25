@@ -109,7 +109,7 @@
       "outcomes": {
         "0": {
           "money": 100,
-          "karma": -5
+          "karma": -10
         },
         "1": {
           "requirements": {
@@ -130,7 +130,7 @@
           },
           "money": -150,
           "effect": "occupied",
-          "lostTime": 30,
+          "lostTime": 10,
           "karma": -5
         },
         "3": {
@@ -140,7 +140,7 @@
             }
           },
           "money": 200,
-          "karma": -5
+          "karma": -10
         },
         "4": {
           "requirements": {
@@ -150,7 +150,7 @@
           },
           "money": 80,
           "randomItem": {},
-          "karma": -5
+          "karma": -10
         },
         "5": {
           "requirements": {

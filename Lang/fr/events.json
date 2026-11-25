@@ -392,7 +392,7 @@
         "outcomes": {
           "0": "Lassés de vous observer, les hommes reprennent leur discussion à voix basse. Votre main se glisse dans la caisse et en ressort avec quelques pièces. Vous quittez la boutique d'un pas tranquille, sans vous retourner.",
           "1": "Votre main traîne une seconde de trop au-dessus de la caisse. Cinq hommes à la carrure imposante vous entourent aussitôt. La correction est rapide, et vous ressortez groggy dans la ruelle.",
-          "2": "Vous profitez d'un moment où les hommes regardent ailleurs pour glisser la main dans la caisse entrouverte : elle est presque vide. L'un d'eux se retourne à cet instant. Honteux, vous devez dédommager les propriétaires et subir un long sermon avant de pouvoir repartir.",
+          "2": "Vous profitez d'un moment où les hommes regardent ailleurs pour glisser la main dans la caisse entrouverte : elle est presque vide. L'un d'eux se retourne à cet instant. Sans un mot, les autres vous entourent, et vous comprenez qu'il vaut mieux payer pour le dérangement. Vous ressortez la bourse bien plus légère.",
           "3": "Vous attendez que les hommes se penchent sur un étal. D'un geste vif, vous videz une bonne partie de la caisse. Vous êtes déjà dans la ruelle quand l'un d'eux relève la tête.",
           "4": "Sur un signe de votre part, votre singe bondit sur le comptoir. Il plonge la main dans la caisse, attrape au passage un bibelot sur un étal et vous rejoint dehors. Les cris des marchands arrivent trop tard.",
           "5": "Un des hommes vous attrape le poignet, puis vous dévisage. Il a entendu parler de vous, et en bien. Plus déçu que fâché, il vous fait la leçon un moment, puis vous laisse partir sans appeler la garde."
@@ -404,7 +404,7 @@
           "0": "Vous saluez les hommes d'un signe de tête et ressortez aussitôt. Personne ne cherche à vous retenir, et vous retrouvez le calme des ruelles de Claire de Ville.",
           "1": "Au coin de la ruelle, un homme pressé fonce droit sur vous. Trop lent pour l'éviter, vous le prenez de plein fouet, et il s'enfuit sans un mot. Vous tombez lourdement sur les pavés et restez un long moment étourdi.",
           "2": "Au coin de la ruelle, un homme pressé vous bouscule en passant et s'enfuit sans s'excuser. Votre épaule heurte un mur, et vous restez un instant sonné.",
-          "3": "Au coin de la ruelle, un homme pressé fonce droit sur vous. Vous l'évitez d'un pas de côté, et il disparaît dans la foule. Vous poursuivez votre chemin sans vous retourner.",
+          "3": "Au coin de la ruelle, un homme pressé fonce droit sur vous. Vous l'évitez d'un pas de côté, et il disparaît au bout de la ruelle. Vous poursuivez votre chemin sans vous retourner.",
           "4": "Vous ressortez sans un mot. Distrait, vous tournez un moment dans le dédale des ruelles de Claire de Ville avant de retrouver la grande rue.",
           "5": "Vous refermez la porte derrière vous. Ces hommes ne vous disaient rien qui vaille, et vous ne tenez pas à savoir d'où viennent leurs bijoux. Vous reprenez votre route d'un bon pas."
         }
