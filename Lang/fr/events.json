@@ -377,9 +377,9 @@
       "trade": {
         "text": "Commercer avec eux.",
         "outcomes": {
-          "0": "Les marchands vous font bon accueil. Après une longue discussion, ils vous cèdent un objet à un prix honnête. Vous ressortez satisfait de votre achat, et ils vous saluent jusqu'à la porte.",
+          "0": "D'abord méfiants, les marchands se détendent quand vous demandez à voir leurs armes. Après une longue discussion, ils vous cèdent un objet à un prix honnête. Vous ressortez satisfait de votre achat, et ils vous saluent jusqu'à la porte.",
           "1": "Les marchands échangent un regard, puis baissent la voix. L'un d'eux sort de sous le comptoir un objet tombé d'on ne sait quel chariot, cédé à bas prix. Vous payez sans poser de questions.",
-          "2": "Les marchands vous vantent une épée sertie de pierres, rangée dans son fourreau, et vous la payez cher. Au coin de la rue, vous la tirez pour l'admirer, et la lame plie sous votre pouce : c'est du fer-blanc peint. Vous revenez sur vos pas, mais la porte de la boutique reste close.",
+          "2": "Après vous avoir jaugé, les marchands vous vantent une épée sertie de pierres, rangée dans son fourreau, et vous la payez cher. Au coin de la rue, vous la tirez pour l'admirer, et la lame plie sous votre pouce : c'est du fer-blanc peint. Vous revenez sur vos pas, mais la porte de la boutique reste close.",
           "3": "Voyant votre allure frêle, les hommes vous encerclent. Sous la menace de leurs poings, vous leur abandonnez quelques pièces, puis ils vous poussent dehors et referment la porte derrière vous.",
           "4": "Les marchands s'intéressent moins à votre bourse qu'à votre sac. Ils examinent le cuir que vous transportez et vous en rachètent quelques morceaux. Le marché est vite conclu, et vous ressortez avec une poignée de pièces.",
           "5": "Vous marchandez si mal, et avec tant de sérieux, que les marchands finissent par en rire. Amusés, ils vous laissent l'objet qui vous plaisait pour une petite somme. Vous ressortez ravi.",
