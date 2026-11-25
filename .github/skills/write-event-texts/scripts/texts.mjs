@@ -87,6 +87,9 @@ const TEXT_RULES = [
 		message: "blowing on the hands only cools a burn or warms cold fingers: show a gesture that suits the injury, and that the hands are free to make"
 	},
 	{
+		level: "warnings", test: text => /(?<!\p{L})(?:désormais|plus jamais|à jamais|pour toujours)(?!\p{L})/iu.test(text), message: "\"désormais\", \"plus jamais\": the world stays in a permanent present, an outcome leaves no lasting change"
+	},
+	{
 		level: "warnings", test: text => /encore et encore|de plus en plus fort/u.test(text), message: "escalation (encore et encore, de plus en plus fort): the player reacts at once"
 	},
 	{

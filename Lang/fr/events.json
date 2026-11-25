@@ -659,9 +659,9 @@
           "1": "Vous n'avez jamais vraiment appris à cuisiner : la viande sort du feu noire dehors et crue dedans. La faim l'emporte, et vous la mangez quand même. Moins d'une heure plus tard, vous êtes plié en deux au bord du chemin.",
           "2": "Vous découpez la bête proprement et laissez la viande cuire à feu doux, le temps qu'il faut. Elle est tendre et bien dorée. Ce repas imprévu vous rend des forces.",
           "3": "Vous frottez la viande d'herbes cueillies au bord du chemin et la faites rôtir lentement. Le renard, d'ordinaire dur et fort en goût, devient un vrai repas. Vous repartez requinqué.",
-          "4": "Le feu allumé, vous soulevez le renard par les pattes. Le corps est pris d'un dernier spasme et vous échappe des mains. En reculant, vous trébuchez et posez la main en plein dans les braises. Vous repartez la main bandée et le ventre vide.",
+          "4": "Le feu allumé, vous soulevez le renard par les pattes. Le corps est pris d'un dernier spasme et vous échappe des mains. Il tombe dans le feu, et en voulant le rattraper, vous plongez la main en plein dans les braises. Vous repartez la main bandée et le ventre vide.",
           "5": "Votre familier s'assoit près du feu et ne quitte plus la broche des yeux. Vous finissez par lui lancer quelques morceaux. Vous mangez un peu moins, mais le repas, partagé, vous fait du bien à tous les deux.",
-          "6": "Plutôt que de chercher du bois, vous posez les morceaux de renard à même votre arme, qui se met à rougeoyer. La viande grésille et cuit à cœur en quelques instants, sans brûler. Pour un renard trouvé au bord du chemin, c'est presque bon.",
+          "6": "Plutôt que de chercher du bois, vous posez votre arme à plat sur deux pierres et y étalez les morceaux de renard. Le métal se met à rougeoyer, et la viande grésille et cuit à cœur en quelques instants, sans brûler. Pour un renard trouvé au bord du chemin, c'est presque bon.",
           "7": "Vous ramassez du bois pour le feu. À votre retour, votre renard est assis devant la dépouille et vous fixe sans bouger. Vous n'avez plus le cœur à la faire cuire, et vous repartez le ventre vide."
         }
       },
@@ -690,16 +690,16 @@
           "0": "Mieux vaut ne pas manger une bête trouvée morte dont on ne sait rien. Vous passez à côté du renard sans vous arrêter et reprenez la route d'un bon pas, le ventre vide.",
           "1": "En passant au carrefour, vous vous arrêtez au poteau pour lire les directions. À vos pieds, le corps du renard est pris d'un violent spasme. Vous sursautez et vous cognez la tête contre l'une des planches du poteau, si fort que vous en voyez trente-six chandelles.",
           "2": "En passant au carrefour, vous vous arrêtez au poteau pour lire les directions. À vos pieds, le corps du renard est pris d'un spasme. Vous sursautez et vous cognez le front contre l'une des planches. Le choc est rude, et une bosse ne tarde pas à pousser.",
-          "3": "En passant au carrefour, vous vous arrêtez au poteau pour lire les directions. À vos pieds, le corps du renard est pris d'un spasme. Vous sursautez et heurtez l'une des planches du poteau, mais vous sentez à peine le choc. La planche, elle, pend désormais de travers.",
+          "3": "En passant au carrefour, vous vous arrêtez au poteau pour lire les directions. À vos pieds, le corps du renard est pris d'un spasme. Vous sursautez et heurtez l'une des planches du poteau, mais vous sentez à peine le choc. La planche, elle, en tremble encore.",
           "4": "Votre renard s'arrête net devant la dépouille et la renifle longuement. Il semble ne pas vouloir la quitter. Après plusieurs appels sans effet, vous le prenez dans vos bras pour reprendre la route.",
-          "5": "Vous dépassez le poteau quand un paysan arrive, un sac à la main. Il a semé des appâts empoisonnés contre les renards qui pillent son poulailler, et celui-ci en a mangé un. Soulagé que vous n'y ayez pas touché, il ramasse la bête. Vous l'aidez à retrouver les autres appâts dans l'herbe avant de reprendre la route.",
+          "5": "Vous dépassez le poteau quand un paysan arrive, un sac à la main. Il explique avoir semé des appâts empoisonnés contre les renards qui pillent son poulailler : celui-ci en a mangé un. Soulagé que vous n'y ayez pas touché, il ramasse la bête. Vous l'aidez à retrouver les autres appâts dans l'herbe avant de reprendre la route.",
           "6": "Une charrette s'arrête au carrefour au moment où vous passez. Le cocher jette un regard au renard, puis à votre mine affamée, et vous tend une pomme de sa réserve. Vous la croquez en reprenant la route."
         }
       },
       "end": {
         "outcomes": {
           "0": "Vous restez un moment devant le renard, sans savoir quoi en faire. Votre ventre gargouille, mais l'idée de manger une bête trouvée morte ne vous dit rien. Vous finissez par reprendre la route.",
-          "1": "Votre loup renifle longuement le renard, puis s'assoit à côté sans bouger. Vous l'appelez plusieurs fois. Il ne se relève qu'au bout d'un moment, et vous reprenez la route ensemble.",
+          "1": "Pendant que vous hésitez, votre loup saisit le renard dans sa gueule, creuse un trou au pied du poteau et l'y enterre, comme une réserve pour plus tard. Il revient ensuite s'asseoir à vos pieds, la truffe pleine de terre et très fier de lui.",
           "2": "Vous tournez autour du renard en vous demandant comment on prépare une telle bête. Faute de réponse, vous le laissez là. Un peu plus loin, la faim vous tord l'estomac et vous fait tourner la tête.",
           "3": "Pendant que vous hésitez, votre T-Rex se jette sur le renard et l'avale d'une seule bouchée. Il trottine ensuite à vos côtés en se léchant les babines. La question est réglée."
         }
