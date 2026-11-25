@@ -505,7 +505,7 @@
       "hunt": {
         "text": "Partir chasser dans les fourrés.",
         "outcomes": {
-          "0": "Vous suivez les traces de gibier dans les fourrés bien plus longtemps que prévu. À chaque fois, les bêtes vous entendent venir et détalent avant que vous soyez à portée. Vous revenez bredouille, le ventre toujours vide.",
+          "0": "Vous suivez les traces de gibier dans les fourrés plus longtemps que prévu. À chaque fois, les bêtes vous entendent venir et détalent avant que vous soyez à portée. Vous revenez bredouille, le ventre toujours vide.",
           "1": "Après une courte traque, vous trouvez un terrier. Vous bouchez ses sorties avec des pierres, sauf une, et attrapez le lapin qui tente de s'en échapper. Vous le faites griller sur un petit feu et le dévorez avec appétit. Repu, vous reprenez la route.",
           "2": "Vous poursuivez un sanglier à travers les fourrés. Acculé, il fait soudain volte-face et vous charge. Rien ne vous protège de ses défenses, qui vous labourent la jambe. Gravement blessé, vous devez vous soigner longuement.",
           "3": "Vous poursuivez un sanglier à travers les fourrés. Acculé, il fait volte-face et vous charge. Vous encaissez le plus gros du choc, mais une défense vous entaille la cuisse. La bête s'enfuit, et vous repartez en boitant.",
