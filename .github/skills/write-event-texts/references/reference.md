@@ -194,6 +194,7 @@ Voir `Core/resources/pets/<id>.json` (rareté) et `Lang/fr/models.json`, clé `p
 | `flying` | vole | 11 Oiseau, 12 Canard, 26 Hibou, 27 Chauve-souris, 33 Cygne, 34 Flamant rose, 54 Perroquet, 58 Aigle, 62 Colombe, 64 Dragon, 68 Canard écarlate, 83 Phénix, 94 Merle, 95 Corbeau, 97 Oie, 102 Féetaud |
 | `keenNose` | a du flair (piste, cachette, guet-apens) | 1 Chien, 2 Caniche, 3 Chat, 4 Chat noir, 9 Porc, 20 Renard, 21 Ours, 28 Loup, 29 Sanglier, 37 Blaireau, 42 Ours polaire, 56 Tigre, 57 Lion, 60 Léopard |
 | `climber` | grimpe aux arbres (cueillir, guetter, se mettre à l'abri en hauteur) | 3 Chat, 4 Chat noir, 21 Ours, 22 Koala, 24 Singe, 35 Raton laveur, 39 Paresseux, 40 Tamia, 43 Panda, 60 Léopard, 90 Orang-outan, 91 Gorille |
+| `grazer` | broute l'herbe (paître au bord du chemin, trouver les herbes tendres) | 7 Lapin, 8 Bœuf, 13 Étalon, 14 Tortue, 17 Bélier, 18 Bouc, 31 Hippopotame, 32 Lama, 46 Éléphant, 47 Zèbre, 48 Rhinocéros, 49 Dromadaire, 50 Chameau, 52 Kangourou, 61 Mammouth, 63 Licorne, 87 Cerf, 88 Buffle d'eau, 89 Bison, 96 Âne, 97 Oie, 98 Élan |
 | `mount` | porte le joueur sur son dos | 13 Étalon, 47 Zèbre, 49 Dromadaire, 50 Chameau, 63 Licorne, 87 Cerf, 88 Buffle d'eau, 96 Âne, 98 Élan |
 | `heavy` | très lourd (pont, glace, barque) | 31 Hippopotame, 46 Éléphant, 48 Rhinocéros, 61 Mammouth, 65 T-Rex, 84 Diplodocus, 89 Bison |
 | `intimidating` | fait peur aux gens et aux bêtes | 21 Ours, 28 Loup, 42 Ours polaire, 45 Crocodile, 48 Rhinocéros, 56 Tigre, 57 Lion, 60 Léopard, 64 Dragon, 65 T-Rex |

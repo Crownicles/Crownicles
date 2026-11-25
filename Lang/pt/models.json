@@ -1529,7 +1529,8 @@
     "mount": "pode levar um cavaleiro",
     "heavy": "muito pesado",
     "intimidating": "intimidante",
-    "climber": "sobe em árvores"
+    "climber": "sobe em árvores",
+    "grazer": "pasta"
   },
   "biomes": {
     "forest": "Floresta",

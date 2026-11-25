@@ -4,5 +4,5 @@
   "force": 21,
   "feedDelay": 10,
   "speed": 20,
-  "tags": ["mount"]
+  "tags": ["mount", "grazer"]
 }

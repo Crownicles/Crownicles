@@ -1529,7 +1529,8 @@
     "mount": "can carry a rider",
     "heavy": "very heavy",
     "intimidating": "intimidating",
-    "climber": "climbs trees"
+    "climber": "climbs trees",
+    "grazer": "grazes"
   },
   "biomes": {
     "forest": "Forest",

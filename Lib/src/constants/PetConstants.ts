@@ -661,7 +661,8 @@ export abstract class PetConstants {
 		MOUNT: "mount",
 		HEAVY: "heavy",
 		INTIMIDATING: "intimidating",
-		CLIMBER: "climber"
+		CLIMBER: "climber",
+		GRAZER: "grazer"
 	} as const;
 
 	static SEX = {

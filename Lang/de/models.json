@@ -1529,7 +1529,8 @@
     "mount": "kann einen Reiter tragen",
     "heavy": "sehr schwer",
     "intimidating": "einschüchternd",
-    "climber": "klettert auf Bäume"
+    "climber": "klettert auf Bäume",
+    "grazer": "grast"
   },
   "biomes": {
     "forest": "Wälder",

@@ -1529,7 +1529,8 @@
     "mount": "può portare un cavaliere",
     "heavy": "molto pesante",
     "intimidating": "intimidatorio",
-    "climber": "si arrampica sugli alberi"
+    "climber": "si arrampica sugli alberi",
+    "grazer": "pascola"
   },
   "biomes": {
     "forest": "Foresta",

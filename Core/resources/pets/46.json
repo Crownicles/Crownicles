@@ -4,5 +4,5 @@
   "force": 30,
   "feedDelay": 2,
   "speed": 10,
-  "tags": ["heavy"]
+  "tags": ["heavy", "grazer"]
 }

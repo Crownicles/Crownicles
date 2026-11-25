@@ -1529,7 +1529,8 @@
     "mount": "peut vous porter",
     "heavy": "très lourd",
     "intimidating": "impressionnant",
-    "climber": "grimpe aux arbres"
+    "climber": "grimpe aux arbres",
+    "grazer": "broute l'herbe"
   },
   "biomes": {
     "forest": "Forêt",
