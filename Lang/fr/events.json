@@ -356,7 +356,7 @@
         "text": "Continuer votre chemin.",
         "outcomes": {
           "0": "Vous saluez le forgeron d'un signe de la main et passez votre chemin. Il vous répond d'un hochement de tête sans lâcher son marteau. Bientôt, le bruit de l'enclume se perd dans le vent de la plaine.",
-          "1": "Pour ne pas déranger le forgeron, vous faites un large détour autour de la prairie. Le sol y est plus mou que prévu, et vous perdez un moment à chercher un passage sec avant de retrouver la route.",
+          "1": "Vous passez devant la maison sans vous arrêter. Au bout de la prairie, un ruisseau coupe le chemin : vous vous y rafraîchissez le visage et remplissez votre gourde, puis repartez un peu moins las.",
           "2": "Vous refusez de vous arrêter malgré la fatigue. Votre pas se fait de plus en plus lourd. Quelques kilomètres plus loin, vous vous effondrez au bord du chemin et vous endormez là où vous êtes tombé, écorché par la chute.",
           "3": "Vous serrez les dents et continuez malgré la fatigue. Vous tenez bon, mais vos pieds ne suivent plus. À la halte suivante, ils sont couverts d'ampoules, et chaque pas vous fait grimacer.",
           "4": "Le forgeron lève les yeux, vous reconnaît et sort vous rejoindre sur le seuil. Il vous tend une gourde d'eau fraîche et un quignon de pain pour la route. Vous mangez en marchant, et la fatigue se fait un peu moins sentir."

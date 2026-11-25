@@ -200,8 +200,7 @@
       "outcomes": {
         "0": {},
         "1": {
-          "effect": "occupied",
-          "lostTime": 20
+          "health": 5
         },
         "2": {
           "requirements": {
