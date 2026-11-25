@@ -499,7 +499,9 @@
           "3": "Vous grimpez vite et sans effort jusqu'à la cime, là où les fruits ont pris le plus de soleil. Vous choisissez les plus dorés et vous régalez sans vous presser, puis vous redescendez en un rien de temps, en pleine forme.",
           "4": "Avant même que vous touchiez le tronc, votre familier bondit dans les branches. Il cueille les fruits les plus mûrs, en goûte un au passage et vous lance les autres un à un. Vous n'avez plus qu'à les attraper.",
           "5": "Pas besoin de grimper : votre familier tend le cou et atteint sans peine des branches bien trop hautes pour vous. Il en détache les fruits les plus juteux et les dépose à vos pieds. Vous mangez à votre faim sans quitter le sol.",
-          "6": "Vous grimpez jusqu'aux fruits, mais un nid de guêpes pend à la branche voisine. Vous cueillez en retenant votre souffle, jusqu'à ce qu'une guêpe vous pique la main. Vous redescendez en hâte avec deux fruits à peine, que vous mangez en soufflant sur votre main enflée."
+          "6": "Vous grimpez jusqu'aux fruits, mais un nid de guêpes pend à la branche voisine. Vous cueillez en retenant votre souffle, jusqu'à ce qu'une guêpe vous pique la main. Vous redescendez en hâte avec deux fruits à peine, que vous mangez en soufflant sur votre main enflée.",
+          "7": "Vous grimpez vers les fruits, mais votre lourde armure pèse sur chaque branche. L'une d'elles craque sous votre poids et cède. Vous tombez au pied de l'arbre, sonné. Vous renoncez à ce repas et reprenez la route d'un pas mal assuré.",
+          "8": "Vous grimpez vers les fruits, mais votre lourde armure pèse sur chaque branche. L'une d'elles craque sous votre poids et cède. Vous tombez au pied de l'arbre, sonné. Vous renoncez à ce repas et reprenez la route d'un pas mal assuré."
         }
       },
       "hunt": {

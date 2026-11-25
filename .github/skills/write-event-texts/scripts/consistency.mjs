@@ -25,6 +25,13 @@ const busyMinutes = x => Math.max(x.lostTime ?? 0, EFFECT_MINUTES[x.effect] ?? 0
 // A strong attack or defense can only come from real equipment: "fort" on the scale of reference.md
 const ATTACK_WITH_WEAPON = 600;
 const DEFENSE_WITH_ARMOR = 520;
+
+// Top quarter of the regular players of each level band (SKILL.md, "Relatif au niveau"): strong for one's level, so real equipment
+const STRONG_FOR_LEVEL = [
+	{ maxLevel: 40, attack: 120, defense: 120 },
+	{ maxLevel: 80, attack: 295, defense: 280 },
+	{ maxLevel: 110, attack: 560, defense: 510 }
+];
 const WEAPON_WORDS = /(?:[Vv]otre|[Vv]os) (?:arme|épée|lame|pioche|hache|marteau|masse|arc|dague|couteau)(?!\p{L})/u;
 const ARMOR_WORDS = /(?:[Vv]otre|[Vv]os) (?:armure|bouclier|cotte|casque)(?!\p{L})/u;
 
@@ -36,8 +43,12 @@ const ARMOR_WORDS = /(?:[Vv]otre|[Vv]os) (?:armure|bouclier|cotte|casque)(?!\p{L
  */
 function isEquipmentGuaranteed(req, slot) {
 	const [stat, threshold, level] = slot === "weapon" ? ["attack", ATTACK_WITH_WEAPON, "weaponLevel"] : ["defense", DEFENSE_WITH_ARMOR, "armorLevel"];
+	const statMin = get(get(req, stat, {}), "min") ?? 0;
+	const levelMax = get(get(req, "level", {}), "max");
+	const band = levelMax === null ? undefined : STRONG_FOR_LEVEL.find(b => levelMax <= b.maxLevel);
 	return (slot === "weapon" && Object.hasOwn(req, "weaponTags"))
-		|| (get(get(req, stat, {}), "min") ?? 0) >= threshold
+		|| statMin >= threshold
+		|| (band !== undefined && statMin >= band[stat])
 		|| (get(get(req, level, {}), "min") ?? 0) >= 1
 		|| get(get(req, "enchantment", {}), "slot") === slot;
 }
@@ -73,11 +84,11 @@ const OUTCOME_RULES = [
 	},
 	{
 		test: (text, x) => WEAPON_WORDS.test(text) && !isEquipmentGuaranteed(getOrEmpty(x, "requirements"), "weapon"),
-		message: "names the player's weapon without a condition that guarantees one (weaponTags, attack min 600, weaponLevel, weapon enchantment): the player may fight bare-handed"
+		message: "names the player's weapon without a condition that guarantees one (weaponTags, attack min 600 or strong for the level band, weaponLevel, weapon enchantment): the player may fight bare-handed"
 	},
 	{
 		test: (text, x) => ARMOR_WORDS.test(text) && !isEquipmentGuaranteed(getOrEmpty(x, "requirements"), "armor"),
-		message: "names the player's armor without a condition that guarantees one (defense min 520, armorLevel, armor enchantment)"
+		message: "names the player's armor without a condition that guarantees one (defense min 520 or strong for the level band, armorLevel, armor enchantment)"
 	},
 	{
 		test: (_, x) => x.goBackToPreviousMap === true && !Array.isArray(x.mapTypesDestination),

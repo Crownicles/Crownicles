@@ -7,8 +7,11 @@
         },
         "1": {
           "requirements": {
+            "level": {
+              "max": 80
+            },
             "defense": {
-              "min": 740
+              "min": 280
             }
           },
           "health": -10,
@@ -51,6 +54,31 @@
         },
         "6": {
           "health": 5
+        },
+        "7": {
+          "requirements": {
+            "level": {
+              "min": 81,
+              "max": 110
+            },
+            "defense": {
+              "min": 510
+            }
+          },
+          "health": -10,
+          "effect": "confounded"
+        },
+        "8": {
+          "requirements": {
+            "level": {
+              "min": 111
+            },
+            "defense": {
+              "min": 760
+            }
+          },
+          "health": -10,
+          "effect": "confounded"
         }
       }
     },
