@@ -1,10 +1,12 @@
 import { CrowniclesEmbed } from "./CrowniclesEmbed";
+
+/*
+ * Every component builder comes from discord.js: it bundles its own copy of @discordjs/builders, whose builders
+ * reject (or fail the instanceof checks of) the rows and sections built from another copy
+ */
 import {
-	ContainerBuilder, MessageActionRowComponentBuilder,
+	ActionRowBuilder, ButtonBuilder, Collector, ContainerBuilder, Message, MessageActionRowComponentBuilder,
 	SectionBuilder, TextDisplayBuilder
-} from "@discordjs/builders";
-import {
-	ActionRowBuilder, ButtonBuilder, Collector, Message
 } from "discord.js";
 import { CrowniclesInteraction } from "./CrowniclesInteraction";
 import { editNestedMenuMessage } from "./CrowniclesNestedMenuEditUtils";
