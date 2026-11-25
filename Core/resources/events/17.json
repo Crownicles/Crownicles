@@ -203,7 +203,8 @@
             ]
           },
           "health": 12,
-          "money": 200
+          "money": 200,
+          "karma": 1
         }
       }
     },
@@ -298,7 +299,8 @@
             }
           },
           "health": 10,
-          "randomItem": {}
+          "randomItem": {},
+          "karma": -3
         },
         "3": {
           "requirements": {

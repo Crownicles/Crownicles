@@ -19,7 +19,8 @@
             "karma": {
               "max": -50
             }
-          }
+          },
+          "karma": -1
         },
         "3": {
           "requirements": {
@@ -38,7 +39,8 @@
         "1": {
           "effect": "occupied",
           "lostTime": 10,
-          "money": 75
+          "money": 75,
+          "karma": -1
         },
         "2": {
           "requirements": {
@@ -66,7 +68,8 @@
         },
         "5": {
           "effect": "occupied",
-          "lostTime": 10
+          "lostTime": 10,
+          "karma": 1
         },
         "6": {
           "effect": "occupied",
@@ -118,7 +121,7 @@
               "min": 50
             }
           },
-          "karma": -1
+          "karma": -3
         },
         "5": {
           "requirements": {
@@ -160,7 +163,8 @@
           },
           "effect": "occupied",
           "lostTime": 15,
-          "health": -10
+          "health": -10,
+          "karma": 2
         },
         "2": {
           "requirements": {
@@ -169,7 +173,8 @@
             }
           },
           "effect": "occupied",
-          "lostTime": 10
+          "lostTime": 10,
+          "karma": 2
         },
         "3": {
           "requirements": {
@@ -177,7 +182,8 @@
               "max": -50
             }
           },
-          "health": -5
+          "health": -5,
+          "karma": 1
         },
         "4": {
           "requirements": {
@@ -188,7 +194,8 @@
               "min": 500
             }
           },
-          "money": 150
+          "money": 150,
+          "karma": 2
         },
         "5": {
           "requirements": {
@@ -198,7 +205,8 @@
           },
           "effect": "occupied",
           "lostTime": 20,
-          "money": 100
+          "money": 100,
+          "karma": 2
         },
         "6": {
           "requirements": {
@@ -208,14 +216,16 @@
           },
           "effect": "occupied",
           "lostTime": 20,
-          "money": 60
+          "money": 60,
+          "karma": 2
         }
       }
     },
     "tell": {
       "outcomes": {
         "0": {
-          "money": 60
+          "money": 60,
+          "karma": 1
         },
         "1": {
           "requirements": {
@@ -232,7 +242,8 @@
               "min": 50
             }
           },
-          "randomItem": {}
+          "randomItem": {},
+          "karma": 2
         },
         "3": {
           "requirements": {
@@ -250,7 +261,8 @@
             }
           },
           "effect": "confounded",
-          "health": -10
+          "health": -10,
+          "karma": 1
         },
         "5": {
           "requirements": {

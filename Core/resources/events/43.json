@@ -52,7 +52,8 @@
               "keenNose"
             ]
           },
-          "money": 80
+          "money": 80,
+          "karma": 1
         },
         "6": {
           "requirements": {
@@ -74,7 +75,8 @@
           "money": -100,
           "tags": [
             "moneyUsage"
-          ]
+          ],
+          "karma": 2
         }
       }
     },
@@ -116,7 +118,8 @@
         "0": {},
         "1": {
           "effect": "occupied",
-          "lostTime": 30
+          "lostTime": 30,
+          "karma": 1
         },
         "2": {
           "requirements": {
@@ -299,7 +302,8 @@
         },
         "3": {
           "effect": "occupied",
-          "lostTime": 90
+          "lostTime": 90,
+          "karma": 1
         },
         "4": {
           "requirements": {
@@ -327,7 +331,8 @@
           },
           "effect": "occupied",
           "lostTime": 90,
-          "money": 150
+          "money": 150,
+          "karma": 3
         },
         "7": {
           "requirements": {

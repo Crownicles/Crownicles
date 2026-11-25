@@ -46,7 +46,8 @@
             "karma": {
               "max": -30
             }
-          }
+          },
+          "karma": 1
         },
         "6": {
           "requirements": {
@@ -90,7 +91,8 @@
               "min": 50
             }
           },
-          "health": 5
+          "health": 5,
+          "karma": -1
         },
         "4": {
           "requirements": {
@@ -161,7 +163,8 @@
             "karma": {
               "max": -30
             }
-          }
+          },
+          "karma": 1
         }
       }
     },
@@ -169,7 +172,8 @@
       "outcomes": {
         "0": {
           "effect": "occupied",
-          "lostTime": 15
+          "lostTime": 15,
+          "karma": -1
         },
         "1": {
           "requirements": {
@@ -177,7 +181,8 @@
               "min": 120
             }
           },
-          "money": 20
+          "money": 20,
+          "karma": 2
         }
       }
     }

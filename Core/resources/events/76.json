@@ -19,7 +19,8 @@
             }
           },
           "effect": "confounded",
-          "health": -18
+          "health": -18,
+          "karma": 1
         },
         "2": {
           "randomItem": {},
@@ -114,7 +115,8 @@
         },
         "1": {
           "effect": "occupied",
-          "lostTime": 30
+          "lostTime": 30,
+          "karma": 1
         },
         "2": {
           "requirements": {
@@ -141,7 +143,8 @@
             }
           },
           "effect": "occupied",
-          "lostTime": 20
+          "lostTime": 20,
+          "karma": 1
         },
         "5": {
           "requirements": {
@@ -149,13 +152,16 @@
               "max": 30
             }
           },
-          "effect": "confounded"
+          "effect": "confounded",
+          "karma": 1
         }
       }
     },
     "end": {
       "outcomes": {
-        "0": {},
+        "0": {
+          "karma": -1
+        },
         "1": {
           "requirements": {
             "validPetTypeIds": [

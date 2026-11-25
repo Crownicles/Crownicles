@@ -2,8 +2,12 @@
   "possibilities": {
     "end": {
       "outcomes": {
-        "0": {},
-        "1": {},
+        "0": {
+          "karma": -1
+        },
+        "1": {
+          "karma": -1
+        },
         "2": {
           "requirements": {
             "speed": {
@@ -42,7 +46,8 @@
           "karma": -10
         },
         "3": {
-          "money": -150
+          "money": -150,
+          "karma": -2
         },
         "4": {
           "requirements": {
@@ -62,7 +67,8 @@
             }
           },
           "effect": "occupied",
-          "lostTime": 20
+          "lostTime": 20,
+          "karma": -1
         },
         "6": {
           "forceStayInCity": true
@@ -74,7 +80,8 @@
             }
           },
           "effect": "occupied",
-          "lostTime": 15
+          "lostTime": 15,
+          "karma": 1
         },
         "8": {
           "requirements": {
@@ -259,7 +266,7 @@
           "karma": -10
         },
         "3": {
-          "karma": -2
+          "karma": -5
         },
         "4": {
           "requirements": {
@@ -297,7 +304,7 @@
               "min": 50
             }
           },
-          "karma": -2
+          "karma": -5
         },
         "8": {
           "requirements": {

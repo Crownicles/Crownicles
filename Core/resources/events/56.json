@@ -22,7 +22,8 @@
             }
           },
           "effect": "occupied",
-          "lostTime": 10
+          "lostTime": 10,
+          "karma": 1
         },
         "4": {
           "requirements": {
@@ -53,11 +54,13 @@
             }
           },
           "effect": "confounded",
-          "health": -70
+          "health": -70,
+          "karma": 1
         },
         "1": {
           "effect": "sleeping",
-          "money": 400
+          "money": 400,
+          "karma": 1
         },
         "2": {
           "requirements": {
@@ -66,7 +69,8 @@
             }
           },
           "effect": "sleeping",
-          "health": 10
+          "health": 10,
+          "karma": 1
         },
         "3": {
           "requirements": {
@@ -75,7 +79,8 @@
             }
           },
           "effect": "confounded",
-          "health": -20
+          "health": -20,
+          "karma": 1
         }
       }
     },
@@ -86,18 +91,22 @@
           "money": 200,
           "tags": [
             "drinkAlcohol"
-          ]
+          ],
+          "karma": 1
         },
         "1": {
-          "health": 10
+          "health": 10,
+          "karma": 3
         },
         "2": {
           "effect": "occupied",
-          "lostTime": 20
+          "lostTime": 20,
+          "karma": 1
         },
         "3": {
           "effect": "freezing",
-          "health": -20
+          "health": -20,
+          "karma": 1
         },
         "4": {
           "requirements": {
@@ -105,7 +114,8 @@
               24
             ]
           },
-          "randomItem": {}
+          "randomItem": {},
+          "karma": 2
         },
         "5": {
           "requirements": {
@@ -117,7 +127,8 @@
             "rarity": {
               "min": 3
             }
-          }
+          },
+          "karma": 1
         }
       }
     },
@@ -153,7 +164,8 @@
         },
         "4": {
           "effect": "occupied",
-          "lostTime": 10
+          "lostTime": 10,
+          "karma": 1
         },
         "5": {
           "requirements": {
@@ -175,7 +187,8 @@
             }
           },
           "effect": "confounded",
-          "health": -10
+          "health": -10,
+          "karma": 1
         },
         "1": {
           "effect": "occupied",
@@ -184,7 +197,8 @@
         "2": {
           "effect": "occupied",
           "health": 5,
-          "lostTime": 20
+          "lostTime": 20,
+          "karma": 1
         },
         "3": {
           "requirements": {
@@ -200,7 +214,8 @@
             "speed": {
               "min": 500
             }
-          }
+          },
+          "karma": 1
         },
         "5": {
           "requirements": {
@@ -217,7 +232,8 @@
               "max": 499
             }
           },
-          "health": -5
+          "health": -5,
+          "karma": 1
         }
       }
     }

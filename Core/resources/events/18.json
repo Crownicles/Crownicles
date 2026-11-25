@@ -145,7 +145,8 @@
           },
           "randomItem": {},
           "effect": "occupied",
-          "lostTime": 30
+          "lostTime": 30,
+          "karma": 1
         },
         "3": {
           "requirements": {

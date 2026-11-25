@@ -7,9 +7,12 @@
           "money": -50,
           "tags": [
             "moneyUsage"
-          ]
+          ],
+          "karma": 1
         },
-        "1": {},
+        "1": {
+          "karma": 1
+        },
         "2": {
           "requirements": {
             "karma": {
@@ -35,7 +38,8 @@
           "money": -25,
           "tags": [
             "moneyUsage"
-          ]
+          ],
+          "karma": 1
         },
         "5": {
           "requirements": {
@@ -46,7 +50,8 @@
           "money": -50,
           "tags": [
             "moneyUsage"
-          ]
+          ],
+          "karma": 1
         },
         "6": {
           "requirements": {

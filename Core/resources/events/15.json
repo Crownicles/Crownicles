@@ -14,7 +14,8 @@
           "lostTime": 30,
           "tags": [
             "moneyUsage"
-          ]
+          ],
+          "karma": 1
         },
         "1": {
           "requirements": {
@@ -50,7 +51,8 @@
             "type": "leather",
             "quantity": 2
           },
-          "money": 80
+          "money": 80,
+          "karma": 1
         },
         "5": {
           "requirements": {
@@ -64,7 +66,8 @@
           "lostTime": 20,
           "tags": [
             "moneyUsage"
-          ]
+          ],
+          "karma": 1
         },
         "6": {
           "requirements": {
@@ -82,7 +85,8 @@
           "lostTime": 30,
           "tags": [
             "moneyUsage"
-          ]
+          ],
+          "karma": 1
         }
       }
     },
@@ -194,7 +198,8 @@
             }
           },
           "effect": "occupied",
-          "lostTime": 15
+          "lostTime": 15,
+          "karma": 1
         },
         "2": {
           "requirements": {

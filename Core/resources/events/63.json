@@ -4,15 +4,18 @@
       "outcomes": {
         "0": {
           "effect": "confounded",
-          "health": -20
+          "health": -20,
+          "karma": 2
         },
         "1": {
-          "effect": "sick"
+          "effect": "sick",
+          "karma": 2
         },
         "2": {
           "effect": "occupied",
           "lostTime": 25,
-          "randomItem": {}
+          "randomItem": {},
+          "karma": 2
         },
         "3": {
           "requirements": {
@@ -67,7 +70,8 @@
             "lost": {
               "health": -15
             }
-          }
+          },
+          "karma": 2
         },
         "7": {
           "requirements": {
@@ -89,7 +93,8 @@
             "lost": {
               "health": -20
             }
-          }
+          },
+          "karma": 2
         },
         "8": {
           "requirements": {
@@ -98,7 +103,8 @@
             }
           },
           "effect": "hurt",
-          "health": -35
+          "health": -35,
+          "karma": 2
         },
         "9": {
           "requirements": {
@@ -106,7 +112,8 @@
               "intimidating"
             ]
           },
-          "money": 250
+          "money": 250,
+          "karma": 2
         },
         "10": {
           "requirements": {
@@ -115,7 +122,8 @@
             }
           },
           "effect": "confounded",
-          "health": -10
+          "health": -10,
+          "karma": 2
         }
       }
     },
@@ -154,12 +162,14 @@
           "money": -165,
           "tags": [
             "moneyUsage"
-          ]
+          ],
+          "karma": -2
         },
         "1": {
           "effect": "occupied",
           "lostTime": 30,
-          "money": 165
+          "money": 165,
+          "karma": -2
         },
         "2": {
           "effect": "occupied",
@@ -201,7 +211,8 @@
             "karma": {
               "min": 80
             }
-          }
+          },
+          "karma": -2
         },
         "7": {
           "requirements": {
@@ -244,7 +255,8 @@
             ]
           },
           "effect": "occupied",
-          "lostTime": 15
+          "lostTime": 15,
+          "karma": -2
         }
       }
     },
@@ -284,7 +296,8 @@
           },
           "forceLeaveCity": true,
           "effect": "occupied",
-          "lostTime": 20
+          "lostTime": 20,
+          "karma": 1
         },
         "5": {
           "requirements": {
@@ -307,7 +320,8 @@
           "tags": [
             "drinkAlcohol",
             "moneyUsage"
-          ]
+          ],
+          "karma": 2
         },
         "7": {
           "requirements": {
@@ -325,7 +339,8 @@
               "max": 30
             }
           },
-          "health": 10
+          "health": 10,
+          "karma": 1
         }
       }
     },

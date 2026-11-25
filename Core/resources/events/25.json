@@ -36,7 +36,8 @@
             ]
           },
           "effect": "occupied",
-          "lostTime": 15
+          "lostTime": 15,
+          "karma": -2
         }
       }
     },
@@ -54,7 +55,7 @@
               "min": 700
             }
           },
-          "karma": 4
+          "karma": 10
         },
         "2": {
           "requirements": {
@@ -64,7 +65,8 @@
           },
           "effect": "hurt",
           "health": -25,
-          "money": -30
+          "money": -30,
+          "karma": 8
         },
         "3": {
           "requirements": {
@@ -88,7 +90,8 @@
               "max": 129
             }
           },
-          "effect": "scared"
+          "effect": "scared",
+          "karma": 1
         },
         "5": {
           "requirements": {
@@ -108,7 +111,7 @@
               "max": 699
             }
           },
-          "karma": 2,
+          "karma": 8,
           "effect": "confounded",
           "health": -10
         },
@@ -170,7 +173,7 @@
             ],
             "quantity": 1
           },
-          "karma": 3,
+          "karma": -2,
           "effect": "occupied",
           "lostTime": 20
         },
@@ -247,7 +250,8 @@
       "outcomes": {
         "0": {
           "effect": "occupied",
-          "lostTime": 5
+          "lostTime": 5,
+          "karma": -1
         },
         "1": {
           "effect": "sleeping"
@@ -285,7 +289,8 @@
               "min": 80
             }
           },
-          "effect": "scared"
+          "effect": "scared",
+          "karma": -2
         }
       }
     }

@@ -149,7 +149,8 @@
               "max": -50
             }
           },
-          "money": 100
+          "money": 100,
+          "karma": -3
         },
         "3": {
           "requirements": {
@@ -157,7 +158,8 @@
               "min": 120
             }
           },
-          "randomItem": {}
+          "randomItem": {},
+          "karma": -2
         },
         "4": {
           "requirements": {
