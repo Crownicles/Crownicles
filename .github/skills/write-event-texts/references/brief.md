@@ -19,6 +19,7 @@ Ne modifie **aucun** autre fichier, et surtout pas le dépôt Crownicles.
 
 ## Ce qu'on attend
 
+0. **Visualiser la scène avant d'écrire.** Avant la première issue, fixe en quelques mots l'espace que pose l'intro : dedans ou dehors, où se tient chaque personnage, où est le joueur, ce qui est à portée de main, ce que chacun voit et entend. Écris-le en première puce de `notes` (*Scène : …*). Puis joue chaque issue dans cet espace : un personnage ne passe pas de dehors à dedans sans le dire, un objet ne se trouve pas dans une pièce que l'intro n'a pas montrée, un geste se fait depuis l'endroit où l'on se tient. Si une issue d'origine ne tient pas dans la scène, corrige l'intro ou l'issue pour que tout se tienne.
 1. **Rester fidèle à l'event d'origine.** Même situation, mêmes personnages, même accroche. Garde **toutes les possibilités d'origine** (mêmes noms) et l'idée de chaque issue d'origine. Garde l'humour quand il y en a.
 2. **Enrichir avec des issues conditionnelles, comme les events déjà réécrits.** Ils sont passés de 4 à 16 issues par event à 13 à 48 (2 à 4 fois plus), et les trois quarts de leurs issues sont conditionnelles. Fais de même :
    - pour chaque possibilité, ajoute des issues qui dépendent **du joueur** : son karma (réputation), son niveau (expérience), ses statistiques (attaque, défense, vitesse), sa classe, son familier, la rareté de celui-ci ou ses capacités (`petTags`), ses badges gagnés en jeu (`badges`), l'argent qu'il porte (`money` dans `requirements`), son niveau de cuisine, les matériaux de son sac, l'enchantement ou l'amélioration de son arme et de son armure (voir `reference.md`) ;
@@ -61,6 +62,7 @@ Ne modifie **aucun** autre fichier, et surtout pas le dépôt Crownicles.
   },
   "icons": { "<nouvelle possibilité>": "🪵", "end": { "<nouvelle issue de end>": "😶" } },
   "notes": [
+    "Scène : l'espace de l'intro en une phrase (dedans ou dehors, où sont les personnages, ce qui est à portée de main).",
     "3 à 8 puces en français : ce que tu as changé et pourquoi (lore, canon, conditions ajoutées, style), et ce que tu as volontairement gardé."
   ]
 }
@@ -156,3 +158,4 @@ Le relecteur a lu l'event 30 réécrit. Voici ce qui ne va pas, et la règle gé
 | *Vous vous hissez de l'autre côté* (pont) ; *Vous regagnez la berge à la nage* (radeau disloqué) | De l'autre côté du trou ou de la rivière ? Quelle berge ? On ne sait pas si le joueur a traversé | **Le joueur sait où il finit** : *l'autre rive*, *la rive que vous veniez de quitter*, *hors du trou*. |
 | Dans `end`, la rabatteuse d'un guet-apens raconte des histoires pendant des heures au joueur muet, dans deux issues qui ne diffèrent que par la durée | Le personnage agit contre ce que l'intro dit de lui ; deux fois la même scène | **Dans `end`, les autres personnages agissent selon leurs buts** (elle se trouble et s'éloigne) ; **pas deux fois la même scène** dans un même choix. |
 | Le joueur aide un marchand, rend service à un garde, ou bouscule un passant, et son karma ne bouge pas | Le karma suit ce que le joueur fait aux autres | **Presque chaque interaction avec un humain change le karma** : + quand il aide, partage ou se montre aimable, - quand il vole, ment, menace ou laisse tomber quelqu'un ; rien quand il est la victime ou ne fait que croiser quelqu'un. |
+| Intro : le forgeron bat le fer *devant la porte* ; issues : *une paillasse dans l'atelier, près de la forge*, *la chauve-souris s'envole dans l'atelier* | La scène n'a pas été visualisée : la forge est dehors dans l'intro, dedans dans les issues | **Visualiser la scène avant d'écrire** : la porte grande ouverte montre la forge à l'intérieur, et toutes les issues s'y jouent. |

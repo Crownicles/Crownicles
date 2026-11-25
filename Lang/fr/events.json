@@ -316,7 +316,7 @@
     }
   },
   "14": {
-    "text": "La fatigue commence à vous peser quand, au milieu de la plaine vide de L'Étendue, vous apercevez une petite maison de pierre au bord d'une prairie. Devant la porte, un forgeron trapu bat sur l'enclume une pièce de métal rougie au feu. Contre le mur s'entassent des fers à cheval et des outils de ferme à réparer.",
+    "text": "La fatigue commence à vous peser quand, au milieu de la plaine vide de L'Étendue, vous arrivez devant une petite maison de pierre au bord d'une prairie. Par sa porte grande ouverte, vous voyez un forgeron trapu battre sur l'enclume une pièce de métal rougie au feu. Dehors, contre le mur, s'entassent des fers à cheval et des outils de ferme à réparer.",
     "possibilities": {
       "chatWorker": {
         "text": "Proposer votre aide au forgeron.",
@@ -359,7 +359,7 @@
           "1": "Pour ne pas déranger le forgeron, vous faites un large détour autour de la prairie. Le sol y est plus mou que prévu, et vous perdez un moment à chercher un passage sec avant de retrouver la route.",
           "2": "Vous refusez de vous arrêter malgré la fatigue. Votre pas se fait de plus en plus lourd. Quelques kilomètres plus loin, vous vous effondrez au bord du chemin et vous endormez là où vous êtes tombé, écorché par la chute.",
           "3": "Vous serrez les dents et continuez malgré la fatigue. Vous tenez bon, mais vos pieds ne suivent plus. À la halte suivante, ils sont couverts d'ampoules, et chaque pas vous fait grimacer.",
-          "4": "Le forgeron lève les yeux, vous reconnaît et vous fait signe d'attendre. Il vous lance une gourde d'eau fraîche et un quignon de pain pour la route. Vous mangez en marchant, et la fatigue se fait un peu moins sentir."
+          "4": "Le forgeron lève les yeux, vous reconnaît et sort vous rejoindre sur le seuil. Il vous tend une gourde d'eau fraîche et un quignon de pain pour la route. Vous mangez en marchant, et la fatigue se fait un peu moins sentir."
         }
       },
       "end": {
