@@ -21,7 +21,7 @@
               "max": 600
             }
           },
-          "effect": "confounded",
+          "effect": "feetHurt",
           "health": -20,
           "karma": 3
         },

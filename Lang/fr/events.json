@@ -323,8 +323,8 @@
         "outcomes": {
           "0": "Le forgeron vous propose de mettre la main à la pâte. Vous passez un long moment à tirer le soufflet et à tenir la pièce pendant qu'il frappe. Quand elle a refroidi, il vous la tend : elle est à vous, pour votre peine.",
           "1": "Le forgeron décline votre aide d'un sourire, mais répond à vos questions sans cesser de frapper. Vous le regardez finir une hache. Quand il la plonge dans l'eau dans un nuage de vapeur, vous le saluez et reprenez la route.",
-          "2": "Le forgeron accepte votre aide et vous demande de sortir du feu un soc de charrue avec une longue pince. Il est bien plus lourd que prévu : il glisse de la pince et tombe, encore rouge, sur votre pied. Étourdi par la douleur, vous repartez en boitant.",
-          "3": "Le forgeron vous confie le marteau pour finir une lame. Vous frappez assez fort, mais pas toujours au bon endroit, et un coup mal placé vous écrase le pouce. Il termine la lame lui-même pendant que vous secouez la main.",
+          "2": "Le forgeron accepte votre aide et vous demande de sortir du feu un soc de charrue avec une longue pince. Il est bien plus lourd que prévu : il glisse de la pince et tombe, encore rouge, sur votre pied. Le forgeron vous fait plonger le pied dans son seau d'eau froide, puis vous repartez en boitant.",
+          "3": "Le forgeron vous confie le marteau pour finir une lame. Vous frappez assez fort, mais pas toujours au bon endroit, et un coup mal placé vous écrase le pouce. Le forgeron vous le bande avec un chiffon propre, puis termine la lame lui-même.",
           "4": "Curieux de voir ce que vous valez, le forgeron vous tend le marteau. Vos coups tombent lourds et réguliers, et la lame prend forme plus vite qu'il ne l'aurait cru. Impressionné, il vous offre l'une de ses plus belles pièces.",
           "5": "Pour avoir les mains libres, vous posez votre arme près de l'enclume, et elle se met à vibrer doucement. Le forgeron a entendu parler d'armes enchantées, sans jamais en avoir vu. Fasciné, il en relève les motifs un long moment et vous paie pour ce privilège."
         }
