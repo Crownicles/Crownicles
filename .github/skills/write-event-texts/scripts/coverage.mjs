@@ -54,7 +54,7 @@ function coverageDimensions(reqs, pets) {
 	// Pets listed by id, and every pet carrying a tag an outcome asks for
 	const askedTags = new Set(reqs.flatMap(r => get(r, "petTags", [])));
 	const taggedPets = [...pets].filter(([, pet]) => pet.tags.some(tag => askedTags.has(tag))).map(([id]) => id);
-	const listedPets = [...new Set([...reqs.flatMap(r => get(r, "validPetTypeIds", [])), ...taggedPets])].sort(byNumber);
+	const listedPets = [...new Set([...reqs.flatMap(r => [...get(r, "validPetTypeIds", []), ...get(r, "excludedPetTypeIds", [])]), ...taggedPets])].sort(byNumber);
 	const petProfiles = [
 		null,
 		...listedPets.filter(id => pets.has(id)).map(id => [id, pets.get(id).rarity]),
@@ -144,6 +144,9 @@ function isClassCovered(r, cls) {
  * @returns {boolean}
  */
 function isPetTypeCovered(r, pet) {
+	if (Object.hasOwn(r, "excludedPetTypeIds") && pet !== null && r.excludedPetTypeIds.includes(pet[0])) {
+		return false;
+	}
 	if (!Object.hasOwn(r, "validPetTypeIds")) {
 		return true;
 	}

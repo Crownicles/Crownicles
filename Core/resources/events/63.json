@@ -157,6 +157,12 @@
     "helpThem": {
       "outcomes": {
         "0": {
+          "requirements": {
+            "excludedPetTypeIds": [
+              10,
+              92
+            ]
+          },
           "effect": "occupied",
           "lostTime": 30,
           "money": -165,
@@ -166,6 +172,12 @@
           "karma": -2
         },
         "1": {
+          "requirements": {
+            "excludedPetTypeIds": [
+              10,
+              92
+            ]
+          },
           "effect": "occupied",
           "lostTime": 30,
           "money": 165,
@@ -180,7 +192,11 @@
           "requirements": {
             "speed": {
               "max": 134
-            }
+            },
+            "excludedPetTypeIds": [
+              10,
+              92
+            ]
           },
           "effect": "jailed",
           "karma": -2
@@ -189,7 +205,11 @@
           "requirements": {
             "speed": {
               "min": 135
-            }
+            },
+            "excludedPetTypeIds": [
+              10,
+              92
+            ]
           },
           "effect": "occupied",
           "lostTime": 30,
@@ -270,6 +290,17 @@
           "effect": "occupied",
           "lostTime": 30,
           "money": 100,
+          "karma": -2
+        },
+        "12": {
+          "requirements": {
+            "validPetTypeIds": [
+              10
+            ]
+          },
+          "money": 80,
+          "effect": "occupied",
+          "lostTime": 15,
           "karma": -2
         }
       }

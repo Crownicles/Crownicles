@@ -56,6 +56,11 @@ export type OutcomeRequirements = {
 	validPetTypeIds?: number[];
 
 	/**
+	 * The outcome is hidden when the player's pet is one of these types: the outcome hunts, cooks or fights that animal
+	 */
+	excludedPetTypeIds?: number[];
+
+	/**
 	 * The player's pet has at least one of these tags (an ability shared by several pets, such as flying)
 	 */
 	petTags?: PetTag[];
@@ -177,6 +182,7 @@ function areStatRequirementsValid(
 async function areProgressionRequirementsValid(req: OutcomeRequirements, player: Player): Promise<boolean> {
 	return await isCampaignMissionValid(req.campaignCurrentMissionId, player)
 		&& await isPetTypeValid(req.validPetTypeIds, player)
+		&& await isPetTypeNotExcluded(req.excludedPetTypeIds, player)
 		&& await isPetDataValid(req, player)
 		&& await areMaterialsValid(req.materials, player)
 		&& await areBadgesValid(req.badges, player);
@@ -234,6 +240,20 @@ async function isPetTypeValid(validPetTypeIds: number[] | undefined, player: Pla
 
 	const petEntity = await getAvailablePetEntity(player);
 	return petEntity !== null && validPetTypeIds.includes(petEntity.typeId);
+}
+
+/**
+ * Check that the player's pet is not one of the excluded types (a player without an available pet is never excluded)
+ * @param excludedPetTypeIds - The pet types that make the outcome illogical
+ * @param player - The player to check
+ */
+async function isPetTypeNotExcluded(excludedPetTypeIds: number[] | undefined, player: Player): Promise<boolean> {
+	if (!excludedPetTypeIds) {
+		return true;
+	}
+
+	const petEntity = await getAvailablePetEntity(player);
+	return petEntity === null || !excludedPetTypeIds.includes(petEntity.typeId);
 }
 
 /**

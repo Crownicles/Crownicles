@@ -517,7 +517,8 @@
           "6": "Vous débusquez un sanglier dans les fourrés. Au lieu de fuir, il gratte la terre, baisse la tête et fonce droit sur vous.",
           "7": "Dans les fourrés vous attend un vieux mâle énorme, couvert de cicatrices, aux défenses longues comme des dagues. Il en a chassé plus d'un de son territoire, et il charge sans attendre.",
           "8": "Un lapin file se terrer sous une souche. Vous posez votre arme à l'entrée du terrier : elle rougeoie, et les herbes sèches qui l'entourent se mettent à fumer. La fumée s'engouffre sous la souche, et le lapin jaillit par une autre sortie. Vous l'attrapez d'un bond, le faites rôtir et mangez à votre faim.",
-          "9": "Vous débusquez un sanglier, mais vous êtes à bout de forces. Il vous charge avant que vous ayez pu lever les bras, vous renverse et vous piétine. Vous restez longtemps à terre avant de pouvoir vous relever, couvert de bleus et le ventre toujours vide."
+          "9": "Vous débusquez un sanglier, mais vous êtes à bout de forces. Il vous charge avant que vous ayez pu lever les bras, vous renverse et vous piétine. Vous restez longtemps à terre avant de pouvoir vous relever, couvert de bleus et le ventre toujours vide.",
+          "10": "Au lieu de suivre une piste, votre familier fouille du groin la terre au pied d'un chêne et déterre une poignée de truffes. Vous les faites griller sur un petit feu et vous régalez avant de reprendre la route."
         },
         "fights": {
           "6": {
@@ -644,7 +645,8 @@
           "2": "D'une main sûre, vous retirez la peau d'un seul tenant. Le premier marchand qui passe au carrefour la palpe, siffle entre ses dents et vous en offre une belle somme.",
           "3": "Un marchand ambulant vous reconnaît : on lui a dit que vous étiez honnête en affaires. Plutôt que des pièces, il vous propose d'échanger la fourrure contre un objet de sa charrette. Vous acceptez sans hésiter.",
           "4": "Le marchand qui passe au carrefour vous dévisage. On décrit votre visage dans les auberges, et il vous soupçonne d'avoir volé cette peau. Il finit par la prendre pour une poignée de pièces, à prendre ou à laisser.",
-          "5": "Vous attendez un acheteur au bord du chemin, la peau sur l'épaule. Personne ne passe. La peau se met à sentir, les mouches arrivent, et vous la jetez trop tard : vous vous sentez mal pour le reste de la journée."
+          "5": "Vous attendez un acheteur au bord du chemin, la peau sur l'épaule. Personne ne passe. La peau se met à sentir, les mouches arrivent, et vous la jetez trop tard : vous vous sentez mal pour le reste de la journée.",
+          "6": "Vous vous agenouillez près de la dépouille, mais votre renard se couche contre elle et grogne dès que vous tendez la main. Vous renoncez à la peau et reprenez la route, votre renard sur les talons."
         }
       },
       "cook": {
@@ -656,7 +658,8 @@
           "3": "Vous frottez la viande d'herbes cueillies au bord du chemin et la faites rôtir lentement. Le renard, d'ordinaire dur et fort en goût, devient un vrai repas. Vous repartez requinqué.",
           "4": "Le feu allumé, vous soulevez le renard par les pattes. Le corps est pris d'un dernier spasme et vous échappe des mains. En reculant, vous trébuchez et posez la main en plein dans les braises.",
           "5": "Votre familier s'assoit près du feu et ne quitte plus la broche des yeux. Vous finissez par lui lancer quelques morceaux. Vous mangez un peu moins, mais le repas, partagé, vous fait du bien à tous les deux.",
-          "6": "Faute de bois sec au carrefour, vous posez les morceaux de renard à même votre arme, qui se met à rougeoyer. La viande grésille et cuit à cœur en quelques instants, sans brûler. Pour un renard trouvé au bord du chemin, c'est presque bon."
+          "6": "Faute de bois sec au carrefour, vous posez les morceaux de renard à même votre arme, qui se met à rougeoyer. La viande grésille et cuit à cœur en quelques instants, sans brûler. Pour un renard trouvé au bord du chemin, c'est presque bon.",
+          "7": "Vous ramassez du bois pour le feu. À votre retour, votre renard est assis devant la dépouille et vous fixe sans bouger. Vous n'avez plus le cœur à la faire cuire, et vous repartez le ventre vide."
         }
       },
       "inspectCarcass": {
@@ -2908,7 +2911,8 @@
           "8": "Les silhouettes en robe noire remarquent vos cicatrices de vieux routier et vous proposent un travail : garder une porte au fond de la cave pendant leur réunion. Des heures durant, vous montez la garde sans rien entendre de ce qui se dit derrière. Quand la porte se rouvre, on vous paie largement et l'on vous prie de partir.",
           "9": "Les silhouettes en robe noire entendent votre bourse tinter avant même que vous ouvriez la bouche. Pour rejoindre leur cause, il faut d'abord la soutenir : elles vous réclament une grosse contribution. Vous payez, et l'on vous promet de vous faire signe. Personne ne vous fait signe.",
           "10": "Les silhouettes en robe noire vous font descendre dans la cave. Mais votre familier flaire les abats qu'elles y répandent pour effrayer les curieux, et se jette dessus. Le temps de l'en arracher, il a dévoré la moitié de leur décor. Furieuses, elles vous mettent dehors.",
-          "11": "Vous rejoignez les silhouettes dans la cave. Leur brasero, qui doit faire monter une fumée rouge pour effrayer les curieux, ne prend pas : le charbon est humide. Vous posez votre arme dessus, le métal rougeoie, et le feu finit par prendre. Ébahies, elles font cercle autour, puis vous paient le coup de main."
+          "11": "Vous rejoignez les silhouettes dans la cave. Leur brasero, qui doit faire monter une fumée rouge pour effrayer les curieux, ne prend pas : le charbon est humide. Vous posez votre arme dessus, le métal rougeoie, et le feu finit par prendre. Ébahies, elles font cercle autour, puis vous paient le coup de main.",
+          "12": "Vous rejoignez les silhouettes dans la cave, votre coq sous le bras. Sous les robes noires, des villageois parient sur des combats de coqs. Le vôtre vous échappe, saute dans l'arène et met en fuite le favori de la soirée. Les parieurs qui avaient misé sur le favori vous jettent dehors, furieux, mais un autre, ravi, vous glisse quelques pièces au passage."
         }
       },
       "warnEveryone": {

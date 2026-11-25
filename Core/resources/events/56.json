@@ -12,6 +12,11 @@
         },
         "1": {},
         "2": {
+          "requirements": {
+            "excludedPetTypeIds": [
+              86
+            ]
+          },
           "health": -3,
           "effect": "feetHurt"
         },

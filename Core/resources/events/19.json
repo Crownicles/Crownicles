@@ -6,7 +6,10 @@
           "requirements": {
             "attack": {
               "max": 230
-            }
+            },
+            "excludedPetTypeIds": [
+              20
+            ]
           },
           "money": 100,
           "effect": "occupied",
@@ -18,7 +21,10 @@
             "attack": {
               "min": 231,
               "max": 599
-            }
+            },
+            "excludedPetTypeIds": [
+              20
+            ]
           },
           "money": 300,
           "effect": "occupied",
@@ -29,7 +35,10 @@
           "requirements": {
             "attack": {
               "min": 600
-            }
+            },
+            "excludedPetTypeIds": [
+              20
+            ]
           },
           "money": 500,
           "effect": "occupied",
@@ -40,7 +49,10 @@
           "requirements": {
             "karma": {
               "min": 50
-            }
+            },
+            "excludedPetTypeIds": [
+              20
+            ]
           },
           "randomItem": {},
           "effect": "occupied",
@@ -51,20 +63,40 @@
           "requirements": {
             "karma": {
               "max": -30
-            }
+            },
+            "excludedPetTypeIds": [
+              20
+            ]
           },
           "money": 50,
           "effect": "occupied",
           "lostTime": 60
         },
         "5": {
+          "requirements": {
+            "excludedPetTypeIds": [
+              20
+            ]
+          },
           "effect": "sick"
+        },
+        "6": {
+          "requirements": {
+            "validPetTypeIds": [
+              20
+            ]
+          }
         }
       }
     },
     "cook": {
       "outcomes": {
         "0": {
+          "requirements": {
+            "excludedPetTypeIds": [
+              20
+            ]
+          },
           "health": 5,
           "effect": "occupied",
           "lostTime": 30
@@ -73,7 +105,10 @@
           "requirements": {
             "cookingLevel": {
               "max": 0
-            }
+            },
+            "excludedPetTypeIds": [
+              20
+            ]
           },
           "effect": "sick"
         },
@@ -82,7 +117,10 @@
             "cookingLevel": {
               "min": 40,
               "max": 69
-            }
+            },
+            "excludedPetTypeIds": [
+              20
+            ]
           },
           "health": 12,
           "effect": "occupied",
@@ -92,19 +130,30 @@
           "requirements": {
             "cookingLevel": {
               "min": 70
-            }
+            },
+            "excludedPetTypeIds": [
+              20
+            ]
           },
           "health": 20,
           "effect": "occupied",
           "lostTime": 40
         },
         "4": {
+          "requirements": {
+            "excludedPetTypeIds": [
+              20
+            ]
+          },
           "health": -20
         },
         "5": {
           "requirements": {
             "petTags": [
               "keenNose"
+            ],
+            "excludedPetTypeIds": [
+              20
             ]
           },
           "health": 8,
@@ -118,9 +167,21 @@
               "kinds": [
                 "burnedDamage"
               ]
-            }
+            },
+            "excludedPetTypeIds": [
+              20
+            ]
           },
           "health": 12,
+          "effect": "occupied",
+          "lostTime": 15
+        },
+        "7": {
+          "requirements": {
+            "validPetTypeIds": [
+              20
+            ]
+          },
           "effect": "occupied",
           "lostTime": 15
         }
@@ -271,7 +332,10 @@
           "requirements": {
             "cookingLevel": {
               "max": 0
-            }
+            },
+            "excludedPetTypeIds": [
+              20
+            ]
           },
           "effect": "starving"
         },

@@ -31,7 +31,7 @@ const OUTCOME_KEYS = new Set([
 ]);
 const FIGHT_CONSEQUENCE_KEYS = new Set(["money", "health", "experience", "effect", "lostTime", "randomItem"]);
 const REQ_RANGES = ["level", "karma", "health", "attack", "defense", "speed", "energyPercent", "money", "petRarity", "cookingLevel", "weaponLevel", "armorLevel"];
-const REQ_LISTS = ["validClassIds", "validPetTypeIds", "petTags", "weaponTags", "badges"];
+const REQ_LISTS = ["validClassIds", "validPetTypeIds", "excludedPetTypeIds", "petTags", "weaponTags", "badges"];
 const REQ_KEYS = new Set([...REQ_RANGES, ...REQ_LISTS, "campaignCurrentMissionId", "materials", "enchantment"]);
 const MATERIAL_FILTERS = new Set(["type", "rarity", "ids", "quantity"]);
 const MATERIAL_TYPES = new Set(["metal", "alloy", "nature", "spiritual", "magic", "leather", "rope", "poison", "explosive", "wood"]);
@@ -232,7 +232,7 @@ function checkRequirementShapes(report, path, req) {
  */
 function checkRequirementReferences(report, path, req, game) {
 	const isUnknownPet = petId => !game.pets.has(typeof petId === "boolean" ? Number(petId) : petId);
-	for (const petId of get(req, "validPetTypeIds", []).filter(isUnknownPet)) {
+	for (const petId of [...get(req, "validPetTypeIds", []), ...get(req, "excludedPetTypeIds", [])].filter(isUnknownPet)) {
 		report.errors.push(`${path}: unknown pet ${pyStr(petId)}`);
 	}
 	for (const badge of get(req, "badges", []).filter(eventBadge => !game.eventBadges.has(eventBadge))) {
@@ -307,12 +307,21 @@ function checkOutcome(report, path, x, context) {
 		report.errors.push(`${path}: useBed must be true and go with the sleeping effect (the player sleeps in a bed)`);
 	}
 	const req = getOrEmpty(x, "requirements");
-	if (!truthy(req) && !Object.hasOwn(x, "consumeMaterials") && x.useBed !== true) {
-		return false;
+	if (truthy(req)) {
+		checkRequirementShapes(report, path, req);
+		checkRequirementReferences(report, path, req, context);
 	}
-	checkRequirementShapes(report, path, req);
-	checkRequirementReferences(report, path, req, context);
-	return true;
+	return isConditional(x);
+}
+
+/**
+ * Whether an outcome is reserved to some players. Excluding the pets of the species the outcome eats keeps it the general case
+ * @param {any} x outcome data
+ * @returns {boolean}
+ */
+function isConditional(x) {
+	const req = getOrEmpty(x, "requirements");
+	return keysOf(req).some(key => key !== "excludedPetTypeIds" && truthy(req[key])) || Object.hasOwn(x, "consumeMaterials") || x.useBed === true;
 }
 
 /**
@@ -415,6 +424,60 @@ function checkKarmaOfPeople(report, dp, tp) {
 	}
 }
 
+// Poultry: a player who keeps one would not pluck and roast its kin
+const POULTRY_PETS = [10, 12, 19, 33, 53, 59, 62, 68, 92, 97];
+
+/**
+ * Animals the player hunts, cooks or eats, and the pets of the same species, which must not see the outcome
+ */
+const SAME_SPECIES = [
+	{ animal: /\b(lapins?|lièvres?|lapereaux?)\b/iu, pets: [7] },
+	{ animal: /\b(sangliers?|marcassins?|porcs?|cochons?|jambons?)\b/iu, pets: [9, 29] },
+	{ animal: /\b(faisans?|poulets?|poules?|volailles?|canards?|oies?|dindons?|dindes?|cailles?|perdrix|pigeons?)\b/iu, pets: POULTRY_PETS },
+	{ animal: /\bcombats? de coqs\b/iu, pets: [10, 92] },
+	{ animal: /\brenards?\b/iu, pets: [20] },
+	{ animal: /\bcrabes?\b/iu, pets: [86] },
+	{ animal: /\bcrevettes?\b/iu, pets: [80] },
+	{ animal: /\bhomards?\b/iu, pets: [81] },
+	{ animal: /\bescargots?\b/iu, pets: [85] },
+	{ animal: /\bpoulpes?\b/iu, pets: [71] },
+	{ animal: /\b(moutons?|agneaux?|béliers?)\b/iu, pets: [17] },
+	{ animal: /\b(chèvres?|boucs?|chevreaux?)\b/iu, pets: [18] },
+	{ animal: /\b(bœufs?|vaches?|veaux?)\b/iu, pets: [8] },
+	{ animal: /\b(cerfs?|chevreuils?|biches?)\b/iu, pets: [87, 98] },
+	{ animal: /\btortues?\b/iu, pets: [14] }
+];
+
+// What the player does (the -ez form of the vouvoiement) or what ends on a plate, not what a character wants to do
+const EATS_OR_HUNTS = /(\b(?:mangez|dévorez|plumez|abattez|dépecez|chassez|débusquez|traquez|faites (?:griller|rôtir|cuire|frire))\b|\b(?:grillée?s?|rôtie?s?|frite?s?|ragoût|soupe|gigot|brochettes?|combats? de coqs)\b)/iu;
+
+/**
+ * Outcomes where the player hunts, cooks or eats an animal kept as a pet, without excluding that pet (excludedPetTypeIds)
+ * @param {Report} report
+ * @param {object} dp data possibilities
+ * @param {object} tp text possibilities
+ * @param {Map<number, {tags: string[]}>} pets
+ */
+function checkSameSpeciesPets(report, dp, tp, pets) {
+	const found = entriesOf(dp).flatMap(([name, possibility]) => entriesOf(get(possibility, "outcomes", {})).flatMap(([outcome, x]) => {
+		const text = String(get(get(get(tp, name, {}), "outcomes", {}), outcome, ""));
+		const req = getOrEmpty(x, "requirements");
+		// An outcome written for one pet stages that pet on purpose
+		if (!EATS_OR_HUNTS.test(text) || Object.hasOwn(req, "validPetTypeIds")) {
+			return [];
+		}
+		const tags = get(req, "petTags", null);
+		const excluded = new Set(get(req, "excludedPetTypeIds", []));
+		const missing = SAME_SPECIES.filter(({ animal }) => animal.test(text))
+			.flatMap(({ pets: ids }) => ids)
+			.filter(id => !excluded.has(id) && (tags === null || tags.some(tag => pets.get(id)?.tags.includes(tag))));
+		return missing.length > 0 ? [`${name}.${outcome} [${[...new Set(missing)].join(", ")}]`] : [];
+	}));
+	if (found.length > 0) {
+		report.warnings.push(`${found.length} outcomes hunt, cook or eat an animal that a player may have as a pet: hide them from that pet with excludedPetTypeIds: ${found.join("; ")}`);
+	}
+}
+
 /**
  * Check the outcome ids of a possibility: same as the texts, numbered 0..n-1, and their count
  * @param {Report} report
@@ -492,7 +555,7 @@ function checkData(report, inp, out, game) {
 			counts.conditional += checkOutcome(report, `data.${name}.${outcome}`, x, context) ? 1 : 0;
 			checkOutcomeFight(report, `data.${name}.${outcome}`, x, get(fightTexts, outcome), game.monsters);
 		}
-		const unconditional = entriesOf(outs).filter(([, x]) => !truthy(getOrEmpty(x, "requirements")) && !Object.hasOwn(x, "consumeMaterials") && x.useBed !== true).length;
+		const unconditional = entriesOf(outs).filter(([, x]) => !isConditional(x)).length;
 		if (unconditional > MAX_UNCONDITIONAL_OUTCOMES) {
 			report.warnings.push(`${name}: ${unconditional} outcomes without condition (at most ${MAX_UNCONDITIONAL_OUTCOMES})`);
 		}
@@ -508,6 +571,7 @@ function checkData(report, inp, out, game) {
 	}
 	checkTierVariety(report, dp);
 	checkKarmaOfPeople(report, dp, tp);
+	checkSameSpeciesPets(report, dp, tp, game.pets);
 	const fightingChoices = entriesOf(dp).filter(([, possibility]) => entriesOf(get(possibility, "outcomes", {})).some(([, x]) => get(x, "fight") !== null));
 	if (fightingChoices.length > 1) {
 		report.warnings.push(`${fightingChoices.length} choices lead to a fight (at most 1 per event)`);

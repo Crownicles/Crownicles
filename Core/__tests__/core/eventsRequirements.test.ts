@@ -22,6 +22,7 @@ interface OutcomeRequirements {
 	petRarity?: Range;
 	validClassIds?: number[];
 	validPetTypeIds?: number[];
+	excludedPetTypeIds?: number[];
 	petTags?: string[];
 	weaponTags?: string[];
 	badges?: string[];
@@ -107,7 +108,7 @@ function buildDimensions(outcomes: Outcome[]): Dimension[] {
 	// Pets listed by id, and every pet carrying a tag an outcome asks for
 	const askedTags = new Set(outcomes.flatMap(o => o.requirements?.petTags ?? []));
 	const petTypes = [...new Set([
-		...outcomes.flatMap(o => o.requirements?.validPetTypeIds ?? []),
+		...outcomes.flatMap(o => [...o.requirements?.validPetTypeIds ?? [], ...o.requirements?.excludedPetTypeIds ?? []]),
 		...Object.entries(PETS).filter(([, pet]) => pet.tags.some(tag => askedTags.has(tag)))
 			.map(([type]) => parseInt(type, 10))
 	])];
@@ -129,11 +130,14 @@ function buildDimensions(outcomes: Outcome[]): Dimension[] {
 	dimensions.push({
 		name: 'pet',
 		values: pets,
-		constrains: o => o.requirements?.validPetTypeIds !== undefined || o.requirements?.petRarity !== undefined || o.requirements?.petTags !== undefined,
+		constrains: o => o.requirements?.validPetTypeIds !== undefined || o.requirements?.excludedPetTypeIds !== undefined || o.requirements?.petRarity !== undefined || o.requirements?.petTags !== undefined,
 		accepts: (o, value) => {
 			const pet = value as PetProfile;
 			const req = o.requirements;
 			if (req?.validPetTypeIds && (!pet || !req.validPetTypeIds.includes(pet.type))) {
+				return false;
+			}
+			if (req?.excludedPetTypeIds && pet && req.excludedPetTypeIds.includes(pet.type)) {
 				return false;
 			}
 			if (req?.petTags && (!pet || !req.petTags.some(tag => pet.tags.includes(tag)))) {

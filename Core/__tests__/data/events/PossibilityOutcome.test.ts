@@ -328,6 +328,23 @@ describe("PossibilityOutcome Requirements", () => {
 		});
 	});
 
+	describe("Excluded pets", () => {
+		const isValid = async (): Promise<boolean> =>
+			(await getValidOutcomesForPlayer({ outcome: { requirements: { excludedPetTypeIds: [10, 19] } } }, mockPlayer as Player)).length === 1;
+
+		it("should hide the outcome from a player whose pet is one of the excluded types", async () => {
+			vi.mocked(PetEntities.getById).mockResolvedValue({ typeId: 19 } as any);
+			expect(await isValid()).toBe(false);
+		});
+
+		it("should keep the outcome for another pet and for a player without a pet", async () => {
+			vi.mocked(PetEntities.getById).mockResolvedValue({ typeId: 1 } as any);
+			expect(await isValid()).toBe(true);
+			mockPlayer = { ...mockPlayer, petId: null } as Partial<Player>;
+			expect(await isValid()).toBe(true);
+		});
+	});
+
 	describe("Bed outcomes", () => {
 		const isBedOutcomeValid = async (lastBedUsedAt: Date | null): Promise<boolean> => {
 			mockPlayer = { ...mockPlayer, lastBedUsedAt } as Partial<Player>;

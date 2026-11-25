@@ -212,7 +212,10 @@
           "requirements": {
             "cookingLevel": {
               "min": 70
-            }
+            },
+            "excludedPetTypeIds": [
+              86
+            ]
           },
           "effect": "occupied",
           "lostTime": 30,

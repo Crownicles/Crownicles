@@ -7,7 +7,11 @@
           "requirements": {
             "money": {
               "min": 5001
-            }
+            },
+            "excludedPetTypeIds": [
+              87,
+              98
+            ]
           },
           "effect": "occupied",
           "health": 30,
@@ -166,7 +170,10 @@
           "requirements": {
             "karma": {
               "min": 50
-            }
+            },
+            "excludedPetTypeIds": [
+              7
+            ]
           },
           "effect": "occupied",
           "health": 15,

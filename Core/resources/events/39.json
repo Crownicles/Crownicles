@@ -104,7 +104,10 @@
           "requirements": {
             "karma": {
               "min": 0
-            }
+            },
+            "excludedPetTypeIds": [
+              80
+            ]
           },
           "forceStayInCity": true,
           "effect": "occupied",
@@ -130,7 +133,10 @@
           "requirements": {
             "level": {
               "max": 30
-            }
+            },
+            "excludedPetTypeIds": [
+              80
+            ]
           },
           "randomItem": {},
           "forceStayInCity": true,

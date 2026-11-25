@@ -119,15 +119,48 @@
     "feast": {
       "outcomes": {
         "0": {
+          "requirements": {
+            "excludedPetTypeIds": [
+              10,
+              12,
+              19,
+              33,
+              53,
+              59,
+              62,
+              68,
+              92,
+              97
+            ]
+          },
           "health": 15,
           "effect": "occupied",
           "lostTime": 60
         },
         "1": {
+          "requirements": {
+            "excludedPetTypeIds": [
+              10,
+              12,
+              19,
+              33,
+              53,
+              59,
+              62,
+              68,
+              92,
+              97
+            ]
+          },
           "health": -10,
           "effect": "sick"
         },
         "2": {
+          "requirements": {
+            "excludedPetTypeIds": [
+              19
+            ]
+          },
           "money": 60,
           "health": 20,
           "karma": 1
@@ -136,7 +169,10 @@
           "requirements": {
             "speed": {
               "max": 40
-            }
+            },
+            "excludedPetTypeIds": [
+              19
+            ]
           },
           "effect": "occupied",
           "lostTime": 15
@@ -145,7 +181,10 @@
           "requirements": {
             "attack": {
               "min": 700
-            }
+            },
+            "excludedPetTypeIds": [
+              19
+            ]
           },
           "money": 200,
           "karma": -2
@@ -154,7 +193,10 @@
           "requirements": {
             "defense": {
               "min": 740
-            }
+            },
+            "excludedPetTypeIds": [
+              19
+            ]
           },
           "effect": "occupied",
           "lostTime": 25
@@ -163,7 +205,10 @@
           "requirements": {
             "cookingLevel": {
               "min": 70
-            }
+            },
+            "excludedPetTypeIds": [
+              19
+            ]
           },
           "health": 20,
           "karma": 2,
@@ -174,7 +219,10 @@
           "requirements": {
             "karma": {
               "max": -30
-            }
+            },
+            "excludedPetTypeIds": [
+              19
+            ]
           },
           "effect": "occupied",
           "lostTime": 20
@@ -183,6 +231,9 @@
           "requirements": {
             "petTags": [
               "intimidating"
+            ],
+            "excludedPetTypeIds": [
+              19
             ]
           },
           "health": 15

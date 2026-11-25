@@ -13,7 +13,7 @@
 
 ## Conditions (`requirements`)
 
-Plages `{"min": x, "max": y}` (bornes incluses, l'une ou l'autre facultative) : `level`, `karma`, `health` (vie actuelle), `attack`, `defense`, `speed` (statistiques avec l'équipement). Listes : `validClassIds`, `validPetTypeIds` (le joueur doit avoir un familier de ce type), `petTags` (son familier a au moins un de ces tags, voir « Familiers »). `petRarity` : plage sur la rareté du familier (il en faut un). `campaignCurrentMissionId` : n'y touche pas. Cuisine, matériaux, enchantements et amélioration de l'équipement : voir plus bas.
+Plages `{"min": x, "max": y}` (bornes incluses, l'une ou l'autre facultative) : `level`, `karma`, `health` (vie actuelle), `attack`, `defense`, `speed` (statistiques avec l'équipement). Listes : `validClassIds`, `validPetTypeIds` (le joueur doit avoir un familier de ce type), `excludedPetTypeIds` (le familier du joueur n'est d'aucun de ces types ; sans familier, l'issue reste possible), `petTags` (son familier a au moins un de ces tags, voir « Familiers »). `petRarity` : plage sur la rareté du familier (il en faut un). `campaignCurrentMissionId` : n'y touche pas. Cuisine, matériaux, enchantements et amélioration de l'équipement : voir plus bas.
 
 ### Seuils calés sur les joueurs réguliers en production
 
@@ -181,6 +181,8 @@ Il commence à 0 et n'est pas borné. Une issue le change de -1 à -5 pour une p
 Voir `Core/resources/pets/<id>.json` (rareté) et `Lang/fr/models.json`, clé `pets` (nom `<id>_male`). Exemples parlants : 1 Chien, 3 Chat, 15 Serpent, 20 Renard, 24 Singe, 28 Loup, 54 Perroquet, 58 Aigle, 64 Dragon, 65 T-Rex, 84 Diplodocus, 91 Gorille, 95 Corbeau.
 
 **Familier en expédition.** Un familier parti en expédition ne compte pas pour les conditions de familier (`validPetTypeIds`, `petTags`, `petRarity`), sauf si le joueur a le talisman de clonage : le joueur est alors traité comme s'il n'avait pas de familier.
+
+**Même espèce que le gibier : la condition `excludedPetTypeIds`.** Une issue où le joueur chasse, cuisine ou mange un animal se masque au joueur dont le familier est de la même espèce : `"excludedPetTypeIds": [7]` pour un lapin grillé. L'issue reste une issue du cas général (elle ne compte pas comme conditionnelle). Les familles les plus courantes : lapin et lièvre 7 ; sanglier et porc 9, 29 ; volaille (faisan, poulet, dindon, canard, oie, pigeon) 10, 12, 19, 33, 53, 59, 62, 68, 92, 97 ; combats de coqs 10, 92 ; renard 20 ; crabe 86 ; crevette 80 ; cerf et chevreuil 87, 98. Si l'exclusion vide un choix pour ce familier, ajoute une issue `validPetTypeIds` où il est présent.
 
 **Capacités : la condition `petTags`.** Quand l'issue repose sur une capacité que plusieurs familiers partagent, la condition vise le tag, pas une liste d'ids : `"petTags": ["flying"]`. Le familier doit avoir au moins un des tags listés. Le texte dit alors *votre familier*, et ce qu'il fait convient à chaque animal qui a le tag. Un nouveau familier tagué est pris en compte tout seul. Le joueur voit les tags de son familier chez le vétérinaire (ligne « Aptitudes ») : un nouveau tag demande son libellé dans `Lang/<langue>/models.json`, clé `petTags`.
 

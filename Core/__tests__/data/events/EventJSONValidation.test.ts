@@ -41,6 +41,7 @@ describe("Event JSON Validation", () => {
 		"money",
 		"campaignCurrentMissionId",
 		"validPetTypeIds",
+		"excludedPetTypeIds",
 		"petTags",
 		"petRarity",
 		"validClassIds",

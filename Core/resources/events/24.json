@@ -51,6 +51,20 @@
     "foodStand": {
       "outcomes": {
         "0": {
+          "requirements": {
+            "excludedPetTypeIds": [
+              10,
+              12,
+              19,
+              33,
+              53,
+              59,
+              62,
+              68,
+              92,
+              97
+            ]
+          },
           "effect": "occupied",
           "health": 75,
           "lostTime": 30,

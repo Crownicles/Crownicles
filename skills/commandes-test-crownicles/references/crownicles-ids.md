@@ -864,14 +864,14 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 8 | Vous avez décidé de profiter de l'été pour passer par les montagnes tant que les cols ne sont pas trop enneigés. Cependant, l'ascension s'av |
 | 9 | Au milieu d'un champ de blé du Berceau, à deux pas de la grande route qui traverse la plaine, un paysan fouille ses meules de foin en jurant |
 | 10 | Au bord du Lac Mirage, des familles pique-niquent près des roseaux. Au bout d'un vieux ponton, un pêcheur se bat avec sa canne : un poisson |
-| 11 | À l'orée du Bois Hurlant, dont les collines cachent des grottes à brigands, une femme encapuchonnée vous aborde. Elle vous déconseille le se |
+| 11 | À l'orée du Bois Hurlant, où des brigands se cachent dans les grottes des collines, une femme encapuchonnée vous aborde. Elle vous déconseil |
 | 12 | Devant vous, la Rivière Vacarme charrie branches et écume dans un grondement assourdissant. Un vieux pont de bois l'enjambe encore : plusieu |
-| 13 | Au bout de la route, vous entrez dans Claire de Ville. La grande cité marchande grouille de monde, mais tout y reste calme : des gardes veil |
-| 14 | La fatigue commence à vous peser quand, au milieu de la plaine vide de L'Étendue, vous apercevez une petite maison de pierre au bord d'une p |
+| 13 | Vous arrivez aux portes de Claire de Ville. Derrière les murailles, la grande cité marchande grouille de monde, mais tout y reste calme : de |
+| 14 | La fatigue commence à vous peser quand, au milieu de la plaine vide de L'Étendue, vous arrivez devant une petite maison de pierre au bord d' |
 | 15 | Dans une ruelle de Claire de Ville, vous poussez la porte d'une petite boutique. Quelques hommes y discutent tranquillement entre des étals |
 | 16 | Après de longues heures à suivre la Rivière aux Crabes, vous découvrez un vieux château au bord de l'eau. Le lierre couvre ses murs, des cor |
 | 17 | Sur le Grand Axe, qui contourne le Mont Célestrum par le nord, la faim vous force à faire halte. Un grand arbre ploie sous des fruits dorés, |
-| 18 | Au détour d'une ruelle de Mergagnan, vous tombez sur un chantier à l'abandon : poutres noircies, échafaudages qui grincent, outils rouillés. |
+| 18 | Au détour d'une ruelle de Mergagnan, vous tombez sur un chantier à l'abandon : échafaudages qui grincent, poutres effondrées, outils rouillé |
 | 19 | Au Croisement des Destins, là où se rejoignent les grands chemins de l'ouest, un renard gît au pied du poteau indicateur. Il semble mort dep |
 | 20 | Dans une ruelle de Claire de Ville, un garde aux armes de la cité a acculé une femme contre un mur. Il lui arrache sa bourse en invoquant un |
 | 21 | En continuant votre périple, vous arrivez devant un pont délabré qui, de plus, est au dessus d'un énorme gouffre. |
