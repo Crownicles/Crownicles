@@ -494,7 +494,7 @@
         "text": "Escalader l'arbre aux fruits dorés.",
         "outcomes": {
           "0": "Vous grimpez de branche en branche jusqu'aux premiers fruits. Ils sont mûrs, sucrés et pleins de jus. Vous en mangez plusieurs, assis sur une grosse branche, puis redescendez avec précaution, l'estomac apaisé.",
-          "1": "Vous vous hissez lentement vers les fruits, en cherchant chaque prise. Vous restez si longtemps sur une branche trop frêle qu'elle finit par craquer et céder. Vous tombez au pied de l'arbre, sonné. Vous renoncez à ce repas et reprenez la route d'un pas mal assuré.",
+          "1": "Vous grimpez vers les fruits, mais votre lourde armure pèse sur chaque branche. L'une d'elles craque sous votre poids et cède. Vous tombez au pied de l'arbre, sonné. Vous renoncez à ce repas et reprenez la route d'un pas mal assuré.",
           "2": "À peine dans les premières branches, vous croquez dans les fruits à portée de main sans regarder s'ils sont mûrs. Certains sont encore verts, d'autres piqués par les vers. Quelques heures plus tard, de violentes crampes vous plient en deux.",
           "3": "Vous grimpez vite et sans effort jusqu'à la cime, là où les fruits ont pris le plus de soleil. Vous choisissez les plus dorés et vous régalez sans vous presser, puis vous redescendez en un rien de temps, en pleine forme.",
           "4": "Avant même que vous touchiez le tronc, votre familier bondit dans les branches. Il cueille les fruits les plus mûrs, en goûte un au passage et vous lance les autres un à un. Vous n'avez plus qu'à les attraper.",

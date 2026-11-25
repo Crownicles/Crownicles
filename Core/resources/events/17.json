@@ -7,8 +7,8 @@
         },
         "1": {
           "requirements": {
-            "speed": {
-              "max": 40
+            "defense": {
+              "min": 740
             }
           },
           "health": -10,
