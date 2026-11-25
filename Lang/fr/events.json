@@ -494,25 +494,27 @@
         "text": "Escalader l'arbre aux fruits dorés.",
         "outcomes": {
           "0": "Vous grimpez de branche en branche jusqu'aux premiers fruits. Ils sont mûrs, sucrés et pleins de jus. Vous en mangez plusieurs, assis sur une grosse branche, puis redescendez avec précaution, l'estomac apaisé.",
-          "1": "Vous vous hissez lentement vers les fruits, en cherchant chaque prise. Une branche craque sous votre pied et cède. Vous tombez au pied de l'arbre, sonné. Vous renoncez à ce repas et reprenez la route d'un pas mal assuré.",
-          "2": "Pressé de manger, vous croquez dans les premiers fruits à portée de main sans regarder s'ils sont mûrs. Certains sont encore verts, d'autres piqués par les vers. Quelques heures plus tard, de violentes crampes vous plient en deux.",
+          "1": "Vous vous hissez lentement vers les fruits, en cherchant chaque prise. Vous restez si longtemps sur une branche trop frêle qu'elle finit par craquer et céder. Vous tombez au pied de l'arbre, sonné. Vous renoncez à ce repas et reprenez la route d'un pas mal assuré.",
+          "2": "À peine dans les premières branches, vous croquez dans les fruits à portée de main sans regarder s'ils sont mûrs. Certains sont encore verts, d'autres piqués par les vers. Quelques heures plus tard, de violentes crampes vous plient en deux.",
           "3": "Vous grimpez vite et sans effort jusqu'à la cime, là où les fruits ont pris le plus de soleil. Vous choisissez les plus dorés et vous régalez sans vous presser, puis vous redescendez en un rien de temps, en pleine forme.",
           "4": "Avant même que vous touchiez le tronc, votre familier bondit dans les branches. Il cueille les fruits les plus mûrs, en goûte un au passage et vous lance les autres un à un. Vous n'avez plus qu'à les attraper.",
-          "5": "Pas besoin de grimper : votre familier tend le cou et atteint sans peine des branches bien trop hautes pour vous. Il en détache les fruits les plus juteux et les dépose à vos pieds. Vous mangez à votre faim sans quitter le sol."
+          "5": "Pas besoin de grimper : votre familier tend le cou et atteint sans peine des branches bien trop hautes pour vous. Il en détache les fruits les plus juteux et les dépose à vos pieds. Vous mangez à votre faim sans quitter le sol.",
+          "6": "Vous grimpez jusqu'aux fruits, mais un nid de guêpes pend à la branche voisine. Vous cueillez en retenant votre souffle, jusqu'à ce qu'une guêpe vous pique la main. Vous redescendez en hâte avec deux fruits à peine, que vous mangez en soufflant sur votre main enflée."
         }
       },
       "hunt": {
         "text": "Partir chasser dans les fourrés.",
         "outcomes": {
-          "0": "Vous suivez les traces de gibier dans les fourrés pendant un long moment. À chaque fois, les bêtes vous entendent venir et détalent avant que vous soyez à portée. Vous revenez bredouille, le ventre toujours vide.",
+          "0": "Vous suivez les traces de gibier dans les fourrés bien plus longtemps que prévu. À chaque fois, les bêtes vous entendent venir et détalent avant que vous soyez à portée. Vous revenez bredouille, le ventre toujours vide.",
           "1": "Après une courte traque, vous trouvez un terrier. Vous bouchez ses sorties avec des pierres, sauf une, et attrapez le lapin qui tente de s'en échapper. Vous le faites griller sur un petit feu et le dévorez avec appétit. Repu, vous reprenez la route.",
-          "2": "Vous poursuivez un sanglier à travers les fourrés. Acculé, il fait soudain volte-face et vous charge. Vous n'avez pas le temps de l'éviter, et ses défenses vous labourent la jambe. Gravement blessé, vous devez vous soigner longuement.",
+          "2": "Vous poursuivez un sanglier à travers les fourrés. Acculé, il fait soudain volte-face et vous charge. Rien ne vous protège de ses défenses, qui vous labourent la jambe. Gravement blessé, vous devez vous soigner longuement.",
           "3": "Vous poursuivez un sanglier à travers les fourrés. Acculé, il fait volte-face et vous charge. Vous encaissez le plus gros du choc, mais une défense vous entaille la cuisse. La bête s'enfuit, et vous repartez en boitant.",
           "4": "Le nez au sol, votre familier flaire une piste et vous mène jusqu'à un lièvre tapi sous un buisson. Vous l'abattez d'une pierre avant qu'il détale, le faites rôtir et mangez enfin à votre faim.",
           "5": "Vous débusquez un faisan et l'abattez d'une pierre. Vous le plumez, le farcissez d'herbes cueillies en chemin et le faites rôtir lentement sur la braise, jusqu'à ce que la peau dore et croustille. Vous vous régalez, et repartez en pleine forme.",
           "6": "Vous débusquez un sanglier dans les fourrés. Au lieu de fuir, il gratte la terre, baisse la tête et fonce droit sur vous.",
           "7": "Dans les fourrés vous attend un vieux mâle énorme, couvert de cicatrices, aux défenses longues comme des dagues. Il en a chassé plus d'un de son territoire, et il charge sans attendre.",
-          "8": "Un lapin file se terrer sous une souche. Vous posez votre arme à l'entrée du terrier : elle rougeoie, et les herbes sèches qui l'entourent se mettent à fumer. La fumée s'engouffre sous la souche, et le lapin jaillit par une autre sortie. Vous l'attrapez d'un bond, le faites rôtir et mangez à votre faim."
+          "8": "Un lapin file se terrer sous une souche. Vous posez votre arme à l'entrée du terrier : elle rougeoie, et les herbes sèches qui l'entourent se mettent à fumer. La fumée s'engouffre sous la souche, et le lapin jaillit par une autre sortie. Vous l'attrapez d'un bond, le faites rôtir et mangez à votre faim.",
+          "9": "Vous débusquez un sanglier, mais vous êtes à bout de forces. Il vous charge avant que vous ayez pu lever les bras, vous renverse et vous piétine. Vous restez longtemps à terre avant de pouvoir vous relever, couvert de bleus et le ventre toujours vide."
         },
         "fights": {
           "6": {
@@ -529,7 +531,7 @@
         "text": "Cueillir les champignons.",
         "outcomes": {
           "0": "Vous vous penchez pour ramasser une poignée de champignons. Entre deux racines, quelque chose brille dans la terre. Vous grattez un peu et dégagez un objet, sans doute perdu par un voyageur. Vous le glissez dans votre sac.",
-          "1": "Vous remplissez vos mains de champignons, puis restez perplexe : lesquels se mangent, et comment les préparer ? Vous passez un long moment à les trier sans parvenir à vous décider. Par prudence, vous finissez par tout jeter.",
+          "1": "Vous remplissez vos mains de champignons, puis restez perplexe : lesquels se mangent, et comment les préparer ? Les trier vous prend plus longtemps que prévu, sans que vous parveniez à vous décider. Par prudence, vous finissez par tout jeter.",
           "2": "Un champignon rouge à points blancs vous fait envie, et vous croquez dedans à pleines dents. Peu après, la tête vous tourne et votre ventre se tord. Vous passez de longues heures allongé dans l'herbe, à attendre que ça passe.",
           "3": "Vous reconnaissez les variétés que vous avez déjà cuisinées. Vous en faites revenir quelques-unes sur un petit feu, et ce repas simple vous cale l'estomac. Vous mettez les autres de côté pour plus tard.",
           "4": "Vous triez les champignons d'un coup d'œil. Vous les faites griller sur une pierre plate posée dans les braises, avec un peu d'ail sauvage, et le parfum vous met l'eau à la bouche. Le repas vous rend toutes vos forces. Vous gardez à part un champignon vénéneux, qui pourra servir.",
@@ -548,7 +550,7 @@
         }
       },
       "scavenge": {
-        "text": "Fouiller les vieux campements.",
+        "text": "Fouiller les campements.",
         "outcomes": {
           "0": "Vous fouillez les foyers éteints et les abris de branchages. Sous une bâche, vous trouvez du pain sec et un morceau de lard encore bons. Vous mangez à votre faim, et vous emportez au passage un bout de corde abandonné.",
           "1": "Dans un coin du campement, vous déterrez une caisse de provisions. La viande sent un peu fort, mais la faim l'emporte. Peu après, votre ventre se révolte, et vous devez vous arrêter pour vous soigner.",

@@ -48,6 +48,9 @@
             ]
           },
           "health": 30
+        },
+        "6": {
+          "health": 5
         }
       }
     },
@@ -153,6 +156,15 @@
           "effect": "occupied",
           "lostTime": 20,
           "health": 25
+        },
+        "9": {
+          "requirements": {
+            "energyPercent": {
+              "max": 15
+            }
+          },
+          "health": -35,
+          "effect": "hurt"
         }
       }
     },
