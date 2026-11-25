@@ -600,7 +600,7 @@
         "text": "Fouiller le chantier.",
         "outcomes": {
           "0": "En fouillant le chantier, vous trouvez une caisse de ferraille coincée sous une poutre effondrée. Vous tirez de toutes vos forces, puis glissez une barre rouillée dessous pour faire levier, mais elle plie. Vous finissez par abandonner, les bras fatigués et les mains vides.",
-          "1": "En fouillant le chantier, vous trouvez une caisse de ferraille coincée sous une poutre effondrée. Vous soulevez la poutre de quelques doigts et la calez avec une pierre. L'ouverture suffit pour glisser la main dans la caisse et en tirer un morceau de métal.",
+          "1": "En fouillant le chantier, vous trouvez une caisse de ferraille coincée sous une poutre effondrée. Vous parvenez à soulever un peu la poutre et la calez avec une pierre. L'ouverture suffit pour glisser la main dans la caisse et en tirer un morceau de métal.",
           "2": "En fouillant le chantier, vous trouvez une caisse de ferraille coincée sous une poutre effondrée. Vous soulevez un bout de la poutre et la faites basculer sur le côté. Le métal de la caisse est encore bon : vous en emportez une bonne charge.",
           "3": "Vous retournez les caisses et soulevez les bâches moisies une à une. Sous la dernière, un coffre de charpentier a échappé aux pilleurs. Il y reste un objet utile, que vous emportez après une longue fouille.",
           "4": "Vous plongez la main dans une caisse à outils sans regarder. Une lame de scie rouillée vous entaille profondément la paume. Le sang coule, et il faudra soigner la plaie avant de reprendre la route.",
