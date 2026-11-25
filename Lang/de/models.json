@@ -1528,7 +1528,8 @@
     "keenNose": "feine Nase",
     "mount": "kann einen Reiter tragen",
     "heavy": "sehr schwer",
-    "intimidating": "einschüchternd"
+    "intimidating": "einschüchternd",
+    "climber": "klettert auf Bäume"
   },
   "biomes": {
     "forest": "Wälder",

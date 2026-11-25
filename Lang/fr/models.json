@@ -1528,7 +1528,8 @@
     "keenNose": "a du flair",
     "mount": "peut vous porter",
     "heavy": "très lourd",
-    "intimidating": "impressionnant"
+    "intimidating": "impressionnant",
+    "climber": "grimpe aux arbres"
   },
   "biomes": {
     "forest": "Forêt",

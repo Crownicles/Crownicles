@@ -501,7 +501,8 @@
           "5": "Pas besoin de grimper : votre familier tend le cou et atteint sans peine des branches bien trop hautes pour vous. Il en détache les fruits les plus juteux et les dépose à vos pieds. Vous mangez à votre faim sans quitter le sol.",
           "6": "Vous grimpez jusqu'aux fruits, mais un nid de guêpes pend à la branche voisine. Vous cueillez en retenant votre souffle, jusqu'à ce qu'une guêpe vous pique la main. Vous redescendez en hâte avec deux fruits à peine, que vous mangez en soufflant sur votre main enflée.",
           "7": "Vous grimpez vers les fruits, mais votre lourde armure pèse sur chaque branche. L'une d'elles craque sous votre poids et cède. Vous tombez au pied de l'arbre, sonné. Vous renoncez à ce repas et reprenez la route d'un pas mal assuré.",
-          "8": "Vous grimpez vers les fruits, mais votre lourde armure pèse sur chaque branche. L'une d'elles craque sous votre poids et cède. Vous tombez au pied de l'arbre, sonné. Vous renoncez à ce repas et reprenez la route d'un pas mal assuré."
+          "8": "Vous grimpez vers les fruits, mais votre lourde armure pèse sur chaque branche. L'une d'elles craque sous votre poids et cède. Vous tombez au pied de l'arbre, sonné. Vous renoncez à ce repas et reprenez la route d'un pas mal assuré.",
+          "9": "Avant même que vous touchiez le tronc, votre familier grimpe dans les branches. Arrivé parmi les fruits, il fait tomber les plus mûrs un à un jusqu'à vos pieds. Vous n'avez plus qu'à les ramasser."
         }
       },
       "hunt": {

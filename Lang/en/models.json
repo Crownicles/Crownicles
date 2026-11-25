@@ -1528,7 +1528,8 @@
     "keenNose": "keen nose",
     "mount": "can carry a rider",
     "heavy": "very heavy",
-    "intimidating": "intimidating"
+    "intimidating": "intimidating",
+    "climber": "climbs trees"
   },
   "biomes": {
     "forest": "Forest",

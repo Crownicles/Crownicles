@@ -1528,7 +1528,8 @@
     "keenNose": "buen olfato",
     "mount": "puede llevar un jinete",
     "heavy": "muy pesado",
-    "intimidating": "intimidante"
+    "intimidating": "intimidante",
+    "climber": "trepa a los árboles"
   },
   "biomes": {
     "forest": "Bosque",

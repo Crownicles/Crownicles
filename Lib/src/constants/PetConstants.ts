@@ -660,7 +660,8 @@ export abstract class PetConstants {
 		KEEN_NOSE: "keenNose",
 		MOUNT: "mount",
 		HEAVY: "heavy",
-		INTIMIDATING: "intimidating"
+		INTIMIDATING: "intimidating",
+		CLIMBER: "climber"
 	} as const;
 
 	static SEX = {

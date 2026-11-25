@@ -1528,7 +1528,8 @@
     "keenNose": "buon fiuto",
     "mount": "può portare un cavaliere",
     "heavy": "molto pesante",
-    "intimidating": "intimidatorio"
+    "intimidating": "intimidatorio",
+    "climber": "si arrampica sugli alberi"
   },
   "biomes": {
     "forest": "Foresta",
