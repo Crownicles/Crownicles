@@ -142,13 +142,13 @@ Part des 186 joueurs actifs sur 14 jours (mesurée le 22/11/2026) :
 | `mission_completer` | badge acheté au Marché royal : un « maître des quêtes » | 28 % |
 | `legendary_pet` | a dressé un familier puissant | 27 % |
 | `expert_expediteur` | a mené de nombreuses expéditions avec son familier | 12 % |
-| `sentimental_crafter` | a fait améliorer une humble relique jusqu'au sommet par le forgeron royal | 7 % |
+| `sentimental_crafter` | a fait perfectionner au plus haut niveau, par le forgeron royal, un objet sans valeur | 7 % |
 | `oracle_patron` | a beaucoup contribué aux bénédictions de l'Oracle | 4 % |
 | `top_glory` | a remporté le plus de gloire d'une saison de combat : un combattant célèbre | 3 % |
 | `master_chef` | cuisinier émérite, niveau 100 de cuisine | 2 % |
 | `animal_lover` | a montré tous les familiers à Talvar le nain | 0 % (badge très rare) |
 
-Comme pour le karma, le badge se **montre** : un personnage reconnaît le joueur, ou réagit à ce qu'il a fait (*le forgeron reconnaît celui qui a fait reforger une babiole jusqu'au sommet*, *un dresseur a entendu parler de votre familier*). Le texte ne nomme jamais le badge. Choisis un badge en lien avec la scène, et une issue à badge reste un bonus : il faut toujours une autre issue pour les joueurs qui ne l'ont pas.
+Comme pour le karma, le badge se **montre** : un personnage reconnaît le joueur, ou réagit à ce qu'il a fait (*le forgeron reconnaît celui qui a fait perfectionner une babiole sans valeur par le forgeron royal*, *un dresseur a entendu parler de votre familier*). Le texte ne nomme jamais le badge. Choisis un badge en lien avec la scène, et une issue à badge reste un bonus : il faut toujours une autre issue pour les joueurs qui ne l'ont pas.
 
 ## Karma
 
