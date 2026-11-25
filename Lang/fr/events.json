@@ -390,9 +390,9 @@
       "steal": {
         "text": "Puiser discrètement dans la caisse.",
         "outcomes": {
-          "0": "Les hommes sont absorbés par leur discussion. Votre main se glisse dans la caisse et en ressort avec quelques pièces. Vous quittez la boutique d'un pas tranquille, sans vous retourner.",
+          "0": "Lassés de vous observer, les hommes reprennent leur discussion à voix basse. Votre main se glisse dans la caisse et en ressort avec quelques pièces. Vous quittez la boutique d'un pas tranquille, sans vous retourner.",
           "1": "Votre main traîne une seconde de trop au-dessus de la caisse. Cinq hommes à la carrure imposante vous entourent aussitôt. La correction est rapide, et vous ressortez groggy dans la ruelle.",
-          "2": "Vous ouvrez la caisse : elle est presque vide. Un des hommes se retourne à ce moment-là. Honteux, vous devez dédommager les propriétaires et subir un long sermon avant de pouvoir repartir.",
+          "2": "Vous profitez d'un moment où les hommes regardent ailleurs pour ouvrir la caisse : elle est presque vide. L'un d'eux se retourne à cet instant. Honteux, vous devez dédommager les propriétaires et subir un long sermon avant de pouvoir repartir.",
           "3": "Vous attendez que les hommes se penchent sur un étal. D'un geste vif, vous videz une bonne partie de la caisse. Vous êtes déjà dans la ruelle quand l'un d'eux relève la tête.",
           "4": "Sur un signe de votre part, votre singe bondit sur le comptoir. Il plonge la main dans la caisse, attrape au passage un bibelot sur un étal et vous rejoint dehors. Les cris des marchands arrivent trop tard.",
           "5": "Un des hommes vous attrape le poignet, puis vous dévisage. Il a entendu parler de vous, et en bien. Plus déçu que fâché, il vous fait la leçon un long moment, puis vous laisse partir sans appeler la garde."
@@ -412,7 +412,7 @@
       "end": {
         "outcomes": {
           "0": "Vous restez planté sur le seuil sans oser avancer. Les hommes finissent par vous demander ce que vous voulez. Vous bredouillez une excuse et ressortez, leurs regards dans votre dos.",
-          "1": "Les hommes oublient leur discussion pour admirer votre familier. Ils vous posent mille questions à son sujet, et le temps file. Vous ne faites aucune affaire, mais vous repartez de bonne humeur.",
+          "1": "Les hommes oublient leur méfiance pour admirer votre familier. Ils vous posent mille questions à son sujet, et le temps file. Vous ne faites aucune affaire, mais vous repartez de bonne humeur.",
           "2": "L'un des hommes vous reconnaît. Sans un mot, il referme la caisse et se poste devant le comptoir, les bras croisés. Vous comprenez le message et ressortez aussitôt dans la ruelle."
         }
       }
