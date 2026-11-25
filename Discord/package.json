@@ -22,7 +22,7 @@
     "interface": "i18next-resources-for-ts interface -i ../Lang/en -o ./src/@types/resources.d.ts"
   },
   "dependencies": {
-    "@discordjs/builders": "1.14.1",
+    "@discordjs/builders": "1.15.0",
     "@types/express": "5.0.6",
     "@types/node": "26.2.0",
     "archiver": "8.0.0",
