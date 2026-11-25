@@ -273,7 +273,7 @@
       "goMarket": {
         "text": "Aller au marché.",
         "outcomes": {
-          "0": "Vous flânez un moment entre les étals du marché. Au pied d'une charrette, vous ramassez un petit objet tombé là, que personne ne vient réclamer.",
+          "0": "Vous flânez un moment entre les étals du marché. Devant une échoppe, un panier de vieilleries attend preneur : vous y dénichez un objet encore utile.",
           "1": "Vous faites le tour du marché, d'un étal à l'autre. Les marchands crient leurs prix, la foule vous bouscule, et rien ne vous tente vraiment. Vous ressortez les mains vides, après avoir perdu un long moment.",
           "2": "Vous vous attardez devant un étal, la bourse bien en vue. Une main habile en tranche les cordons dans la foule. Le temps de vous retourner, le voleur a disparu entre les charrettes, et les gardes ne retrouvent personne.",
           "3": "Une main se glisse vers votre bourse. Vous attrapez le poignet du voleur avant qu'il ne l'atteigne. La garde l'emmène, et une marchande qu'il venait de dépouiller vous remercie d'une poignée de pièces.",
