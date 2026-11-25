@@ -82,6 +82,11 @@ const TEXT_RULES = [
 		level: "warnings", test: text => /(?<!\p{L})retard(?!\p{L})|plus tard que prévu/u.test(text), message: "\"retard\" or \"plus tard que prévu\": the player has no schedule (write \"plus longtemps que prévu\")"
 	},
 	{
+		level: "warnings",
+		test: text => /souffl\p{L}* (?:sur|dans) (?:votre|vos|sa|ses) (?:main|paume|doigt)/u.test(text) && !/brûl|braise|feu|froid|gel|glac|engourd/u.test(text),
+		message: "blowing on the hands only cools a burn or warms cold fingers: show a gesture that suits the injury, and that the hands are free to make"
+	},
+	{
 		level: "warnings", test: text => /encore et encore|de plus en plus fort/u.test(text), message: "escalation (encore et encore, de plus en plus fort): the player reacts at once"
 	},
 	{
