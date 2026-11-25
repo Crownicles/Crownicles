@@ -407,7 +407,7 @@ const MAX_UNCONDITIONAL_OUTCOMES = 6;
 /**
  * Words naming a person: an outcome where the player deals with someone almost always changes the karma
  */
-const PERSON = /\b(marchande?s?|gardes?|aubergiste|forgeron|pêcheu(?:r|se)s?|voyageu(?:r|se)s?|inconnue?s?|hommes?|femmes?|enfants?|villageois(?:es?)?|paysan(?:ne)?s?|brigands?|bandits?|capitaine|ermite|vieillard|vieille|duc|princesse|chevaliers?|soldats?|moine|sorcière|mendiant|vagabond|charretier|berger|bergère|bûcheron|chasseurs?|pirates?|équipage|marins?|courtier|passants?|habitants|propriétaires?|cuisinier|clients?|noble|seigneur|sergent|mercenaires?|complices?|gamins?|ivrogne|musicien|barde|spectateurs?|comédiens?|fermiers?|fermière|guérisseu(?:r|se)|alchimiste|messager|pèlerins?|caravaniers?|nomades?|tavernier|serveuse|apprenti|écuyer)\b/iu;
+const PERSON = /\b(marchande?s?|gardes?|aubergiste|forgeron|pêcheu(?:r|se)s?|voyageu(?:r|se)s?|inconnue?s?|hommes?|femmes?|enfants?|villageois(?:es?)?|paysan(?:ne)?s?|brigands?|bandits?|capitaine|ermite|vieillard|vieille|duc|princesse|chevaliers?|soldats?|moine|sorcière|mendiant|vagabond|charretier|berger|bergère|bûcheron|chasseurs?|pirates?|équipage|marins?|courtier|(?<!en )passants?|habitants|propriétaires?|cuisinier|clients?|noble|seigneur|sergent|mercenaires?|complices?|gamins?|ivrogne|musicien|barde|spectateurs?|comédiens?|fermiers?|fermière|guérisseu(?:r|se)|alchimiste|messager|pèlerins?|caravaniers?|nomades?|tavernier|serveuse|apprenti|écuyer)\b/iu;
 
 /**
  * Outcomes whose text names a person but whose data leaves the karma unchanged

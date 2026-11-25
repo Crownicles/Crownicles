@@ -79,7 +79,7 @@ const TEXT_RULES = [
 		level: "warnings", test: (text, kind) => kind === "choice" && [...text].length > CHOICE_SHORT_LENGTH, message: `choice longer than ${CHOICE_SHORT_LENGTH} chars: keep the details for the outcome`
 	},
 	{
-		level: "warnings", test: text => /(?<!\p{L})retard(?!\p{L})/u.test(text), message: "\"retard\": the player has no schedule"
+		level: "warnings", test: text => /(?<!\p{L})retard(?!\p{L})|plus tard que prévu/u.test(text), message: "\"retard\" or \"plus tard que prévu\": the player has no schedule (write \"plus longtemps que prévu\")"
 	},
 	{
 		level: "warnings", test: text => /encore et encore|de plus en plus fort/u.test(text), message: "escalation (encore et encore, de plus en plus fort): the player reacts at once"

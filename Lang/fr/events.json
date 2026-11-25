@@ -640,35 +640,36 @@
       "butch": {
         "text": "Dépecer le renard pour vendre sa peau.",
         "outcomes": {
-          "0": "Maladroit, vous déchirez la peau à plusieurs endroits. Un marchand ambulant qui passe au carrefour retourne la fourrure trouée en grimaçant. Il vous en donne quelques pièces, sans plus.",
+          "0": "Faute de bonne lame, vous déchirez la peau à plusieurs endroits. Un marchand ambulant qui passe au carrefour retourne la fourrure trouée en grimaçant. Il vous en donne quelques pièces, sans plus.",
           "1": "Vous dépecez le renard sans trop abîmer la peau. Un marchand ambulant s'arrête au carrefour, examine la fourrure et vous en propose un prix correct. Vous acceptez.",
           "2": "D'une main sûre, vous retirez la peau d'un seul tenant. Le premier marchand qui passe au carrefour la palpe, siffle entre ses dents et vous en offre une belle somme.",
-          "3": "Un marchand ambulant vous reconnaît : on lui a dit que vous étiez honnête en affaires. Plutôt que des pièces, il vous propose d'échanger la fourrure contre un objet de sa charrette. Vous acceptez sans hésiter.",
-          "4": "Le marchand qui passe au carrefour vous dévisage. On décrit votre visage dans les auberges, et il vous soupçonne d'avoir volé cette peau. Il finit par la prendre pour une poignée de pièces, à prendre ou à laisser.",
-          "5": "Vous attendez un acheteur au bord du chemin, la peau sur l'épaule. Personne ne passe. La peau se met à sentir, les mouches arrivent, et vous la jetez trop tard : vous vous sentez mal pour le reste de la journée.",
-          "6": "Vous vous agenouillez près de la dépouille, mais votre renard se couche contre elle et grogne dès que vous tendez la main. Vous renoncez à la peau et reprenez la route, votre renard sur les talons."
+          "3": "Vous dépecez le renard au pied du poteau. Un marchand ambulant qui passe au carrefour vous reconnaît : on lui a dit que vous étiez honnête en affaires. Il prend la peau sans même la retourner et vous laisse choisir en échange un objet de sa charrette.",
+          "4": "Vous dépecez le renard au pied du poteau. Un marchand ambulant s'arrête, puis vous dévisage : on décrit votre visage dans les auberges. Persuadé que vous avez volé cette peau à un trappeur, il ne vous en offre qu'une poignée de pièces, à prendre ou à laisser.",
+          "5": "Vous dépecez le renard et attendez un acheteur au bord du chemin, la peau sur l'épaule. Les voyageurs défilent au carrefour, mais aucun ne veut d'une peau encore grasse. Elle se met à sentir, les mouches arrivent, et vous la jetez trop tard : vous vous sentez mal pour le reste de la journée.",
+          "6": "Vous vous agenouillez près de la dépouille, mais votre renard se couche contre elle et grogne dès que vous tendez la main. Vous renoncez à la peau et reprenez la route, votre renard sur les talons.",
+          "7": "Vous dépecez le renard au pied du poteau. Un marchand qui passe au carrefour vous en propose une misère, mais un second, arrivé par un autre chemin, surenchérit aussitôt. Les deux hommes se disputent la peau, et vous la vendez au plus offrant."
         }
       },
       "cook": {
         "text": "Faire cuire le renard.",
         "outcomes": {
           "0": "Vous allumez un petit feu de brindilles et faites rôtir quelques morceaux. La viande est dure et forte en goût, ce n'est pas un festin. Mais elle est chaude, et elle calme votre faim.",
-          "1": "Vous n'avez jamais vraiment appris à cuisiner. La viande, noire dehors et crue dedans, ne passe pas. Moins d'une heure plus tard, vous êtes plié en deux au bord du chemin.",
+          "1": "Vous n'avez jamais vraiment appris à cuisiner : la viande sort du feu noire dehors et crue dedans. La faim l'emporte, et vous la mangez quand même. Moins d'une heure plus tard, vous êtes plié en deux au bord du chemin.",
           "2": "Vous découpez la bête proprement et laissez la viande cuire à feu doux, le temps qu'il faut. Elle est tendre et bien dorée. Ce repas imprévu vous rend des forces.",
           "3": "Vous frottez la viande d'herbes cueillies au bord du chemin et la faites rôtir lentement. Le renard, d'ordinaire dur et fort en goût, devient un vrai repas. Vous repartez requinqué.",
-          "4": "Le feu allumé, vous soulevez le renard par les pattes. Le corps est pris d'un dernier spasme et vous échappe des mains. En reculant, vous trébuchez et posez la main en plein dans les braises.",
+          "4": "Le feu allumé, vous soulevez le renard par les pattes. Le corps est pris d'un dernier spasme et vous échappe des mains. En reculant, vous trébuchez et posez la main en plein dans les braises. Vous repartez la main bandée et le ventre vide.",
           "5": "Votre familier s'assoit près du feu et ne quitte plus la broche des yeux. Vous finissez par lui lancer quelques morceaux. Vous mangez un peu moins, mais le repas, partagé, vous fait du bien à tous les deux.",
-          "6": "Faute de bois sec au carrefour, vous posez les morceaux de renard à même votre arme, qui se met à rougeoyer. La viande grésille et cuit à cœur en quelques instants, sans brûler. Pour un renard trouvé au bord du chemin, c'est presque bon.",
+          "6": "Plutôt que de chercher du bois, vous posez les morceaux de renard à même votre arme, qui se met à rougeoyer. La viande grésille et cuit à cœur en quelques instants, sans brûler. Pour un renard trouvé au bord du chemin, c'est presque bon.",
           "7": "Vous ramassez du bois pour le feu. À votre retour, votre renard est assis devant la dépouille et vous fixe sans bouger. Vous n'avez plus le cœur à la faire cuire, et vous repartez le ventre vide."
         }
       },
       "inspectCarcass": {
         "text": "Examiner la dépouille.",
         "outcomes": {
-          "0": "Vous retournez la bête avec précaution. Ni plaie, ni bave, ni trace de maladie : le renard semble mort de froid ou de vieillesse. Vous y avez passé un moment, mais vous savez à quoi vous en tenir.",
-          "1": "En soulevant le corps, vous découvrez un petit sac de cuir enfoncé dans la boue. Un voyageur a dû le perdre en passant au carrefour. À l'intérieur, un objet que vous décidez de garder.",
+          "0": "Vous retournez la bête avec précaution. Ni bave ni trace de maladie, et ses crocs sont usés et jaunis : ce vieux renard semble simplement mort de vieillesse. Vous le reposez au pied du poteau et reprenez la route.",
+          "1": "En soulevant le corps, vous découvrez dessous un petit sac de cuir à demi enfoncé dans la boue et couvert de moisissure : un voyageur a dû le perdre au carrefour il y a longtemps. À l'intérieur, un objet que vous décidez de garder.",
           "2": "Votre serpent se dresse près de la gueule du renard et siffle sans s'arrêter. En regardant mieux, vous voyez des restes de viande verdâtre entre ses crocs : un appât empoisonné. Vous laissez la bête où elle est.",
-          "3": "Vous manipulez le corps à mains nues. Les puces quittent la bête refroidie et trouvent en vous un nouvel hôte. Vous passez un long moment à vous gratter au bord du chemin avant de pouvoir repartir."
+          "3": "Sans prendre de précaution, vous retournez le corps à mains nues. Les puces quittent la bête refroidie et trouvent en vous un nouvel hôte. Vous passez un long moment à vous gratter au bord du chemin avant de pouvoir repartir."
         }
       },
       "buryCarcass": {
@@ -677,7 +678,7 @@
           "0": "Avec une pierre plate, vous creusez un trou au bord du chemin, à l'écart du passage. Le sol est dur et le travail prend du temps. Vous couvrez le renard de terre et posez quelques pierres dessus contre les charognards.",
           "1": "Vous attaquez la terre à grands coups, sans reprendre votre souffle. En peu de temps, le trou est assez profond pour que les bêtes ne viennent pas le rouvrir. Vous couvrez le renard et reprenez la route.",
           "2": "Vous sortez une planche de votre sac et vous en servez comme d'une pelle. Le bois finit par se fendre, mais le trou est vite creusé. Vous couvrez le renard et repartez sans avoir perdu trop de temps.",
-          "3": "Votre renard reste assis près du trou pendant que vous creusez. Quand la terre recouvre le corps, il gratte un peu le monticule, puis vient se coller contre vos jambes. Vous repartez plus tard que prévu.",
+          "3": "Votre renard reste assis près du trou pendant que vous creusez. Quand la terre recouvre le corps, il gratte un peu le monticule, puis vient se coller contre vos jambes. Vous restez près de la tombe plus longtemps que prévu avant de reprendre la route.",
           "4": "Un voyageur qui passe au carrefour vous reconnaît : on parle de vous en bien sur les routes. Il pose son sac et vous aide à creuser. Le travail fini, il partage avec vous son pain et un morceau de fromage."
         }
       },
@@ -689,14 +690,14 @@
           "2": "En passant au carrefour, vous vous arrêtez au poteau pour lire les directions. À vos pieds, le corps du renard est pris d'un spasme. Vous sursautez et vous cognez le front contre l'une des planches. Le choc est rude, et une bosse ne tarde pas à pousser.",
           "3": "En passant au carrefour, vous vous arrêtez au poteau pour lire les directions. À vos pieds, le corps du renard est pris d'un spasme. Vous sursautez et heurtez l'une des planches du poteau, mais vous sentez à peine le choc. La planche, elle, pend désormais de travers.",
           "4": "Votre renard s'arrête net devant la dépouille et la renifle longuement. Il semble ne pas vouloir la quitter. Après plusieurs appels sans effet, vous le prenez dans vos bras pour reprendre la route.",
-          "5": "Vous contournez le poteau indicateur en gardant vos distances avec le renard. Au carrefour, vous prenez le premier chemin venu, le ventre vide mais l'esprit tranquille.",
+          "5": "Vous dépassez le poteau quand un paysan arrive, un sac à la main. Il a semé des appâts empoisonnés contre les renards qui pillent son poulailler, et celui-ci en a mangé un. Soulagé que vous n'y ayez pas touché, il ramasse la bête. Vous l'aidez à retrouver les autres appâts dans l'herbe avant de reprendre la route.",
           "6": "Une charrette s'arrête au carrefour au moment où vous passez. Le cocher jette un regard au renard, puis à votre mine affamée, et vous tend une pomme de sa réserve. Vous la croquez en reprenant la route."
         }
       },
       "end": {
         "outcomes": {
           "0": "Vous restez un moment devant le renard, sans savoir quoi en faire. Votre ventre gargouille, mais l'idée de manger une bête trouvée morte ne vous dit rien. Vous finissez par reprendre la route.",
-          "1": "Votre loup renifle longuement le renard, puis s'assoit à côté sans bouger. Vous l'appelez plusieurs fois. Il ne se relève qu'au bout d'un long moment, et vous reprenez la route ensemble.",
+          "1": "Votre loup renifle longuement le renard, puis s'assoit à côté sans bouger. Vous l'appelez plusieurs fois. Il ne se relève qu'au bout d'un moment, et vous reprenez la route ensemble.",
           "2": "Vous tournez autour du renard en vous demandant comment on prépare une telle bête. Faute de réponse, vous le laissez là. Un peu plus loin, la faim vous tord l'estomac et vous fait tourner la tête.",
           "3": "Pendant que vous hésitez, votre T-Rex se jette sur le renard et l'avale d'une seule bouchée. Il trottine ensuite à vos côtés en se léchant les babines. La question est réglée."
         }
@@ -920,7 +921,7 @@
       "end": {
         "outcomes": {
           "0": "Vous faites le tour de la foire et jetez quelques coups d'œil aux étals, mais aucun ne vous retient. Vous laissez la musique derrière vous et vous éloignez des quais sans avoir dépensé une pièce.",
-          "1": "Vous n'achetez rien, mais vous flânez longuement entre les stands. La musique, l'odeur de friture et le vent du large vous détendent. Vous repartez reposé, un peu plus tard que prévu.",
+          "1": "Vous n'achetez rien, mais vous flânez entre les stands plus longtemps que prévu. La musique, l'odeur de friture et le vent du large vous détendent, et vous repartez reposé.",
           "2": "Vous flânez longuement entre les stands. Sur votre passage, des habitants vous saluent avec le sourire, et une marchande de beignets insiste pour vous en offrir un. Vous repartez détendu, le ventre content.",
           "3": "Entre deux stands, un jeune homme vous arrête et vous serre la main. Sur la Voie champêtre, il vous a vu mettre en fuite des brigands qui détroussaient des voyageurs. Il tient à vous remercier et vous glisse une bourse bien garnie.",
           "4": "Autour de vous, les fêtards s'écartent : votre familier leur fait peur. Vous restez près de lui, et il se tient tranquille au milieu de la foule. Bientôt, des enfants s'enhardissent à l'approcher, et la fête reprend autour de vous.",
