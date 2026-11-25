@@ -207,9 +207,9 @@
               95
             ]
           },
-          "randomItem": {},
-          "effect": "occupied",
-          "lostTime": 10
+          "randomItem": {
+            "category": 3
+          }
         },
         "2": {
           "requirements": {
