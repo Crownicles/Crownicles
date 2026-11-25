@@ -87,6 +87,7 @@ Le français (`Lang/fr`) est la référence. Depuis l'abandon de Crowdin (#5181)
 | *Vous testez chaque planche, comme la route vous l'a appris* (event 12) | Formule toute faite, qui sonne écrite | *Habitué des vieux ponts, vous testez chaque planche* |
 | *Le courant vous roule contre les rochers* (event 12) | Verbe mal employé : on roule *sur* quelque chose, ou un courant vous roule *dans* l'eau | *Il vous emporte loin en aval et vous projette contre les rochers* |
 | *Le vent se lève et le sable remplace les cailloux : le chemin débouche sur la plage* (event 12) | Détail parasite (le vent) et tournure littéraire | *Bientôt, vos pieds s'enfoncent dans le sable, et vous arrivez sur la plage* |
+| *des pierres tombées ont crevé une cachette* ; *le plancher a crevé la cassette* ; *le toit crevé* (events 16 et 76) | Le propriétaire n'aime pas *crever* pour un objet | *ont ouvert une cachette*, *a brisé la cassette*, *le toit délabré* |
 | *Pour ne pas déranger le forgeron, vous faites un large détour autour de la prairie. Le sol y est plus mou que prévu* (event 14) | Raison absurde (passer devant quelqu'un ne le dérange pas), *y* qui ne renvoie à rien de clair, et 20 minutes perdues sans que le joueur ait rien fait pour | Une issue neutre sans malus, ou un petit plus : *un ruisseau coupe le chemin : vous vous y rafraîchissez* |
 
 ## Structure d'un event
