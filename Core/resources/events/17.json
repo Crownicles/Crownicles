@@ -140,6 +140,19 @@
               "effect": "hurt"
             }
           }
+        },
+        "8": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "kinds": [
+                "burnedDamage"
+              ]
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 20,
+          "health": 25
         }
       }
     },

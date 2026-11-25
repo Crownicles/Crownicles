@@ -250,6 +250,22 @@
             "bigFeast"
           ],
           "karma": 1
+        },
+        "7": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "kinds": [
+                "poisonedDamage"
+              ]
+            }
+          },
+          "effect": "occupied",
+          "health": 20,
+          "lostTime": 60,
+          "tags": [
+            "bigFeast"
+          ]
         }
       }
     },

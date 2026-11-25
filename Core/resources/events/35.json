@@ -126,6 +126,23 @@
             ]
           },
           "karma": 2
+        },
+        "12": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "kinds": [
+                "frozenDamage"
+              ]
+            }
+          },
+          "money": 80,
+          "effect": "occupied",
+          "lostTime": 20,
+          "tags": [
+            "drinkAlcohol"
+          ],
+          "karma": 2
         }
       }
     },

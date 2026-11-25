@@ -136,6 +136,18 @@
             ]
           },
           "money": 300
+        },
+        "8": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "kinds": [
+                "burnedDamage"
+              ]
+            }
+          },
+          "money": 120,
+          "karma": 1
         }
       }
     },

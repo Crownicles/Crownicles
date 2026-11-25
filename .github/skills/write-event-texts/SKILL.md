@@ -240,6 +240,7 @@ Si l'une n'a pas de réponse dans le texte, l'issue ne tient pas.
 - **Une ruse tient debout des deux côtés.** Qui l'a préparée, pourquoi, et quand le joueur la découvre, au moment où il la découvrirait vraiment. Event 71 : une bourse remplie de noyaux de dattes, que le joueur ne découvre qu'en la vidant loin de la tente, ne tient pas. Personne ne range des noyaux dans une bourse, et on sent tout de suite la différence. Ce qui tient : Xirtex attendait ce voleur au karma bas et lui a préparé un leurre, une bourse lourde remplie de cailloux plats qui tintent comme des pièces, que le joueur ouvre au clair de lune à peine sorti.
 - **Une perte de temps plutôt qu'une altération lourde** quand la situation est bénigne : se perdre dans une auberge en ruine, c'est fort ; mettre longtemps à en ressortir (`occupied`), c'est juste.
 - **Le mot du texte suit le seuil**, et inversement.
+- **La condition est la cause de ce qui arrive.** Le joueur doit pouvoir relier son issue à ce qui la déclenche. La fatigue dépend de l'énergie (`energyPercent`), pas de la vitesse. La vitesse sert à rattraper, esquiver, se rattraper à temps ou fuir, et le texte le montre (*Trop lent pour l'éviter…*, *vous ne vous rattrapez pas à temps*). Event 14 : continuer malgré la fatigue faisait s'effondrer les joueurs à 10 de vitesse ou moins et donnait des ampoules aux autres ; c'est maintenant l'énergie qui décide (`max` 15 : il s'endort au bord du chemin ; 16 à 50 : il traîne les pieds).
 
 ### L'échelle des seuils
 
@@ -253,6 +254,7 @@ L'échelle est calée sur les 130 joueurs réguliers en production, c'est-à-dir
 | un joueur fort, un vétéran | `min` 130 | `min` 700 | `min` 740 | `min` 500 | 10 % |
 | un joueur exceptionnel | `min` 140 | `min` 780 | `min` 860 | `min` 560 | 5 % |
 
+- **Une vitesse de 10 ou moins existe bien** : 17 joueurs réguliers sur 145 (12 %, mesuré le 25/11/2026). Ce sont surtout les classes en armure lourde (Ganté, Casqué, Maillé, Tank impénétrable), que leur équipement ralentit, et les débutants. Le texte d'une telle issue montre une lenteur, pas une faiblesse en général.
 - **« Fort » veut dire vraiment fort**, le premier dixième. Être dans le premier quart, c'est juste « correct ».
 - **Des paliers plutôt qu'un seuil binaire.** Entre une défense de 519 et de 520, le joueur ne doit pas passer de « se faire déchiqueter » à « s'en sortir indemne ». Quand une stat fait varier un malus ou un bonus, on le gradue en trois paliers :
 

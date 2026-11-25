@@ -204,18 +204,17 @@
         },
         "2": {
           "requirements": {
-            "speed": {
-              "max": 10
+            "energyPercent": {
+              "max": 15
             }
           },
-          "effect": "sleeping",
-          "health": -20
+          "effect": "sleeping"
         },
         "3": {
           "requirements": {
-            "speed": {
-              "min": 11,
-              "max": 134
+            "energyPercent": {
+              "min": 16,
+              "max": 50
             }
           },
           "effect": "feetHurt"

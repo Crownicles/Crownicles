@@ -117,6 +117,20 @@
           "health": -25,
           "money": -200,
           "effect": "hurt"
+        },
+        "9": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "kinds": [
+                "frozenDamage"
+              ]
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 20,
+          "health": 15,
+          "karma": 3
         }
       }
     },

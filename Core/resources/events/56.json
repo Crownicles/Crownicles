@@ -42,6 +42,20 @@
             }
           },
           "money": -40
+        },
+        "6": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "kinds": [
+                "burnedDamage"
+              ]
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 20,
+          "health": 15,
+          "karma": 1
         }
       }
     },
@@ -175,6 +189,20 @@
           },
           "effect": "occupied",
           "lostTime": 15
+        },
+        "6": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "kinds": [
+                "poisonedDamage"
+              ]
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 15,
+          "money": 90,
+          "karma": 1
         }
       }
     },

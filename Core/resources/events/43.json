@@ -354,6 +354,19 @@
           },
           "effect": "sleeping",
           "health": 10
+        },
+        "9": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "types": [
+                "magic"
+              ]
+            }
+          },
+          "effect": "sleeping",
+          "health": 15,
+          "karma": 1
         }
       }
     }

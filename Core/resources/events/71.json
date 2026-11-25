@@ -46,6 +46,17 @@
           },
           "effect": "lost",
           "karma": 1
+        },
+        "6": {
+          "requirements": {
+            "weaponLevel": {
+              "min": 3
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 20,
+          "health": 30,
+          "karma": 1
         }
       }
     },

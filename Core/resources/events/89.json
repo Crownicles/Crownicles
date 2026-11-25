@@ -176,6 +176,15 @@
             ]
           },
           "karma": 1
+        },
+        "7": {
+          "requirements": {
+            "armorLevel": {
+              "min": 3
+            }
+          },
+          "health": 10,
+          "karma": 1
         }
       }
     },

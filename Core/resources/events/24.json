@@ -231,6 +231,17 @@
           "tags": [
             "moneyUsage"
           ]
+        },
+        "8": {
+          "requirements": {
+            "weaponLevel": {
+              "min": 3
+            }
+          },
+          "money": 80,
+          "effect": "occupied",
+          "lostTime": 30,
+          "karma": 1
         }
       }
     }

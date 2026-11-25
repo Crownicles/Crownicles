@@ -149,6 +149,18 @@
           "effect": "occupied",
           "lostTime": 120,
           "karma": 2
+        },
+        "5": {
+          "requirements": {
+            "weaponLevel": {
+              "min": 3
+            }
+          },
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 90,
+          "health": 20,
+          "karma": 1
         }
       }
     },

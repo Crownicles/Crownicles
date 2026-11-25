@@ -87,6 +87,21 @@
             "moneyUsage"
           ],
           "karma": 1
+        },
+        "7": {
+          "requirements": {
+            "weaponLevel": {
+              "min": 3
+            }
+          },
+          "money": -50,
+          "randomItem": {},
+          "effect": "occupied",
+          "lostTime": 20,
+          "tags": [
+            "moneyUsage"
+          ],
+          "karma": 1
         }
       }
     },

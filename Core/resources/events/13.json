@@ -204,6 +204,20 @@
           "effect": "sleeping",
           "health": 30,
           "karma": 3
+        },
+        "6": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "kinds": [
+                "frozenDamage"
+              ]
+            }
+          },
+          "forceStayInCity": true,
+          "effect": "sleeping",
+          "health": 30,
+          "karma": 1
         }
       }
     },
@@ -424,6 +438,18 @@
           "effect": "occupied",
           "lostTime": 30,
           "money": 60,
+          "karma": 2
+        },
+        "8": {
+          "requirements": {
+            "armorLevel": {
+              "min": 3
+            }
+          },
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 25,
+          "money": 50,
           "karma": 2
         }
       }

@@ -427,6 +427,19 @@
             "moneyUsage"
           ],
           "karma": 2
+        },
+        "10": {
+          "requirements": {
+            "armorLevel": {
+              "min": 3
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 30,
+          "randomItem": {
+            "category": 3
+          },
+          "karma": 1
         }
       }
     }

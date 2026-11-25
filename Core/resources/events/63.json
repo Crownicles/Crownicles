@@ -257,6 +257,20 @@
           "effect": "occupied",
           "lostTime": 15,
           "karma": -2
+        },
+        "11": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "kinds": [
+                "burnedDamage"
+              ]
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 30,
+          "money": 100,
+          "karma": -2
         }
       }
     },

@@ -110,6 +110,19 @@
           "health": 8,
           "effect": "occupied",
           "lostTime": 40
+        },
+        "6": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "kinds": [
+                "burnedDamage"
+              ]
+            }
+          },
+          "health": 12,
+          "effect": "occupied",
+          "lostTime": 15
         }
       }
     },

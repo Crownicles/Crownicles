@@ -55,6 +55,20 @@
           "lostTime": 15,
           "health": 20,
           "karma": 1
+        },
+        "6": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "types": [
+                "magic"
+              ]
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 15,
+          "randomItem": {},
+          "karma": 1
         }
       }
     },

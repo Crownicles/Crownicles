@@ -125,6 +125,20 @@
           "karma": 10,
           "effect": "occupied",
           "lostTime": 30
+        },
+        "8": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "types": [
+                "magic"
+              ]
+            }
+          },
+          "money": 80,
+          "karma": 10,
+          "effect": "occupied",
+          "lostTime": 30
         }
       }
     },

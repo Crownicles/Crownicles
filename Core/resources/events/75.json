@@ -55,6 +55,20 @@
           },
           "money": 120,
           "karma": 3
+        },
+        "7": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "kinds": [
+                "frozenDamage"
+              ]
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 60,
+          "money": 100,
+          "karma": 1
         }
       }
     },

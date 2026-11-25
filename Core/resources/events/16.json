@@ -206,6 +206,17 @@
           "effect": "occupied",
           "lostTime": 30,
           "health": 15
+        },
+        "5": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "kinds": [
+                "poisonedDamage"
+              ]
+            }
+          },
+          "randomItem": {}
         }
       }
     },
