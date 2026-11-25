@@ -140,6 +140,11 @@ Le français (`Lang/fr`) est la référence. Depuis l'abandon de Crowdin (#5181)
 - **Les voisins de la carte sont les seuls lieux qu'on peut supposer proches.**
   - Ne suppose jamais la destination suivante du joueur.
   - `mapTypesDestination` doit viser un type présent chez un voisin, sinon l'event plante. C'est arrivé avec le type `mo` près de Claire de Ville.
+- **Un trait par lieu, qu'on ne prête pas à un autre.** Le joueur retient chaque lieu par un trait marquant. Si deux lieux partagent le même, il les confond. Des brigands peuvent rôder un peu partout, mais chaque lieu garde sa façon d'en avoir :
+  - le Bois Hurlant : des brigands terrés dans les grottes de ses collines (description du jeu ; events 11 et 13) ;
+  - le Grand Axe : la route des brigands, avec leurs campements au bord du chemin (events 17 et 43) ;
+  - la Forêt du Vieillard : une forêt immense où l'on se perd (description du jeu), sans brigands.
+  Avant de donner un trait à un lieu, vérifie dans la description du jeu et dans le canon de la bible qu'un autre lieu ne l'a pas déjà.
 - **Le décor suit l'état du lieu.** Dans des ruines, pas de *salle commune* ni de *comptoir* en activité : *vers les ruines*, *les vestiges de l'écurie*.
 - **Villes : ne contredis pas le menu affiché juste après l'event.**
   - L'auberge porte son nom du jeu (Halte des Braves, Auberge du Seigneur…).
