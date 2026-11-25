@@ -175,8 +175,8 @@
         "8": {
           "requirements": {
             "level": {
-              "min": 20,
-              "max": 79
+              "min": 15,
+              "max": 74
             },
             "energyPercent": {
               "min": 40
@@ -184,10 +184,10 @@
           },
           "fight": {
             "monster": "boar",
-            "level": 40,
+            "level": 25,
             "won": {
-              "money": 120,
-              "experience": 30
+              "money": 75,
+              "experience": 20
             },
             "lost": {
               "health": -15
@@ -197,7 +197,7 @@
         "9": {
           "requirements": {
             "level": {
-              "min": 80
+              "min": 75
             },
             "energyPercent": {
               "min": 40

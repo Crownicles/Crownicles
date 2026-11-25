@@ -63,8 +63,8 @@
         "6": {
           "requirements": {
             "level": {
-              "min": 20,
-              "max": 79
+              "min": 25,
+              "max": 99
             },
             "energyPercent": {
               "min": 40
@@ -72,10 +72,10 @@
           },
           "fight": {
             "monster": "skeleton",
-            "level": 40,
+            "level": 55,
             "won": {
-              "money": 100,
-              "experience": 30,
+              "money": 140,
+              "experience": 40,
               "randomItem": {}
             },
             "lost": {
@@ -86,7 +86,7 @@
         "7": {
           "requirements": {
             "level": {
-              "min": 80
+              "min": 100
             },
             "energyPercent": {
               "min": 40
@@ -94,10 +94,10 @@
           },
           "fight": {
             "monster": "skeleton",
-            "level": 100,
+            "level": 140,
             "won": {
-              "money": 200,
-              "experience": 80,
+              "money": 280,
+              "experience": 110,
               "randomItem": {
                 "rarity": {
                   "min": 3

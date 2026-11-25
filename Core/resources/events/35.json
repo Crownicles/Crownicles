@@ -282,10 +282,10 @@
           "karma": -8,
           "fight": {
             "monster": "bandit",
-            "level": 40,
+            "level": 35,
             "won": {
-              "money": 350,
-              "experience": 40
+              "money": 305,
+              "experience": 35
             },
             "lost": {
               "money": -150,
@@ -305,10 +305,10 @@
           "karma": -8,
           "fight": {
             "monster": "bandit",
-            "level": 100,
+            "level": 95,
             "won": {
-              "money": 500,
-              "experience": 80
+              "money": 475,
+              "experience": 75
             },
             "lost": {
               "money": -250,

@@ -163,8 +163,8 @@
         "7": {
           "requirements": {
             "level": {
-              "min": 20,
-              "max": 79
+              "min": 30,
+              "max": 94
             },
             "energyPercent": {
               "min": 40
@@ -173,10 +173,10 @@
           "karma": 2,
           "fight": {
             "monster": "mercenary",
-            "level": 40,
+            "level": 65,
             "won": {
-              "money": 300,
-              "experience": 40
+              "money": 490,
+              "experience": 65
             },
             "lost": {
               "health": -15
@@ -186,7 +186,7 @@
         "8": {
           "requirements": {
             "level": {
-              "min": 80
+              "min": 95
             },
             "energyPercent": {
               "min": 40
@@ -195,10 +195,10 @@
           "karma": 2,
           "fight": {
             "monster": "mercenary",
-            "level": 100,
+            "level": 130,
             "won": {
-              "money": 300,
-              "experience": 100,
+              "money": 650,
+              "experience": 130,
               "randomItem": {}
             },
             "lost": {

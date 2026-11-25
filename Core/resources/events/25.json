@@ -202,8 +202,8 @@
         "6": {
           "requirements": {
             "level": {
-              "min": 20,
-              "max": 79
+              "min": 10,
+              "max": 49
             },
             "energyPercent": {
               "min": 40
@@ -212,10 +212,10 @@
           "karma": -10,
           "fight": {
             "monster": "bandit",
-            "level": 40,
+            "level": 15,
             "won": {
-              "money": 200,
-              "experience": 30
+              "money": 75,
+              "experience": 10
             },
             "lost": {
               "money": -150,
@@ -226,7 +226,7 @@
         "7": {
           "requirements": {
             "level": {
-              "min": 80
+              "min": 50
             },
             "energyPercent": {
               "min": 40
@@ -235,10 +235,10 @@
           "karma": -10,
           "fight": {
             "monster": "bandit",
-            "level": 100,
+            "level": 85,
             "won": {
-              "money": 400,
-              "experience": 80,
+              "money": 340,
+              "experience": 70,
               "randomItem": {}
             },
             "lost": {

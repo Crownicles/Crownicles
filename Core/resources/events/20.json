@@ -157,7 +157,7 @@
           "requirements": {
             "level": {
               "min": 20,
-              "max": 79
+              "max": 89
             },
             "energyPercent": {
               "min": 40
@@ -166,10 +166,10 @@
           "karma": 5,
           "fight": {
             "monster": "corruptGuard",
-            "level": 40,
+            "level": 45,
             "won": {
-              "money": 150,
-              "experience": 40
+              "money": 170,
+              "experience": 45
             },
             "lost": {
               "money": -120,
@@ -180,7 +180,7 @@
         "6": {
           "requirements": {
             "level": {
-              "min": 80
+              "min": 90
             },
             "energyPercent": {
               "min": 40
@@ -189,10 +189,10 @@
           "karma": 5,
           "fight": {
             "monster": "corruptGuard",
-            "level": 100,
+            "level": 115,
             "won": {
-              "money": 300,
-              "experience": 90,
+              "money": 345,
+              "experience": 105,
               "randomItem": {}
             },
             "lost": {

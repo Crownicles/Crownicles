@@ -56,8 +56,8 @@
         "6": {
           "requirements": {
             "level": {
-              "min": 20,
-              "max": 79
+              "min": 10,
+              "max": 64
             },
             "money": {
               "min": 100000
@@ -68,10 +68,10 @@
           },
           "fight": {
             "monster": "bandit",
-            "level": 40,
+            "level": 20,
             "won": {
-              "money": 150,
-              "experience": 40
+              "money": 75,
+              "experience": 20
             },
             "lost": {
               "money": -150,
@@ -82,7 +82,7 @@
         "7": {
           "requirements": {
             "level": {
-              "min": 80
+              "min": 65
             },
             "money": {
               "min": 100000
@@ -93,10 +93,10 @@
           },
           "fight": {
             "monster": "bandit",
-            "level": 100,
+            "level": 75,
             "won": {
-              "money": 300,
-              "experience": 80,
+              "money": 225,
+              "experience": 60,
               "randomItem": {}
             },
             "lost": {

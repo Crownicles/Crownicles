@@ -132,7 +132,7 @@
           "requirements": {
             "level": {
               "min": 20,
-              "max": 79
+              "max": 89
             },
             "energyPercent": {
               "min": 40
@@ -141,10 +141,10 @@
           "karma": 2,
           "fight": {
             "monster": "giantFish",
-            "level": 40,
+            "level": 50,
             "won": {
-              "money": 150,
-              "experience": 30
+              "money": 190,
+              "experience": 40
             },
             "lost": {
               "health": -15
@@ -154,7 +154,7 @@
         "15": {
           "requirements": {
             "level": {
-              "min": 80
+              "min": 90
             },
             "energyPercent": {
               "min": 40
@@ -163,10 +163,10 @@
           "karma": 2,
           "fight": {
             "monster": "giantFish",
-            "level": 100,
+            "level": 120,
             "won": {
-              "money": 300,
-              "experience": 80,
+              "money": 360,
+              "experience": 95,
               "randomItem": {}
             },
             "lost": {

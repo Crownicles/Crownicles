@@ -123,7 +123,16 @@ Une issue peut déclencher un combat :
 ```
 
 - `monster` : un fichier de `Core/resources/monsters`. Les monstres sans île (`"maps": []`) sont réservés aux events : `bandit` (détrousseur rapide), `corruptGuard` (garde corrompu, bouclier), `mercenary` (épée à louer), `boar` (sanglier), `giantFish` (poisson géant). Les monstres des îles servent aussi quand la scène s'y prête (`skeleton` dans le château en ruine de l'event 16).
-- Repères : niveau 40 pour les joueurs de niveau 20 à 79, niveau 100 au-delà (events 10, 11, 16, 17, 20, 25, 39).
+- Repères : un monstre de même niveau que le joueur fait un combat équilibré ; un écart de 30 niveaux le rend facile ou difficile. Varie les tranches et les niveaux selon l'adversaire, par exemple :
+
+  | Adversaire | Joueurs | Monstre |
+  |---|---|---|
+  | brigand blessé (event 25), faux récolteur (event 50), sanglier ordinaire (event 17) | 10 à 49-64 | 15 à 20 |
+  | brigand, garde, mercenaire ordinaire | 15-30 à 69-99 | 30 à 65 |
+  | chef de bande, vieux mâle, garde chevronné | 50-90 et plus | 85 à 120 |
+  | chef des mercenaires (event 47), vieux mercenaire (event 36), seigneur squelette (event 16) | 95-100 et plus | 125 à 140 |
+
+  La récompense d'un combat gagné suit le niveau du monstre : environ 2 à 5 pièces et 0,8 point d'expérience par niveau.
 - `level` : fixe. Un monstre au niveau du joueur est un vrai combat ; 20 niveaux de moins, une formalité. Borne `level` dans `requirements` pour que le combat reste à la mesure des joueurs qui le reçoivent.
 - `won` / `lost` : `money`, `health`, `experience`, `effect` + `lostTime`, `randomItem`. Un nul compte comme une victoire (l'adversaire renonce). Un combat perdu vide déjà l'énergie du joueur : la perte reste modérée.
 - `energyPercent.min` d'au moins 1 est obligatoire (validateur et tests) : sans énergie, le joueur perdrait d'office.
