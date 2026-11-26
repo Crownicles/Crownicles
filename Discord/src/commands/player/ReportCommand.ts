@@ -138,7 +138,7 @@ type ConditionTriplet = [Condition, string, Omit<I18nCrowniclesOptions, "lng">];
  * Values displayed after a big event outcome or after the fight it triggered
  */
 type ReportResultValues = Pick<CommandReportBigEventResultRes, "money" | "health" | "experience" | "effect">
-	& Partial<Pick<CommandReportBigEventResultRes, "score" | "energy" | "gems" | "tokens" | "materials">>;
+	& Partial<Pick<CommandReportBigEventResultRes, "score" | "energy" | "gems" | "tokens" | "materials" | "petLove">>;
 
 function getReportResultConditionTriplets(packet: ReportResultValues, lng: Language): ConditionTriplet[] {
 	return [
@@ -191,6 +191,16 @@ function getReportResultConditionTriplets(packet: ReportResultValues, lng: Langu
 			packet.effect?.name === Effect.OCCUPIED.id,
 			"timeLost",
 			{ timeLost: packet.effect ? minutesDisplayIntl(packet.effect.time, lng) : 0 }
+		],
+		[
+			(packet.petLove ?? 0) > 0,
+			"petLove",
+			{ petLove: packet.petLove }
+		],
+		[
+			(packet.petLove ?? 0) < 0,
+			"petLoveLost",
+			{ petLove: -(packet.petLove ?? 0) }
 		],
 		...(packet.materials ?? []).map((material): ConditionTriplet => [
 			material.quantity !== 0,

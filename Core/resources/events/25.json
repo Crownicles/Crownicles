@@ -37,7 +37,8 @@
           },
           "effect": "occupied",
           "lostTime": 15,
-          "karma": -2
+          "karma": -2,
+          "petLove": 2
         }
       }
     },

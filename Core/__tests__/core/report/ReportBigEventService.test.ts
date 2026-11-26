@@ -30,6 +30,8 @@ vi.mock("../../../src/data/events/PossibilityOutcome", () => ({
 	getValidOutcomesForPlayer: vi.fn((outcomes: object) => Promise.resolve(Object.entries(outcomes)))
 }));
 
+vi.mock("../../../src/data/events/OutcomeRequirements", () => ({ getAvailablePetEntity: vi.fn().mockResolvedValue(null) }));
+
 vi.mock("../../../src/data/events/PossibilityOutcomeCondition", () => ({ verifyPossibilityOutcomeCondition: vi.fn().mockResolvedValue(true) }));
 
 vi.mock("../../../../Lib/src/locks/withLockedEntities", async importOriginal => ({
@@ -73,6 +75,8 @@ import { MissionsController } from "../../../src/core/missions/MissionsControlle
 import { chooseDestination } from "../../../src/core/report/ReportDestinationService";
 import { startBigEventFight } from "../../../src/core/report/ReportBigEventFightService";
 import { applyPossibilityOutcome } from "../../../src/data/events/PossibilityOutcome";
+import { getAvailablePetEntity } from "../../../src/data/events/OutcomeRequirements";
+import PetEntity from "../../../src/core/database/game/models/PetEntity";
 import { verifyPossibilityOutcomeCondition } from "../../../src/data/events/PossibilityOutcomeCondition";
 import {
 	LockedRowNotFoundError, withLockedEntities
@@ -177,6 +181,7 @@ beforeEach(() => {
 
 afterEach(() => {
 	vi.restoreAllMocks();
+	vi.mocked(getAvailablePetEntity).mockReset().mockResolvedValue(null);
 	vi.mocked(MissionsController.update).mockClear();
 	vi.mocked(chooseDestination).mockReset().mockResolvedValue(undefined);
 	vi.mocked(applyPossibilityOutcome).mockReset().mockResolvedValue(null);
@@ -261,6 +266,26 @@ describe("doRandomBigEvent", () => {
 	describe("outcome", () => {
 		const timeOf = (): number => vi.mocked(applyPossibilityOutcome).mock.calls[0][0].time;
 
+		it("should lock the pet with the player and pass it on when the outcome changes its love points", async () => {
+			const petEvent = bigEvent(5, {
+				north: { outcomes: { a: { petLove: 3 } } },
+				end: { outcomes: { 1: {} } }
+			});
+			const lockedPet = { id: 7 };
+			vi.mocked(getAvailablePetEntity).mockResolvedValue({ id: 7 } as PetEntity);
+			vi.mocked(withLockedEntities).mockImplementation((_keys, body) => body([lockedRow, {}, lockedPet] as never));
+			await startBigEvent(petEvent);
+
+			const response = await choose("north");
+
+			expect(getAvailablePetEntity).toHaveBeenCalledWith(row);
+			expect(withLockedEntities).toHaveBeenCalledWith(
+				[Player.lockKey(row.id), PlayerMissionsInfo.lockKey(row.id), PetEntity.lockKey(7)],
+				expect.any(Function)
+			);
+			expect(applyPossibilityOutcome).toHaveBeenCalledWith(expect.objectContaining({ pet: lockedPet }), lockedRow, context, response);
+		});
+
 		it("should apply a random valid outcome of the chosen possibility under the player and missions lock", async () => {
 			const tagged = bigEvent(5, {
 				north: {
@@ -285,8 +310,9 @@ describe("doRandomBigEvent", () => {
 			expect(lockedRow.nextEvent).toBeNull();
 			expect(lockedRow.save).toHaveBeenCalledTimes(2);
 			expect(applyPossibilityOutcome).toHaveBeenCalledWith({
-				eventId: 5, possibilityName: "north", outcome: ["a", { tags: ["outcomeTag"] }], time: 30
+				eventId: 5, possibilityName: "north", outcome: ["a", { tags: ["outcomeTag"] }], time: 30, pet: null
 			}, lockedRow, context, response);
+			expect(getAvailablePetEntity).not.toHaveBeenCalled();
 			expect(lockedRow.killIfNeeded).toHaveBeenCalledWith(response, NumberChangeReason.BIG_EVENT);
 			expect(chooseDestination).toHaveBeenCalledWith(context, lockedRow, null, response, {
 				mainPacket: false, allowStayInCity: true, forceStayInCity: false

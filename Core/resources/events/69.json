@@ -33,7 +33,8 @@
           },
           "effect": "occupied",
           "lostTime": 15,
-          "karma": 1
+          "karma": 1,
+          "petLove": -2
         },
         "4": {
           "requirements": {

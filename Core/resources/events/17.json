@@ -357,7 +357,8 @@
               "grazer"
             ]
           },
-          "health": 20
+          "health": 20,
+          "petLove": 2
         },
         "5": {
           "requirements": {
@@ -464,7 +465,8 @@
               60
             ]
           },
-          "health": 40
+          "health": 40,
+          "petLove": 2
         },
         "3": {
           "requirements": {

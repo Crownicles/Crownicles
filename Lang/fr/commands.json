@@ -857,6 +857,8 @@
     "remainingEnergyTitle": "Énergie restante :",
     "startPoint": "Point de départ :",
     "timeLost": "** | {emote:clocks.10} Temps perdu : **{{timeLost}}",
+    "petLove": "** | {emote:unitValues.petLove} Points d'amour gagnés par votre familier : **{{petLove, number}}",
+    "petLoveLost": "** | {emote:unitValues.lostPetLove} Points d'amour perdus par votre familier : **{{petLove, number}}",
     "materialLost": "** | {emote:materials.{{materialId}}} Matériau utilisé : **$t(models:materials.{{materialId}}) x{{quantity, number}}",
     "materialWon": "** | {emote:materials.{{materialId}}} Matériau obtenu : **$t(models:materials.{{materialId}}) x{{quantity, number}}",
     "travelPathTitle": "Voyage actuel :",

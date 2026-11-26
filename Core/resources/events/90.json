@@ -243,7 +243,8 @@
             "validPetTypeIds": [
               19
             ]
-          }
+          },
+          "petLove": 1
         }
       }
     },

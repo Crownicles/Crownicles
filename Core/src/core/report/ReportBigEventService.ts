@@ -49,6 +49,8 @@ import {
 	PlayerMissionsInfo, PlayerMissionsInfos
 } from "../database/game/models/PlayerMissionsInfo";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import PetEntity from "../database/game/models/PetEntity";
+import { getAvailablePetEntity } from "../../data/events/OutcomeRequirements";
 
 /**
  * Check all missions to check when you execute a big event
@@ -137,7 +139,7 @@ async function updateTagMissions(
 /**
  * Body of the critical section: apply the outcome, persist the player,
  * log only after the row is durably saved. Runs under
- * `withLockedEntities([Player, PlayerMissionsInfo])`.
+ * `withLockedEntities([Player, PlayerMissionsInfo])`, plus the pet when the outcome changes its love points.
  * @returns the fight the outcome triggers, if the player survived it: the destination is then chosen after the fight
  */
 async function applyLockedOutcomeUnderLock(
@@ -147,12 +149,13 @@ async function applyLockedOutcomeUnderLock(
 		possibility: PossibilityEntry;
 		randomOutcome: PossibilityOutcomeEntry;
 		time: number;
+		pet: Locked<PetEntity> | null;
 	},
 	context: PacketContext,
 	response: CrowniclesPacket[]
 ): Promise<PendingBigEventFight | null> {
 	const {
-		event, possibility, randomOutcome, time
+		event, possibility, randomOutcome, time, pet
 	} = outcomeContext;
 	lockedPlayer.nextEvent = null;
 	await lockedPlayer.save();
@@ -161,7 +164,8 @@ async function applyLockedOutcomeUnderLock(
 		eventId: event.id,
 		possibilityName: possibility[0],
 		outcome: randomOutcome,
-		time
+		time,
+		pet
 	}, lockedPlayer, context, response);
 
 	const isDead = await lockedPlayer.killIfNeeded(response, NumberChangeReason.BIG_EVENT);
@@ -259,17 +263,23 @@ async function doPossibility(
 	 */
 	await PlayerMissionsInfos.getOfPlayer(freshPlayer.id);
 
+	// The pet is locked with the player only when the outcome changes its love points
+	const pet = randomOutcome[1].petLove ? await getAvailablePetEntity(freshPlayer) : null;
+
 	let pendingFight: PendingBigEventFight | null = null;
 	try {
 		pendingFight = await withLockedEntities(
 			[
 				Player.lockKey(freshPlayer.id),
-				PlayerMissionsInfo.lockKey(freshPlayer.id)
+				PlayerMissionsInfo.lockKey(freshPlayer.id),
+				...pet ? [PetEntity.lockKey(pet.id)] : []
 			] as const,
-			([lockedPlayer]) => lockedPlayer.runWithTokenCapReference(() => applyLockedOutcomeUnderLock(
+			([
+				lockedPlayer, , lockedPet
+			]) => lockedPlayer.runWithTokenCapReference(() => applyLockedOutcomeUnderLock(
 				lockedPlayer,
 				{
-					event, possibility, randomOutcome, time
+					event, possibility, randomOutcome, time, pet: lockedPet ?? null
 				},
 				context,
 				response

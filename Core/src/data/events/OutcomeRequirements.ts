@@ -260,7 +260,7 @@ async function isPetTypeNotExcluded(excludedPetTypeIds: number[] | undefined, pl
  * Get the player's pet if it can take part in a big event: a pet on an expedition only counts with the clone talisman
  * @param player - The player whose pet is read
  */
-async function getAvailablePetEntity(player: Player): Promise<PetEntity | null> {
+export async function getAvailablePetEntity(player: Player): Promise<PetEntity | null> {
 	if (!player.petId || !await PetUtils.isPetAvailable(player, PetConstants.AVAILABILITY_CONTEXT.BIG_EVENT)) {
 		return null;
 	}

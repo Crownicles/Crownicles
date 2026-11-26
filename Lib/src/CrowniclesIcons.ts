@@ -2521,7 +2521,9 @@ export const CrowniclesIcons: {
 		glory: "✨",
 		timeGain: "⌛",
 		none: "❌",
-		token: "🪙"
+		token: "🪙",
+		petLove: "💕",
+		lostPetLove: "😿"
 	},
 	shopItems: {
 		randomItem: "❓",

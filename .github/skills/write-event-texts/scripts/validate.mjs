@@ -27,7 +27,7 @@ import { checkConsistency } from "./consistency.mjs";
 const OUTCOME_KEYS = new Set([
 	"condition", "requirements", "lostTime", "health", "karma", "effect", "money", "energy", "gems", "tokens", "bonusExperience",
 	"bonusPoints", "randomItem", "randomPet", "givePet", "oneshot", "nextEvent", "mapTypesDestination", "mapTypesExcludeDestination",
-	"mapLink", "goBackToPreviousMap", "forceStayInCity", "forceLeaveCity", "tags", "consumeMaterials", "giveMaterials", "fight", "useBed"
+	"mapLink", "goBackToPreviousMap", "forceStayInCity", "forceLeaveCity", "tags", "consumeMaterials", "giveMaterials", "fight", "useBed", "petLove"
 ]);
 const FIGHT_CONSEQUENCE_KEYS = new Set(["money", "health", "experience", "effect", "lostTime", "randomItem"]);
 const REQ_RANGES = ["level", "karma", "health", "attack", "defense", "speed", "energyPercent", "money", "petRarity", "cookingLevel", "weaponLevel", "armorLevel"];
@@ -270,6 +270,32 @@ function checkOutcomeKeys(report, path, x) {
 	}
 	if (get(x, "effect") === "occupied" && !truthy(get(x, "lostTime"))) {
 		report.warnings.push(`${path}: occupied without lostTime`);
+	}
+	checkPetLove(report, path, x);
+}
+
+// A big event moves the love of a pet as much as a small event or a meal (1 to 5 points)
+const MAX_PET_LOVE = 5;
+
+/**
+ * The pet love an outcome gives or takes: only for an outcome about the player's pet, and on the same scale as a meal
+ * @param {Report} report
+ * @param {string} path
+ * @param {any} x outcome data
+ */
+function checkPetLove(report, path, x) {
+	if (!Object.hasOwn(x, "petLove")) {
+		return;
+	}
+	const req = getOrEmpty(x, "requirements");
+	if (!Number.isInteger(x.petLove) || x.petLove === 0) {
+		report.errors.push(`${path}: petLove must be a non-zero integer`);
+	}
+	else if (Math.abs(x.petLove) > MAX_PET_LOVE) {
+		report.warnings.push(`${path}: petLove ${x.petLove}: a big event moves the love of a pet by ${MAX_PET_LOVE} points at most, as much as a meal`);
+	}
+	if (!["validPetTypeIds", "petTags", "petRarity"].some(key => Object.hasOwn(req, key))) {
+		report.errors.push(`${path}: petLove needs a pet condition (validPetTypeIds, petTags or petRarity): the outcome is about the player's pet`);
 	}
 }
 

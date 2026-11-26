@@ -7,7 +7,7 @@ import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { PlayerSmallEvents } from "../../core/database/game/models/PlayerSmallEvent";
 import { Maps } from "../../core/maps/Maps";
 import { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
-import { PetEntities } from "../../core/database/game/models/PetEntity";
+import PetEntity, { PetEntities } from "../../core/database/game/models/PetEntity";
 import { CommandReportBigEventResultRes } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
 	CrowniclesPacket, makePacket, PacketContext
@@ -160,6 +160,24 @@ function applyOutcomeEnergy(outcome: PossibilityOutcome, player: Player, playerA
 	return 0;
 }
 
+/**
+ * Change the love points of the player's pet and return the change actually applied (blessing and bounds included)
+ */
+async function applyOutcomePetLoveUnderLock(outcome: PossibilityOutcome, pet: Locked<PetEntity> | null | undefined, player: Player, response: CrowniclesPacket[]): Promise<number> {
+	if (!outcome.petLove || !pet) {
+		return 0;
+	}
+	const lovePointsBefore = pet.lovePoints;
+	await pet.changeLovePoints({
+		player,
+		amount: outcome.petLove,
+		response,
+		reason: NumberChangeReason.BIG_EVENT
+	});
+	await pet.save({ fields: ["lovePoints"] });
+	return pet.lovePoints - lovePointsBefore;
+}
+
 async function applyOutcomeGems(outcome: PossibilityOutcome, player: Player): Promise<number> {
 	if (outcome.gems && outcome.gems !== 0) {
 		const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
@@ -290,6 +308,11 @@ type ApplyOutcome = {
 	possibilityName: string;
 	outcome: PossibilityOutcomeEntry;
 	time: number;
+
+	/**
+	 * The player's pet, locked with the player when the outcome changes its love points
+	 */
+	pet?: Locked<PetEntity> | null;
 };
 
 /**
@@ -341,6 +364,9 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 		give: possibilityOutcome.outcome[1].giveMaterials
 	}, player, response);
 
+	// Pet love
+	const petLove = await applyOutcomePetLoveUnderLock(possibilityOutcome.outcome[1], possibilityOutcome.pet, player, response);
+
 	const packet = makePacket(CommandReportBigEventResultRes, {
 		eventId: possibilityOutcome.eventId,
 		possibilityId: possibilityOutcome.possibilityName,
@@ -354,6 +380,7 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 		experience,
 		effect,
 		materials,
+		...petLove !== 0 ? { petLove } : {},
 		oneshot: possibilityOutcome.outcome[1].oneshot ?? false
 	});
 
@@ -409,6 +436,11 @@ export interface PossibilityOutcome {
 	 * Karma lost or won
 	 */
 	karma?: number;
+
+	/**
+	 * Love points won or lost by the player's pet, when it is available for the big event
+	 */
+	petLove?: number;
 
 	/**
 	 * Effect to apply

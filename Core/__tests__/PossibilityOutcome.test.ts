@@ -1,5 +1,5 @@
 import {
-	describe, expect, it, vi
+	afterEach, beforeEach, describe, expect, it, vi
 } from "vitest";
 import { NumberChangeReason } from "../../Lib/src/constants/LogsConstants";
 import {
@@ -7,6 +7,12 @@ import {
 } from "../../Lib/src/packets/CrowniclesPacket";
 import Player from "../src/core/database/game/models/Player";
 import { applyPossibilityOutcome } from "../src/data/events/PossibilityOutcome";
+import PetEntity from "../src/core/database/game/models/PetEntity";
+import { MissionsController } from "../src/core/missions/MissionsController";
+import { Crownicles } from "../src/core/bot/Crownicles";
+import { setCrowniclesInstanceForTests } from "../src/app";
+import { PetConstants } from "../../Lib/src/constants/PetConstants";
+import { CommandReportBigEventResultRes } from "../../Lib/src/packets/commands/CommandReportPacket";
 
 vi.mock("../src/core/database/game/models/InventorySlot", () => ({
 	InventorySlots: { getPlayerActiveObjects: vi.fn().mockResolvedValue({}) }
@@ -33,7 +39,8 @@ vi.mock("../../Lib/src/utils/RandomUtils", () => ({
 vi.mock("../src/core/blessings/BlessingManager", () => ({
 	BlessingManager: {
 		getInstance: () => ({
-			applyMoneyBlessing: (amount: number): number => amount
+			applyMoneyBlessing: (amount: number): number => amount,
+			getPetLoveMultiplier: (): number => 1
 		})
 	}
 }));
@@ -169,5 +176,70 @@ describe("applyPossibilityOutcome", () => {
 		expect(lockedRow.save).toHaveBeenCalledTimes(bedSaves);
 		expect(player.lastBedUsedAt !== null).toBe(useBed);
 		vi.restoreAllMocks();
+	});
+
+	describe("Pet love", () => {
+		beforeEach(() => {
+			setCrowniclesInstanceForTests({
+				logsDatabase: { logPetLoveChange: vi.fn().mockResolvedValue(undefined) }
+			} as unknown as Crownicles); // Only the log used by the pet love changes
+			vi.spyOn(MissionsController, "update").mockResolvedValue(undefined);
+		});
+
+		afterEach(() => {
+			setCrowniclesInstanceForTests(null);
+			vi.restoreAllMocks();
+		});
+
+		const makePlayer = (): Player => Object.assign(Object.create(Player.prototype) as Player, {
+			id: 1,
+			level: 10,
+			effectDuration: 0,
+			effectId: "",
+			addEnergy: vi.fn(),
+			addExperience: vi.fn().mockResolvedValue(undefined),
+			addHealth: vi.fn().mockResolvedValue(undefined),
+			addMoney: vi.fn().mockResolvedValue(undefined),
+			addScore: vi.fn().mockResolvedValue(undefined),
+			addTokens: vi.fn().mockResolvedValue(undefined),
+			setLastReportWithEffect: vi.fn().mockResolvedValue(undefined)
+		});
+		const resultPacket = (response: CrowniclesPacket[]): CommandReportBigEventResultRes =>
+			response.find(packet => packet instanceof CommandReportBigEventResultRes) as CommandReportBigEventResultRes;
+
+		it("saves the love the pet won and shows the change actually applied, capped at the maximum", async () => {
+			const pet = Object.assign(Object.create(PetEntity.prototype) as PetEntity, {
+				typeId: 1,
+				lovePoints: PetConstants.MAX_LOVE_POINTS - 2,
+				save: vi.fn().mockResolvedValue(undefined)
+			});
+			const response: CrowniclesPacket[] = [];
+
+			await applyPossibilityOutcome({
+				eventId: 19,
+				possibilityName: "cook",
+				outcome: ["5", { petLove: 5 }],
+				time: 0,
+				pet
+			}, makePlayer(), {} as PacketContext, response);
+
+			expect(pet.lovePoints).toBe(PetConstants.MAX_LOVE_POINTS);
+			expect(pet.save).toHaveBeenCalledWith({ fields: ["lovePoints"] });
+			expect(resultPacket(response).petLove).toBe(2);
+		});
+
+		it("changes nothing when the player has no pet available for the event", async () => {
+			const response: CrowniclesPacket[] = [];
+
+			await applyPossibilityOutcome({
+				eventId: 19,
+				possibilityName: "cook",
+				outcome: ["5", { petLove: -3 }],
+				time: 0,
+				pet: null
+			}, makePlayer(), {} as PacketContext, response);
+
+			expect(resultPacket(response).petLove).toBeUndefined();
+		});
 	});
 });

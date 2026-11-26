@@ -344,7 +344,8 @@
           },
           "effect": "occupied",
           "lostTime": 15,
-          "health": 10
+          "health": 10,
+          "petLove": 2
         },
         "3": {
           "requirements": {

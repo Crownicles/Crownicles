@@ -186,6 +186,11 @@ export class CommandReportBigEventResultRes extends CrowniclesPacket {
 		quantity: number;
 	}[];
 
+	/**
+	 * Love points won (positive) or lost (negative) by the player's pet
+	 */
+	petLove?: number;
+
 	oneshot!: boolean;
 }
 

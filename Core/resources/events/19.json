@@ -169,7 +169,8 @@
           },
           "health": 8,
           "effect": "occupied",
-          "lostTime": 40
+          "lostTime": 40,
+          "petLove": 2
         },
         "6": {
           "requirements": {
@@ -266,7 +267,8 @@
           },
           "karma": 2,
           "effect": "occupied",
-          "lostTime": 45
+          "lostTime": 45,
+          "petLove": 2
         },
         "4": {
           "requirements": {
@@ -317,7 +319,8 @@
             ]
           },
           "effect": "occupied",
-          "lostTime": 10
+          "lostTime": 10,
+          "petLove": 1
         },
         "5": {
           "karma": 2,
