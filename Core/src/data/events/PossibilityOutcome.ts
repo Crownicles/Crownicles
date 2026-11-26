@@ -7,7 +7,7 @@ import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { PlayerSmallEvents } from "../../core/database/game/models/PlayerSmallEvent";
 import { Maps } from "../../core/maps/Maps";
 import { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
-import { PetEntities } from "../../core/database/game/models/PetEntity";
+import PetEntity, { PetEntities } from "../../core/database/game/models/PetEntity";
 import { CommandReportBigEventResultRes } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
 	CrowniclesPacket, makePacket, PacketContext
@@ -27,6 +27,13 @@ import {
 	asMinutes, minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
+import {
+	applyOutcomeMaterials, OutcomeMaterialConsumption, OutcomeMaterialQuantity
+} from "./OutcomeMaterials";
+import {
+	isOutcomeValidForPlayer, OutcomeRequirements
+} from "./OutcomeRequirements";
+import { OutcomeFight } from "./OutcomeFight";
 
 async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	const scoreChange = TravelTime.timeTravelledToScore(minutesToMilliseconds(asMinutes(time)))
@@ -109,6 +116,12 @@ async function applyOutcomeHealth(outcome: PossibilityOutcome, player: Player, r
 	return 0;
 }
 
+async function applyOutcomeKarma(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<void> {
+	if (outcome.karma) {
+		await player.addKarma(outcome.karma, response, NumberChangeReason.BIG_EVENT);
+	}
+}
+
 async function applyOutcomeMoneyUnderLock(outcome: PossibilityOutcome, time: number, player: Locked<Player>, response: CrowniclesPacket[]): Promise<number> {
 	let moneyChange = (outcome.money ?? 0) + Math.round(time / 10 + RandomUtils.crowniclesRandom.integer(0, time / 10 + player.level / 5 - 1));
 	if (outcome.money && outcome.money < 0 && moneyChange > 0) {
@@ -147,6 +160,24 @@ function applyOutcomeEnergy(outcome: PossibilityOutcome, player: Player, playerA
 	return 0;
 }
 
+/**
+ * Change the love points of the player's pet and return the change actually applied (blessing and bounds included)
+ */
+async function applyOutcomePetLoveUnderLock(outcome: PossibilityOutcome, pet: Locked<PetEntity> | null | undefined, player: Player, response: CrowniclesPacket[]): Promise<number> {
+	if (!outcome.petLove || !pet) {
+		return 0;
+	}
+	const lovePointsBefore = pet.lovePoints;
+	await pet.changeLovePoints({
+		player,
+		amount: outcome.petLove,
+		response,
+		reason: NumberChangeReason.BIG_EVENT
+	});
+	await pet.save({ fields: ["lovePoints"] });
+	return pet.lovePoints - lovePointsBefore;
+}
+
 async function applyOutcomeGems(outcome: PossibilityOutcome, player: Player): Promise<number> {
 	if (outcome.gems && outcome.gems !== 0) {
 		const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
@@ -169,7 +200,12 @@ async function applyOutcomeTokens(outcome: PossibilityOutcome, player: Player, r
 	return 0;
 }
 
-async function applyOutcomeRandomItem(outcome: PossibilityOutcome, player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
+export async function applyOutcomeRandomItem(
+	outcome: { randomItem?: OutcomeRandomItem },
+	player: Player,
+	context: PacketContext,
+	response: CrowniclesPacket[]
+): Promise<void> {
 	if (!outcome.randomItem) {
 		return;
 	}
@@ -247,6 +283,13 @@ function getNextMapLink(outcome: PossibilityOutcome, player: Player): MapLink | 
 		return MapLinkDataController.instance.getById(outcome.mapLink) ?? null;
 	}
 
+	if (outcome.goBackToPreviousMap) {
+		const goBackLink = Maps.getGoBackMapLink(player);
+		if (goBackLink) {
+			return goBackLink;
+		}
+	}
+
 	if (outcome.mapTypesDestination || outcome.mapTypesExcludeDestination) {
 		return getMapTypesDestinationLink(outcome, player);
 	}
@@ -265,6 +308,11 @@ type ApplyOutcome = {
 	possibilityName: string;
 	outcome: PossibilityOutcomeEntry;
 	time: number;
+
+	/**
+	 * The player's pet, locked with the player when the outcome changes its love points
+	 */
+	pet?: Locked<PetEntity> | null;
 };
 
 /**
@@ -296,11 +344,28 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 	// Health
 	const health = await applyOutcomeHealth(possibilityOutcome.outcome[1], player, response);
 
+	// Karma
+	await applyOutcomeKarma(possibilityOutcome.outcome[1], player, response);
+
 	// Energy
 	const energy = applyOutcomeEnergy(possibilityOutcome.outcome[1], player, playerActiveObjects);
 
 	// Effect + lost time
 	const effect = await applyOutcomeEffect(possibilityOutcome.outcome[1], player);
+
+	// Bed
+	if (possibilityOutcome.outcome[1].useBed) {
+		await player.markBedUsed(new Date());
+	}
+
+	// Materials
+	const materials = await applyOutcomeMaterials({
+		consume: possibilityOutcome.outcome[1].consumeMaterials,
+		give: possibilityOutcome.outcome[1].giveMaterials
+	}, player, response);
+
+	// Pet love
+	const petLove = await applyOutcomePetLoveUnderLock(possibilityOutcome.outcome[1], possibilityOutcome.pet, player, response);
 
 	const packet = makePacket(CommandReportBigEventResultRes, {
 		eventId: possibilityOutcome.eventId,
@@ -314,6 +379,8 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 		tokens,
 		experience,
 		effect,
+		materials,
+		...petLove !== 0 ? { petLove } : {},
 		oneshot: possibilityOutcome.outcome[1].oneshot ?? false
 	});
 
@@ -338,9 +405,22 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 	return getNextMapLink(possibilityOutcome.outcome[1], player);
 }
 
+/**
+ * Random item given by an outcome, of the given category and rarity range
+ */
+export type OutcomeRandomItem = {
+	category?: number;
+	rarity?: {
+		min?: number;
+		max?: number;
+	};
+};
+
 export interface PossibilityOutcome {
 
 	condition?: PossibilityOutcomeCondition;
+
+	requirements?: OutcomeRequirements;
 
 	/**
 	 * Time lost for the lost time effect
@@ -351,6 +431,16 @@ export interface PossibilityOutcome {
 	 * Health lost or won
 	 */
 	health?: number;
+
+	/**
+	 * Karma lost or won
+	 */
+	karma?: number;
+
+	/**
+	 * Love points won or lost by the player's pet, when it is available for the big event
+	 */
+	petLove?: number;
 
 	/**
 	 * Effect to apply
@@ -390,13 +480,7 @@ export interface PossibilityOutcome {
 	/**
 	 * Give a random item
 	 */
-	randomItem?: {
-		category?: number;
-		rarity?: {
-			min?: number;
-			max?: number;
-		};
-	};
+	randomItem?: OutcomeRandomItem;
 
 	/**
 	 * Give a random pet
@@ -409,6 +493,23 @@ export interface PossibilityOutcome {
 	};
 
 	givePet?: { petIds: number[] };
+
+	/**
+	 * Consume this quantity of the player's materials matching the filters, taken from the most plentiful first.
+	 * The outcome is only possible when the player owns enough of them.
+	 */
+	consumeMaterials?: OutcomeMaterialConsumption;
+
+	/**
+	 * The player sleeps in a bed (an inn, a host's bed): the outcome is only possible when no bed was used during the cooldown
+	 * shared by the home, the apartment and the inn rooms, and it starts that cooldown
+	 */
+	useBed?: boolean;
+
+	/**
+	 * Give this quantity of one random material matching the filters
+	 */
+	giveMaterials?: OutcomeMaterialQuantity;
 
 	/**
 	 * One shot the player
@@ -436,6 +537,13 @@ export interface PossibilityOutcome {
 	mapLink?: number;
 
 	/**
+	 * Send the player back to the map they are coming from. When the U-turn is impossible
+	 * (towards a city, through a one way link), `mapTypesDestination` is used instead, so the
+	 * outcome must always declare it: the choice is never hidden (#4844).
+	 */
+	goBackToPreviousMap?: boolean;
+
+	/**
 	 * Force the player to stay in the city after the outcome: the destination
 	 * menu is skipped and the player enters the city directly, until they
 	 * explicitly leave via the report command. Ignored when a forced map link
@@ -450,7 +558,33 @@ export interface PossibilityOutcome {
 	forceLeaveCity?: boolean;
 
 	/**
+	 * Fight a monster once the outcome is applied. The next destination is chosen after the fight
+	 */
+	fight?: OutcomeFight;
+
+	/**
 	 * Tags
 	 */
 	tags?: string[];
+}
+
+/**
+ * Get the valid outcomes for a player based on their requirements and the player state
+ * @param outcomes - The outcomes to filter
+ * @param player - The player to check the outcomes against
+ */
+export async function getValidOutcomesForPlayer(
+	outcomes: { [key: string]: PossibilityOutcome },
+	player: Player
+): Promise<[string, PossibilityOutcome][]> {
+	const playerActiveObjects: PlayerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+	const validOutcomes: [string, PossibilityOutcome][] = [];
+
+	for (const [key, outcome] of Object.entries(outcomes)) {
+		if (await isOutcomeValidForPlayer(outcome, player, playerActiveObjects)) {
+			validOutcomes.push([key, outcome]);
+		}
+	}
+
+	return validOutcomes;
 }

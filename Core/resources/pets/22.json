@@ -3,5 +3,6 @@
   "diet": "herbivorous",
   "force": 2,
   "feedDelay": 9,
-  "speed": 3
+  "speed": 3,
+  "tags": ["climber"]
 }

@@ -5,15 +5,231 @@
         "0": {
           "effect": "occupied",
           "lostTime": 60,
-          "randomItem": {}
+          "randomItem": {
+            "category": 0
+          },
+          "karma": 3
         },
         "1": {
           "effect": "occupied",
-          "lostTime": 10
+          "lostTime": 10,
+          "karma": 2
         },
         "2": {
-          "effect": "injured",
-          "health": -70
+          "requirements": {
+            "attack": {
+              "max": 600
+            }
+          },
+          "effect": "feetHurt",
+          "health": -20,
+          "karma": 3
+        },
+        "3": {
+          "requirements": {
+            "attack": {
+              "min": 601,
+              "max": 779
+            }
+          },
+          "health": -15,
+          "karma": 3
+        },
+        "4": {
+          "requirements": {
+            "attack": {
+              "min": 780
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 60,
+          "randomItem": {
+            "rarity": {
+              "min": 3
+            },
+            "category": 0
+          },
+          "karma": 3
+        },
+        "5": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "types": [
+                "magic"
+              ]
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 40,
+          "money": 80,
+          "karma": 3
+        }
+      }
+    },
+    "stayNight": {
+      "outcomes": {
+        "0": {
+          "effect": "sleeping",
+          "health": 10,
+          "useBed": true
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 100,
+          "health": 5,
+          "karma": 1
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          }
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "effect": "sleeping",
+          "health": 25,
+          "useBed": true
+        },
+        "4": {
+          "requirements": {
+            "validPetTypeIds": [
+              1,
+              2
+            ]
+          },
+          "effect": "sleeping",
+          "health": 20,
+          "useBed": true,
+          "petLove": 2
+        },
+        "5": {
+          "requirements": {
+            "cookingLevel": {
+              "min": 70
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 100,
+          "health": 20,
+          "karma": 2
+        }
+      }
+    },
+    "inspectForge": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 20,
+          "karma": 1
+        },
+        "1": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "effect": "burning",
+          "health": -15
+        },
+        "2": {
+          "consumeMaterials": {
+            "ids": [
+              70,
+              81,
+              16
+            ],
+            "quantity": 2
+          },
+          "randomItem": {
+            "category": 0
+          },
+          "karma": 1
+        },
+        "3": {
+          "requirements": {
+            "validClassIds": [
+              8,
+              9,
+              10,
+              11,
+              20
+            ]
+          },
+          "money": 60,
+          "karma": 2
+        },
+        "4": {
+          "requirements": {
+            "validPetTypeIds": [
+              27
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 30
+        },
+        "5": {
+          "requirements": {
+            "weaponLevel": {
+              "min": 3
+            }
+          },
+          "randomItem": {
+            "rarity": {
+              "min": 3
+            },
+            "category": 0
+          },
+          "karma": 1
+        },
+        "6": {
+          "requirements": {
+            "badges": [
+              "sentimental_crafter"
+            ]
+          },
+          "randomItem": {
+            "category": 3
+          }
+        }
+      }
+    },
+    "goAway": {
+      "outcomes": {
+        "0": {},
+        "1": {
+          "health": 5
+        },
+        "2": {
+          "requirements": {
+            "energyPercent": {
+              "max": 15
+            }
+          },
+          "effect": "sleeping"
+        },
+        "3": {
+          "requirements": {
+            "energyPercent": {
+              "min": 16,
+              "max": 50
+            }
+          },
+          "effect": "feetHurt"
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "health": 10
         }
       }
     },
@@ -22,37 +238,6 @@
         "0": {
           "effect": "occupied",
           "lostTime": 30
-        }
-      }
-    },
-    "goAway": {
-      "outcomes": {
-        "0": {},
-        "1": {
-          "effect": "occupied",
-          "lostTime": 20
-        },
-        "2": {
-          "effect": "sleeping",
-          "health": -20
-        }
-      }
-    },
-    "stayNight": {
-      "outcomes": {
-        "0": {
-          "effect": "sleeping",
-          "health": 10
-        },
-        "1": {
-          "effect": "occupied",
-          "lostTime": 5
-        },
-        "2": {},
-        "3": {
-          "effect": "occupied",
-          "health": 5,
-          "lostTime": 100
         }
       }
     }

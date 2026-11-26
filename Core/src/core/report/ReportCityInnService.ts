@@ -16,7 +16,7 @@ import {
 	CommandReportSleepRoomRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
-import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
+import { getNextBedAvailableAt } from "../utils/BedUtils";
 import { crowniclesInstance } from "../../app";
 import { MissionsController } from "../missions/MissionsController";
 
@@ -128,9 +128,10 @@ export async function handleInnRoomReaction(
 		}
 
 		const now = new Date();
-		if (lockedPlayer.lastBedUsedAt && now.getTime() - lockedPlayer.lastBedUsedAt.getTime() < HomeConstants.BED_COOLDOWN_MS) {
+		const nextBedAvailableAt = getNextBedAvailableAt(lockedPlayer.lastBedUsedAt, now);
+		if (nextBedAvailableAt !== null) {
 			response.push(makePacket(CommandReportBedCooldownRes, {
-				nextAvailableAt: lockedPlayer.lastBedUsedAt.getTime() + HomeConstants.BED_COOLDOWN_MS
+				nextAvailableAt: nextBedAvailableAt
 			}));
 			return false;
 		}

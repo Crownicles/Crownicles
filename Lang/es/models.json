@@ -1520,6 +1520,18 @@
       "prefix": "de"
     }
   },
+  "petTags": {
+    "flying": "puede volar",
+    "aquatic": "a gusto en el agua",
+    "nocturnal": "ve en la oscuridad",
+    "fire": "domina el fuego",
+    "keenNose": "buen olfato",
+    "mount": "puede llevar un jinete",
+    "heavy": "muy pesado",
+    "intimidating": "intimidante",
+    "climber": "trepa a los árboles",
+    "grazer": "pasta"
+  },
   "biomes": {
     "forest": "Bosque",
     "mountain": "Montaña",

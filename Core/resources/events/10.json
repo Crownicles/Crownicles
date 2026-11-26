@@ -1,42 +1,310 @@
 {
   "possibilities": {
-    "end": {
-      "outcomes": {
-        "0": {}
-      }
-    },
     "help": {
       "outcomes": {
-        "0": {},
+        "0": {
+          "money": 50,
+          "karma": 2
+        },
         "1": {
-          "effect": "occupied",
-          "lostTime": 30,
-          "randomItem": {}
+          "requirements": {
+            "attack": {
+              "min": 600
+            }
+          },
+          "randomItem": {},
+          "karma": 2
         },
         "2": {
-          "effect": "occupied",
-          "lostTime": 30,
-          "money": 234
+          "money": 25,
+          "karma": 2
         },
         "3": {
+          "requirements": {
+            "attack": {
+              "max": 230
+            }
+          },
+          "health": -15,
           "effect": "confounded",
-          "health": -10
+          "karma": 2
+        },
+        "4": {
+          "karma": 2
+        },
+        "5": {
+          "requirements": {
+            "attack": {
+              "min": 231,
+              "max": 599
+            }
+          },
+          "health": -5,
+          "karma": 2
+        },
+        "6": {
+          "requirements": {
+            "attack": {
+              "min": 780
+            }
+          },
+          "money": -50,
+          "karma": 1,
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "7": {
+          "requirements": {
+            "validPetTypeIds": [
+              73,
+              74,
+              75
+            ]
+          },
+          "money": 80,
+          "karma": 2
+        },
+        "8": {
+          "requirements": {
+            "validPetTypeIds": [
+              25,
+              30,
+              55,
+              72
+            ]
+          },
+          "money": 100,
+          "karma": 2
+        },
+        "9": {
+          "requirements": {
+            "validPetTypeIds": [
+              21,
+              42
+            ]
+          },
+          "money": 100,
+          "karma": 2
+        },
+        "10": {
+          "requirements": {
+            "validPetTypeIds": [
+              71
+            ]
+          },
+          "money": 80,
+          "karma": 2
+        },
+        "11": {
+          "requirements": {
+            "validPetTypeIds": [
+              82
+            ]
+          },
+          "money": 80,
+          "health": 5,
+          "karma": 2
+        },
+        "12": {
+          "requirements": {
+            "validPetTypeIds": [
+              3,
+              4
+            ]
+          },
+          "money": -60,
+          "karma": 1,
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "13": {
+          "requirements": {
+            "validPetTypeIds": [
+              45,
+              77
+            ]
+          },
+          "karma": 1
+        },
+        "14": {
+          "requirements": {
+            "level": {
+              "min": 20,
+              "max": 89
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "karma": 2,
+          "fight": {
+            "monster": "giantFish",
+            "level": 50,
+            "won": {
+              "money": 190,
+              "experience": 40
+            },
+            "lost": {
+              "health": -15
+            }
+          }
+        },
+        "15": {
+          "requirements": {
+            "level": {
+              "min": 90
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "karma": 2,
+          "fight": {
+            "monster": "giantFish",
+            "level": 120,
+            "won": {
+              "money": 360,
+              "experience": 95,
+              "randomItem": {}
+            },
+            "lost": {
+              "health": -25
+            }
+          }
+        }
+      }
+    },
+    "advice": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "level": {
+              "min": 120
+            }
+          },
+          "money": 40,
+          "karma": 1
+        },
+        "1": {
+          "requirements": {
+            "level": {
+              "max": 55
+            }
+          },
+          "karma": 1
+        },
+        "2": {
+          "karma": 1
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "karma": 1
+        },
+        "4": {
+          "requirements": {
+            "validPetTypeIds": [
+              12,
+              33
+            ]
+          },
+          "money": 40,
+          "karma": 1
         }
       }
     },
     "push": {
       "outcomes": {
         "0": {
-          "money": -500,
+          "money": -100,
+          "health": -10,
+          "karma": -10,
+          "effect": "occupied",
+          "lostTime": 30,
           "tags": [
             "moneyUsage"
           ]
+        },
+        "1": {
+          "money": -200,
+          "health": -15,
+          "karma": -10,
+          "effect": "confounded",
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "2": {
+          "health": -20,
+          "karma": -10,
+          "effect": "confounded"
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "money": -300,
+          "karma": -10,
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "4": {
+          "requirements": {
+            "speed": {
+              "max": 40
+            }
+          },
+          "health": -10,
+          "karma": -12,
+          "effect": "freezing"
+        },
+        "5": {
+          "requirements": {
+            "validPetTypeIds": [
+              30,
+              55
+            ]
+          },
+          "karma": -6
         }
       }
     },
     "skip": {
       "outcomes": {
-        "0": {}
+        "0": {
+          "karma": -1
+        },
+        "1": {
+          "karma": -1
+        },
+        "2": {
+          "requirements": {
+            "validPetTypeIds": [
+              1,
+              2
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 20,
+          "karma": -1
+        }
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 45,
+          "karma": -1
+        }
       }
     }
   },

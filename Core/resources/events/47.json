@@ -2,70 +2,327 @@
   "possibilities": {
     "end": {
       "outcomes": {
-        "0": {},
-        "1": {},
+        "0": {
+          "karma": -1
+        },
+        "1": {
+          "karma": -1
+        },
         "2": {
-          "effect": "jailed"
+          "requirements": {
+            "speed": {
+              "max": 134
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 180
+        },
+        "3": {
+          "effect": "sleeping",
+          "forceStayInCity": true
+        },
+        "4": {
+          "requirements": {
+            "speed": {
+              "min": 135
+            }
+          }
         }
       }
     },
     "goAway": {
       "outcomes": {
-        "0": {
-          "health": -5,
-          "money": -300
-        },
-        "1": {},
-        "2": {
+        "0": {},
+        "1": {
           "health": 10
         },
+        "2": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "randomItem": {},
+          "karma": -10
+        },
         "3": {
-          "randomItem": {}
+          "money": -150,
+          "karma": -2
         },
         "4": {
-          "money": -250
+          "requirements": {
+            "money": {
+              "min": 100000
+            }
+          },
+          "money": -300,
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "5": {
+          "requirements": {
+            "defense": {
+              "min": 740
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 20,
+          "karma": -1
+        },
+        "6": {
+          "forceStayInCity": true
+        },
+        "7": {
+          "requirements": {
+            "petRarity": {
+              "min": 1
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 15,
+          "karma": 1
+        },
+        "8": {
+          "requirements": {
+            "karma": {
+              "min": 80
+            }
+          },
+          "health": 5
         }
       }
     },
     "help": {
       "outcomes": {
-        "0": {},
+        "0": {
+          "effect": "occupied",
+          "lostTime": 120,
+          "karma": 2
+        },
         "1": {
-          "effect": "hurt",
-          "money": -160
+          "requirements": {
+            "attack": {
+              "max": 440
+            }
+          },
+          "health": -20,
+          "effect": "confounded",
+          "money": -150,
+          "karma": 2
         },
         "2": {
-          "health": -15
+          "health": -15,
+          "effect": "confounded",
+          "karma": 2
         },
         "3": {
-          "effect": "injured",
-          "health": -120
+          "requirements": {
+            "validClassIds": [
+              15,
+              21
+            ]
+          },
+          "health": -40,
+          "effect": "hurt",
+          "karma": 2
         },
         "4": {
-          "money": 1200
+          "requirements": {
+            "speed": {
+              "min": 500
+            }
+          },
+          "money": 300,
+          "effect": "occupied",
+          "lostTime": 60,
+          "karma": 5
         },
         "5": {
-          "money": 800
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "money": 300,
+          "karma": 3
         },
         "6": {
-          "money": 100,
-          "randomItem": {}
+          "requirements": {
+            "money": {
+              "min": 100000
+            }
+          },
+          "money": -300,
+          "randomItem": {},
+          "karma": 5,
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "7": {
+          "requirements": {
+            "level": {
+              "min": 30,
+              "max": 94
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "karma": 2,
+          "fight": {
+            "monster": "mercenary",
+            "level": 65,
+            "won": {
+              "money": 490,
+              "experience": 65
+            },
+            "lost": {
+              "health": -15
+            }
+          }
+        },
+        "8": {
+          "requirements": {
+            "level": {
+              "min": 95
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "karma": 2,
+          "fight": {
+            "monster": "mercenary",
+            "level": 130,
+            "won": {
+              "money": 650,
+              "experience": 130,
+              "randomItem": {}
+            },
+            "lost": {
+              "health": -25
+            }
+          }
+        },
+        "9": {
+          "requirements": {
+            "energyPercent": {
+              "max": 15
+            }
+          },
+          "health": -35,
+          "effect": "hurt",
+          "karma": 2
+        },
+        "10": {
+          "requirements": {
+            "petTags": [
+              "heavy"
+            ]
+          },
+          "money": 300,
+          "karma": 5
+        },
+        "11": {
+          "requirements": {
+            "attack": {
+              "min": 441,
+              "max": 699
+            }
+          },
+          "health": -8,
+          "effect": "confounded",
+          "karma": 2
+        },
+        "12": {
+          "requirements": {
+            "attack": {
+              "min": 700
+            }
+          },
+          "money": 300,
+          "karma": 5
         }
       }
     },
     "tell": {
       "outcomes": {
-        "0": {},
+        "0": {
+          "karma": -8
+        },
         "1": {
-          "money": 25
+          "money": 25,
+          "karma": -10
         },
         "2": {
-          "money": 100
+          "requirements": {
+            "attack": {
+              "min": 440
+            }
+          },
+          "money": 100,
+          "karma": -10
         },
-        "3": {},
+        "3": {
+          "karma": -5
+        },
         "4": {
+          "requirements": {
+            "defense": {
+              "max": 180
+            }
+          },
+          "health": -40,
           "effect": "hurt",
-          "health": -60
+          "karma": -5
+        },
+        "5": {
+          "requirements": {
+            "defense": {
+              "min": 181,
+              "max": 519
+            }
+          },
+          "health": -20,
+          "effect": "confounded",
+          "karma": -5
+        },
+        "6": {
+          "requirements": {
+            "defense": {
+              "min": 520
+            }
+          },
+          "health": -3,
+          "karma": -5
+        },
+        "7": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "karma": -5
+        },
+        "8": {
+          "requirements": {
+            "karma": {
+              "max": -50
+            }
+          },
+          "money": 150,
+          "karma": -12
+        },
+        "9": {
+          "requirements": {
+            "badges": [
+              "top_glory"
+            ]
+          },
+          "randomItem": {},
+          "karma": -8
         }
       }
     }

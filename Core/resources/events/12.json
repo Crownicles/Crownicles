@@ -1,20 +1,237 @@
 {
   "possibilities": {
+    "searchBridge": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "speed": {
+              "max": 40
+            }
+          },
+          "health": -20,
+          "effect": "confounded"
+        },
+        "1": {
+          "requirements": {
+            "speed": {
+              "min": 41,
+              "max": 349
+            }
+          },
+          "health": -8
+        },
+        "2": {
+          "requirements": {
+            "speed": {
+              "min": 350
+            }
+          }
+        },
+        "3": {
+          "requirements": {
+            "level": {
+              "min": 96
+            }
+          },
+          "randomItem": {}
+        },
+        "4": {
+          "requirements": {
+            "petTags": [
+              "heavy"
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 60
+        },
+        "5": {
+          "effect": "occupied",
+          "lostTime": 20
+        },
+        "6": {
+          "requirements": {
+            "defense": {
+              "min": 740
+            }
+          },
+          "health": -10,
+          "effect": "confounded"
+        }
+      }
+    },
+    "swim": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "attack": {
+              "max": 440
+            }
+          },
+          "health": -25,
+          "effect": "lost"
+        },
+        "1": {
+          "requirements": {
+            "attack": {
+              "min": 441,
+              "max": 699
+            }
+          },
+          "health": -15,
+          "effect": "freezing"
+        },
+        "2": {
+          "requirements": {
+            "attack": {
+              "min": 700
+            }
+          },
+          "health": 5
+        },
+        "3": {
+          "requirements": {
+            "validPetTypeIds": [
+              77,
+              82
+            ]
+          }
+        },
+        "4": {
+          "requirements": {
+            "petTags": [
+              "mount"
+            ]
+          }
+        },
+        "5": {
+          "effect": "freezing"
+        },
+        "6": {
+          "requirements": {
+            "defense": {
+              "min": 740
+            }
+          },
+          "health": -10,
+          "effect": "confounded"
+        }
+      }
+    },
+    "otherWay": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "speed": {
+              "max": 10
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 180
+        },
+        "1": {
+          "requirements": {
+            "speed": {
+              "min": 11,
+              "max": 134
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 90
+        },
+        "2": {
+          "requirements": {
+            "speed": {
+              "min": 135
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 30
+        },
+        "3": {
+          "mapTypesDestination": [
+            "vi"
+          ]
+        },
+        "4": {
+          "mapTypesDestination": [
+            "be"
+          ]
+        },
+        "5": {
+          "requirements": {
+            "petTags": [
+              "keenNose"
+            ]
+          },
+          "randomItem": {},
+          "effect": "occupied",
+          "lostTime": 60
+        },
+        "6": {
+          "requirements": {
+            "badges": [
+              "expert_expediteur"
+            ],
+            "petTags": [
+              "keenNose"
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 15
+        }
+      }
+    },
     "craftBoat": {
       "outcomes": {
         "0": {
+          "consumeMaterials": {
+            "ids": [
+              12,
+              47,
+              49
+            ],
+            "quantity": 1
+          },
+          "randomItem": {},
           "effect": "occupied",
-          "health": -5,
-          "lostTime": 30
+          "lostTime": 45
         },
         "1": {
-          "effect": "freezing",
-          "health": -30
+          "effect": "occupied",
+          "lostTime": 140
         },
         "2": {
+          "health": -25,
+          "effect": "freezing"
+        },
+        "3": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "health": -5,
           "effect": "occupied",
-          "lostTime": 140,
-          "randomItem": {}
+          "lostTime": 30
+        },
+        "4": {
+          "requirements": {
+            "validPetTypeIds": [
+              90
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 45
+        },
+        "5": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "karma": 3,
+          "effect": "occupied",
+          "lostTime": 60
         }
       }
     },
@@ -22,45 +239,24 @@
       "outcomes": {
         "0": {
           "effect": "occupied",
-          "lostTime": 165
-        }
-      }
-    },
-    "otherWay": {
-      "outcomes": {
-        "0": {
-          "effect": "occupied",
-          "lostTime": 55
-        }
-      }
-    },
-    "searchBridge": {
-      "outcomes": {
-        "0": {
-          "effect": "occupied",
-          "lostTime": 30
+          "lostTime": 150
         },
         "1": {
+          "requirements": {
+            "petTags": [
+              "keenNose"
+            ]
+          },
           "effect": "occupied",
-          "lostTime": 60
+          "lostTime": 20
         },
         "2": {
-          "money": 30
-        },
-        "3": {
-          "effect": "confounded",
-          "health": -25
-        }
-      }
-    },
-    "swim": {
-      "outcomes": {
-        "0": {
-          "effect": "freezing",
-          "health": -30
-        },
-        "1": {
-          "health": 5
+          "requirements": {
+            "health": {
+              "max": 40
+            }
+          },
+          "effect": "sleeping"
         }
       }
     }

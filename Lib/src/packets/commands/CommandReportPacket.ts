@@ -178,7 +178,47 @@ export class CommandReportBigEventResultRes extends CrowniclesPacket {
 
 	tokens!: number;
 
+	/**
+	 * Materials won (positive quantity) or consumed (negative quantity)
+	 */
+	materials?: {
+		materialId: number;
+		quantity: number;
+	}[];
+
+	/**
+	 * Love points won (positive) or lost (negative) by the player's pet
+	 */
+	petLove?: number;
+
 	oneshot!: boolean;
+}
+
+/**
+ * Result of the fight an outcome of a big event triggered, sent once the fight is over
+ */
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportBigEventFightResultRes extends CrowniclesPacket {
+	eventId!: number;
+
+	possibilityId!: string;
+
+	outcomeId!: string;
+
+	monsterId!: string;
+
+	won!: boolean;
+
+	experience!: number;
+
+	effect?: {
+		name: string;
+		time: number;
+	};
+
+	health!: number;
+
+	money!: number;
 }
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)

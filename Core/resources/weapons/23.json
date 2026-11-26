@@ -3,7 +3,8 @@
   "rawAttack": 3,
   "type": "metal",
   "tags": [
-    "metallic"
+    "metallic",
+    "blunt"
   ],
   "materialCategory": 6
 }

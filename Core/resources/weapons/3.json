@@ -2,5 +2,8 @@
   "rarity": 2,
   "rawAttack": 4,
   "type": "wood",
-  "materialCategory": 2
+  "materialCategory": 2,
+  "tags": [
+    "blunt"
+  ]
 }

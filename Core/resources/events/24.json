@@ -7,12 +7,64 @@
           "effect": "occupied",
           "health": 5,
           "lostTime": 40
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "effect": "occupied",
+          "health": 10,
+          "lostTime": 40
+        },
+        "3": {
+          "requirements": {
+            "level": {
+              "min": 130
+            }
+          },
+          "money": 300
+        },
+        "4": {
+          "requirements": {
+            "petTags": [
+              "intimidating"
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 30,
+          "karma": 3
+        },
+        "5": {
+          "requirements": {
+            "validPetTypeIds": [
+              4,
+              95
+            ]
+          },
+          "health": -5,
+          "karma": -2
         }
       }
     },
     "foodStand": {
       "outcomes": {
         "0": {
+          "requirements": {
+            "excludedPetTypeIds": [
+              10,
+              12,
+              19,
+              33,
+              53,
+              59,
+              62,
+              68,
+              92,
+              97
+            ]
+          },
           "effect": "occupied",
           "health": 75,
           "lostTime": 30,
@@ -22,18 +74,53 @@
           ]
         },
         "1": {
-          "effect": "sick",
-          "health": -100,
           "money": -20,
           "tags": [
             "moneyUsage"
           ]
         },
         "2": {
+          "requirements": {
+            "karma": {
+              "max": -50
+            }
+          },
+          "effect": "sick",
+          "health": -15,
           "money": -20,
           "tags": [
             "moneyUsage"
           ]
+        },
+        "3": {
+          "requirements": {
+            "validPetTypeIds": [
+              63
+            ]
+          },
+          "money": 120
+        },
+        "4": {
+          "requirements": {
+            "cookingLevel": {
+              "min": 70
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 180,
+          "money": 300,
+          "karma": 3
+        },
+        "5": {
+          "requirements": {
+            "level": {
+              "min": 96
+            }
+          },
+          "effect": "occupied",
+          "health": 40,
+          "lostTime": 40,
+          "karma": 1
         }
       }
     },
@@ -46,11 +133,41 @@
           ]
         },
         "1": {
+          "requirements": {
+            "karma": {
+              "min": 0
+            }
+          },
           "effect": "occupied",
-          "lostTime": 30
+          "lostTime": 30,
+          "karma": 1
         },
         "2": {
           "money": 200
+        },
+        "3": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "money": 240
+        },
+        "4": {
+          "requirements": {
+            "validPetTypeIds": [
+              46
+            ]
+          },
+          "money": 150
+        },
+        "5": {
+          "requirements": {
+            "validPetTypeIds": [
+              54
+            ]
+          },
+          "karma": -2
         }
       }
     },
@@ -66,6 +183,79 @@
           "tags": [
             "moneyUsage"
           ]
+        },
+        "2": {
+          "requirements": {
+            "level": {
+              "min": 130
+            }
+          },
+          "money": -100,
+          "randomItem": {},
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "max": -50
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 15
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "max": -50
+            }
+          },
+          "money": -300,
+          "randomItem": {},
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "5": {
+          "requirements": {
+            "validPetTypeIds": [
+              53
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 20,
+          "randomItem": {}
+        },
+        "6": {
+          "requirements": {
+            "karma": {
+              "max": -50
+            }
+          }
+        },
+        "7": {
+          "requirements": {
+            "money": {
+              "min": 100000
+            }
+          },
+          "money": -400,
+          "randomItem": {},
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "8": {
+          "requirements": {
+            "weaponLevel": {
+              "min": 3
+            }
+          },
+          "money": 80,
+          "effect": "occupied",
+          "lostTime": 30,
+          "karma": 1
         }
       }
     }

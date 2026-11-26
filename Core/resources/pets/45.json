@@ -3,5 +3,6 @@
   "diet": "carnivorous",
   "force": 28,
   "feedDelay": 10,
-  "speed": 12
+  "speed": 12,
+  "tags": ["intimidating"]
 }

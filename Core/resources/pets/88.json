@@ -2,5 +2,6 @@
   "rarity": 6,
   "force": 22,
   "feedDelay": 2,
-  "speed": 14
+  "speed": 14,
+  "tags": ["mount", "grazer"]
 }

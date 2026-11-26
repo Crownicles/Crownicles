@@ -1,41 +1,257 @@
 {
   "possibilities": {
-    "end": {
-      "outcomes": {
-        "0": {
-          "effect": "occupied",
-          "lostTime": 10
-        },
-        "1": {
-          "effect": "occupied",
-          "lostTime": 260
-        }
-      }
-    },
     "fruits": {
       "outcomes": {
         "0": {
           "health": 15
         },
         "1": {
-          "effect": "confounded",
-          "health": -10
+          "requirements": {
+            "level": {
+              "max": 80
+            },
+            "defense": {
+              "min": 280
+            }
+          },
+          "health": -10,
+          "effect": "confounded"
         },
         "2": {
-          "effect": "sick",
-          "health": -15
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "health": -15,
+          "effect": "sick"
+        },
+        "3": {
+          "requirements": {
+            "speed": {
+              "min": 350
+            }
+          },
+          "health": 25
+        },
+        "4": {
+          "requirements": {
+            "validPetTypeIds": [
+              24,
+              90,
+              91
+            ]
+          },
+          "health": 25
+        },
+        "5": {
+          "requirements": {
+            "validPetTypeIds": [
+              51,
+              84
+            ]
+          },
+          "health": 30
+        },
+        "6": {
+          "health": 5
+        },
+        "7": {
+          "requirements": {
+            "level": {
+              "min": 81,
+              "max": 110
+            },
+            "defense": {
+              "min": 510
+            }
+          },
+          "health": -10,
+          "effect": "confounded"
+        },
+        "8": {
+          "requirements": {
+            "level": {
+              "min": 111
+            },
+            "defense": {
+              "min": 760
+            }
+          },
+          "health": -10,
+          "effect": "confounded"
+        },
+        "9": {
+          "requirements": {
+            "petTags": [
+              "climber"
+            ]
+          },
+          "health": 25
         }
       }
     },
     "hunt": {
       "outcomes": {
-        "0": {},
+        "0": {
+          "effect": "occupied",
+          "lostTime": 60
+        },
         "1": {
-          "effect": "injured",
-          "health": -60
+          "requirements": {
+            "excludedPetTypeIds": [
+              7
+            ]
+          },
+          "health": 20
         },
         "2": {
-          "health": 20
+          "requirements": {
+            "defense": {
+              "max": 180
+            },
+            "excludedPetTypeIds": [
+              9,
+              29
+            ]
+          },
+          "health": -60,
+          "effect": "injured"
+        },
+        "3": {
+          "requirements": {
+            "defense": {
+              "min": 181,
+              "max": 519
+            },
+            "excludedPetTypeIds": [
+              9,
+              29
+            ]
+          },
+          "health": -20,
+          "effect": "hurt"
+        },
+        "4": {
+          "requirements": {
+            "petTags": [
+              "keenNose"
+            ]
+          },
+          "health": 30
+        },
+        "5": {
+          "requirements": {
+            "cookingLevel": {
+              "min": 70
+            },
+            "excludedPetTypeIds": [
+              10,
+              12,
+              19,
+              33,
+              53,
+              59,
+              62,
+              68,
+              92,
+              97
+            ]
+          },
+          "health": 35
+        },
+        "6": {
+          "requirements": {
+            "level": {
+              "min": 10,
+              "max": 59
+            },
+            "energyPercent": {
+              "min": 40
+            },
+            "excludedPetTypeIds": [
+              9,
+              29
+            ]
+          },
+          "fight": {
+            "monster": "boar",
+            "level": 15,
+            "won": {
+              "money": 30,
+              "health": 25,
+              "experience": 10
+            },
+            "lost": {
+              "health": -20
+            }
+          }
+        },
+        "7": {
+          "requirements": {
+            "level": {
+              "min": 60
+            },
+            "energyPercent": {
+              "min": 40
+            },
+            "excludedPetTypeIds": [
+              9,
+              29
+            ]
+          },
+          "fight": {
+            "monster": "boar",
+            "level": 110,
+            "won": {
+              "money": 220,
+              "health": 40,
+              "experience": 90
+            },
+            "lost": {
+              "health": -30,
+              "effect": "hurt"
+            }
+          }
+        },
+        "8": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "kinds": [
+                "burnedDamage"
+              ]
+            },
+            "excludedPetTypeIds": [
+              7
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 20,
+          "health": 25
+        },
+        "9": {
+          "requirements": {
+            "energyPercent": {
+              "max": 15
+            },
+            "excludedPetTypeIds": [
+              9,
+              29
+            ]
+          },
+          "health": -35,
+          "effect": "hurt"
+        },
+        "10": {
+          "requirements": {
+            "validPetTypeIds": [
+              9,
+              29
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 20
         }
       }
     },
@@ -45,12 +261,62 @@
           "randomItem": {}
         },
         "1": {
+          "requirements": {
+            "cookingLevel": {
+              "max": 30
+            }
+          },
           "effect": "occupied",
           "lostTime": 55
         },
         "2": {
-          "effect": "injured",
-          "health": -40
+          "requirements": {
+            "cookingLevel": {
+              "max": 30
+            }
+          },
+          "health": -40,
+          "effect": "injured"
+        },
+        "3": {
+          "requirements": {
+            "cookingLevel": {
+              "min": 31,
+              "max": 69
+            }
+          },
+          "health": 10,
+          "giveMaterials": {
+            "ids": [
+              55
+            ],
+            "quantity": 2
+          }
+        },
+        "4": {
+          "requirements": {
+            "cookingLevel": {
+              "min": 70
+            }
+          },
+          "health": 30,
+          "giveMaterials": {
+            "ids": [
+              66
+            ],
+            "quantity": 1
+          }
+        },
+        "5": {
+          "requirements": {
+            "validPetTypeIds": [
+              9,
+              29
+            ]
+          },
+          "health": 12,
+          "money": 200,
+          "karma": 1
         }
       }
     },
@@ -62,13 +328,152 @@
         "1": {
           "effect": "starving"
         },
-        "2": {}
+        "2": {
+          "requirements": {
+            "cookingLevel": {
+              "min": 40,
+              "max": 69
+            }
+          },
+          "health": 10,
+          "giveMaterials": {
+            "ids": [
+              41
+            ],
+            "quantity": 1
+          }
+        },
+        "3": {
+          "requirements": {
+            "cookingLevel": {
+              "min": 70
+            }
+          },
+          "health": 20
+        },
+        "4": {
+          "requirements": {
+            "petTags": [
+              "grazer"
+            ]
+          },
+          "health": 20,
+          "petLove": 2
+        },
+        "5": {
+          "requirements": {
+            "validPetTypeIds": [
+              8
+            ]
+          },
+          "effect": "starving"
+        }
+      }
+    },
+    "scavenge": {
+      "outcomes": {
+        "0": {
+          "health": 10,
+          "giveMaterials": {
+            "ids": [
+              12,
+              47
+            ],
+            "quantity": 1
+          }
+        },
+        "1": {
+          "health": -10,
+          "effect": "sick"
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "max": -50
+            }
+          },
+          "health": 10,
+          "randomItem": {},
+          "karma": -3
+        },
+        "3": {
+          "requirements": {
+            "attack": {
+              "max": 440
+            }
+          },
+          "health": -20,
+          "effect": "hurt"
+        },
+        "4": {
+          "requirements": {
+            "attack": {
+              "min": 700
+            }
+          },
+          "health": 15
+        }
       }
     },
     "skip": {
       "outcomes": {
-        "0": {},
+        "0": {
+          "requirements": {
+            "level": {
+              "min": 31,
+              "max": 95
+            }
+          },
+          "effect": "starving"
+        },
         "1": {
+          "effect": "sleeping"
+        },
+        "2": {
+          "requirements": {
+            "level": {
+              "min": 96
+            }
+          }
+        },
+        "3": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "health": -5,
+          "effect": "starving"
+        }
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 15
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 260
+        },
+        "2": {
+          "requirements": {
+            "validPetTypeIds": [
+              56,
+              57,
+              60
+            ]
+          },
+          "health": 40,
+          "petLove": 2
+        },
+        "3": {
+          "requirements": {
+            "health": {
+              "max": 30
+            }
+          },
           "effect": "sleeping"
         }
       }

@@ -5,24 +5,109 @@
         "0": {
           "effect": "occupied",
           "lostTime": 30
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 30,
+          "randomItem": {}
+        },
+        "2": {
+          "requirements": {
+            "attack": {
+              "max": 230
+            }
+          },
+          "effect": "sleeping"
+        },
+        "3": {
+          "requirements": {
+            "attack": {
+              "min": 600
+            }
+          }
+        }
+      }
+    },
+    "turnBack": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 20,
+          "mapTypesDestination": [
+            "ro",
+            "pl"
+          ],
+          "goBackToPreviousMap": true
+        },
+        "1": {
+          "requirements": {
+            "speed": {
+              "max": 40
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 60,
+          "mapTypesDestination": [
+            "ro",
+            "pl"
+          ],
+          "goBackToPreviousMap": true
+        },
+        "2": {
+          "requirements": {
+            "speed": {
+              "min": 350
+            }
+          },
+          "mapTypesDestination": [
+            "ro",
+            "pl"
+          ],
+          "goBackToPreviousMap": true
+        },
+        "3": {
+          "requirements": {
+            "petTags": [
+              "keenNose"
+            ]
+          },
+          "mapTypesDestination": [
+            "ro",
+            "pl"
+          ],
+          "goBackToPreviousMap": true
+        }
+      }
+    },
+    "otherWay": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "level": {
+              "min": 120
+            }
+          }
+        },
+        "1": {},
+        "2": {
+          "effect": "lost"
+        },
+        "3": {
+          "requirements": {
+            "level": {
+              "max": 55
+            }
+          },
+          "health": -4,
+          "effect": "lost"
         }
       }
     },
     "end": {
       "outcomes": {
         "0": {
-          "effect": "occupied",
-          "lostTime": 100
-        }
-      }
-    },
-    "otherWay": {
-      "outcomes": {
-        "0": {},
-        "1": {
-          "effect": "occupied",
-          "health": -5,
-          "lostTime": 30
+          "money": -300,
+          "effect": "sleeping"
         }
       }
     }

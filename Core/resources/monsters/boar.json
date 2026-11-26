@@ -1,0 +1,41 @@
+{
+  "baseEnergyValue": 130,
+  "attackRatio": 60,
+  "defenseRatio": 45,
+  "speedRatio": 85,
+  "breath": 4,
+  "maxBreath": 10,
+  "breathRegen": 3,
+  "rewardFactor": 0.2,
+  "materialLoot": [
+    63,
+    58,
+    55,
+    54,
+    64,
+    52
+  ],
+  "attacks": [
+    {
+      "id": "ramAttack",
+      "minLevel": 0,
+      "weight": 5
+    },
+    {
+      "id": "hardBiteAttack",
+      "minLevel": 0,
+      "weight": 3
+    },
+    {
+      "id": "roarAttack",
+      "minLevel": 0,
+      "weight": 2
+    },
+    {
+      "id": "grabAndThrowAttack",
+      "minLevel": 60,
+      "weight": 2
+    }
+  ],
+  "maps": []
+}

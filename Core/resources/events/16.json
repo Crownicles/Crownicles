@@ -1,5 +1,279 @@
 {
   "possibilities": {
+    "enterCastle": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 25,
+          "randomItem": {
+            "category": 0
+          }
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 10
+        },
+        "2": {
+          "requirements": {
+            "defense": {
+              "max": 340
+            }
+          },
+          "effect": "hurt",
+          "health": -35
+        },
+        "3": {
+          "requirements": {
+            "defense": {
+              "min": 341,
+              "max": 739
+            }
+          },
+          "effect": "confounded",
+          "health": -15
+        },
+        "4": {
+          "consumeMaterials": {
+            "ids": [
+              12,
+              47,
+              49
+            ],
+            "quantity": 1
+          },
+          "effect": "occupied",
+          "lostTime": 35,
+          "randomItem": {
+            "rarity": {
+              "min": 3
+            }
+          }
+        },
+        "5": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 20,
+          "money": 150,
+          "karma": -3
+        },
+        "6": {
+          "requirements": {
+            "level": {
+              "min": 25,
+              "max": 99
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "fight": {
+            "monster": "skeleton",
+            "level": 55,
+            "won": {
+              "money": 140,
+              "experience": 40,
+              "randomItem": {}
+            },
+            "lost": {
+              "health": -25
+            }
+          }
+        },
+        "7": {
+          "requirements": {
+            "level": {
+              "min": 100
+            },
+            "energyPercent": {
+              "min": 40
+            }
+          },
+          "fight": {
+            "monster": "skeleton",
+            "level": 140,
+            "won": {
+              "money": 280,
+              "experience": 110,
+              "randomItem": {
+                "rarity": {
+                  "min": 3
+                }
+              }
+            },
+            "lost": {
+              "health": -30
+            }
+          }
+        },
+        "8": {
+          "requirements": {
+            "energyPercent": {
+              "max": 15
+            }
+          },
+          "effect": "feetHurt",
+          "health": -30
+        }
+      }
+    },
+    "walkAround": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 60
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 80,
+          "money": 250
+        },
+        "2": {
+          "requirements": {
+            "speed": {
+              "max": 40
+            }
+          },
+          "effect": "hurt",
+          "health": -20
+        },
+        "3": {
+          "requirements": {
+            "speed": {
+              "min": 41,
+              "max": 349
+            }
+          },
+          "effect": "feetHurt",
+          "health": -8
+        },
+        "4": {
+          "requirements": {
+            "petTags": [
+              "keenNose"
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 15,
+          "money": 180
+        },
+        "5": {
+          "requirements": {
+            "attack": {
+              "min": 780
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 30,
+          "randomItem": {}
+        }
+      }
+    },
+    "searchRiver": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 45,
+          "money": 80
+        },
+        "1": {
+          "requirements": {
+            "speed": {
+              "max": 10
+            }
+          },
+          "effect": "freezing",
+          "health": -10
+        },
+        "2": {
+          "requirements": {
+            "level": {
+              "min": 130
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 80,
+          "money": 100,
+          "randomItem": {}
+        },
+        "3": {
+          "requirements": {
+            "validPetTypeIds": [
+              31
+            ]
+          },
+          "health": 10,
+          "randomItem": {}
+        },
+        "4": {
+          "requirements": {
+            "cookingLevel": {
+              "min": 70
+            },
+            "excludedPetTypeIds": [
+              86
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 30,
+          "health": 15
+        },
+        "5": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "kinds": [
+                "poisonedDamage"
+              ]
+            }
+          },
+          "randomItem": {}
+        },
+        "6": {
+          "health": -3
+        }
+      }
+    },
+    "skip": {
+      "outcomes": {
+        "0": {},
+        "1": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 30
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "health": 10
+        },
+        "3": {
+          "requirements": {
+            "validPetTypeIds": [
+              86
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 15
+        },
+        "4": {
+          "effect": "occupied",
+          "lostTime": 15,
+          "money": 40,
+          "karma": 2
+        }
+      }
+    },
     "end": {
       "outcomes": {
         "0": {
@@ -9,45 +283,16 @@
         "1": {
           "effect": "occupied",
           "lostTime": 30
-        }
-      }
-    },
-    "enterCastle": {
-      "outcomes": {
-        "0": {
-          "effect": "hurt",
-          "health": -35
         },
-        "1": {
+        "2": {
+          "requirements": {
+            "validPetTypeIds": [
+              70
+            ]
+          },
           "effect": "occupied",
           "lostTime": 25,
-          "randomItem": {}
-        },
-        "2": {
-          "effect": "occupied",
-          "lostTime": 10
-        }
-      }
-    },
-    "skip": {
-      "outcomes": {
-        "0": {}
-      }
-    },
-    "walkAround": {
-      "outcomes": {
-        "0": {
-          "effect": "occupied",
-          "lostTime": 80
-        },
-        "1": {
-          "effect": "occupied",
-          "lostTime": 80,
-          "money": 450
-        },
-        "2": {
-          "effect": "hurt",
-          "health": -20
+          "money": 150
         }
       }
     }

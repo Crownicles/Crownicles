@@ -32,3 +32,23 @@ export enum Badge {
 	SENTIMENTAL_CRAFTER = "sentimental_crafter",
 	MASTER_CHEF = "master_chef"
 }
+
+/**
+ * Badges a big event outcome may depend on: those earned inside the game world, that a character could plausibly know about.
+ * Badges about the staff, donations, contests, bug reports or votes stay out of the fiction.
+ * The bought rich badge is left out too: the money requirement tells how wealthy the player really is.
+ */
+export const EVENT_OUTCOME_BADGES = [
+	Badge.ANIMAL_LOVER,
+	Badge.EXPERT_EXPEDITEUR,
+	Badge.LEGENDARY_PET,
+	Badge.MASTER_CHEF,
+	Badge.SENTIMENTAL_CRAFTER,
+	Badge.ORACLE_PATRON,
+	Badge.MISSION_COMPLETER,
+	Badge.TOP_GLORY,
+	Badge.POWERFUL_GUILD,
+	Badge.VERY_POWERFUL_GUILD
+] as const;
+
+export type EventOutcomeBadge = typeof EVENT_OUTCOME_BADGES[number];

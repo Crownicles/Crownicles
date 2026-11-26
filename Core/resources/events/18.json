@@ -1,44 +1,168 @@
 {
   "possibilities": {
-    "end": {
-      "outcomes": {
-        "0": {
-          "effect": "occupied",
-          "lostTime": 10
-        }
-      }
-    },
     "searchScaffolding": {
-      "outcomes": {
-        "0": {
-          "effect": "occupied",
-          "lostTime": 45
-        },
-        "1": {
-          "effect": "occupied",
-          "lostTime": 15,
-          "randomItem": {}
-        },
-        "2": {
-          "effect": "confounded",
-          "health": -30
-        }
-      }
-    },
-    "searchSite": {
       "outcomes": {
         "0": {
           "effect": "occupied",
           "lostTime": 30
         },
         "1": {
+          "randomItem": {},
           "effect": "occupied",
-          "lostTime": 40,
-          "randomItem": {}
+          "lostTime": 15
         },
         "2": {
+          "requirements": {
+            "speed": {
+              "max": 10
+            }
+          },
+          "effect": "hurt",
+          "health": -30
+        },
+        "3": {
+          "requirements": {
+            "speed": {
+              "min": 11,
+              "max": 134
+            }
+          },
+          "health": -10
+        },
+        "4": {
+          "requirements": {
+            "speed": {
+              "min": 135
+            }
+          },
+          "randomItem": {},
+          "money": 60,
+          "effect": "occupied",
+          "lostTime": 15
+        },
+        "5": {
+          "requirements": {
+            "validPetTypeIds": [
+              24,
+              90,
+              91
+            ]
+          },
+          "randomItem": {},
+          "effect": "occupied",
+          "lostTime": 10
+        }
+      }
+    },
+    "searchSite": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "attack": {
+              "max": 600
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 30
+        },
+        "1": {
+          "requirements": {
+            "attack": {
+              "min": 601,
+              "max": 779
+            }
+          },
+          "giveMaterials": {
+            "ids": [
+              70,
+              81,
+              16
+            ],
+            "quantity": 1
+          },
+          "effect": "occupied",
+          "lostTime": 25
+        },
+        "2": {
+          "requirements": {
+            "attack": {
+              "min": 780
+            }
+          },
+          "giveMaterials": {
+            "ids": [
+              70,
+              81,
+              16
+            ],
+            "quantity": 3
+          },
+          "effect": "occupied",
+          "lostTime": 20
+        },
+        "3": {
+          "randomItem": {},
+          "effect": "occupied",
+          "lostTime": 40
+        },
+        "4": {
           "effect": "hurt",
           "health": -20
+        },
+        "5": {
+          "requirements": {
+            "validPetTypeIds": [
+              38
+            ]
+          },
+          "giveMaterials": {
+            "ids": [
+              2,
+              18,
+              84
+            ],
+            "quantity": 2
+          },
+          "effect": "occupied",
+          "lostTime": 30
+        }
+      }
+    },
+    "investigate": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 45,
+          "bonusExperience": 80
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 90
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "randomItem": {},
+          "effect": "occupied",
+          "lostTime": 30,
+          "karma": 3
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 30
+        },
+        "4": {
+          "effect": "occupied",
+          "lostTime": 45,
+          "bonusExperience": 80
         }
       }
     },
@@ -46,8 +170,59 @@
       "outcomes": {
         "0": {},
         "1": {
-          "effect": "confounded",
-          "health": -15
+          "effect": "occupied",
+          "lostTime": 10
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 15
+        },
+        "3": {
+          "requirements": {
+            "petTags": [
+              "climber"
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 20
+        }
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 15
+        },
+        "1": {
+          "requirements": {
+            "validPetTypeIds": [
+              54,
+              94,
+              95
+            ]
+          },
+          "randomItem": {
+            "category": 3
+          }
+        },
+        "2": {
+          "requirements": {
+            "validPetTypeIds": [
+              91
+            ]
+          },
+          "money": 40,
+          "effect": "occupied",
+          "lostTime": 20
+        },
+        "3": {
+          "health": -3
         }
       }
     }

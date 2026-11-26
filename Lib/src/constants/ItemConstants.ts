@@ -121,7 +121,10 @@ export abstract class ItemConstants {
 		HOLY: "holy",
 		RANGED: "ranged",
 		FIRE: "fire",
-		METALLIC: "metallic"
+		METALLIC: "metallic",
+
+		// Heavy striking weapon (hammer, pickaxe, mace…) that can smash a lock or a door, checked by the weaponTags requirement of big events
+		BLUNT: "blunt"
 	};
 
 	static readonly NATURE_ID_TO_NAME = [

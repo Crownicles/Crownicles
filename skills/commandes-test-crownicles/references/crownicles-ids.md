@@ -314,7 +314,7 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 93 | Caravane |
 | 94 | Armure électrifiée |
 | 95 | Exosquelette |
-| 96 | Tenue de l’Archimage |
+| 96 | Tenue de l'Archimage |
 | 97 | Armure en diamant |
 | 98 | Bouclier en Beskar |
 | 99 | Armure en Beskar |
@@ -854,81 +854,81 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 
 | ID | Début du texte |
 |---|---|
-| 1 | Un arbre est tombé sur le chemin et bloque le passage ! |
-| 2 | Devant vous, un chien arrive et tourne autour de vous. Il semble vouloir que vous le suiviez ! |
-| 3 | Alors que vous voyagez sur la Route des Merveilles, vous découvrez un coffret ! Malheureusement, il est verrouillé... |
+| 1 | Dans la pénombre de la Forêt Du Vieillard, un grand chêne déraciné s'est abattu en travers du sentier. Sa ramure forme un mur de branches br |
+| 2 | Sur les pavés brisés de la Grande Rue, un chien efflanqué au pelage tacheté surgit des ruines d'un ancien comptoir. Il tourne autour de vous |
+| 3 | Sur la Route des Merveilles, entre les étals des marchands ambulants et les échoppes en ruine, votre pied heurte un petit coffret à demi enf |
 | 4 | Vous avez décidé de profiter d'une nuit calme pour continuer votre progression. Le ciel est magnifique et après quelques minutes à le scrute |
 | 5 | Vous avez trouvé une fontaine ! |
 | 6 | Vous vous étiez arrêté dans une grotte pour manger et vous hésitez à repartir... |
 | 7 | Parmi les ruines de Ville Forte, vous découvrez une maison encore debout. Elle semble abandonnée... |
 | 8 | Vous avez décidé de profiter de l'été pour passer par les montagnes tant que les cols ne sont pas trop enneigés. Cependant, l'ascension s'av |
-| 9 | Au milieu d'un champ, vous rencontrez un paysan. Ce dernier a perdu sa fourche... |
-| 10 | Alors que vous passiez près d'un plan d'eau, vous remarquez un homme qui semble en difficulté sur sa partie de pêche ! |
-| 11 | Alors que vous vous apprêtez à rentrer dans une forêt, une inconnue vous explique qu'il existe un chemin plus court en passant par l'ouest. |
-| 12 | Vous voyez une rivière devant vous. De l'autre côté du rivage, vous apercevez un village. |
-| 13 | Après avoir passé plusieurs semaines à marcher sans effectuer la moindre rencontre humaine, vous arpentez à présent les ruelles d'une petite |
-| 14 | Alors que la fatigue commence à vous assaillir, vous découvrez une petite prairie où se tient une petite maison. Vous vous en approchez et d |
-| 15 | Alors que vous traversez une ville en passant par des ruelles, vous entrez dans ce qui vous semble être une petite boutique où un groupe d'h |
-| 16 | Après avoir suivi pendant de longues heures une rivière, vous découvrez un vieux château qui semble abandonné au bord de l'eau. |
-| 17 | Affamé par votre journée de voyage, vous décidez de faire une halte et de rechercher de quoi vous nourrir autour de vous. |
-| 18 | La ville où vous mettez les pieds semble déserte, sans âme qui vive. En parcourant ses rues, votre regard s'arrête sur un chantier qui paraî |
-| 19 | Après de longs jours sans avoir pu vous sustenter, vous voyez sur le bord du chemin un cadavre de renard, semblant tout frais. |
-| 20 | À votre arrivée dans un village, vous remarquez du coin de l'œil un garde volant une pauvre femme. |
+| 9 | Au milieu d'un champ de blé du Berceau, à deux pas de la grande route qui traverse la plaine, un paysan fouille ses meules de foin en jurant |
+| 10 | Au bord du Lac Mirage, des familles pique-niquent près des roseaux. Au bout d'un vieux ponton, un pêcheur se bat avec sa canne : un poisson |
+| 11 | À l'orée du Bois Hurlant, où des brigands se cachent dans les grottes des collines, une femme encapuchonnée vous aborde. Elle vous déconseil |
+| 12 | Devant vous, la Rivière Vacarme charrie branches et écume dans un grondement assourdissant. Un vieux pont de bois l'enjambe encore : plusieu |
+| 13 | Vous arrivez aux portes de Claire de Ville. Derrière les murailles, la grande cité marchande grouille de monde, mais tout y reste calme : de |
+| 14 | La fatigue commence à vous peser quand, au milieu de la plaine vide de L'Étendue, vous arrivez devant une petite maison de pierre au bord d' |
+| 15 | Dans une ruelle de Claire de Ville, vous poussez la porte d'une petite boutique. Quelques hommes y discutent tranquillement entre des étals |
+| 16 | Après de longues heures à suivre la Rivière aux Crabes, vous découvrez un vieux château au bord de l'eau. Le lierre couvre ses murs, des cor |
+| 17 | Sur le Grand Axe, qui contourne le Mont Célestrum par le nord, la faim vous force à faire halte. Un grand arbre ploie sous des fruits dorés, |
+| 18 | Au détour d'une ruelle de Mergagnan, un pan de palissade gît sur les pavés. Derrière, des murs à mi-hauteur disparaissent sous des échafauda |
+| 19 | Au Croisement des Destins, là où se rejoignent les grands chemins de l'ouest, un renard gît au pied du poteau indicateur. Il semble mort dep |
+| 20 | Dans une ruelle de Claire de Ville, un garde aux armes de la cité a acculé une femme contre un mur. Il lui arrache sa bourse en invoquant un |
 | 21 | En continuant votre périple, vous arrivez devant un pont délabré qui, de plus, est au dessus d'un énorme gouffre. |
 | 22 | Alors que vous traversez la propriété d'un fermier, vous voyez un pommier aux fruits forts appétissants. |
 | 23 | Vous vous baladez en forêt, quand soudain, vous apercevez un chariot qui semble cassé. Autour, le groupe de personnes semble mal en point. |
-| 24 | Vous montez sur une colline. Alors que vous regardez autour de vous, vous voyez des lumières au loin. Au fur et à mesure que vous vous appro |
-| 25 | Après plusieurs jours de voyage sans encombre, vous finissez par arriver sur les lieux d'une petite escarmouche entre deux groupes armés. Le |
-| 26 | En arrivant dans un village, vous remarquez un regroupement de personnes. Vous constatez très vite en vous approchant qu'une pendaison est e |
+| 24 | Du haut d'une colline, vous apercevez Mergagnan : des lumières dansent sur le port et de la musique monte jusqu'à vous. C'est jour de fête. |
+| 25 | Au Croisement des Destins, le grand carrefour à l'ouest du Mont Célestrum, l'herbe est piétinée et couverte d'armes brisées. Des mercenaires |
+| 26 | À Ville Forte, au pied des remparts effondrés, les villageois ont dressé une potence de bois peint. Pour quelques pièces, ils rejouent devan |
 | 27 | En arrivant dans un petit village, vous remarquez un puits avec un petit objet brillant au fond. |
 | 28 | Pendant votre périple, un groupe d'hommes "prêchant la parole des dieux" vous invite à rejoindre leur cause. |
 | 29 | Les températures dépassant les 30°C depuis plusieurs jours vous accablent. Alors que vos forces commencent à faiblir, incapable de continuer |
-| 30 | Vous apercevez un château au loin, vous décidez de vous en approcher par l'entrée principale. Cette demeure semble être celle du Duc Benatis |
+| 30 | Sur le Chemin aux Loups, au-dessus des berges glissantes de la Vacarme, se dresse le château du Duc Benatis, entouré de ses plantations de b |
 | 31 | Vous entendez un bruit de galop au loin. Vous vous retournez et voyez un chevalier à l'armure noire et au blason inconnu. |
 | 32 | Vous continuez votre chemin tranquillement dans une forêt, lorsque vous entendez un cri. La voix semble être celle d'un homme. Vous décidez |
 | 33 | Vous arrivez dans une ferme où se déroule un grand festin. Les gens paraissent accueillants. |
 | 34 | À votre arrivée au village, des passants vous reconnaissent et vous abordent. Ils se rappellent parfaitement de l'aide que vous leur aviez a |
-| 35 | Vous entrez dans un bar, et le barman vous interpelle, vous disant qu'il aimerait "tester de nouvelles boissons" sur vous. |
-| 36 | Au cours de votre très long périple, vous arrivez aux abords d'un petit village fort charmant. Le lieu est si modeste que, d'un simple coup |
+| 35 | À Mergagnan, vous entrez dans l'auberge Au Coin du Feu, pleine de marins et de pêcheurs. Derrière le comptoir, l'aubergiste aligne des chope |
+| 36 | Sur la place de Boug-Coton, face à la luxueuse Auberge du Seigneur, un vieil artisan tient une petite bijouterie. On vient de loin pour ses |
 | 37 | Vous marchez tranquillement sur la route grimpante, le temps est clair et le chemin de pierre en bon état. Vous pensez aux différentes desti |
 | 38 | Faisant route, vous croisez un marchand itinérant, qui vous interpelle. Il dit avoir des objets qui pourraient vous intéresser, et ce à des |
-| 39 | Durant votre périple, vous arrivez dans une ville en bord de mer. Vous faites là-bas la rencontre d'un homme, disant s'appeler Price et être |
+| 39 | À Mergagnan, sur le port où sèchent les filets, à deux pas de la Plage Sentinelle, un mercenaire nommé Price vous aborde. L'épée au côté et |
 | 40 | Vous vous enfoncez dans une forêt sombre, et apercevez la silhouette d'un homme au loin. Vous décidez de vous approcher et comprenez que c'e |
 | 41 | Alors que vous continuez votre chemin, vous arrivez à une ville. Juste après, un groupe d'homme arrive vers vous et vous attrape, puis vous |
 | 42 | Au détour d'un chemin, une jeune femme apparaît. Vous ne saisissez d'abord pas très bien ce qu'elle dit mais finissez par comprendre qu'elle |
-| 43 | Faisant route vers l'Est en pleine nuit, vous marchez. Il fait sombre mais la lune est claire. Vous apercevez devant vous un être éclairé pa |
+| 43 | Sur le Grand Axe, la route des brigands qui contourne le Mont Célestrum par le nord, vous marchez de nuit sous une lune claire. Un peu plus |
 | 44 | Lors de votre long périple, vous vous retrouvez au bord d'une large rivière. Ne pouvant la traverser, vous décidez de la longer jusqu'à trou |
 | 45 | En arrivant aux abords d'un village animé, vous entendez un groupe de personnes parler d'un sanctuaire qui serait hanté. Curieux que vous êt |
-| 46 | En passant dans un petit village, vous tombez sur le plus célèbre ménestrel connu dans la région et au-delà des frontières, nommé Pérotin. C |
-| 47 | Vous êtes tellement épuisé que vous avez du mal à marcher. C'est alors que vous apercevez un village, vous êtes sauvé ! Vous arrivez non san |
+| 46 | À Boug-Coton, devant l'Auberge du Seigneur, Pérotin, le ménestrel le plus célèbre du pays, paie sa note en chansons. On dit qu'avec sa mando |
+| 47 | Au bout d'une longue route, vous arrivez affamé à Ville Forte, où une famille de paysans vous sert une soupe. Le père vous demande une faveu |
 | 48 | Vous êtes à la recherche d'un artéfact. Vous le convoitez car celui-ci, d'après les légendes, offrirait richesse et pouvoir à son possesseur |
 | 49 | Après vous être baladé plusieurs minutes sur la plage vous croisez une étrange petite créature, c'est un bernard-l'hermite ! Il semble s'êtr |
-| 50 | Lors de votre périple, vous atteignez un petit hameau du nom de village Coco, il fait très chaud et vous avez besoin de vous reposer. Les li |
+| 50 | Écrasé par la chaleur du désert, vous somnolez à l'ombre d'un cocotier du Village Coco, près de la source où les nobles de la Vallée des Roi |
 | 51 | Alors que vous atteignez le pied du Mont Célestrum, vous repérez un escalier tortueux, taillé dans le flanc gauche du Mont. En vous en rappr |
 | 52 | Alors que vous faites étape à Boug-Coton, vous êtes interpellé par des enfants vous demandant de jouer avec eux. |
 | 53 | Alors que vous passez au bord du lac Mirage, vous remarquez un homme vous faisant signe d'un peu plus loin. Intrigué, vous décidez de le rej |
 | 54 | Vous apercevez le village Boug-Coton et décidez de vous y rendre. À peine arrivé vous entendez parler d'un conflit entre le seigneur de ces |
 | 55 | Sans doute à cause de la rude tempête d'hier, un arbre est tombé sur le petit sentier de forêt où vous marchez. Son tronc faisant 3 bons mèt |
-| 56 | Vous approchez la Plage Sentinelle, l'air frais emplit vos poumons et l'odeur iodée de la mer atteint vos narines. À mesure que vous avancez |
+| 56 | Le soleil se couche sur la Plage Sentinelle et le vent fraîchit sur le sable fin. Il vous faut un abri pour la nuit. En haut d'une dune, vou |
 | 57 | Vous marchez sous un ciel bleu azur. L'air est doux et vous continuez votre chemin en écoutant les oiseaux qui chantent, le craquement des a |
 | 58 | Après de longues heures de marche au travers de la route marécageuse, vous croisez une femme à un carrefour. Épuisé, vous l'ignorez mais ell |
 | 60 | Vous êtes amené dans la grande salle de réception du château où vous rencontrez rapidement le roi. On vous explique la nature du concours qu |
 | 61 | Bonjour et bienvenue sur Crownicles ! Le roi est à la recherche d'un noble chevalier pour marier sa fille et vous av |
 | 62 | Un paysan vous hèle au devant de sa ferme située aux abords de l'Étendue. Celle-ci est constituée de pâturages, d'un vignoble et d'un champ |
-| 63 | Au bout d'un certain temps, vous arrivez enfin dans le village de Boug-Coton où une rumeur court que des créatures maléfiques sont à l'œuvre |
+| 63 | À Boug-Coton, à deux pas de l'Auberge du Seigneur, les villageois parlent à voix basse : chaque nuit, des silhouettes en robe noire descende |
 | 64 | À peine arrivé à votre destination, un messager s'arrête essoufflé devant vous et vous tend une missive. Vous lisez avec attention le conten |
 | 65 | Vous arrivez dans la salle de reception du château du Roi, comme de nombreux autres aventuriers d'ailleurs. Au milieu de la salle se tient u |
 | 66 | Après une brève traversée, le capitaine amarre son navire à ce qui semble être un ponton. Vous êtes bien trop absorbé dans votre contemplati |
 | 67 | Après un peu de marche, vous arrivez au niveau du bateau qui vous a emmené préalablement sur cette île peu hospitalière. Voyant votre fatigu |
 | 68 | En arrivant à Claire de Ville, votre regard est attiré par un bâtiment dont l'entrée est encadrée par deux statues de hiboux en pierre. En v |
-| 69 | Alors que vous traversez la Forêt du Vieillard, une femme magnifique s'approche en courant. Ses longs cheveux évoquent par leur couleur l'éc |
+| 69 | Dans la Forêt Du Vieillard, une femme accourt vers vous entre les arbres. Ses longs cheveux ont la couleur de l'écume, sa robe d'argent bril |
 | 70 | Alors que vous parcourez le désert de La Dune, l'air vous semble devenir de plus en plus sec. À mesure que vous avancez, les grains de sable |
-| 71 | Alors que vous traversez la Vallée des Rois, vous apercevez une oasis. Assoiffé par votre voyage, vous vous élancez vers la petite étendue d |
+| 71 | Entre les dunes de la Vallée des Rois, deux tombeaux à demi ensevelis dominent une petite oasis. Assoiffé, vous vous penchez pour boire à un |
 | 72 | Alors que vous arrivez aux abords de Claire de Ville, vous découvrez que bon nombre de ses habitants se sont déplacés à l'extérieur des gran |
 | 73 | Cheminant avec nonchalance sur la Route des Merveilles, vous vous approchez d'un petit groupe de personnes en demi-cercle autour d'un homme |
 | 74 | Alors que vous déambulez sans but précis, vos narines sont soudainement assaillies par une intense odeur iodée. Une étrange femme vêtue d'un |
-| 75 | En arrivant à la plage sentinelle, vous apercevez, amarré, un bateau aux voiles noires et usées. Sur le pont, un homme portant un large tric |
-| 76 | Après de longues heures de marche à travers la Forêt Celestrum, vous apercevez enfin près d'une rivière scintillante ce qui semble être une |
+| 75 | Sur la Plage Sentinelle, à l'écart du port de Mergagnan, un navire aux voiles noires et rapiécées est amarré près des rochers. On y chante à |
+| 76 | Après des heures de marche dans la Forêt Célestrum, vous trouvez une maison délabrée au bord d'une rivière. Un cri en sort. Vous frappez à l |
 | 77 | En progressant dans un sentier sinueux de la Forêt Celestrum, vous entendez soudain des éclats de voix provenant d'une clairière proche. Int |
 | 78 | Vous progressez sur la route grimpante quand soudain un épais brouillard monte de la Rivière aux Crabes, dont vous apercevez encore vaguemen |
 | 79 | Sur la route grimpante, vous entendez un tintement de clochettes qui se rapproche. Bientôt apparaît un large troupeau de chèvres mené par un |
@@ -941,7 +941,8 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 86 | Après une longue marche éreintante, vous débouchez sur une clairière silencieuse où s'étend un vaste plan d'eau aux reflets changeants. Le L |
 | 87 | Le sentier serpente entre les rochers, rude et escarpé. Le souffle court, vous grimpez sous un ciel gris quand, au détour d'un virage, vous |
 | 88 | Le sable brûlant s'enfonce sous vos pas tandis que vous progressez difficilement, le foulard serré sur le visage pour filtrer le vent chaud |
-| 89 | Vous avancez tranquillement dans les rues de la ville entourant le château royal. Les passants discutent et l'ambiance est joyeuse ; vous en |
+| 89 | Dans la Cour du Château, l'esplanade pavée qui mène aux portes royales est noire de monde. Des messagers se fraient un chemin entre les pass |
+| 90 | Dans une ferme du Berceau, la fin des récoltes ramène chaque année la même querelle autour d'un dindon énorme et très fier : Gros-Léon pour |
 
 ## Mini-événements (/test smallEvent <nom>)
 

@@ -1,0 +1,46 @@
+{
+  "baseEnergyValue": 100,
+  "attackRatio": 55,
+  "defenseRatio": 40,
+  "speedRatio": 100,
+  "breath": 4,
+  "maxBreath": 10,
+  "breathRegen": 3,
+  "rewardFactor": 0.2,
+  "materialLoot": [
+    20,
+    26,
+    47,
+    49,
+    70,
+    81
+  ],
+  "attacks": [
+    {
+      "id": "quickAttack",
+      "minLevel": 0,
+      "weight": 5
+    },
+    {
+      "id": "simpleAttack",
+      "minLevel": 0,
+      "weight": 4
+    },
+    {
+      "id": "ambush",
+      "minLevel": 0,
+      "weight": 2
+    },
+    {
+      "id": "sabotageAttack",
+      "minLevel": 40,
+      "weight": 2
+    },
+    {
+      "id": "piercingAttack",
+      "minLevel": 80,
+      "weight": 1
+    }
+  ],
+  "maps": []
+}

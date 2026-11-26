@@ -22,7 +22,15 @@ vi.mock("../../../src/core/missions/MissionsController", () => ({
 
 vi.mock("../../../src/core/report/ReportDestinationService", () => ({ chooseDestination: vi.fn().mockResolvedValue(undefined) }));
 
-vi.mock("../../../src/data/events/PossibilityOutcome", () => ({ applyPossibilityOutcome: vi.fn().mockResolvedValue(null) }));
+vi.mock("../../../src/core/report/ReportBigEventFightService", () => ({ startBigEventFight: vi.fn().mockResolvedValue(undefined) }));
+
+// Outcome requirements are covered by PossibilityOutcome.test.ts: here every outcome is valid
+vi.mock("../../../src/data/events/PossibilityOutcome", () => ({
+	applyPossibilityOutcome: vi.fn().mockResolvedValue(null),
+	getValidOutcomesForPlayer: vi.fn((outcomes: object) => Promise.resolve(Object.entries(outcomes)))
+}));
+
+vi.mock("../../../src/data/events/OutcomeRequirements", () => ({ getAvailablePetEntity: vi.fn().mockResolvedValue(null) }));
 
 vi.mock("../../../src/data/events/PossibilityOutcomeCondition", () => ({ verifyPossibilityOutcomeCondition: vi.fn().mockResolvedValue(true) }));
 
@@ -65,7 +73,10 @@ import {
 import { MapLinkDataController } from "../../../src/data/MapLink";
 import { MissionsController } from "../../../src/core/missions/MissionsController";
 import { chooseDestination } from "../../../src/core/report/ReportDestinationService";
+import { startBigEventFight } from "../../../src/core/report/ReportBigEventFightService";
 import { applyPossibilityOutcome } from "../../../src/data/events/PossibilityOutcome";
+import { getAvailablePetEntity } from "../../../src/data/events/OutcomeRequirements";
+import PetEntity from "../../../src/core/database/game/models/PetEntity";
 import { verifyPossibilityOutcomeCondition } from "../../../src/data/events/PossibilityOutcomeCondition";
 import {
 	LockedRowNotFoundError, withLockedEntities
@@ -125,7 +136,9 @@ function firstMapLink(): MapLink {
 	return mapLink;
 }
 
-type OutcomeDouble = { condition?: object; tags?: string[]; forceLeaveCity?: boolean; forceStayInCity?: boolean };
+type OutcomeDouble = {
+	condition?: object; tags?: string[]; forceLeaveCity?: boolean; forceStayInCity?: boolean; fight?: { monster: string; level: number };
+};
 
 function bigEvent(id: number, possibilities: Record<string, { outcomes: Record<string, OutcomeDouble>; tags?: string[] }>, tags?: string[]): BigEvent {
 	return {
@@ -168,11 +181,13 @@ beforeEach(() => {
 
 afterEach(() => {
 	vi.restoreAllMocks();
+	vi.mocked(getAvailablePetEntity).mockReset().mockResolvedValue(null);
 	vi.mocked(MissionsController.update).mockClear();
 	vi.mocked(chooseDestination).mockReset().mockResolvedValue(undefined);
 	vi.mocked(applyPossibilityOutcome).mockReset().mockResolvedValue(null);
 	vi.mocked(verifyPossibilityOutcomeCondition).mockReset().mockResolvedValue(true);
 	vi.mocked(withLockedEntities).mockReset();
+	vi.mocked(startBigEventFight).mockClear();
 	doubles.logBigEvent.mockClear();
 });
 
@@ -251,6 +266,26 @@ describe("doRandomBigEvent", () => {
 	describe("outcome", () => {
 		const timeOf = (): number => vi.mocked(applyPossibilityOutcome).mock.calls[0][0].time;
 
+		it("should lock the pet with the player and pass it on when the outcome changes its love points", async () => {
+			const petEvent = bigEvent(5, {
+				north: { outcomes: { a: { petLove: 3 } } },
+				end: { outcomes: { 1: {} } }
+			});
+			const lockedPet = { id: 7 };
+			vi.mocked(getAvailablePetEntity).mockResolvedValue({ id: 7 } as PetEntity);
+			vi.mocked(withLockedEntities).mockImplementation((_keys, body) => body([lockedRow, {}, lockedPet] as never));
+			await startBigEvent(petEvent);
+
+			const response = await choose("north");
+
+			expect(getAvailablePetEntity).toHaveBeenCalledWith(row);
+			expect(withLockedEntities).toHaveBeenCalledWith(
+				[Player.lockKey(row.id), PlayerMissionsInfo.lockKey(row.id), PetEntity.lockKey(7)],
+				expect.any(Function)
+			);
+			expect(applyPossibilityOutcome).toHaveBeenCalledWith(expect.objectContaining({ pet: lockedPet }), lockedRow, context, response);
+		});
+
 		it("should apply a random valid outcome of the chosen possibility under the player and missions lock", async () => {
 			const tagged = bigEvent(5, {
 				north: {
@@ -275,8 +310,9 @@ describe("doRandomBigEvent", () => {
 			expect(lockedRow.nextEvent).toBeNull();
 			expect(lockedRow.save).toHaveBeenCalledTimes(2);
 			expect(applyPossibilityOutcome).toHaveBeenCalledWith({
-				eventId: 5, possibilityName: "north", outcome: ["a", { tags: ["outcomeTag"] }], time: 30
+				eventId: 5, possibilityName: "north", outcome: ["a", { tags: ["outcomeTag"] }], time: 30, pet: null
 			}, lockedRow, context, response);
+			expect(getAvailablePetEntity).not.toHaveBeenCalled();
 			expect(lockedRow.killIfNeeded).toHaveBeenCalledWith(response, NumberChangeReason.BIG_EVENT);
 			expect(chooseDestination).toHaveBeenCalledWith(context, lockedRow, null, response, {
 				mainPacket: false, allowStayInCity: true, forceStayInCity: false
@@ -333,6 +369,37 @@ describe("doRandomBigEvent", () => {
 			vi.mocked(applyPossibilityOutcome).mockResolvedValue(teleport);
 			await choose("north");
 			expect(chooseDestination).toHaveBeenCalledWith(context, lockedRow, teleport, expect.any(Array), expect.anything());
+		});
+
+		it("should start the fight of the outcome after the lock and choose the destination only once it is over", async () => {
+			const fight = { monster: "bandit", level: 40 };
+			const freshRow = asPlayer(explorerRow());
+			vi.spyOn(Players, "getById").mockResolvedValue(freshRow);
+			await startBigEvent(bigEvent(5, { north: { outcomes: { 1: { fight, forceLeaveCity: true } } } }));
+
+			const response = await choose("north");
+
+			expect(chooseDestination).not.toHaveBeenCalled();
+			expect(lockedRow.save).toHaveBeenCalledTimes(2);
+			expect(doubles.logBigEvent).toHaveBeenCalledWith("explorer", 5, "north", "1");
+			expect(startBigEventFight).toHaveBeenCalledWith(freshRow, {
+				eventId: 5,
+				possibilityId: "north",
+				outcomeId: "1",
+				fight,
+				destination: { newMapLink: null, allowStayInCity: false, forceStayInCity: false }
+			}, context, response);
+			expect(vi.mocked(startBigEventFight).mock.invocationCallOrder[0])
+				.toBeLessThan(vi.mocked(BlockingUtils.unblockPlayer).mock.invocationCallOrder[0]);
+		});
+
+		it("should not start the fight of a player the outcome killed", async () => {
+			lockedRow.killIfNeeded.mockResolvedValue(true);
+			await startBigEvent(bigEvent(5, { north: { outcomes: { 1: { fight: { monster: "bandit", level: 40 } } } } }));
+
+			await choose("north");
+
+			expect(startBigEventFight).not.toHaveBeenCalled();
 		});
 
 		it("should only acknowledge the end of the very first report", async () => {

@@ -2,7 +2,9 @@ import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
 import { BaseMission } from "../../types/CompletedMission";
-import { PetDiet } from "../../constants/PetConstants";
+import {
+	PetDiet, PetTag
+} from "../../constants/PetConstants";
 import { SexTypeShort } from "../../constants/StringConstants";
 import { RandomPetDwarfInfo } from "../../types/RandomPetDwarfInfo";
 import { PlantId } from "../../constants/PlantConstants";
@@ -61,6 +63,11 @@ export class CommandMissionShopPetInformation extends CrowniclesPacket {
 	speed!: number;
 
 	feedDelay!: number;
+
+	/**
+	 * Abilities of the pet (flying, keen nose…), that some big event outcomes depend on
+	 */
+	tags!: PetTag[];
 
 	/**
 	 * Expedition location types that this pet likes (e.g., "forest", "mountain")

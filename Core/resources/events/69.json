@@ -2,35 +2,173 @@
   "possibilities": {
     "accept": {
       "outcomes": {
-        "0": {},
-        "1": {},
+        "0": {
+          "effect": "occupied",
+          "lostTime": 15,
+          "karma": 1
+        },
+        "1": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 30,
+          "karma": 1
+        },
         "2": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "karma": 1
+        },
+        "3": {
+          "requirements": {
+            "validPetTypeIds": [
+              3
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 15,
+          "karma": 1,
+          "petLove": -2
+        },
+        "4": {
+          "requirements": {
+            "validClassIds": [
+              24
+            ]
+          },
           "effect": "sleeping",
-          "health": 35
+          "health": 25,
+          "karma": 1
+        },
+        "5": {
+          "requirements": {
+            "badges": [
+              "oracle_patron"
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 15,
+          "health": 20,
+          "karma": 1
+        },
+        "6": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "types": [
+                "magic"
+              ]
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 15,
+          "randomItem": {},
+          "karma": 1
         }
       }
     },
     "compromise": {
       "outcomes": {
-        "0": {},
-        "1": {
+        "0": {
           "effect": "sleeping",
           "tags": [
             "drinkAlcohol"
-          ]
+          ],
+          "karma": 1
+        },
+        "1": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "karma": 1
+        },
+        "2": {
+          "requirements": {
+            "speed": {
+              "min": 135
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 30,
+          "karma": 1
+        },
+        "3": {
+          "requirements": {
+            "defense": {
+              "min": 520
+            }
+          },
+          "health": 10,
+          "karma": 1
+        },
+        "4": {
+          "requirements": {
+            "petRarity": {
+              "min": 4
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 20,
+          "karma": 1
         }
       }
     },
     "deny": {
       "outcomes": {
         "0": {
+          "health": -25,
           "effect": "hurt",
-          "health": -25
+          "karma": -3
         },
         "1": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "health": -10,
           "effect": "sick",
-          "health": -10
-        }
+          "karma": -2
+        },
+        "2": {
+          "requirements": {
+            "attack": {
+              "min": 700
+            }
+          },
+          "health": -5,
+          "karma": -2
+        },
+        "3": {
+          "requirements": {
+            "speed": {
+              "min": 500
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 15,
+          "karma": -2
+        },
+        "4": {
+          "requirements": {
+            "petTags": [
+              "keenNose"
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 10,
+          "karma": -2
+        },
+        "5": {},
+        "6": {}
       }
     },
     "end": {
@@ -38,6 +176,33 @@
         "0": {
           "effect": "occupied",
           "lostTime": 135
+        },
+        "1": {
+          "requirements": {
+            "karma": {
+              "max": -50
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 135
+        },
+        "2": {
+          "requirements": {
+            "speed": {
+              "min": 135
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 10
+        },
+        "3": {
+          "requirements": {
+            "petRarity": {
+              "min": 4
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 5
         }
       }
     }

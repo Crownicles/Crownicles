@@ -4,7 +4,8 @@
   "defense": 100,
   "type": "wood",
   "tags": [
-    "metallic"
+    "metallic",
+    "blunt"
   ],
   "materialCategory": 15
 }

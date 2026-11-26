@@ -3,36 +3,332 @@
     "butch": {
       "outcomes": {
         "0": {
+          "requirements": {
+            "attack": {
+              "max": 230
+            },
+            "excludedPetTypeIds": [
+              20
+            ]
+          },
+          "money": 100,
           "effect": "occupied",
-          "lostTime": 90,
-          "money": 500
+          "lostTime": 60,
+          "karma": 1
         },
         "1": {
+          "requirements": {
+            "attack": {
+              "min": 231,
+              "max": 599
+            },
+            "excludedPetTypeIds": [
+              20
+            ]
+          },
+          "money": 300,
           "effect": "occupied",
-          "lostTime": 15,
-          "randomItem": {}
+          "lostTime": 60,
+          "karma": 1
         },
         "2": {
+          "requirements": {
+            "attack": {
+              "min": 600
+            },
+            "excludedPetTypeIds": [
+              20
+            ]
+          },
+          "money": 500,
+          "effect": "occupied",
+          "lostTime": 40,
+          "karma": 1
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            },
+            "excludedPetTypeIds": [
+              20
+            ]
+          },
+          "randomItem": {},
+          "effect": "occupied",
+          "lostTime": 45,
+          "karma": 1
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            },
+            "excludedPetTypeIds": [
+              20
+            ]
+          },
+          "money": 50,
+          "effect": "occupied",
+          "lostTime": 60
+        },
+        "5": {
+          "requirements": {
+            "excludedPetTypeIds": [
+              20
+            ]
+          },
           "effect": "sick"
+        },
+        "6": {
+          "requirements": {
+            "validPetTypeIds": [
+              20
+            ]
+          }
+        },
+        "7": {
+          "requirements": {
+            "excludedPetTypeIds": [
+              20
+            ]
+          },
+          "money": 250,
+          "effect": "occupied",
+          "lostTime": 60,
+          "karma": 1
         }
       }
     },
     "cook": {
       "outcomes": {
         "0": {
-          "effect": "sick"
+          "requirements": {
+            "excludedPetTypeIds": [
+              20
+            ]
+          },
+          "health": 5,
+          "effect": "occupied",
+          "lostTime": 45
         },
         "1": {
-          "effect": "occupied",
-          "lostTime": 40
+          "requirements": {
+            "cookingLevel": {
+              "max": 30
+            },
+            "excludedPetTypeIds": [
+              20
+            ]
+          },
+          "effect": "sick"
         },
         "2": {
-          "health": -20
+          "requirements": {
+            "cookingLevel": {
+              "min": 40,
+              "max": 69
+            },
+            "excludedPetTypeIds": [
+              20
+            ]
+          },
+          "health": 12,
+          "effect": "occupied",
+          "lostTime": 40
         },
         "3": {
-          "effect": "occupied",
+          "requirements": {
+            "cookingLevel": {
+              "min": 70
+            },
+            "excludedPetTypeIds": [
+              20
+            ]
+          },
           "health": 20,
+          "effect": "occupied",
           "lostTime": 40
+        },
+        "4": {
+          "requirements": {
+            "excludedPetTypeIds": [
+              20
+            ]
+          },
+          "health": -20
+        },
+        "5": {
+          "requirements": {
+            "petTags": [
+              "keenNose"
+            ],
+            "excludedPetTypeIds": [
+              20
+            ]
+          },
+          "health": 8,
+          "effect": "occupied",
+          "lostTime": 40,
+          "petLove": 2
+        },
+        "6": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "kinds": [
+                "burnedDamage"
+              ]
+            },
+            "excludedPetTypeIds": [
+              20
+            ]
+          },
+          "health": 12,
+          "effect": "occupied",
+          "lostTime": 15
+        },
+        "7": {
+          "requirements": {
+            "validPetTypeIds": [
+              20
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 15
+        }
+      }
+    },
+    "inspectCarcass": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 15
+        },
+        "1": {
+          "randomItem": {},
+          "effect": "occupied",
+          "lostTime": 20
+        },
+        "2": {
+          "requirements": {
+            "validPetTypeIds": [
+              15
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 10
+        },
+        "3": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 40
+        }
+      }
+    },
+    "buryCarcass": {
+      "outcomes": {
+        "0": {
+          "karma": 2,
+          "effect": "occupied",
+          "lostTime": 40
+        },
+        "1": {
+          "requirements": {
+            "attack": {
+              "min": 440
+            }
+          },
+          "karma": 2,
+          "effect": "occupied",
+          "lostTime": 20
+        },
+        "2": {
+          "consumeMaterials": {
+            "ids": [
+              2,
+              84
+            ],
+            "quantity": 1
+          },
+          "karma": 2,
+          "effect": "occupied",
+          "lostTime": 20
+        },
+        "3": {
+          "requirements": {
+            "validPetTypeIds": [
+              20
+            ]
+          },
+          "karma": 2,
+          "effect": "occupied",
+          "lostTime": 45,
+          "petLove": 2
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "health": 10,
+          "karma": 2,
+          "effect": "occupied",
+          "lostTime": 30
+        }
+      }
+    },
+    "skip": {
+      "outcomes": {
+        "0": {},
+        "1": {
+          "requirements": {
+            "defense": {
+              "max": 60
+            }
+          },
+          "health": -20,
+          "effect": "confounded"
+        },
+        "2": {
+          "requirements": {
+            "defense": {
+              "min": 61,
+              "max": 339
+            }
+          },
+          "health": -10
+        },
+        "3": {
+          "requirements": {
+            "defense": {
+              "min": 340
+            }
+          },
+          "health": -3
+        },
+        "4": {
+          "requirements": {
+            "validPetTypeIds": [
+              20
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 10,
+          "petLove": 1
+        },
+        "5": {
+          "karma": 2,
+          "effect": "occupied",
+          "lostTime": 20
+        },
+        "6": {
+          "health": 3
         }
       }
     },
@@ -41,14 +337,33 @@
         "0": {
           "effect": "occupied",
           "lostTime": 10
-        }
-      }
-    },
-    "skip": {
-      "outcomes": {
-        "0": {},
+        },
         "1": {
-          "health": -20
+          "requirements": {
+            "validPetTypeIds": [
+              28
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 15
+        },
+        "2": {
+          "requirements": {
+            "cookingLevel": {
+              "max": 30
+            },
+            "excludedPetTypeIds": [
+              20
+            ]
+          },
+          "effect": "starving"
+        },
+        "3": {
+          "requirements": {
+            "validPetTypeIds": [
+              65
+            ]
+          }
         }
       }
     }

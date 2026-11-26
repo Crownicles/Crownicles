@@ -52,7 +52,7 @@ Ces commandes **n'existent pas** :
 
 Les commandes de la catégorie **Global action** (`dailytimeout`, `forceweeklytimeout`, `forceseasonend`, `migration`) affectent tous les joueurs du serveur. `migration` peut corrompre les données.
 
-## Référence (117 commandes)
+## Référence (119 commandes)
 
 Générée depuis le code du jeu (dépôt Crownicles/Crownicles).
 
@@ -193,7 +193,7 @@ Générée depuis le code du jeu (dépôt Crownicles/Crownicles).
 | `/test petlovepoints <lovePoints>` | petlp | Définit le niveau d'amour (love points) du familier actuel. Les points d'amour influencent les capacités et l'efficacité du pet |
 | `/test pet <id> <sex = m/f>` |  | Donne un familier spécifique avec l'ID et le sexe choisis. Utilisez ID 0 pour supprimer le pet actuel. Sexe: m=mâle, f=femelle. Voir Core/resources/pets/ pour les IDs |
 
-### Player (27)
+### Player (29)
 
 | Syntaxe | Alias | Description |
 |---|---|---|
@@ -213,6 +213,7 @@ Générée depuis le code du jeu (dépôt Crownicles/Crownicles).
 | `/test leaguereward` |  | Force l'exécution de la commande de récompense de ligue en ignorant les restrictions de date. Permet de tester les récompenses de classement |
 | `/test markallpetsseendwarf` | mapsd | Marque tous les familiers comme ayant été montrés au nain Talvar (le nain du mini event qui donne 1 gemme / animal). |
 | `/test playerhealth <health>` | health | Définit les points de vie actuels du joueur testeur. Ne peut pas dépasser les points de vie maximum. Utilisez 0 pour tuer le joueur |
+| `/test playerkarma` | karma | Affiche votre karma actuel |
 | `/test playerlevel <niveau>` | level, lvl | Définit le niveau du joueur testeur. Le niveau influence les points de vie, de puissance, et débloque de nouvelles fonctionnalités |
 | `/test playermoney <money>` | money | Définit l'argent du joueur testeur à la valeur spécifiée. L'argent sert aux achats d'objets, d'améliorations et aux services de guilde |
 | `/test playerscore <score>` | score | Définit le score total du joueur testeur. |
@@ -220,6 +221,7 @@ Générée depuis le code du jeu (dépôt Crownicles/Crownicles).
 | `/test playerweeklyscore <weeklyscore>` | weeklyscore | Définit le score hebdomadaire du joueur testeur. (le nombre de points gagnés depuis le début de la semaine) indépendant du score du joueur /! Remet aussi à zéro les paliers du défi du roi déjà récompensés : le prochain gain de points paie tous les paliers atteints. |
 | `/test resetpetseendwarf` | rpsd | Remet à zéro la liste des familiers montrés au nain Talvar. (Le nain qui donne une gemme chaque fois qu'il voit un animal dans le small event dédié). |
 | `/test sendnotification <type>` | sendnotif | Envoie une notification de test au joueur. Types disponibles : 'report' (destination atteinte), 'guildDaily' (mission de guilde). Utile pour tester l'affichage des notifications |
+| `/test setkarma <karma>` | setkarma | Définit votre karma à la valeur donnée |
 | `/test setup` | setupplayer, fullsetup | Configure un joueur prêt à tester : niveau 30, argent, gemmes, pet aléatoire, équipement aléatoire, voyage en cours |
 | `/test skiptutorial` | skiptuto, init | Alternative aux premiers /report. Permet de sauter le tutoriel et d'initialiser votre joueur au niveau 1 avec 2000 points |
 | `/test talisman <type = anchor/clone/harvest> <action = give/remove>` |  | Donne ou retire un talisman. Types: anchor (ancrage), clone (clonage), harvest (cœur sylvestre). Actions: give (donner), remove (retirer) |

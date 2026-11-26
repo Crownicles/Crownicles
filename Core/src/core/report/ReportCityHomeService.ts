@@ -28,6 +28,7 @@ import {
 	LockKey, Locked, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
+import { getNextBedAvailableAt } from "../utils/BedUtils";
 import {
 	Apartment, Apartments
 } from "../database/game/models/Apartment";
@@ -585,9 +586,10 @@ export async function handleHomeBedReaction(
 		}
 
 		const now = new Date();
-		if (lockedPlayer.lastBedUsedAt && now.getTime() - lockedPlayer.lastBedUsedAt.getTime() < HomeConstants.BED_COOLDOWN_MS) {
+		const nextBedAvailableAt = getNextBedAvailableAt(lockedPlayer.lastBedUsedAt, now);
+		if (nextBedAvailableAt !== null) {
 			response.push(makePacket(CommandReportBedCooldownRes, {
-				nextAvailableAt: lockedPlayer.lastBedUsedAt.getTime() + HomeConstants.BED_COOLDOWN_MS
+				nextAvailableAt: nextBedAvailableAt
 			}));
 			return {
 				logParams: null,

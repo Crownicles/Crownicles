@@ -1,14 +1,5 @@
 {
   "possibilities": {
-    "end": {
-      "outcomes": {
-        "0": {
-          "forceStayInCity": true,
-          "effect": "occupied",
-          "lostTime": 200
-        }
-      }
-    },
     "goAway": {
       "outcomes": {
         "0": {
@@ -24,31 +15,130 @@
           "mapTypesDestination": [
             "ro"
           ]
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            },
+            "materials": {
+              "ids": [
+                65,
+                56,
+                3,
+                38
+              ],
+              "quantity": {
+                "max": 0
+              }
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 45,
+          "mapTypesDestination": [
+            "ro"
+          ]
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "min": 80
+            }
+          },
+          "mapTypesDestination": [
+            "ro"
+          ]
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "consumeMaterials": {
+            "ids": [
+              65,
+              56,
+              3,
+              38
+            ],
+            "quantity": 1
+          },
+          "effect": "occupied",
+          "lostTime": 150,
+          "mapTypesDestination": [
+            "ro"
+          ]
         }
       }
     },
     "goForge": {
       "outcomes": {
         "0": {
-          "forceStayInCity": true
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 20,
+          "karma": 1
         },
         "1": {
+          "requirements": {
+            "attack": {
+              "max": 90
+            }
+          },
           "forceStayInCity": true,
           "effect": "occupied",
           "lostTime": 40,
           "money": -300
         },
         "2": {
-          "forceStayInCity": true,
-          "randomItem": {}
-        },
-        "3": {
-          "forceStayInCity": true
-        },
-        "4": {
+          "requirements": {
+            "attack": {
+              "min": 91,
+              "max": 439
+            }
+          },
           "forceStayInCity": true,
           "effect": "occupied",
-          "lostTime": 20
+          "lostTime": 20,
+          "money": -60
+        },
+        "3": {
+          "requirements": {
+            "attack": {
+              "min": 440
+            }
+          },
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 30,
+          "randomItem": {
+            "category": 0
+          },
+          "karma": 2
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "forceStayInCity": true,
+          "money": -100,
+          "randomItem": {
+            "category": 0
+          },
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "5": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "forceStayInCity": true
         }
       }
     },
@@ -56,20 +146,84 @@
       "outcomes": {
         "0": {
           "forceStayInCity": true,
-          "effect": "occupied",
-          "lostTime": 120
-        },
-        "1": {
-          "forceStayInCity": true,
           "effect": "sleeping",
           "health": 15,
           "money": -70,
           "tags": [
             "moneyUsage"
-          ]
+          ],
+          "useBed": true
+        },
+        "1": {
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 120,
+          "health": 10,
+          "karma": 2
         },
         "2": {
-          "forceStayInCity": true
+          "requirements": {
+            "karma": {
+              "min": 80
+            }
+          },
+          "forceStayInCity": true,
+          "effect": "sleeping",
+          "health": 30,
+          "useBed": true
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "forceStayInCity": true,
+          "effect": "sleeping",
+          "health": 15,
+          "money": -140,
+          "tags": [
+            "moneyUsage"
+          ],
+          "useBed": true
+        },
+        "4": {
+          "requirements": {
+            "validPetTypeIds": [
+              65
+            ]
+          },
+          "forceStayInCity": true,
+          "effect": "sleeping",
+          "health": 30,
+          "useBed": true
+        },
+        "5": {
+          "requirements": {
+            "cookingLevel": {
+              "min": 70
+            }
+          },
+          "forceStayInCity": true,
+          "effect": "sleeping",
+          "health": 30,
+          "karma": 3,
+          "useBed": true
+        },
+        "6": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "kinds": [
+                "frozenDamage"
+              ]
+            }
+          },
+          "forceStayInCity": true,
+          "effect": "sleeping",
+          "health": 30,
+          "karma": 1,
+          "useBed": true
         }
       }
     },
@@ -87,9 +241,257 @@
           "lostTime": 60
         },
         "2": {
+          "requirements": {
+            "speed": {
+              "max": 40
+            }
+          },
           "forceStayInCity": true,
-          "effect": "injured",
-          "health": -60
+          "money": -150,
+          "effect": "occupied",
+          "lostTime": 20
+        },
+        "3": {
+          "requirements": {
+            "speed": {
+              "min": 350
+            }
+          },
+          "forceStayInCity": true,
+          "money": 80,
+          "karma": 2
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "forceStayInCity": true,
+          "money": -150,
+          "randomItem": {},
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "5": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 20,
+          "randomItem": {},
+          "karma": 2
+        },
+        "6": {
+          "requirements": {
+            "money": {
+              "min": 100000
+            }
+          },
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 30,
+          "money": -300,
+          "randomItem": {
+            "rarity": {
+              "min": 3
+            }
+          },
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "7": {
+          "requirements": {
+            "petTags": [
+              "keenNose"
+            ]
+          },
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 20,
+          "money": 80,
+          "karma": 2
+        }
+      }
+    },
+    "seekInformation": {
+      "outcomes": {
+        "0": {
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 30,
+          "karma": 1
+        },
+        "1": {
+          "forceStayInCity": true,
+          "money": -150
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 30,
+          "forceLeaveCity": true
+        },
+        "3": {
+          "requirements": {
+            "level": {
+              "min": 96
+            }
+          },
+          "mapTypesDestination": [
+            "ro"
+          ],
+          "karma": 1
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 60,
+          "randomItem": {}
+        }
+      }
+    },
+    "helpCityGuards": {
+      "outcomes": {
+        "0": {
+          "forceStayInCity": true,
+          "karma": 1
+        },
+        "1": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "forceStayInCity": true,
+          "effect": "working",
+          "karma": 2,
+          "bonusExperience": 150
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "forceStayInCity": true,
+          "effect": "working",
+          "money": 150,
+          "karma": 3
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "max": -50
+            },
+            "speed": {
+              "max": 135
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 180,
+          "forceLeaveCity": true
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "max": -50
+            },
+            "speed": {
+              "min": 136,
+              "max": 499
+            }
+          },
+          "effect": "feetHurt",
+          "health": -10,
+          "forceLeaveCity": true
+        },
+        "5": {
+          "requirements": {
+            "karma": {
+              "max": -50
+            },
+            "speed": {
+              "min": 500
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 20,
+          "forceLeaveCity": true
+        },
+        "6": {
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 45,
+          "karma": 1
+        },
+        "7": {
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 30,
+          "money": 60,
+          "karma": 2
+        },
+        "8": {
+          "requirements": {
+            "armorLevel": {
+              "min": 3
+            }
+          },
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 25,
+          "money": 50,
+          "karma": 2
+        }
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 200
+        },
+        "1": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "forceStayInCity": true,
+          "effect": "lost"
+        },
+        "2": {
+          "requirements": {
+            "level": {
+              "min": 130
+            }
+          },
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 40,
+          "karma": 1
+        },
+        "3": {
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 30,
+          "money": -15
         }
       }
     }

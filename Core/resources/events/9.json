@@ -1,41 +1,188 @@
 {
   "possibilities": {
-    "end": {
-      "outcomes": {
-        "0": {
-          "effect": "occupied",
-          "lostTime": 15
-        }
-      }
-    },
     "help": {
       "outcomes": {
         "0": {
           "effect": "occupied",
           "lostTime": 15,
-          "money": 25
+          "money": 25,
+          "karma": 2
         },
         "1": {
           "effect": "occupied",
           "lostTime": 30,
-          "randomItem": {}
+          "randomItem": {},
+          "karma": 2
         },
         "2": {
-          "effect": "hurt",
-          "health": -15
+          "effect": "occupied",
+          "lostTime": 60,
+          "karma": 2
         },
         "3": {
+          "requirements": {
+            "petTags": [
+              "keenNose"
+            ]
+          },
           "effect": "occupied",
-          "lostTime": 50
+          "lostTime": 10,
+          "money": 60,
+          "karma": 2
+        },
+        "4": {
+          "requirements": {
+            "speed": {
+              "min": 500
+            }
+          },
+          "health": -8,
+          "effect": "confounded",
+          "money": 25,
+          "karma": 2
+        },
+        "5": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "karma": 1
+        },
+        "6": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "health": -18,
+          "effect": "hurt",
+          "karma": 2
         }
       }
     },
     "skip": {
       "outcomes": {
-        "0": {},
+        "0": {
+          "karma": -1
+        },
         "1": {
-          "effect": "hurt",
-          "health": -15
+          "health": -10,
+          "effect": "feetHurt",
+          "karma": -1,
+          "requirements": {
+            "speed": {
+              "min": 350
+            }
+          }
+        },
+        "2": {
+          "requirements": {
+            "defense": {
+              "min": 520
+            }
+          },
+          "money": 25,
+          "karma": 1
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "health": 5,
+          "karma": -1
+        },
+        "4": {
+          "requirements": {
+            "petTags": [
+              "flying"
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 5,
+          "money": 25,
+          "karma": 1
+        }
+      }
+    },
+    "makeFork": {
+      "outcomes": {
+        "0": {
+          "consumeMaterials": [
+            {
+              "ids": [
+                2,
+                18,
+                58,
+                84,
+                88
+              ],
+              "quantity": 1
+            },
+            {
+              "type": "metal",
+              "quantity": 2
+            }
+          ],
+          "effect": "occupied",
+          "lostTime": 40,
+          "money": 50,
+          "karma": 3
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 40,
+          "money": 20,
+          "karma": 3
+        },
+        "2": {
+          "requirements": {
+            "attack": {
+              "max": 230
+            }
+          },
+          "health": -6,
+          "effect": "confounded",
+          "karma": 1
+        },
+        "3": {
+          "requirements": {
+            "attack": {
+              "min": 600
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 15,
+          "money": 80,
+          "karma": 3
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "karma": 1
+        }
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 15,
+          "karma": -1
+        },
+        "1": {
+          "requirements": {
+            "level": {
+              "min": 120
+            }
+          },
+          "money": 20,
+          "karma": 2
         }
       }
     }

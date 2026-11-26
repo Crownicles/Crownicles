@@ -56,6 +56,7 @@ export default defineConfig([
 				playerReloaders: [
 					"addExperience",
 					"addHealth",
+					"addKarma",
 					"addLevelUpPacket",
 					"addMoney",
 					"addRage",
@@ -73,6 +74,8 @@ export default defineConfig([
 					"mutateWithMissions",
 					"processLevelUps",
 					"setGloryPoints",
+					"setKarma",
+					"markBedUsed",
 					"setRage",
 					"spendMoney",
 					"useTokens"

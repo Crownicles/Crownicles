@@ -3,5 +3,6 @@
   "diet": "herbivorous",
   "force": 29,
   "feedDelay": 4,
-  "speed": 8
+  "speed": 8,
+  "tags": ["heavy", "grazer"]
 }

@@ -372,95 +372,148 @@ export const CrowniclesIcons: {
 		scared: "😱",
 		lost: "🧐",
 		healed: "🏥",
-		fished: "🐟"
+		fished: "🐟",
+		working: "👨‍🔧",
+		burning: "🥵"
 	},
 	events: {
 		1: {
 			cutTree: "🪓",
-			end: { 0: "🪓" },
-			otherWay: "🚶"
+			end: { 0: "💤" },
+			otherWay: "🗺️",
+			turnBack: "↩️"
 		},
 		10: {
+			advice: "🗣️",
 			end: { 0: "🚶" },
 			help: "🎣",
 			push: "🖐️",
 			skip: "🏃"
 		},
 		11: {
-			end: { 0: "🚶" },
-			followHint: "👈",
-			forest: "🌳",
-			oppositeSide: "👉"
+			end: {
+				0: "🕑",
+				1: "👀",
+				2: "🐈‍⬛"
+			},
+			followHint: "🧭",
+			forest: "🌲",
+			oppositeSide: "🚶",
+			questionStranger: "🕵️"
 		},
 		12: {
 			craftBoat: "🚣",
-			end: { 0: "🕑" },
+			end: {
+				0: "🕑",
+				1: "🕑",
+				2: "😴"
+			},
 			otherWay: "🚶",
 			searchBridge: "🌉",
 			swim: "🏊"
 		},
 		13: {
-			end: { 0: "🚶" },
+			end: {
+				0: "🚶",
+				1: "🗺️",
+				2: "🧭",
+				3: "🪈"
+			},
 			goAway: "🚶",
 			goForge: "🔨",
 			goInn: "🏠",
-			goMarket: "🎪"
+			goMarket: "🎪",
+			helpCityGuards: "🛡️",
+			seekInformation: "🕵️"
 		},
 		14: {
-			chatWorker: "🔨",
-			end: { 0: "🚶" },
+			chatWorker: "🤝",
+			end: { 0: "🌾" },
 			goAway: "🚶",
+			inspectForge: "🧐",
 			stayNight: "🛏️"
 		},
 		15: {
-			end: { 0: "🚶" },
+			end: {
+				0: "🕑",
+				1: "🕑",
+				2: "🚪"
+			},
 			skip: "🏃",
-			steal: "💰",
-			trade: "👥"
+			steal: "🕵️",
+			trade: "💰"
 		},
 		16: {
 			end: {
-				0: "🚶",
-				1: "🚶"
+				0: "👁️",
+				1: "⏳",
+				2: "👽"
 			},
-			enterCastle: "🔎",
-			skip: "➡️",
-			walkAround: "🔁"
+			enterCastle: "🏰",
+			searchRiver: "🌊",
+			skip: "🏃",
+			walkAround: "🚶"
 		},
 		17: {
 			end: {
-				0: "🚶",
-				1: "🚶"
+				0: "🕑",
+				1: "🕑",
+				2: "🐅",
+				3: "😴"
 			},
-			fruits: "🍎",
+			fruits: "🍏",
 			hunt: "🦌",
 			mushrooms: "🍄",
 			salad: "🥗",
-			skip: "🚶"
+			scavenge: "🧺",
+			skip: "🏃"
 		},
 		18: {
-			end: { 0: "🚶" },
-			searchScaffolding: "⛓️",
-			searchSite: "🔎",
-			skip: "🚶"
+			end: {
+				0: "🕑",
+				1: "🕑",
+				2: "🦍",
+				3: "🪵"
+			},
+			investigate: "🕵️",
+			searchScaffolding: "🧗",
+			searchSite: "🗺️",
+			skip: "🏃"
 		},
 		19: {
+			buryCarcass: "⚰️",
 			butch: "🔪",
-			cook: "🍽️",
-			end: { 0: "👀" },
-			skip: "🚶"
+			cook: "🔥",
+			end: {
+				0: "🤔",
+				1: "🐺",
+				2: "😵",
+				3: "🦖"
+			},
+			inspectCarcass: "🔍",
+			skip: "🏃"
 		},
 		2: {
-			end: { 0: "🐶" },
+			end: {
+				0: "🐶",
+				1: "🩸",
+				2: "🐾",
+				3: "🐕",
+				4: "💤"
+			},
 			followDog: "🐕",
+			intimidateDog: "😠",
 			skip: "🏃"
 		},
 		20: {
 			alert: "🤙",
 			end: {
 				0: "🚶",
-				1: "🚶"
+				1: "🚶",
+				2: "🐾"
 			},
+			intimidate: "😠",
+			negotiateBribe: "💰",
 			skip: "🚶",
 			surpriseAttack: "👊"
 		},
@@ -489,7 +542,11 @@ export const CrowniclesIcons: {
 		24: {
 			end: {
 				0: "🚶",
-				1: "🚶"
+				1: "🚶",
+				2: "😊",
+				3: "🤝",
+				4: "🐾",
+				5: "🧙"
 			},
 			foodStand: "🍢",
 			gameStand: "🎯",
@@ -499,15 +556,25 @@ export const CrowniclesIcons: {
 			dontHelp: "🚶",
 			end: {
 				0: "👀",
-				1: "👀"
+				1: "👀",
+				2: "🐈",
+				3: "👽",
+				4: "💀",
+				5: "😶"
 			},
 			help: "🤝",
 			steal: "🕵️"
 		},
 		26: {
-			end: { 0: "👀" },
+			end: {
+				0: "👀",
+				1: "🕊️",
+				2: "👀",
+				3: "😢"
+			},
 			goAway: "🚶",
 			steal: "💸",
+			tell: "🗣️",
 			trySave: "👊"
 		},
 		27: {
@@ -536,14 +603,17 @@ export const CrowniclesIcons: {
 		3: {
 			abandon: "▶️",
 			end: { 0: "▶️" },
-			mineIt: "⛏️",
+			mineIt: "🔨",
+			pickLock: "🪝",
 			searchKey: "🔑"
 		},
 		30: {
 			duke: "🤴",
 			end: {
 				0: "🚶",
-				1: "🚶"
+				1: "🚶",
+				2: "🐒",
+				3: "🍰"
 			},
 			gift: "🎁",
 			party: "🎉",
@@ -589,14 +659,23 @@ export const CrowniclesIcons: {
 		},
 		35: {
 			deny: "❌",
-			end: { 0: "🚶" },
+			end: {
+				0: "🚶",
+				1: "😴",
+				2: "🥴",
+				3: "👀",
+				4: "🐟",
+				5: "🐘"
+			},
 			steal: "💰",
 			test: "🍺"
 		},
 		36: {
 			end: {
 				0: "🚶",
-				1: "🚶"
+				1: "🚶",
+				2: "💤",
+				3: "👀"
 			},
 			goAway: "🚶",
 			goInn: "🏡",
@@ -626,8 +705,12 @@ export const CrowniclesIcons: {
 			convoy: "🚶",
 			end: {
 				0: "🗣️",
-				1: "🗣️"
+				1: "🗣️",
+				2: "🤨",
+				3: "💪",
+				4: "💸"
 			},
+			follow: "🕵️",
 			meal: "🍖",
 			steal: "🤑"
 		},
@@ -671,11 +754,13 @@ export const CrowniclesIcons: {
 			end: {
 				0: "🚶",
 				1: "🚶",
-				2: "🚶"
+				2: "🚶",
+				3: "😴",
+				4: "🐾"
 			},
 			fight: "⚔️",
 			goBack: "⬇️",
-			shelter: "⛪"
+			shelter: "🛡️"
 		},
 		44: {
 			end: { 0: "🚶" },
@@ -697,19 +782,24 @@ export const CrowniclesIcons: {
 			end: {
 				0: "🚶",
 				1: "🔪",
-				2: "💊"
+				2: "💊",
+				3: "😴",
+				4: "🐾"
 			},
 			singCrazyLove: "🤪",
 			singHero: "⚔️",
 			singLove: "🥰",
 			singRoyalty: "👑",
+			singSober: "🪕",
 			singWork: "🪕"
 		},
 		47: {
 			end: {
 				0: "🚶",
 				1: "🏃",
-				2: "🕵️"
+				2: "🕵️",
+				3: "😴",
+				4: "🪟"
 			},
 			goAway: "🚶",
 			help: "⚔️",
@@ -743,9 +833,12 @@ export const CrowniclesIcons: {
 		},
 		50: {
 			ask: "🗣️",
+			climb: "🌴",
 			end: {
 				0: "☀️",
-				1: "🥥"
+				1: "🥥",
+				2: "💦",
+				3: "🌙"
 			},
 			leave: "🚶",
 			nap: "😴"
@@ -811,7 +904,11 @@ export const CrowniclesIcons: {
 			end: {
 				0: "💥",
 				1: "😶",
-				2: "🍵"
+				2: "🍵",
+				3: "😴",
+				4: "🏃",
+				5: "🥶",
+				6: "🤕"
 			},
 			refuse: "❌"
 		},
@@ -862,10 +959,13 @@ export const CrowniclesIcons: {
 		},
 		63: {
 			end: {
-				0: "🎆",
+				0: "🌙",
 				1: "🍺",
 				2: "🗯️",
-				3: "💡"
+				3: "💡",
+				4: "🐾",
+				5: "😱",
+				6: "🛏️"
 			},
 			faceThem: "⚔️",
 			goAway: "🏃",
@@ -925,7 +1025,12 @@ export const CrowniclesIcons: {
 			accept: "👍",
 			compromise: "🤝",
 			deny: "👿",
-			end: { 0: "👁️" }
+			end: {
+				0: "👁️",
+				1: "😶",
+				2: "🍃",
+				3: "🐾"
+			}
 		},
 		7: {
 			check: "🚪",
@@ -943,10 +1048,15 @@ export const CrowniclesIcons: {
 		},
 		71: {
 			accept: "🍖",
+			clearChannel: "💧",
 			deny: "❌",
 			end: {
-				0: "🏃",
-				1: "😠"
+				0: "🚫",
+				1: "😠",
+				2: "🦦",
+				3: "💨",
+				4: "📓",
+				5: "🚰"
 			},
 			steal: "💸"
 		},
@@ -979,18 +1089,24 @@ export const CrowniclesIcons: {
 		},
 		75: {
 			accept: "⚓",
-			refuse: "⛔",
+			askAbout: "🗺️",
 			end: {
 				0: "🏝️",
 				1: "🏝️",
 				2: "🏝️",
 				3: "🏏"
-			}
+			},
+			refuse: "⛔"
 		},
 		76: {
-			end: { 0: "🚶‍♂️" },
-			help: "🤝",
+			end: {
+				0: "🚶‍♂️",
+				1: "🐈",
+				2: "🔒",
+				3: "☕"
+			},
 			explore: "🔍",
+			help: "🤝",
 			question: "❓"
 		},
 		77: {
@@ -1094,19 +1210,36 @@ export const CrowniclesIcons: {
 			end: { 0: "🚶" }
 		},
 		89: {
-			stepAside: "↔️",
-			ignore: "🚶",
 			bow: "🙇",
-			otherAlley: "↪️",
 			end: {
 				0: "🚶",
-				1: "⏳"
-			}
+				1: "⏳",
+				2: "🐕",
+				3: "👀"
+			},
+			ignore: "🚶",
+			otherAlley: "↪️",
+			stepAside: "↔️"
 		},
 		9: {
-			end: { 0: "🚶" },
+			end: {
+				0: "🚶",
+				1: "🧐"
+			},
 			help: "🔎",
+			makeFork: "🪵",
 			skip: "▶️"
+		},
+		90: {
+			end: {
+				0: "🚶",
+				1: "🪶",
+				2: "💤",
+				3: "🦃",
+				4: "🍺"
+			},
+			feast: "🍗",
+			protect: "🛡️"
 		}
 	},
 	mapTypes: {
@@ -1606,6 +1739,11 @@ export const CrowniclesIcons: {
 		}
 	},
 	monsters: {
+		bandit: "🥷",
+		giantFish: "🐟",
+		boar: "🐗",
+		mercenary: "🤺",
+		corruptGuard: "💂",
 		spider: "🕷️",
 		slimyMutant: "🦠",
 		skeleton: "💀",
@@ -2383,7 +2521,9 @@ export const CrowniclesIcons: {
 		glory: "✨",
 		timeGain: "⌛",
 		none: "❌",
-		token: "🪙"
+		token: "🪙",
+		petLove: "💕",
+		lostPetLove: "😿"
 	},
 	shopItems: {
 		randomItem: "❓",
@@ -2544,7 +2684,8 @@ export const CrowniclesIcons: {
 		age: "👶",
 		force: "💪",
 		speed: "🚀",
-		feedDelay: "⏳"
+		feedDelay: "⏳",
+		abilities: "🐾"
 	},
 	equipCommand: {
 		equipped: "🗡️",

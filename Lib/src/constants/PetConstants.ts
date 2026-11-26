@@ -20,6 +20,7 @@ export abstract class PetConstants {
 	 */
 	static readonly AVAILABILITY_CONTEXT = {
 		SMALL_EVENT: "smallEvent",
+		BIG_EVENT: "bigEvent",
 		ATTACK_FIGHT: "attackFight",
 		DEFENSE_FIGHT: "defenseFight"
 	} as const;
@@ -653,7 +654,15 @@ export abstract class PetConstants {
 		FIRE: "fire",
 		FLYING: "flying",
 		AQUATIC: "aquatic",
-		NOCTURNAL: "nocturnal"
+		NOCTURNAL: "nocturnal",
+
+		// Abilities shared by several pets, checked by the big event outcomes through the petTags requirement
+		KEEN_NOSE: "keenNose",
+		MOUNT: "mount",
+		HEAVY: "heavy",
+		INTIMIDATING: "intimidating",
+		CLIMBER: "climber",
+		GRAZER: "grazer"
 	} as const;
 
 	static SEX = {

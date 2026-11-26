@@ -5,6 +5,7 @@ import {
 import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
+	CommandReportBigEventFightResultRes,
 	CommandReportBigEventResultRes,
 	CommandReportPacketReq
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
@@ -133,7 +134,13 @@ export async function createBigEventCollector(context: PacketContext, packet: Re
 type Condition = boolean | number | undefined;
 type ConditionTriplet = [Condition, string, Omit<I18nCrowniclesOptions, "lng">];
 
-function getReportResultConditionTriplets(packet: CommandReportBigEventResultRes, lng: Language): ConditionTriplet[] {
+/**
+ * Values displayed after a big event outcome or after the fight it triggered
+ */
+type ReportResultValues = Pick<CommandReportBigEventResultRes, "money" | "health" | "experience" | "effect">
+	& Partial<Pick<CommandReportBigEventResultRes, "score" | "energy" | "gems" | "tokens" | "materials" | "petLove">>;
+
+function getReportResultConditionTriplets(packet: ReportResultValues, lng: Language): ConditionTriplet[] {
 	return [
 		[
 			packet.score,
@@ -184,8 +191,62 @@ function getReportResultConditionTriplets(packet: CommandReportBigEventResultRes
 			packet.effect?.name === Effect.OCCUPIED.id,
 			"timeLost",
 			{ timeLost: packet.effect ? minutesDisplayIntl(packet.effect.time, lng) : 0 }
-		]
+		],
+		[
+			(packet.petLove ?? 0) > 0,
+			"petLove",
+			{ petLove: packet.petLove }
+		],
+		[
+			(packet.petLove ?? 0) < 0,
+			"petLoveLost",
+			{ petLove: -(packet.petLove ?? 0) }
+		],
+		...(packet.materials ?? []).map((material): ConditionTriplet => [
+			material.quantity !== 0,
+			material.quantity < 0 ? "materialLost" : "materialWon",
+			{
+				materialId: material.materialId,
+				quantity: Math.abs(material.quantity)
+			}
+		])
 	];
+}
+
+function formatReportResult(packet: ReportResultValues, lng: Language): string {
+	return getReportResultConditionTriplets(packet, lng)
+		.map(triplet => triplet[0]
+			? i18n.t(`commands:report.${triplet[1]}`, {
+				lng,
+				...triplet[2]
+			})
+			: "")
+		.join("");
+}
+
+/**
+ * Display the result of the fight a big event outcome triggered
+ * @param packet
+ * @param context
+ */
+export async function reportFightResult(packet: CommandReportBigEventFightResultRes, context: PacketContext): Promise<void> {
+	const interactionId = context.discord?.interaction;
+	const interaction = interactionId ? DiscordCache.getInteraction(interactionId) : null;
+	if (!interaction || !context.keycloakId) {
+		return;
+	}
+	const lng = interaction.userLanguage;
+
+	await interaction.channel.send({
+		content: i18n.t("commands:report.doPossibility", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId, lng),
+			result: formatReportResult(packet, lng),
+			event: i18n.t(`events:${packet.eventId}.possibilities.${packet.possibilityId}.fights.${packet.outcomeId}.${packet.won ? "won" : "lost"}`, { lng }),
+			emoji: CrowniclesIcons.monsters[packet.monsterId],
+			alte: packet.effect && packet.effect.name !== Effect.OCCUPIED.id ? CrowniclesIcons.effects[packet.effect.name] : ""
+		})
+	});
 }
 
 /**
@@ -197,14 +258,7 @@ export async function reportResult(packet: CommandReportBigEventResultRes, conte
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const lng = interaction.userLanguage;
 
-	const result = getReportResultConditionTriplets(packet, lng)
-		.map(triplet => triplet[0]
-			? i18n.t(`commands:report.${triplet[1]}`, {
-				lng,
-				...triplet[2]
-			})
-			: "")
-		.join("");
+	const result = formatReportResult(packet, lng);
 
 	const content = i18n.t("commands:report.doPossibility", {
 		lng,

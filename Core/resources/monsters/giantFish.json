@@ -1,0 +1,40 @@
+{
+  "baseEnergyValue": 120,
+  "attackRatio": 55,
+  "defenseRatio": 40,
+  "speedRatio": 90,
+  "breath": 4,
+  "maxBreath": 10,
+  "breathRegen": 3,
+  "rewardFactor": 0.2,
+  "materialLoot": [
+    38,
+    68,
+    8,
+    45,
+    52
+  ],
+  "attacks": [
+    {
+      "id": "tailWhipAttack",
+      "minLevel": 0,
+      "weight": 5
+    },
+    {
+      "id": "hardBiteAttack",
+      "minLevel": 0,
+      "weight": 3
+    },
+    {
+      "id": "waterJet",
+      "minLevel": 0,
+      "weight": 3
+    },
+    {
+      "id": "ramAttack",
+      "minLevel": 40,
+      "weight": 2
+    }
+  ],
+  "maps": []
+}

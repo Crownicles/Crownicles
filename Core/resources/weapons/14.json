@@ -3,5 +3,8 @@
   "rawAttack": 1,
   "speed": -10,
   "type": "rope",
-  "materialCategory": 3
+  "materialCategory": 3,
+  "tags": [
+    "blunt"
+  ]
 }

@@ -1520,6 +1520,18 @@
       "prefix": "von"
     }
   },
+  "petTags": {
+    "flying": "kann fliegen",
+    "aquatic": "fühlt sich im Wasser wohl",
+    "nocturnal": "sieht im Dunkeln",
+    "fire": "beherrscht das Feuer",
+    "keenNose": "feine Nase",
+    "mount": "kann einen Reiter tragen",
+    "heavy": "sehr schwer",
+    "intimidating": "einschüchternd",
+    "climber": "klettert auf Bäume",
+    "grazer": "grast"
+  },
   "biomes": {
     "forest": "Wälder",
     "mountain": "Berg",

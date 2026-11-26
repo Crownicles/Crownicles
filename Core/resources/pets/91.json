@@ -2,5 +2,6 @@
   "rarity": 6,
   "force": 27,
   "feedDelay": 3,
-  "speed": 11
+  "speed": 11,
+  "tags": ["climber"]
 }

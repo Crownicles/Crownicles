@@ -2,13 +2,37 @@
   "possibilities": {
     "abandon": {
       "outcomes": {
-        "0": {},
-        "1": {}
-      }
-    },
-    "end": {
-      "outcomes": {
-        "0": {}
+        "0": {
+          "karma": 1
+        },
+        "1": {},
+        "2": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "money": 100,
+          "karma": 2
+        },
+        "3": {
+          "requirements": {
+            "validPetTypeIds": [
+              24
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 25
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 20
+        }
       }
     },
     "mineIt": {
@@ -19,12 +43,56 @@
         },
         "1": {
           "effect": "occupied",
-          "lostTime": 30
-        },
-        "2": {
-          "effect": "occupied",
           "lostTime": 15,
           "money": 68
+        },
+        "2": {
+          "requirements": {
+            "attack": {
+              "max": 230
+            }
+          },
+          "health": -8,
+          "effect": "occupied",
+          "lostTime": 30
+        },
+        "3": {
+          "requirements": {
+            "weaponTags": [
+              "blunt"
+            ]
+          },
+          "money": 200,
+          "effect": "occupied",
+          "lostTime": 10
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "karma": -1,
+          "effect": "occupied",
+          "lostTime": 20
+        },
+        "5": {
+          "requirements": {
+            "validPetTypeIds": [
+              91
+            ]
+          },
+          "money": 150
+        },
+        "6": {
+          "requirements": {
+            "attack": {
+              "min": 600
+            }
+          },
+          "money": 150,
+          "effect": "occupied",
+          "lostTime": 10
         }
       }
     },
@@ -32,26 +100,115 @@
       "outcomes": {
         "0": {
           "effect": "occupied",
-          "lostTime": 50,
-          "money": 576
+          "lostTime": 60,
+          "money": 139
         },
         "1": {
           "effect": "occupied",
-          "lostTime": 60,
-          "money": 139
+          "lostTime": 120
         },
         "2": {
           "effect": "occupied",
           "lostTime": 40
         },
         "3": {
+          "requirements": {
+            "level": {
+              "min": 120
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 30,
+          "money": 576
+        },
+        "4": {
+          "requirements": {
+            "level": {
+              "max": 55
+            }
+          },
           "effect": "occupied",
           "lostTime": 20
         },
-        "4": {
+        "5": {
+          "requirements": {
+            "petTags": [
+              "keenNose"
+            ]
+          },
           "effect": "occupied",
-          "lostTime": 120
+          "lostTime": 20,
+          "money": 300
+        },
+        "6": {
+          "requirements": {
+            "speed": {
+              "min": 350
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 20,
+          "money": 139
         }
+      }
+    },
+    "pickLock": {
+      "outcomes": {
+        "0": {
+          "consumeMaterials": {
+            "type": "metal",
+            "quantity": 1
+          },
+          "money": 120,
+          "karma": -1,
+          "effect": "occupied",
+          "lostTime": 25
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 20
+        },
+        "2": {
+          "requirements": {
+            "speed": {
+              "max": 40
+            }
+          },
+          "health": -5,
+          "effect": "occupied",
+          "lostTime": 15
+        },
+        "3": {
+          "requirements": {
+            "speed": {
+              "min": 350
+            }
+          },
+          "consumeMaterials": {
+            "type": "metal",
+            "quantity": 1
+          },
+          "money": 200,
+          "karma": -1,
+          "effect": "occupied",
+          "lostTime": 10
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "money": 150,
+          "karma": -3,
+          "effect": "occupied",
+          "lostTime": 10
+        }
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {}
       }
     }
   },

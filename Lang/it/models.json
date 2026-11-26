@@ -1520,6 +1520,18 @@
       "prefix": "di"
     }
   },
+  "petTags": {
+    "flying": "sa volare",
+    "aquatic": "a suo agio in acqua",
+    "nocturnal": "vede al buio",
+    "fire": "domina il fuoco",
+    "keenNose": "buon fiuto",
+    "mount": "può portare un cavaliere",
+    "heavy": "molto pesante",
+    "intimidating": "intimidatorio",
+    "climber": "si arrampica sugli alberi",
+    "grazer": "pascola"
+  },
   "biomes": {
     "forest": "Foresta",
     "mountain": "Montagna",

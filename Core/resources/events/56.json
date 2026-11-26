@@ -3,23 +3,103 @@
     "beach": {
       "outcomes": {
         "0": {
+          "requirements": {
+            "speed": {
+              "max": 10
+            }
+          },
           "money": -100
         },
         "1": {},
         "2": {
-          "health": -3
+          "requirements": {
+            "excludedPetTypeIds": [
+              86
+            ]
+          },
+          "health": -3,
+          "effect": "feetHurt"
+        },
+        "3": {
+          "requirements": {
+            "speed": {
+              "min": 135
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 10,
+          "karma": 1
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 20
+        },
+        "5": {
+          "requirements": {
+            "speed": {
+              "min": 11,
+              "max": 134
+            }
+          },
+          "money": -40
+        },
+        "6": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "kinds": [
+                "burnedDamage"
+              ]
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 20,
+          "health": 15,
+          "karma": 1
         }
       }
     },
     "drinkBlack": {
       "outcomes": {
         "0": {
+          "requirements": {
+            "health": {
+              "min": 100
+            }
+          },
           "effect": "confounded",
-          "health": -70
+          "health": -70,
+          "karma": 1
         },
         "1": {
           "effect": "sleeping",
-          "money": 400
+          "money": 400,
+          "karma": 1
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "effect": "sleeping",
+          "health": 10,
+          "karma": 1
+        },
+        "3": {
+          "requirements": {
+            "health": {
+              "max": 99
+            }
+          },
+          "effect": "confounded",
+          "health": -20,
+          "karma": 1
         }
       }
     },
@@ -30,33 +110,44 @@
           "money": 200,
           "tags": [
             "drinkAlcohol"
-          ]
+          ],
+          "karma": 1
         },
         "1": {
-          "health": 10
+          "health": 10,
+          "karma": 3
         },
         "2": {
           "effect": "occupied",
-          "lostTime": 20
+          "lostTime": 20,
+          "karma": 1
         },
         "3": {
           "effect": "freezing",
-          "health": -20
-        }
-      }
-    },
-    "end": {
-      "outcomes": {
-        "0": {
-          "effect": "confounded"
+          "health": -20,
+          "karma": 1
         },
-        "1": {
-          "money": -225
+        "4": {
+          "requirements": {
+            "validClassIds": [
+              24
+            ]
+          },
+          "randomItem": {},
+          "karma": 2
         },
-        "2": {
-          "effect": "occupied",
-          "health": 5,
-          "lostTime": 20
+        "5": {
+          "requirements": {
+            "karma": {
+              "min": 80
+            }
+          },
+          "randomItem": {
+            "rarity": {
+              "min": 3
+            }
+          },
+          "karma": 1
         }
       }
     },
@@ -67,11 +158,115 @@
           "health": 15
         },
         "1": {
+          "requirements": {
+            "level": {
+              "max": 55
+            }
+          },
           "effect": "confounded"
         },
         "2": {
+          "requirements": {
+            "validClassIds": [
+              24
+            ]
+          },
+          "health": 5
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "effect": "freezing"
+        },
+        "4": {
           "effect": "occupied",
-          "lostTime": 10
+          "lostTime": 10,
+          "karma": 1
+        },
+        "5": {
+          "requirements": {
+            "level": {
+              "min": 130
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 15
+        },
+        "6": {
+          "requirements": {
+            "enchantment": {
+              "slot": "weapon",
+              "kinds": [
+                "poisonedDamage"
+              ]
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 15,
+          "money": 90,
+          "karma": 1
+        }
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "speed": {
+              "max": 135
+            }
+          },
+          "effect": "confounded",
+          "health": -10,
+          "karma": 1
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 15
+        },
+        "2": {
+          "effect": "occupied",
+          "health": 5,
+          "lostTime": 20,
+          "karma": 1
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "effect": "sleeping",
+          "health": 10
+        },
+        "4": {
+          "requirements": {
+            "speed": {
+              "min": 500
+            }
+          },
+          "karma": 1
+        },
+        "5": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "effect": "freezing"
+        },
+        "6": {
+          "requirements": {
+            "speed": {
+              "min": 136,
+              "max": 499
+            }
+          },
+          "health": -5,
+          "karma": 1
         }
       }
     }
@@ -80,8 +275,5 @@
     {
       "mapId": 1
     }
-  ],
-  "tags": [
-    "meetGruffo"
   ]
 }

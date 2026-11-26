@@ -1,32 +1,197 @@
 {
   "possibilities": {
-    "end": {
-      "outcomes": {
-        "0": {
-          "health": -10
-        }
-      }
-    },
     "followDog": {
       "outcomes": {
         "0": {
-          "effect": "lost"
+          "requirements": {
+            "speed": {
+              "max": 40
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 45
         },
         "1": {
-          "money": 176
+          "money": 120
+        },
+        "2": {
+          "requirements": {
+            "level": {
+              "min": 130
+            }
+          },
+          "randomItem": {
+            "rarity": {
+              "min": 3
+            }
+          },
+          "money": 200
+        },
+        "3": {
+          "requirements": {
+            "validPetTypeIds": [
+              1,
+              2
+            ]
+          },
+          "randomItem": {
+            "rarity": {
+              "min": 4
+            }
+          },
+          "money": 300
+        },
+        "4": {
+          "requirements": {
+            "speed": {
+              "min": 500
+            }
+          },
+          "health": -8,
+          "effect": "confounded",
+          "money": 60
+        },
+        "5": {
+          "effect": "occupied",
+          "lostTime": 20,
+          "karma": 3
+        }
+      }
+    },
+    "intimidateDog": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 10,
+          "karma": -2
+        },
+        "1": {
+          "requirements": {
+            "attack": {
+              "max": 230
+            }
+          },
+          "health": -20,
+          "effect": "hurt",
+          "karma": -2
+        },
+        "2": {
+          "requirements": {
+            "attack": {
+              "min": 600
+            }
+          },
+          "karma": -2
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "max": -50
+            }
+          },
+          "money": 13,
+          "karma": -5
+        },
+        "4": {
+          "requirements": {
+            "petTags": [
+              "intimidating"
+            ]
+          },
+          "karma": -2
+        },
+        "5": {
+          "karma": -2
         }
       }
     },
     "skip": {
       "outcomes": {
         "0": {
-          "effect": "occupied",
-          "lostTime": 15
+          "requirements": {
+            "defense": {
+              "max": 180
+            }
+          },
+          "health": -25,
+          "effect": "hurt"
         },
-        "1": {},
+        "1": {
+          "requirements": {
+            "defense": {
+              "min": 181,
+              "max": 519
+            }
+          },
+          "health": -12
+        },
         "2": {
-          "effect": "hurt",
-          "health": -15
+          "requirements": {
+            "defense": {
+              "min": 520
+            }
+          },
+          "health": -3
+        },
+        "3": {
+          "requirements": {
+            "speed": {
+              "min": 350
+            }
+          }
+        },
+        "4": {
+          "requirements": {
+            "speed": {
+              "max": 40
+            }
+          },
+          "health": -25,
+          "effect": "hurt"
+        },
+        "5": {
+          "requirements": {
+            "petTags": [
+              "flying"
+            ]
+          }
+        },
+        "6": {},
+        "7": {},
+        "8": {
+          "effect": "starving"
+        }
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {
+          "health": -15,
+          "effect": "confounded"
+        },
+        "1": {
+          "requirements": {
+            "defense": {
+              "max": 180
+            }
+          },
+          "health": -30,
+          "effect": "hurt"
+        },
+        "2": {
+          "requirements": {
+            "validPetTypeIds": [
+              1,
+              2
+            ]
+          },
+          "randomItem": {}
+        },
+        "3": {},
+        "4": {
+          "effect": "occupied",
+          "lostTime": 30,
+          "karma": 1
         }
       }
     }
